@@ -1,5 +1,4 @@
-name = "applewalls"
+name = "phwalls"
 compatibility_date = "2025-01-27"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
-
