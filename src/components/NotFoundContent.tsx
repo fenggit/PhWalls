@@ -9,25 +9,25 @@ export default function NotFoundContent() {
 
   const quickLinks = [
     {
-      href: '/brands/google-pixel',
+      href: '/google-pixel',
       title: 'Google Pixel Wallpapers',
       description: texts.notFoundQuickLinkIphoneDescription,
       tone: 'from-blue-50 to-cyan-50 border-blue-100',
     },
     {
-      href: '/brands/huawei',
+      href: '/huawei',
       title: 'Huawei Wallpapers',
       description: texts.notFoundQuickLinkIpadDescription,
       tone: 'from-emerald-50 to-green-50 border-emerald-100',
     },
     {
-      href: '/brands/samsung',
+      href: '/samsung',
       title: 'Samsung Wallpapers',
       description: texts.notFoundQuickLinkMacDescription,
       tone: 'from-violet-50 to-fuchsia-50 border-violet-100',
     },
     {
-      href: '/brands/xiaomi',
+      href: '/xiaomi',
       title: 'Xiaomi Wallpapers',
       description: texts.notFoundQuickLinkWwdcDescription,
       tone: 'from-sky-50 to-indigo-50 border-sky-100',

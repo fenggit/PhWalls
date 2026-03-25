@@ -242,7 +242,7 @@ npm start
 
 **技术实现**：
 - 检测逻辑：`src/components/LanguageProvider.tsx` 中的 `detectLanguageFromBrowser()` 函数
-- 语言存储：使用浏览器 localStorage，key 为 `language`
+- 语言存储：使用浏览器 localStorage，key 为 `phwalls-language`
 - 翻译文件：`src/lib/i18n.ts` 包含所有语言的翻译文本
 - 无需配置：不需要设置任何环境变量，系统自动工作
 

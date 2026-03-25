@@ -6,6 +6,7 @@ import {
   findWallpaperCollection,
   isWallpaperCategory,
 } from '@/lib/wallpapers';
+import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { SITE_URL, buildCollectionDescription, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { getI18nTexts } from '@/lib/i18n';
@@ -107,7 +108,11 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const detailPath = buildWallpaperDetailPath(category, collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
-  const categoryLandingUrl = withLanguageUrl(`${SITE_URL}/brands/${category}`, language);
+  const categoryBrand = getBrandCategoryBySlug(category);
+  const categoryLandingUrl = withLanguageUrl(
+    `${SITE_URL}${categoryBrand ? buildBrandPath(categoryBrand.type) : `/${category}`}`,
+    language
+  );
 
   // 按设备分组（服务端，爬虫可见）
   const deviceGroups: Record<string, string[]> = {};

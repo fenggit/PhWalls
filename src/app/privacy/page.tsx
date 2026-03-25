@@ -7,7 +7,6 @@ import { Suspense } from 'react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { withLanguagePath } from '@/lib/language';
 import BackNavButton from '@/components/BackNavButton';
-import { analytics } from '@/lib/analytics';
 import { Mail } from 'lucide-react';
 
 // 将使用useSearchParams的组件分离出来
@@ -16,7 +15,6 @@ function PrivacyPolicyContent() {
   const homeHref = withLanguagePath('/', language);
   const thirdPartyServices = [
     texts.privacyServiceGoogleAnalytics,
-    texts.privacyServiceGoogleAdsense,
     texts.privacyServiceCloudflare,
   ];
 
@@ -153,7 +151,6 @@ function PrivacyPolicyContent() {
                         <p className="font-semibold text-blue-900">{texts.contactEmail}</p>
                         <a 
                           href="mailto:fenggit@163.com" 
-                          onClick={() => analytics.openContactUs()}
                           className="text-blue-700 hover:text-blue-800 transition-colors duration-200"
                         >
                           fenggit@163.com

@@ -5,10 +5,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
 import { Language } from '@/types';
-import { analytics } from '@/lib/analytics';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { buildWallpaperListTitle, getTabData } from '@/lib/data';
+import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpapers';
 
@@ -166,18 +166,9 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
     setPreviewWallpapers(deviceData.item);
     setPreviewIndex(index);
     setIsPreviewOpen(true);
-    analytics.previewWallpaper({
-      action: 'open',
-      wallpaperName: deviceData.item[index]?.name,
-    });
   }, [deviceData]);
 
   const handleLanguageChange = (lang: Language) => {
-    if (lang !== currentLang) {
-      analytics.navLanguageChange({
-        language: lang,
-      });
-    }
     setCurrentLang(lang);
   };
 
@@ -244,6 +235,10 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
   const categoryBreadcrumbLabel = useMemo(() => {
     return buildWallpaperListTitle(getWallpaperCategoryLabel(category), texts.wallpapersTitleSuffix);
   }, [category, texts.wallpapersTitleSuffix]);
+  const categoryLandingPath = useMemo(() => {
+    const brand = getBrandCategoryBySlug(category);
+    return brand ? buildBrandPath(brand.type) : `/${category}`;
+  }, [category]);
 
   const pageDescription = useMemo(
     () => texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
@@ -288,7 +283,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
             {texts.home}
           </Link>
           <span className="px-2">›</span>
-          <Link href={withLanguagePath(`/brands/${category}`, currentLang)} className="hover:text-blue-600">
+          <Link href={withLanguagePath(categoryLandingPath, currentLang)} className="hover:text-blue-600">
             {categoryBreadcrumbLabel}
           </Link>
           <span className="px-2">›</span>

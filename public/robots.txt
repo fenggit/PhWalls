@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://www.applewalls.com/sitemap.xml
+Sitemap: https://www.phwalls.com/sitemap.xml
 
 # Disallow admin pages
 Disallow: /api/

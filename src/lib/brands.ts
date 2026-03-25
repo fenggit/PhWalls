@@ -1,43 +1,45 @@
-export type SourceWallpaperCategory =
-  | 'iphone'
-  | 'ipad'
-  | 'mac'
-  | 'ios'
-  | 'ipados'
-  | 'macos'
-  | 'new-year'
-  | 'wwdc';
+import tabData from '@/data/tab.json';
 
-export type BrandCategoryConfig = {
+type RawTabCategory = {
   title: string;
-  slug: string;
-  source: SourceWallpaperCategory;
+  type: string;
 };
 
-export const BRAND_CATEGORIES = [
-  { title: 'Google Pixel', slug: 'google-pixel', source: 'iphone' },
-  { title: 'HarmonyOS', slug: 'harmonyos', source: 'ios' },
-  { title: 'Honor', slug: 'honor', source: 'ipad' },
-  { title: 'Huawei', slug: 'huawei', source: 'macos' },
-  { title: 'Huawei MatePad', slug: 'huawei-matepad', source: 'ipados' },
-  { title: 'Motorola', slug: 'motorola', source: 'mac' },
-  { title: 'Transsion Infinix', slug: 'transsion-infinix', source: 'new-year' },
-  { title: 'Transsion Tecno', slug: 'transsion-tecno', source: 'wwdc' },
-  { title: 'OnePlus', slug: 'oneplus', source: 'iphone' },
-  { title: 'Oppo', slug: 'oppo', source: 'ios' },
-  { title: 'Realme', slug: 'realme', source: 'ipad' },
-  { title: 'Samsung', slug: 'samsung', source: 'macos' },
-  { title: 'Vivo', slug: 'vivo', source: 'ipados' },
-  { title: 'Xiaomi', slug: 'xiaomi', source: 'mac' },
-] as const satisfies readonly BrandCategoryConfig[];
+export type BrandCategory = {
+  title: string;
+  type: string;
+  slug: string;
+};
 
-export type WallpaperCategory = (typeof BRAND_CATEGORIES)[number]['slug'];
-export type BrandCategory = (typeof BRAND_CATEGORIES)[number];
+export type WallpaperCategory = string;
 
 export function normalizeCategoryType(value: string): string {
   return value.toLowerCase().trim().replace(/\s+/g, '-');
 }
 
+const safeDecodeURIComponent = (value: string): string => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+export const BRAND_CATEGORIES: BrandCategory[] = (tabData as RawTabCategory[]).map((item) => ({
+  title: item.title,
+  type: item.type,
+  slug: normalizeCategoryType(item.type),
+}));
+
 export function getBrandCategoryBySlug(slug: string): BrandCategory | null {
-  return BRAND_CATEGORIES.find((item) => item.slug === slug) ?? null;
+  const normalized = normalizeCategoryType(safeDecodeURIComponent(slug));
+  return (
+    BRAND_CATEGORIES.find(
+      (item) => item.slug === normalized || normalizeCategoryType(item.type) === normalized
+    ) ?? null
+  );
+}
+
+export function buildBrandPath(type: string): string {
+  return `/${encodeURIComponent(type)}`;
 }

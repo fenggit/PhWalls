@@ -12,7 +12,6 @@ import {
 const STATIC_PATHS = new Set([
   'sitemap.xml',
   'robots.txt',
-  'ads.txt',
   'llms.txt',
   'favicon.ico',
   'indexnow-key.txt',

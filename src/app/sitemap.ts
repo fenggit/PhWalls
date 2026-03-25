@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/seo'
 import { SUPPORTED_LANGUAGES, withLanguageUrl } from '@/lib/language'
-import { BRAND_CATEGORIES } from '@/lib/brands'
+import { BRAND_CATEGORIES, buildBrandPath } from '@/lib/brands'
 import {
   buildWallpaperDetailPath,
   getAllWallpaperCollections,
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/design', changeFrequency: 'weekly', priority: 0.9 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.4 },
     ...BRAND_CATEGORIES.map((brand) => ({
-      path: `/brands/${brand.slug}`,
+      path: buildBrandPath(brand.type),
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     })),

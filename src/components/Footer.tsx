@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
 import { withLanguagePath } from '@/lib/language';
-import { analytics } from '@/lib/analytics';
 
 export default function Footer() {
 	const { language: currentLang, texts } = useLanguage();
@@ -44,21 +43,18 @@ export default function Footer() {
 				<div className="flex items-center gap-6 md:gap-8 pt-1">
 					<Link
 						href={withLanguagePath('/about', currentLang)}
-						onClick={() => analytics.openAboutUs()}
 						className="text-gray-700 hover:text-blue-600 text-sm font-semibold transition-colors"
 					>
 						{texts.aboutUs}
 					</Link>
 					<Link
 						href={withLanguagePath('/privacy', currentLang)}
-						onClick={() => analytics.openPrivacyPolicy()}
 						className="text-gray-700 hover:text-blue-600 text-sm font-semibold transition-colors"
 					>
 						{texts.privacyPolicy}
 					</Link>
 					<a
 						href="mailto:fenggit@163.com"
-						onClick={() => analytics.openContactUs()}
 						className="text-gray-700 hover:text-blue-600 text-sm font-semibold transition-colors"
 					>
 						{texts.contactUs}

@@ -9,10 +9,10 @@ import Script from 'next/script';
 import Footer from '@/components/Footer';
 import BackNavButton from '@/components/BackNavButton';
 import { useLanguage } from '@/components/LanguageProvider';
-import { analytics } from '@/lib/analytics';
+import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
+import { getTabData } from '@/lib/data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
-import { Language, LanguageCode } from '@/types';
 import {
   CheckCircle2,
   Clock3,
@@ -24,48 +24,12 @@ import {
   Sparkles,
 } from 'lucide-react';
 
-function getAppleSupportLinks(language: Language) {
-  const links = {
-    [LanguageCode.ZH]: {
-      iphone: 'https://support.apple.com/zh-cn/102638',
-      ipad: 'https://support.apple.com/zh-cn/guide/mac-help/mchlp3013/mac',
-      mac: 'https://support.apple.com/zh-cn/guide/mac-help/mchlp3013/mac',
-    },
-    [LanguageCode.EN]: {
-      iphone: 'https://support.apple.com/en-us/102638',
-      ipad: 'https://support.apple.com/en-us/guide/mac-help/mchlp3013/mac',
-      mac: 'https://support.apple.com/en-us/guide/mac-help/mchlp3013/mac',
-    },
-    [LanguageCode.JA]: {
-      iphone: 'https://support.apple.com/ja-jp/102638',
-      ipad: 'https://support.apple.com/ja-jp/guide/mac-help/mchlp3013/mac',
-      mac: 'https://support.apple.com/ja-jp/guide/mac-help/mchlp3013/mac',
-    },
-    [LanguageCode.VI]: {
-      iphone: 'https://support.apple.com/en-us/102638',
-      ipad: 'https://support.apple.com/en-us/guide/mac-help/mchlp3013/mac',
-      mac: 'https://support.apple.com/en-us/guide/mac-help/mchlp3013/mac',
-    },
-    [LanguageCode.ZH_HANT]: {
-      iphone: 'https://support.apple.com/zh-tw/102638',
-      ipad: 'https://support.apple.com/zh-tw/guide/mac-help/mchlp3013/mac',
-      mac: 'https://support.apple.com/zh-tw/guide/mac-help/mchlp3013/mac',
-    },
-  } as const;
-
-  return links[language] || links[LanguageCode.EN];
-}
-
 function AboutContent() {
   const { language, texts } = useLanguage();
   const pageCopy = {
     heroTagline: texts.aboutHeroTagline,
     resourceTitle: texts.aboutResourceTitle,
     resourceDesc: texts.aboutResourceDesc,
-    iphoneDesc: texts.aboutIphoneDesc,
-    ipadDesc: texts.aboutIpadDesc,
-    macDesc: texts.aboutMacDesc,
-    wwdcDesc: texts.aboutWwdcDesc,
     trustTitle: texts.aboutTrustTitle,
     trustDesc: texts.aboutTrustDesc,
     supportTitle: texts.aboutSupportTitle,
@@ -73,35 +37,21 @@ function AboutContent() {
     contactTitle: texts.aboutContactTitle,
     contactDesc: texts.aboutContactDesc,
   };
-  const appleLinks = getAppleSupportLinks(language);
   const homeHref = withLanguagePath('/', language);
-
-  const collections = [
-    {
-      href: withLanguagePath('/iphone-wallpapers', language),
-      title: texts.iphoneWallpapers,
-      desc: pageCopy.iphoneDesc,
-      tone: 'from-blue-50 to-cyan-50 border-blue-100',
-    },
-    {
-      href: withLanguagePath('/ipad-wallpapers', language),
-      title: texts.ipadWallpapers,
-      desc: pageCopy.ipadDesc,
-      tone: 'from-green-50 to-emerald-50 border-green-100',
-    },
-    {
-      href: withLanguagePath('/macos-wallpapers', language),
-      title: texts.macosWallpapers,
-      desc: pageCopy.macDesc,
-      tone: 'from-violet-50 to-fuchsia-50 border-violet-100',
-    },
-    {
-      href: withLanguagePath('/wwdc-wallpapers', language),
-      title: texts.wwdcWallpapers,
-      desc: pageCopy.wwdcDesc,
-      tone: 'from-sky-50 to-indigo-50 border-sky-100',
-    },
+  const brandTabs = getTabData().filter((item) => normalizeCategoryType(item.type) !== 'design');
+  const collectionTones = [
+    'from-blue-50 to-cyan-50 border-blue-100',
+    'from-green-50 to-emerald-50 border-green-100',
+    'from-violet-50 to-fuchsia-50 border-violet-100',
+    'from-sky-50 to-indigo-50 border-sky-100',
   ];
+
+  const collections = brandTabs.slice(0, 4).map((item, index) => ({
+    href: withLanguagePath(buildBrandPath(item.type), language),
+    title: `${item.title} Wallpapers`,
+    desc: `Explore official ${item.title} wallpaper collections and download them in full resolution.`,
+    tone: collectionTones[index % collectionTones.length],
+  }));
 
   const faqItems = [
     { question: texts.faqQuestion2, answer: texts.faqAnswer2 },
@@ -263,30 +213,21 @@ function AboutContent() {
               </h2>
               <p className="mt-4 text-slate-600 leading-relaxed">{pageCopy.supportDesc}</p>
               <div className="mt-6 grid sm:grid-cols-3 gap-3">
-                <a
-                  href={appleLinks.iphone}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800 hover:bg-blue-100 transition-colors"
-                >
-                  {texts.iphoneWallpapers}
-                </a>
-                <a
-                  href={appleLinks.ipad}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 hover:bg-emerald-100 transition-colors"
-                >
-                  {texts.ipadWallpapers}
-                </a>
-                <a
-                  href={appleLinks.mac}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm font-medium text-violet-800 hover:bg-violet-100 transition-colors"
-                >
-                  {texts.macosWallpapers}
-                </a>
+                {brandTabs.slice(0, 3).map((item, index) => (
+                  <Link
+                    key={item.type}
+                    href={withLanguagePath(buildBrandPath(item.type), language)}
+                    className={`rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                      index === 0
+                        ? 'border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100'
+                        : index === 1
+                          ? 'border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                          : 'border border-violet-200 bg-violet-50 text-violet-800 hover:bg-violet-100'
+                    }`}
+                  >
+                    {item.title} Wallpapers
+                  </Link>
+                ))}
               </div>
             </article>
           </div>
@@ -333,7 +274,6 @@ function AboutContent() {
                 </a>
                 <a
                   href="mailto:fenggit@163.com"
-                  onClick={() => analytics.openContactUs()}
                   className="inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
                 >
                   <Mail className="h-4 w-4 text-slate-500" />
@@ -341,7 +281,6 @@ function AboutContent() {
                 </a>
                 <Link
                   href={withLanguagePath('/privacy', language)}
-                  onClick={() => analytics.openPrivacyPolicy()}
                   className="inline-flex w-full items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
                 >
                   {texts.privacyPolicy}

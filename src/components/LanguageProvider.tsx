@@ -5,10 +5,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getI18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
 import MiniProgramModal from '@/components/MiniProgramModal';
-import { analytics } from '@/lib/analytics';
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_COOKIE_NAME,
+  LANGUAGE_LOCAL_STORAGE_KEY,
   getLanguageFromPath,
   normalizeLanguage,
   SUPPORTED_LANGUAGES,
@@ -37,11 +37,10 @@ export function LanguageProvider({
 
   // 小程序二维码弹窗
   const [isMiniProgramOpen, setIsMiniProgramOpen] = useState(false);
-  const [hasSentContext, setHasSentContext] = useState(false);
   
   const persistLanguage = useCallback((lang: Language) => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem('language', lang);
+    localStorage.setItem(LANGUAGE_LOCAL_STORAGE_KEY, lang);
     document.cookie = `${LANGUAGE_COOKIE_NAME}=${lang}; path=/; max-age=31536000; samesite=lax`;
     document.documentElement.lang = lang;
   }, []);
@@ -65,7 +64,7 @@ export function LanguageProvider({
   useEffect(() => {
     if (typeof window === 'undefined' || isInitialized) return;
 
-    const savedLanguage = normalizeLanguage(localStorage.getItem('language'));
+    const savedLanguage = normalizeLanguage(localStorage.getItem(LANGUAGE_LOCAL_STORAGE_KEY));
     const pathLanguage = getLanguageFromPath(window.location.pathname);
 
     if (pathLanguage) {
@@ -108,23 +107,7 @@ export function LanguageProvider({
     return () => window.removeEventListener(OPEN_EVENT_NAME, handler);
   }, [isInitialized]);
 
-  useEffect(() => {
-    if (!isMiniProgramOpen) return;
-    analytics.miniProgram({ action: 'open' });
-  }, [isMiniProgramOpen]);
-
-  useEffect(() => {
-    if (!isInitialized || hasSentContext || typeof window === 'undefined') return;
-    const system = navigator.userAgent || 'unknown';
-    analytics.deviceInfo({
-      system,
-      language,
-    });
-    setHasSentContext(true);
-  }, [hasSentContext, isInitialized, language]);
-
   const handleMiniProgramClose = () => {
-    analytics.miniProgram({ action: 'close' });
     setIsMiniProgramOpen(false);
   };
   

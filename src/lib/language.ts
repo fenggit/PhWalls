@@ -8,6 +8,7 @@ export const SUPPORTED_LANGUAGES: Language[] = [
   LanguageCode.ZH_HANT,
 ];
 export const DEFAULT_LANGUAGE: Language = LanguageCode.EN;
+export const LANGUAGE_LOCAL_STORAGE_KEY = 'phwalls-language';
 export const LANGUAGE_COOKIE_NAME = 'phwalls-lang';
 export const LANGUAGE_HEADER_NAME = 'x-phwalls-lang';
 export const LANGUAGE_PATH_SEGMENTS: Record<Language, string> = {

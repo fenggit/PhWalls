@@ -5,13 +5,9 @@ import { Fragment, useState, useEffect, useCallback, useMemo } from 'react';
 import Header from '@/components/Header';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import Footer from '@/components/Footer';
-import GoogleHorBannerAd from '@/components/ads/GoogleHorBannerAd';
-import GoogleGridAds from '@/components/ads/GoogleGridAds';
-import GoogleItemAds from '@/components/ads/GoogleItemAds';
 import { Language } from '@/types';
 import { buildWallpaperListTitle, getTabData, sortByDateDesc } from '@/lib/data';
 import { useLanguage } from '@/components/LanguageProvider';
-import { analytics } from '@/lib/analytics';
 import { normalizeCategoryType } from '@/lib/brands';
 import {
   buildWallpaperDetailPath,
@@ -34,7 +30,6 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
   const [imageLoadingStates, setImageLoadingStates] = useState<Record<string, boolean>>({});
   const [viewportWidth, setViewportWidth] = useState(1536);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [adsReady, setAdsReady] = useState(false);
   
   // 预览模态框状态
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -187,13 +182,8 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
 
   // 语言切换处理
   const handleLanguageChange = useCallback((lang: Language) => {
-    if (lang !== currentLang) {
-      analytics.navLanguageChange({
-        language: lang,
-      });
-    }
     setCurrentLang(lang);
-  }, [currentLang, setCurrentLang]);
+  }, [setCurrentLang]);
 
   // 滚动性能优化
   useEffect(() => {
@@ -236,10 +226,6 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
     setPreviewWallpapers(wallpapers);
     setPreviewIndex(0);
     setIsPreviewOpen(true);
-    analytics.previewWallpaper({
-      action: 'open',
-      wallpaperName: wallpapers[0]?.name,
-    });
   }, []);
 
   // 关闭预览模态框
@@ -268,24 +254,6 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
 
     return () => {
       window.removeEventListener('resize', updateViewportWidth);
-    };
-  }, []);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    const enableAds = () => setAdsReady(true);
-
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(enableAds, { timeout: 4000 });
-    } else {
-      timer = setTimeout(enableAds, 2500);
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
     };
   }, []);
 
@@ -666,15 +634,8 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
                     </div>
                   )}
 
-                  {adsReady ? <GoogleItemAds /> : null}
                 </div>
               </section>
-              {adsReady && index === 0 && (
-                <GoogleGridAds />
-              )}
-              {adsReady && index !== 0 && index < visibleCategories.length - 1 && (
-                <GoogleHorBannerAd />
-              )}
             </Fragment>
           );
         })}

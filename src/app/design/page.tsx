@@ -8,7 +8,6 @@ import { useLanguage } from '@/components/LanguageProvider';
 import { withLanguagePath } from '@/lib/language';
 import BackNavButton from '@/components/BackNavButton';
 import Script from 'next/script';
-import { analytics } from '@/lib/analytics';
 
 // 预设壁纸数据
 const presetWallpapers = [
@@ -141,17 +140,10 @@ function DesignPageContent() {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleDeviceTypeChange = (type: DeviceType) => {
-    if (type !== deviceType) {
-      analytics.designDeviceChange({ deviceType: type });
-    }
     setDeviceType(type);
   };
 
   const handlePresetSelect = (wallpaper: (typeof presetWallpapers)[number]) => {
-    analytics.designPresetSelect({
-      presetId: wallpaper.id,
-      presetName: wallpaper.name,
-    });
     setSelectedWallpaper(wallpaper);
     setCustomColor(wallpaper.hexColor);
     setUseCustomColor(false);
@@ -160,12 +152,10 @@ function DesignPageContent() {
   const handleCustomColorChange = (value: string) => {
     setCustomColor(value);
     setUseCustomColor(true);
-    analytics.designCustomColorSet({ colorHex: value });
   };
 
   const handleCustomSizeToggle = (enabled: boolean) => {
     setUseCustomSize(enabled);
-    analytics.designCustomSizeToggle({ enabled });
   };
 
   // 初始化壁纸大小
@@ -192,19 +182,9 @@ function DesignPageContent() {
       const aspectRatio = device.width / device.height;
       const nextSize = { width: clampedWidth, height: Math.round(clampedWidth / aspectRatio) };
       setWallpaperSize(nextSize);
-      analytics.designSizeChange({
-        width: nextSize.width,
-        height: nextSize.height,
-        maintainAspect: true,
-      });
     } else {
       const nextSize = { ...wallpaperSize, width: clampedWidth };
       setWallpaperSize(nextSize);
-      analytics.designSizeChange({
-        width: nextSize.width,
-        height: nextSize.height,
-        maintainAspect: false,
-      });
     }
   };
 
@@ -218,19 +198,9 @@ function DesignPageContent() {
       const aspectRatio = device.width / device.height;
       const nextSize = { width: Math.round(clampedHeight * aspectRatio), height: clampedHeight };
       setWallpaperSize(nextSize);
-      analytics.designSizeChange({
-        width: nextSize.width,
-        height: nextSize.height,
-        maintainAspect: true,
-      });
     } else {
       const nextSize = { ...wallpaperSize, height: clampedHeight };
       setWallpaperSize(nextSize);
-      analytics.designSizeChange({
-        width: nextSize.width,
-        height: nextSize.height,
-        maintainAspect: false,
-      });
     }
   };
 
@@ -244,7 +214,6 @@ function DesignPageContent() {
   // 处理保持宽高比开关变化
   const handleMaintainAspectRatioChange = (newValue: boolean) => {
     setMaintainAspectRatio(newValue);
-    analytics.designAspectToggle({ enabled: newValue });
     if (newValue) {
       // 如果启用保持宽高比，以当前宽度为准重新计算高度
       const device = deviceConfigs[deviceType];
@@ -277,15 +246,6 @@ function DesignPageContent() {
     const device = deviceConfigs[deviceType];
     const finalWidth = useCustomSize ? wallpaperSize.width : device.width;
     const finalHeight = useCustomSize ? wallpaperSize.height : device.height;
-    analytics.designDownload({
-      deviceType,
-      width: finalWidth,
-      height: finalHeight,
-      useCustomSize,
-      useCustomColor,
-      presetId: selectedWallpaper.id,
-      presetName: selectedWallpaper.name,
-    });
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

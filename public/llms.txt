@@ -7,7 +7,7 @@ Sitemap: https://www.applewalls.com/sitemap.xml
 Languages: en, zh, ja, vi, zh-hant
 Last-Updated: 2026-03-13
 Canonical: https://www.applewalls.com/{lang}/... (language subpaths)
-Language-Resolution: user choice stored in localStorage + `applewalls-lang` cookie, otherwise IP country mapping
+Language-Resolution: user choice stored in localStorage (`phwalls-language`) + `phwalls-lang` cookie, otherwise IP country mapping
 
 ---
 

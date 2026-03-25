@@ -2,13 +2,11 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
 import { Globe } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Language, LanguageCode, TabInfo } from '@/types';
-import { analytics } from '@/lib/analytics';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
-import { normalizeCategoryType } from '@/lib/brands';
+import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
 
 export interface HeaderProps {
@@ -47,7 +45,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
       const normalizedType = normalizeCategoryType(categoryType);
 
       if (normalizedType === 'design') return '/design';
-      return `/brands/${normalizedType}`;
+      return buildBrandPath(categoryType);
     },
     []
   );
@@ -56,9 +54,13 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
     const normalizedPath = stripLanguagePrefix(currentPath).path;
     if (normalizedPath === '/') return 'all';
     if (normalizedPath === '/design') return 'design';
-    const brandPathMatch = normalizedPath.match(/^\/brands\/([^/]+)$/);
-    if (brandPathMatch?.[1]) {
-      return brandPathMatch[1];
+    const topLevelMatch = normalizedPath.match(/^\/([^/]+)$/);
+    if (topLevelMatch?.[1]) {
+      try {
+        return normalizeCategoryType(decodeURIComponent(topLevelMatch[1]));
+      } catch {
+        return normalizeCategoryType(topLevelMatch[1]);
+      }
     }
     return '';
   }, []);
@@ -100,13 +102,9 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
   );
 
   const handleCategorySelect = useCallback(
-    (categoryType: string, categoryTitle: string) => {
+    (categoryType: string) => {
       const normalizedType = normalizeCategoryType(categoryType);
       setActiveMobileType((prev) => (prev === normalizedType ? prev : normalizedType));
-
-      analytics.navCategoryClick({
-        categoryTitle,
-      });
 
       setIsDeviceMenuOpen(false);
       setIsLanguageMenuOpen(false);
@@ -115,39 +113,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
     []
   );
 
-  const handleTabClick = useCallback(
-    (event: ReactMouseEvent<HTMLAnchorElement>, categoryTitle: string) => {
-      // Allow open-in-new-tab and non-left clicks to behave normally.
-      if (
-        event.defaultPrevented ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey ||
-        event.button !== 0
-      ) {
-        return;
-      }
-
-      analytics.navCategoryClick({
-        categoryTitle,
-      });
-    },
-    []
-  );
-
-  const handleAllSelect = useCallback(() => {
-    analytics.navCategoryClick({
-      categoryTitle: mobileAllLabel,
-    });
-  }, [mobileAllLabel]);
-
   const handleLanguageChange = (lang: Language) => {
-    if (lang !== currentLang) {
-      analytics.navLanguageChange({
-        language: lang,
-      });
-    }
     onLanguageChange(lang);
   };
 
@@ -237,7 +203,6 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                   <Link
                     key={category.type}
                     href={href}
-                    onClick={(event) => handleTabClick(event, category.title)}
                     className={getDesktopTabButtonClass(isActive)}
                     title={category.title}
                     prefetch
@@ -247,7 +212,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                 ) : (
                   <button
                     key={category.type}
-                    onClick={() => handleCategorySelect(category.type, category.title)}
+                    onClick={() => handleCategorySelect(category.type)}
                     className={getDesktopTabButtonClass(isActive)}
                     title={category.title}
                   >
@@ -298,7 +263,6 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
             <div className="hidden md:block">
               <Link
                 href={withLanguagePath('/about', currentLang)}
-                onClick={() => analytics.openAbout()}
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 rounded-md hover:bg-blue-50"
               >
                 {texts.about}
@@ -379,7 +343,6 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                 <Link
                   key="all"
                   href={withLanguagePath('/', currentLang)}
-                  onClick={handleAllSelect}
                   className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
                     activeMobileType === 'all'
                       ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
@@ -399,7 +362,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                     <Link
                       key={category.type}
                       href={href}
-                      onClick={() => analytics.navCategoryClick({ categoryTitle: category.title })}
+                      onClick={() => handleCategorySelect(category.type)}
                       className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
                         isActive
                           ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
@@ -414,7 +377,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                   ) : (
                     <button
                       key={category.type}
-                      onClick={() => handleCategorySelect(category.type, category.title)}
+                      onClick={() => handleCategorySelect(category.type)}
                       className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
                         isActive
                           ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
@@ -531,7 +494,6 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
               <Link
                 href={withLanguagePath('/about', currentLang)}
                 onClick={() => {
-                  analytics.openAbout();
                   setIsDeviceMenuOpen(false);
                 }}
                 className="flex items-center space-x-2 w-full text-left text-gray-700 hover:text-blue-600 transition-colors duration-200 min-h-[40px] px-2 rounded-md hover:bg-gray-50"

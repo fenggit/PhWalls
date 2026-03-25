@@ -39,6 +39,9 @@ type SeoLandingPageProps = {
   categoryKey: string;
   categoryPath?: string;
   detailCategory?: WallpaperCategory;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoSubtitle?: string;
   cardAspect: string;
   gridClass: string;
   cards: LandingCard[];
@@ -85,6 +88,9 @@ export default function SeoLandingPage({
   categoryKey,
   categoryPath,
   detailCategory,
+  seoTitle,
+  seoDescription,
+  seoSubtitle,
   cardAspect,
   gridClass,
   cards,
@@ -112,10 +118,16 @@ export default function SeoLandingPage({
 
   const currentLangData = categoryDataByLang[currentLang] || categoryDataByLang[LanguageCode.EN];
   const copy = currentLangData[categoryKey] || categoryDataByLang[LanguageCode.EN][categoryKey];
-  const title = copy?.title || breadcrumbLabel;
+  const title = seoTitle || copy?.title || breadcrumbLabel;
   const pageTitle = buildWallpaperListTitle(title, texts.wallpapersTitleSuffix);
-  const description = copy?.desc || '';
-  const subtitle = copy?.subTitle || '';
+  const description =
+    seoDescription ||
+    copy?.desc ||
+    `Explore official ${breadcrumbLabel}. Download high-resolution, watermark-free wallpapers for free.`;
+  const subtitle =
+    seoSubtitle ||
+    copy?.subTitle ||
+    `${cards.length} curated collections, continuously updated with the latest official releases.`;
   const breadcrumbAriaLabel = texts.breadcrumbNavigationLabel;
   const updatedLabel = texts.updatedLabel;
   const resolvedDetailCategory = detailCategory || (categoryKey.replace('-wallpapers', '') as WallpaperCategory);

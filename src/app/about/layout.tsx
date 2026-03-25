@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     keywords:
-      'PhWalls, original Apple wallpapers, iPhone wallpapers, iPad wallpapers, Mac wallpapers, iOS wallpapers, iPadOS wallpapers, macOS wallpapers, 4K wallpapers, 5K wallpapers, 6K wallpapers',
+      'PhWalls, phone wallpapers, samsung wallpapers, vivo wallpapers, google pixel wallpapers, realme wallpapers, xiaomi wallpapers, huawei wallpapers, oneplus wallpapers',
     openGraph: {
       title,
       description,

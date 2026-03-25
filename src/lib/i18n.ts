@@ -328,7 +328,6 @@ export interface I18nTexts {
   privacySection5Content1: string;
   privacySection5Subtitle: string;
   privacyServiceGoogleAnalytics: string;
-  privacyServiceGoogleAdsense: string;
   privacyServiceCloudflare: string;
   privacySection6Title: string;
   privacySection6Content1: string;
@@ -680,7 +679,6 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     privacySection5Content1: '我们使用以下第三方服务，它们可能有自己的隐私政策：',
     privacySection5Subtitle: '我们使用的第三方服务包括：',
     privacyServiceGoogleAnalytics: 'Google Analytics - 网站分析',
-    privacyServiceGoogleAdsense: 'Google AdSense - 广告服务',
     privacyServiceCloudflare: 'Cloudflare - CDN和安全服务',
     privacySection6Title: '6. 用户权利',
     privacySection6Content1: '根据适用的数据保护法律，您拥有以下权利：',
@@ -1030,7 +1028,6 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     privacySection5Content1: 'We use the following third-party services, which may have their own privacy policies:',
     privacySection5Subtitle: 'Third-party services we use include:',
     privacyServiceGoogleAnalytics: 'Google Analytics - Website Analytics',
-    privacyServiceGoogleAdsense: 'Google AdSense - Advertising Services',
     privacyServiceCloudflare: 'Cloudflare - CDN and Security Services',
     privacySection6Title: '6. User Rights',
     privacySection6Content1: 'Under applicable data protection laws, you have the following rights:',
@@ -1380,7 +1377,6 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     privacySection5Content1: '以下の第三者サービスを使用しており、それぞれ独自のプライバシーポリシーがあります：',
     privacySection5Subtitle: '使用している第三者サービスには以下が含まれます：',
     privacyServiceGoogleAnalytics: 'Google Analytics - サイト分析',
-    privacyServiceGoogleAdsense: 'Google AdSense - 広告配信',
     privacyServiceCloudflare: 'Cloudflare - CDNとセキュリティ',
     privacySection6Title: '6. ユーザー権利',
     privacySection6Content1: '適用されるデータ保護法に基づき、以下の権利があります：',
@@ -1703,7 +1699,6 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     privacySection5Content1: 'Chúng tôi sử dụng các dịch vụ bên thứ ba sau, có thể có chính sách bảo mật riêng:',
     privacySection5Subtitle: 'Các dịch vụ bên thứ ba chúng tôi sử dụng bao gồm:',
     privacyServiceGoogleAnalytics: 'Google Analytics - Phân tích trang web',
-    privacyServiceGoogleAdsense: 'Google AdSense - Dịch vụ quảng cáo',
     privacyServiceCloudflare: 'Cloudflare - CDN và bảo mật',
     privacySection6Title: '6. Quyền người dùng',
     privacySection6Content1: 'Theo luật bảo vệ dữ liệu hiện hành, bạn có các quyền sau:',
@@ -2053,7 +2048,6 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     privacySection5Content1: '我們使用以下第三方服務，它們可能有自己的隱私政策：',
     privacySection5Subtitle: '我們使用的第三方服務包括：',
     privacyServiceGoogleAnalytics: 'Google Analytics - 網站分析',
-    privacyServiceGoogleAdsense: 'Google AdSense - 廣告服務',
     privacyServiceCloudflare: 'Cloudflare - CDN與安全服務',
     privacySection6Title: '6. 使用者權利',
     privacySection6Content1: '根據適用的資料保護法律，您擁有以下權利：',

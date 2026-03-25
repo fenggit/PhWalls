@@ -134,21 +134,21 @@ export default async function RootLayout({
   return (
     <html lang={currentLanguage} className="scroll-smooth">
       <head>
+        {/* Google tag (gtag.js) */}
         <Script
-          id="gtag-loader"
-          src="https://www.googletagmanager.com/gtag/js?id=G-FMKN5TM8D8"
-          strategy="afterInteractive"
+          id="google-tag-manager"
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-V98C3T2XRM"
         />
         <Script
-          id="gtag-init"
-          strategy="afterInteractive"
+          id="google-tag-init"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
-              window.gtag = gtag;
               gtag('js', new Date());
-              gtag('config', 'G-FMKN5TM8D8');
+
+              gtag('config', 'G-V98C3T2XRM');
             `,
           }}
         />
@@ -169,22 +169,8 @@ export default async function RootLayout({
           }}
         /> */}
 
-        {/* 将此代码放置在您网站的每个网页上，Google 即会自动为您在所有最佳位置展示广告 */}
-        <Script
-          id="adsense-script"
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4449597016215208"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-
-        {/* Pinterest 站点验证 */}
-        <meta name="p:domain_verify" content="53b732a626787b705f8adfc7d6dc1c3e" />
-        {/* End Pinterest 站点验证 */}
-
         {/* 资源提示优化 */}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
 
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />

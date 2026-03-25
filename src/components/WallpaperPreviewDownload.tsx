@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
-import { analytics } from '@/lib/analytics';
 
 interface WallpaperItem {
   name: string;
@@ -45,18 +44,9 @@ export default function WallpaperPreviewDownload({
 
   const currentWallpaper = wallpapers[currentIndex];
 
-  const getWallpaperParams = useCallback(() => ({
-    categoryName,
-    wallpaperName: currentWallpaper?.name,
-  }), [categoryName, currentWallpaper?.name]);
-
   const handleClose = useCallback(() => {
-    analytics.previewWallpaper({
-      action: 'close',
-      wallpaperName: currentWallpaper?.name,
-    });
     onClose();
-  }, [currentWallpaper?.name, onClose]);
+  }, [onClose]);
 
   // 批量生成私有URL
   const generateBatchPrivateUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
@@ -208,9 +198,6 @@ export default function WallpaperPreviewDownload({
   const goToPrevious = useCallback(() => {
     if (currentIndex > 0) {
       const nextIndex = currentIndex - 1;
-      analytics.previewNavigate({
-        wallpaperName: wallpapers[nextIndex]?.name,
-      });
       onIndexChange(nextIndex);
     }
   }, [currentIndex, onIndexChange, wallpapers]);
@@ -219,9 +206,6 @@ export default function WallpaperPreviewDownload({
   const goToNext = useCallback(() => {
     if (currentIndex < wallpapers.length - 1) {
       const nextIndex = currentIndex + 1;
-      analytics.previewNavigate({
-        wallpaperName: wallpapers[nextIndex]?.name,
-      });
       onIndexChange(nextIndex);
     }
   }, [currentIndex, onIndexChange, wallpapers]);
@@ -273,25 +257,17 @@ export default function WallpaperPreviewDownload({
       link.click();
       document.body.removeChild(link);
 
-      analytics.downloadSuccess({
-        ...getWallpaperParams(),
-      });
-
       // 延迟释放blob URL，确保下载完成
       setTimeout(() => {
         window.URL.revokeObjectURL(blobUrl);
       }, 100);
     } catch (error) {
-      analytics.downloadFail({
-        categoryName,
-        wallpaperName: currentWallpaper?.name,
-      });
       console.error('Download failed:', error);
       alert(texts.downloadFailed + '\n\n' + texts.errorDetails + ': ' + (error instanceof Error ? error.message : texts.unknownError));
     } finally {
       setIsDownloading(false);
     }
-  }, [categoryName, currentWallpaper, getWallpaperParams, isDownloading, texts.downloadFailed, texts.errorDetails, texts.unknownError]);
+  }, [currentWallpaper, isDownloading, texts.downloadFailed, texts.errorDetails, texts.unknownError]);
 
   // 处理下载按钮点击
   const handleDownloadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -302,9 +278,6 @@ export default function WallpaperPreviewDownload({
       return;
     }
 
-    analytics.downloadClick({
-      wallpaperName: currentWallpaper?.name,
-    });
     downloadWallpaper();
   }, [currentWallpaper, currentImageUrl, downloadWallpaper, isDownloading, isLoading]);
 
@@ -312,34 +285,20 @@ export default function WallpaperPreviewDownload({
   const handleZoomIn = useCallback(() => {
     const nextZoom = Math.min(zoomLevel + 0.5, 3);
     setZoomLevel(nextZoom);
-    analytics.previewZoom({
-      zoomLevel: nextZoom,
-      wallpaperName: currentWallpaper?.name,
-    });
-  }, [currentWallpaper?.name, zoomLevel]);
+  }, [zoomLevel]);
 
   const handleZoomOut = useCallback(() => {
     const nextZoom = Math.max(zoomLevel - 0.5, 0.5);
     setZoomLevel(nextZoom);
-    analytics.previewZoom({
-      zoomLevel: nextZoom,
-      wallpaperName: currentWallpaper?.name,
-    });
-  }, [currentWallpaper?.name, zoomLevel]);
+  }, [zoomLevel]);
 
   const handleResetZoom = useCallback(() => {
     setZoomLevel(1);
-    analytics.previewZoom({
-      zoomLevel: 1,
-      wallpaperName: currentWallpaper?.name,
-    });
-  }, [currentWallpaper?.name]);
+  }, []);
 
   // 刷新当前图片
   const handleRefreshImage = useCallback(async () => {
     if (!currentWallpaper || !isOpen) return;
-
-    analytics.previewRefresh({ wallpaperName: currentWallpaper?.name });
 
     const displayPath = currentWallpaper.compressPath || currentWallpaper.originPath;
 
