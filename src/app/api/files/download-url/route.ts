@@ -6,7 +6,8 @@ export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
-    const { key } = await request.json();
+    const body = (await request.json()) as { key?: string };
+    const { key } = body;
 
     if (!key) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 });
@@ -54,4 +55,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

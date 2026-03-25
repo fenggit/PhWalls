@@ -7,7 +7,7 @@ const SIGNING_CONCURRENCY = 8;
 
 export async function POST(request: NextRequest) {
   try {
-    let body;
+    let body: { keys?: unknown };
     try {
       body = await request.json();
     } catch (error) {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     if (!environment.r2.bucket || !environment.r2.endpoint) {
       console.error('R2 bucket or endpoint not configured');
       return NextResponse.json(

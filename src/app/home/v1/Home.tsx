@@ -75,7 +75,7 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
         return {};
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as { urls?: Record<string, string> };
       return data.urls || {};
     } catch (error) {
       console.error('Failed to generate batch private URLs:', error);
