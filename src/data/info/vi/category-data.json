@@ -1,0 +1,42 @@
+{
+  "iphone-wallpapers": {
+    "title": "iPhone Wallpapers",
+    "desc": "Tổng hợp hình nền iPhone tích hợp sẵn hệ thống từ đời đầu đến các mẫu iPhone mới nhất. Tải xuống chất lượng HD và 4K, tối ưu cho nhiều kích thước màn hình và màn hình khóa.",
+    "subTitle": "Hình nền iPhone tích hợp sẵn hệ thống HD và 4K"
+  },
+  "ios-wallpapers": {
+    "title": "iOS Wallpapers",
+    "desc": "Khám phá hình nền mặc định iOS từ iOS 1 đến phiên bản mới nhất, sắp xếp theo từng đời hệ điều hành. Hỗ trợ tải ảnh độ phân giải cao cho người dùng iPhone.",
+    "subTitle": "Bộ sưu tập hình nền iOS theo phiên bản"
+  },
+  "ipad-wallpapers": {
+    "title": "iPad Wallpapers",
+    "desc": "Bộ hình nền iPad tích hợp sẵn hệ thống cho iPad Pro, iPad Air và iPad mini. Ảnh HD và 4K được tối ưu cho màn hình lớn, phù hợp cả màn hình chính và khóa.",
+    "subTitle": "Hình nền iPad tích hợp sẵn hệ thống cho mọi dòng máy"
+  },
+  "ipados-wallpapers": {
+    "title": "iPadOS Wallpapers",
+    "desc": "Tổng hợp hình nền mặc định iPadOS từ iPadOS 13 đến bản mới nhất, phân loại rõ theo phiên bản. Dễ tìm, dễ tải với chất lượng ảnh cao.",
+    "subTitle": "Hình nền iPadOS mặc định theo từng phiên bản"
+  },
+  "macos-wallpapers": {
+    "title": "macOS Wallpapers",
+    "desc": "Tải hình nền macOS tích hợp sẵn hệ thống từ thời Mac OS X đến macOS mới nhất. Ảnh độ phân giải cao dành cho MacBook, iMac và màn hình ngoài.",
+    "subTitle": "Hình nền macOS tích hợp sẵn hệ thống độ phân giải cao"
+  },
+  "mac-wallpapers": {
+    "title": "Hình nền Mac",
+    "desc": "Tuyển chọn hình nền cho MacBook Pro, MacBook Air, iMac và các thiết bị Mac khác. Hỗ trợ từ HD đến 5K, phù hợp cho desktop sắc nét.",
+    "subTitle": "Bộ sưu tập hình nền Mac tích hợp sẵn hệ thống"
+  },
+  "new-year-wallpapers": {
+    "title": "Apple New Year Wallpapers",
+    "desc": "Sưu tầm hình nền Apple chủ đề Năm Mới và Tết Âm lịch qua nhiều năm. Tải ảnh chất lượng cao để làm mới màn hình iPhone, iPad và Mac.",
+    "subTitle": "Hình nền Apple chủ đề Năm Mới và Tết"
+  },
+  "wwdc-wallpapers": {
+    "title": "WWDC Wallpapers",
+    "desc": "Tổng hợp hình nền WWDC tích hợp sẵn hệ thống qua từng năm, gồm visual sự kiện và thiết kế keynote. Tải ảnh độ phân giải cao để lưu trữ và sử dụng.",
+    "subTitle": "Hình nền WWDC tích hợp sẵn hệ thống theo năm"
+  }
+}

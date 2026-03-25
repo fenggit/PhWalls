@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AppleWalls 首页改版演示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-a: #edf4ff;
+      --bg-b: #ffffff;
+      --bg-c: #eefaf6;
+      --text-main: #101828;
+      --text-sub: #475467;
+      --text-muted: #667085;
+      --line: #e4e7ec;
+      --card: #ffffff;
+      --chip-bg: #f2f4f7;
+      --chip-on: #dff2ff;
+      --brand: #0b7bd3;
+      --tag-bg: rgba(17, 24, 39, 0.48);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text-main);
+      font-family: "Noto Sans SC", sans-serif;
+      background: linear-gradient(145deg, var(--bg-a), var(--bg-b), var(--bg-c));
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+    .top {
+      position: sticky; top: 0; z-index: 40;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.86);
+      border-bottom: 1px solid var(--line);
+    }
+    .top-inner {
+      height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .logo {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 28px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text-main);
+    }
+    .nav { display: flex; align-items: center; gap: 20px; }
+    .nav a {
+      text-decoration: none; color: #344054; font-size: 14px; font-weight: 600;
+      padding: 8px 10px; border-radius: 999px;
+    }
+    .nav a:hover { background: #f2f4f7; color: #101828; }
+    .hero { padding: 38px 0 24px; }
+    .hero h1 {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .hero p {
+      margin: 14px 0 0; max-width: 760px; color: var(--text-sub); line-height: 1.7; font-size: 18px;
+    }
+    .hero-actions { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--line); background: #fff; color: #101828; text-decoration: none;
+      padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 700;
+    }
+    .btn.primary { background: #101828; color: #fff; border-color: #101828; }
+
+    .section { padding: 16px 0 10px; }
+    .section h2 {
+      margin: 0 0 12px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 30px; letter-spacing: -0.02em;
+    }
+    .section .hint { margin: 0 0 20px; color: var(--text-muted); font-size: 14px; }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .cat-card {
+      border: 1px solid var(--line); border-radius: 18px; background: var(--card); overflow: hidden;
+      text-decoration: none; color: inherit; transition: transform .2s ease, box-shadow .2s ease;
+      box-shadow: 0 4px 14px rgba(16,24,40,.04);
+    }
+    .cat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(16,24,40,.1); }
+    .cat-cover { aspect-ratio: 16/10; width: 100%; object-fit: cover; display: block; background: linear-gradient(135deg,#cce5ff,#c7f9e7); }
+    .cat-body { padding: 12px 14px 14px; }
+    .cat-title { margin: 0; font-size: 18px; font-weight: 700; }
+    .cat-meta { margin-top: 6px; font-size: 12px; color: #667085; display: flex; gap: 10px; }
+
+    .chips-wrap {
+      margin-top: 14px; padding-bottom: 8px;
+      overflow-x: auto; display: flex; gap: 10px;
+      scrollbar-width: none;
+      position: sticky; top: 68px; z-index: 20;
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.84));
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    .chips-wrap::-webkit-scrollbar { display: none; }
+    .chip {
+      border: 0; white-space: nowrap; cursor: pointer;
+      background: var(--chip-bg); color: #344054;
+      border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 700;
+    }
+    .chip.active { background: var(--chip-on); color: #074d83; }
+
+    .latest-head {
+      margin-top: 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .latest-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .latest-card {
+      border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff;
+      text-decoration: none; color: inherit;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .latest-card:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(16,24,40,.08); }
+    .cover-wrap { position: relative; background: #eff3f8; }
+    .cover-wrap img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .ratio-phone { aspect-ratio: 9/16; }
+    .ratio-ipad { aspect-ratio: 4/3; }
+    .ratio-mac { aspect-ratio: 16/10; }
+    .count-tag {
+      position: absolute; right: 10px; bottom: 10px;
+      display: inline-flex; align-items: center; gap: 4px;
+      border-radius: 10px; padding: 3px 8px;
+      background: var(--tag-bg); color: #fff;
+      font-size: 12px; font-weight: 700;
+      backdrop-filter: blur(6px);
+    }
+    .count-tag svg { width: 13px; height: 13px; }
+    .latest-body { padding: 10px 12px 12px; }
+    .badge {
+      display: inline-flex; align-items: center; border: 1px solid #d0e8ff;
+      color: #075985; background: #eff8ff; border-radius: 999px;
+      font-size: 11px; font-weight: 700; padding: 2px 7px;
+    }
+    .latest-title { margin: 8px 0 0; font-size: 14px; font-weight: 700; line-height: 1.35; }
+    .latest-sub { margin-top: 4px; color: #667085; font-size: 12px; }
+
+    .special-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .special-card {
+      position: relative; text-decoration: none; color: #fff; border-radius: 16px; overflow: hidden;
+      min-height: 180px; border: 1px solid rgba(255,255,255,.22);
+    }
+    .special-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .special-mask { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.54)); }
+    .special-body { position: absolute; left: 14px; right: 14px; bottom: 14px; }
+    .special-body h3 { margin: 0; font-size: 22px; font-family: "Space Grotesk", sans-serif; }
+    .special-body p { margin: 4px 0 0; font-size: 12px; opacity: .9; }
+
+    .seo-copy {
+      margin: 34px 0 44px; border: 1px solid var(--line); background: #fff; border-radius: 16px; padding: 18px;
+    }
+    .seo-copy p { margin: 0; color: #475467; line-height: 1.8; font-size: 14px; }
+
+    @media (max-width: 980px) {
+      .nav { display: none; }
+      .hero p { font-size: 16px; }
+      .section h2 { font-size: 26px; }
+      .chips-wrap { top: 64px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <a href="/" class="logo">AppleWalls</a>
+      <nav class="nav">
+        <a href="/iphone-wallpapers">iPhone 壁纸</a>
+        <a href="/ipad-wallpapers">iPad 壁纸</a>
+        <a href="/ios-wallpapers">iOS 壁纸</a>
+        <a href="/ipados-wallpapers">iPadOS 壁纸</a>
+        <a href="/macos-wallpapers">macOS 壁纸</a>
+        <a href="/new-year-wallpapers">新年壁纸</a>
+        <a href="/wwdc-wallpapers">WWDC 壁纸</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" id="hero">
+      <h1>Apple 壁纸导航首页</h1>
+      <p>首页聚焦内容分发：桌面端从导航栏直接进入落地页；首页负责快速发现、最新更新和专题入口，减少与落地页内容重复。</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#collections">浏览分类</a>
+        <a class="btn" href="#latest">查看最新更新</a>
+      </div>
+    </section>
+
+    <section class="section" id="collections">
+      <h2>壁纸分类</h2>
+      <p class="hint">基于现有数据：7 个分类 + 每类总组数与总壁纸数</p>
+      <div id="categoryGrid" class="cat-grid"></div>
+    </section>
+
+    <section class="section" id="latest">
+      <div id="chips" class="chips-wrap"></div>
+      <div class="latest-head">
+        <h2 style="margin:0;">最新更新</h2>
+        <a id="viewAllBtn" class="btn" href="/iphone-wallpapers">查看全部</a>
+      </div>
+      <p class="hint">移动端通过横向滑动分类标签过滤；桌面端同样可快速切换</p>
+      <div id="latestGrid" class="latest-grid"></div>
+    </section>
+
+    <section class="section">
+      <h2>专题精选</h2>
+      <div id="specialGrid" class="special-grid"></div>
+    </section>
+
+    <section class="seo-copy">
+      <p>
+        AppleWalls 首页建议定位为内容导航页：提供 iPhone、iPad、iOS、iPadOS、macOS 及 WWDC / 新年专题入口。用户从首页完成分类选择，再进入对应落地页深度浏览，能提升导航效率并保持 SEO 语义清晰。
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const categoryCards = [
+      {"key":"iphone","label":"iPhone","route":"/iphone-wallpapers","groups":32,"wallpapers":351,"imageKey":"iPhone/iPhone 17e/compress/iphone-17e-pink.webp"},
+      {"key":"ipad","label":"iPad","route":"/ipad-wallpapers","groups":11,"wallpapers":79,"imageKey":"iPad/iPad Pro 2024/compress/iPad_Pro_2024_Wallpaper_1.webp"},
+      {"key":"ios","label":"iOS","route":"/ios-wallpapers","groups":19,"wallpapers":358,"imageKey":"iOS/iOS 26/compress/iOS26-HomeScreen-Dark.webp"},
+      {"key":"ipados","label":"iPadOS","route":"/ipados-wallpapers","groups":6,"wallpapers":30,"imageKey":"iPadOS/iPadOS 26/compress/iPadOS26-HomeScreen-Landscape-Dark.webp"},
+      {"key":"macos","label":"macOS","route":"/macos-wallpapers","groups":13,"wallpapers":68,"imageKey":"macOS/macOS 26 Tahoe/compress/26-Tahoe-Beach-Dawn.jpeg"},
+      {"key":"newyear","label":"新年","route":"/new-year-wallpapers","groups":6,"wallpapers":74,"imageKey":"New Year/2017 nianhua/compress/Mac/2017 Mac - Auspicious Fortune.webp"},
+      {"key":"wwdc","label":"WWDC","route":"/wwdc-wallpapers","groups":14,"wallpapers":123,"imageKey":"WWDC/WWDC 2012/compress/apple logo/WWDC12 Mac apple logo.webp"}
+    ];
+
+    const latestItems = [
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone 17e Wallpapers","date":"2026/03","count":3,"imageKey":"iPhone/iPhone 17e/compress/iphone-17e-pink.webp"},
+      {"key":"newyear","category":"新年","route":"/new-year-wallpapers","name":"2026 horse Wallpapers","date":"2026","count":4,"imageKey":"New Year/2026 horse/compress/2026 horse Apple Watch.webp"},
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone 17 Pro Wallpapers","date":"2025/09","count":3,"imageKey":"iPhone/iPhone 17 Pro/compress/iPhone 17 Pro Cosmic Orange.png"},
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone 17 Wallpapers","date":"2025/09","count":5,"imageKey":"iPhone/iPhone 17/compress/iPhone 17 Black.jpg"},
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone Air Wallpapers","date":"2025/09","count":4,"imageKey":"iPhone/iPhone Air/compress/iPhone Air Cloud White.png"},
+      {"key":"ios","category":"iOS","route":"/ios-wallpapers","name":"iOS 26 Wallpapers","date":"2025/09","count":4,"imageKey":"iOS/iOS 26/compress/iOS26-HomeScreen-Dark.webp"},
+      {"key":"macos","category":"macOS","route":"/macos-wallpapers","name":"macOS 26 Tahoe Wallpapers","date":"2025/09","count":6,"imageKey":"macOS/macOS 26 Tahoe/compress/26-Tahoe-Beach-Dawn.jpeg"},
+      {"key":"ipados","category":"iPadOS","route":"/ipados-wallpapers","name":"iPadOS 26 Wallpapers","date":"2025/06","count":8,"imageKey":"iPadOS/iPadOS 26/compress/iPadOS26-HomeScreen-Landscape-Dark.webp"},
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone 16e Wallpapers","date":"2025/02","count":1,"imageKey":"iPhone/iPhone 16e/compress/iPhone 16e.png"},
+      {"key":"newyear","category":"新年","route":"/new-year-wallpapers","name":"2025 snake Wallpapers","date":"2025","count":4,"imageKey":"New Year/2025 snake/compress/2025 snake Apple Watch.webp"},
+      {"key":"wwdc","category":"WWDC","route":"/wwdc-wallpapers","name":"WWDC 2025 Wallpapers","date":"2025","count":16,"imageKey":"WWDC/WWDC 2025/compress/WWDC25 Mac WWDC25 1.webp"},
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone 16 Pro Wallpapers","date":"2024/09","count":4,"imageKey":"iPhone/iPhone 16 Pro/compress/iPhone 16 Pro Black Titanium.png"},
+      {"key":"iphone","category":"iPhone","route":"/iphone-wallpapers","name":"iPhone 16 Wallpapers","date":"2024/09","count":5,"imageKey":"iPhone/iPhone 16/compress/iPhone 16 Black.jpg"},
+      {"key":"ios","category":"iOS","route":"/ios-wallpapers","name":"iOS 18 Wallpapers","date":"2024/09","count":8,"imageKey":"iOS/iOS 18/compress/iOS18-Azure-Dark.webp"},
+      {"key":"ipados","category":"iPadOS","route":"/ipados-wallpapers","name":"iPadOS 18 Wallpapers","date":"2024/09","count":8,"imageKey":"iPadOS/iPadOS 18/compress/ipados-18-3840x2668-24385.webp"},
+      {"key":"macos","category":"macOS","route":"/macos-wallpapers","name":"macOS 15 Sequoia Wallpapers","date":"2024/09","count":3,"imageKey":"macOS/macOS 15 Sequoia/compress/15-Sequoia-Dark-6K.jpg"},
+      {"key":"ipad","category":"iPad","route":"/ipad-wallpapers","name":"iPad Pro 2024 Wallpapers","date":"2024/05","count":2,"imageKey":"iPad/iPad Pro 2024/compress/iPad_Pro_2024_Wallpaper_1.webp"},
+      {"key":"ipad","category":"iPad","route":"/ipad-wallpapers","name":"iPad Air 2024 Wallpapers","date":"2024/05","count":16,"imageKey":"iPad/iPad Air 2024 (M2) /compress/iPad Air 11-in. (M2) Blue Landscape.jpg"}
+    ];
+
+    const specials = [
+      {"key":"wwdc","label":"WWDC 专题","route":"/wwdc-wallpapers","name":"WWDC 2012 Wallpapers","date":"2012","count":6,"imageKey":"WWDC/WWDC 2012/compress/apple logo/WWDC12 Mac apple logo.webp"},
+      {"key":"newyear","label":"新年专题","route":"/new-year-wallpapers","name":"2017 nianhua Wallpapers","date":"2017","count":15,"imageKey":"New Year/2017 nianhua/compress/Mac/2017 Mac - Auspicious Fortune.webp"}
+    ];
+
+    const chips = [{ key: "all", label: "全部" }].concat(categoryCards.map((x) => ({ key: x.key, label: x.label })));
+    let activeChip = "all";
+
+    function imageUrl(key) {
+      return "/api/public/wallpaper-image?key=" + encodeURIComponent(key || "");
+    }
+
+    function cnName(name) {
+      return (name || "").replace(/\\bWallpapers\\b/g, "壁纸").trim();
+    }
+
+    function ratioClass(key) {
+      if (key === "iphone" || key === "ios") return "ratio-phone";
+      if (key === "macos") return "ratio-mac";
+      return "ratio-ipad";
+    }
+
+    function countIcon() {
+      return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 3.75A1.75 1.75 0 0 1 4.75 2h10.5A1.75 1.75 0 0 1 17 3.75v9.5A1.75 1.75 0 0 1 15.25 15H4.75A1.75 1.75 0 0 1 3 13.25v-9.5Zm1.5.25v8h11V4h-11Zm1.25 9.5a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Zm1.5-5.5a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Zm-1 3.5h6.5l-1.8-2.4a.75.75 0 0 0-1.2 0l-1.05 1.4-.7-.95a.75.75 0 0 0-1.2 0L6.25 11.5Z"/></svg>';
+    }
+
+    function renderCategories() {
+      document.getElementById("categoryGrid").innerHTML = categoryCards.map((c) => `
+        <a class="cat-card" href="${c.route}">
+          <img class="cat-cover" src="${imageUrl(c.imageKey)}" alt="${c.label}" loading="lazy" />
+          <div class="cat-body">
+            <h3 class="cat-title">${c.label}</h3>
+            <div class="cat-meta"><span>${c.groups} 组</span><span>${c.wallpapers} 张</span></div>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    function renderChips() {
+      const host = document.getElementById("chips");
+      host.innerHTML = chips.map((c) => `
+        <button class="chip ${c.key === activeChip ? "active" : ""}" data-key="${c.key}">${c.label}</button>
+      `).join("");
+      host.querySelectorAll(".chip").forEach((el) => {
+        el.addEventListener("click", () => {
+          activeChip = el.getAttribute("data-key");
+          renderChips();
+          renderLatest();
+        });
+      });
+    }
+
+    function renderLatest() {
+      const list = activeChip === "all" ? latestItems : latestItems.filter((x) => x.key === activeChip);
+      document.getElementById("viewAllBtn").href = activeChip === "all"
+        ? "/iphone-wallpapers"
+        : (categoryCards.find((x) => x.key === activeChip)?.route || "/iphone-wallpapers");
+      document.getElementById("latestGrid").innerHTML = list.map((x) => `
+        <a class="latest-card" href="${x.route}">
+          <div class="cover-wrap ${ratioClass(x.key)}">
+            <img src="${imageUrl(x.imageKey)}" alt="${x.name}" loading="lazy" />
+            <span class="count-tag">${countIcon()}${x.count}</span>
+          </div>
+          <div class="latest-body">
+            <span class="badge">${x.category}</span>
+            <h3 class="latest-title">${cnName(x.name)}</h3>
+            <p class="latest-sub">${x.date} 更新</p>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    function renderSpecials() {
+      document.getElementById("specialGrid").innerHTML = specials.map((x) => `
+        <a class="special-card" href="${x.route}">
+          <img src="${imageUrl(x.imageKey)}" alt="${x.label}" loading="lazy" />
+          <div class="special-mask"></div>
+          <div class="special-body">
+            <h3>${x.label}</h3>
+            <p>${cnName(x.name)} · ${x.date} · ${x.count} 张</p>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    renderCategories();
+    renderChips();
+    renderLatest();
+    renderSpecials();
+  </script>
+</body>
+</html>

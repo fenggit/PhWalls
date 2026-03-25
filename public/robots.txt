@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.applewalls.com/sitemap.xml
+
+# Disallow admin pages
+Disallow: /api/
+Disallow: /user/

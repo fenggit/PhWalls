@@ -1,0 +1,217 @@
+/*!
+ * PhWalls Global Styles
+ * Version: 1.0.0
+ * Build: 2025-01-28
+ * Description: Global CSS styles with Tailwind CSS integration
+ */
+
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* 防止横向滚动 */
+  #__next {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
+  }
+  
+  /* 所有容器都限制在视口宽度内 */
+  div {
+    max-width: 100%;
+  }
+  
+  /* 优化图片渲染 */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* 移动端特殊处理 */
+  @media (max-width: 768px) {
+    * {
+      max-width: 100vw;
+    }
+    
+    section, main, nav {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+  }
+}
+
+@layer components {
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* 性能优化类 */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .will-change-opacity {
+    will-change: opacity;
+  }
+  
+  /* 优化卡片阴影 */
+  .card-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease-out;
+  }
+  
+  .card-shadow:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* 优化动画性能 */
+  .smooth-transition {
+    transition: all 0.2s ease-out;
+  }
+  
+  /* 图片加载动画 */
+  .image-loading-skeleton {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%);
+    background-size: 200% 200%;
+    animation: loading-shimmer 2s ease-in-out infinite;
+  }
+  
+  @keyframes loading-shimmer {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+  
+  /* 图片淡入动画 */
+  .image-fade-in {
+    animation: imageFadeIn 0.3s ease-out;
+  }
+  
+  @keyframes imageFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* 柔和的加载点动画 */
+  .loading-dot {
+    animation: loadingDot 1.4s ease-in-out infinite both;
+  }
+  
+  @keyframes loadingDot {
+    0%, 80%, 100% {
+      transform: scale(0.8);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* 优雅的加载动画 */
+  .elegant-loading {
+    animation: elegantPulse 2s ease-in-out infinite;
+  }
+  
+  .elegant-loading-ring {
+    animation: elegantRing 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes elegantPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes elegantRing {
+    0% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  
+  /* 微妙的加载点动画 */
+  .subtle-loading-dot {
+    animation: subtleBounce 1.2s ease-in-out infinite;
+  }
+  
+  @keyframes subtleBounce {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(-4px);
+      opacity: 1;
+    }
+  }
+}

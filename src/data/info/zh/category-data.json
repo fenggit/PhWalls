@@ -1,0 +1,42 @@
+{
+  "iphone-wallpapers": {
+    "title": "iPhone Wallpapers",
+    "desc": "收录历代 iPhone 系统内置壁纸，从早期机型到最新 iPhone 系列持续更新。提供高清与 4K 下载，适配不同尺寸屏幕与锁屏显示效果。",
+    "subTitle": "iPhone 系统内置壁纸高清与 4K 下载"
+  },
+  "ios-wallpapers": {
+    "title": "iOS Wallpapers",
+    "desc": "整理 iOS 1 到最新版本的系统默认壁纸，按版本分类，查找更高效。包含经典与新款设计风格，支持高分辨率下载与收藏。",
+    "subTitle": "历代 iOS 系统内置壁纸全集"
+  },
+  "ipad-wallpapers": {
+    "title": "iPad Wallpapers",
+    "desc": "汇总 iPad Pro、iPad Air、iPad mini 等机型系统内置壁纸，覆盖主要设备世代。支持高清和 4K 下载，针对大屏桌面显示优化。",
+    "subTitle": "iPad 全机型系统内置壁纸合集"
+  },
+  "ipados-wallpapers": {
+    "title": "iPadOS Wallpapers",
+    "desc": "收录 iPadOS 13 至最新版本系统内置默认壁纸，按系统版本清晰归档。提供高画质下载，方便快速浏览每代 iPadOS 视觉设计。",
+    "subTitle": "iPadOS 历代系统壁纸按版本整理"
+  },
+  "macos-wallpapers": {
+    "title": "macOS Wallpapers",
+    "desc": "整理从 Mac OS X 到最新 macOS 的系统内置壁纸，包含经典风景与抽象主题。提供高分辨率下载，适配 MacBook 与 iMac 桌面。",
+    "subTitle": "macOS 系统内置桌面壁纸高分辨率下载"
+  },
+  "mac-wallpapers": {
+    "title": "Mac 壁纸",
+    "desc": "精选 MacBook Pro、MacBook Air、iMac 等设备相关系统内置壁纸，涵盖内置与机型主题设计。支持高清至 5K 下载，细节更清晰。",
+    "subTitle": "Mac 设备系统内置壁纸精选合集"
+  },
+  "new-year-wallpapers": {
+    "title": "Apple New Year Wallpapers",
+    "desc": "收集 Apple 历年新年与春节主题壁纸，汇总节日限定视觉设计。支持高分辨率下载，适用于手机、平板与电脑桌面场景。",
+    "subTitle": "Apple 新年贺岁壁纸合集"
+  },
+  "wwdc-wallpapers": {
+    "title": "WWDC Wallpapers",
+    "desc": "汇总 Apple WWDC 历届大会系统内置壁纸与主视觉，按年份持续更新。提供高清下载，方便收藏每一年的开发者大会设计风格。",
+    "subTitle": "WWDC 历年系统内置主题壁纸"
+  }
+}

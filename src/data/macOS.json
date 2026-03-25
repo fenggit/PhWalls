@@ -1,0 +1,648 @@
+[
+  {
+    "name": "macOS 26 Tahoe Wallpapers",
+    "date": "2025/09",
+    "item": [
+      {
+        "name": "26-Tahoe-Beach-Dawn",
+        "type": "image/png",
+        "size": "18.72 MB",
+        "originPath": "macOS/macOS 26 Tahoe/origin/26-Tahoe-Beach-Dawn.png",
+        "compressPath": "macOS/macOS 26 Tahoe/compress/26-Tahoe-Beach-Dawn.webp",
+        "tag": ""
+      },
+      {
+        "name": "26-Tahoe-Beach-Day",
+        "type": "image/png",
+        "size": "23.63 MB",
+        "originPath": "macOS/macOS 26 Tahoe/origin/26-Tahoe-Beach-Day.png",
+        "compressPath": "macOS/macOS 26 Tahoe/compress/26-Tahoe-Beach-Day.webp",
+        "tag": ""
+      },
+      {
+        "name": "26-Tahoe-Beach-Dusk",
+        "type": "image/png",
+        "size": "20.66 MB",
+        "originPath": "macOS/macOS 26 Tahoe/origin/26-Tahoe-Beach-Dusk.png",
+        "compressPath": "macOS/macOS 26 Tahoe/compress/26-Tahoe-Beach-Dusk.webp",
+        "tag": ""
+      },
+      {
+        "name": "26-Tahoe-Beach-Night",
+        "type": "image/png",
+        "size": "14.81 MB",
+        "originPath": "macOS/macOS 26 Tahoe/origin/26-Tahoe-Beach-Night.png",
+        "compressPath": "macOS/macOS 26 Tahoe/compress/26-Tahoe-Beach-Night.webp",
+        "tag": ""
+      },
+      {
+        "name": "26-Tahoe-Dark-6K",
+        "type": "image/png",
+        "size": "49.85 MB",
+        "originPath": "macOS/macOS 26 Tahoe/origin/26-Tahoe-Dark-6K.png",
+        "compressPath": "macOS/macOS 26 Tahoe/compress/26-Tahoe-Dark-6K.webp",
+        "tag": ""
+      },
+      {
+        "name": "26-Tahoe-Light-6K",
+        "type": "image/png",
+        "size": "50.92 MB",
+        "originPath": "macOS/macOS 26 Tahoe/origin/26-Tahoe-Light-6K.png",
+        "compressPath": "macOS/macOS 26 Tahoe/compress/26-Tahoe-Light-6K.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 15 Sequoia Wallpapers",
+    "date": "2024/09",
+    "item": [
+      {
+        "name": "15-Sequoia-Dark-6K",
+        "type": "image/jpeg",
+        "size": "7.76 MB",
+        "originPath": "macOS/macOS 15 Sequoia/origin/15-Sequoia-Dark-6K.jpg",
+        "compressPath": "macOS/macOS 15 Sequoia/compress/15-Sequoia-Dark-6K.webp",
+        "tag": ""
+      },
+      {
+        "name": "15-Sequoia-Light-6K",
+        "type": "image/jpeg",
+        "size": "853.5 KB",
+        "originPath": "macOS/macOS 15 Sequoia/origin/15-Sequoia-Light-6K.jpg",
+        "compressPath": "macOS/macOS 15 Sequoia/compress/15-Sequoia-Light-6K.webp",
+        "tag": ""
+      },
+      {
+        "name": "15-Sequoia-Sunrise",
+        "type": "image/png",
+        "size": "12.91 MB",
+        "originPath": "macOS/macOS 15 Sequoia/origin/15-Sequoia-Sunrise.png",
+        "compressPath": "macOS/macOS 15 Sequoia/compress/15-Sequoia-Sunrise.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 14 Sonoma Wallpapers",
+    "date": "2023/09",
+    "item": [
+      {
+        "name": "macOS-14-Sonoma-Graphic-Dark",
+        "type": "image/jpeg",
+        "size": "3.4 MB",
+        "originPath": "macOS/macOS 14 Sonoma/origin/macOS-14-Sonoma-Graphic-Dark.jpg",
+        "compressPath": "macOS/macOS 14 Sonoma/compress/macOS-14-Sonoma-Graphic-Dark.webp",
+        "tag": ""
+      },
+      {
+        "name": "macOS-14-Sonoma-Graphic-Light",
+        "type": "image/jpeg",
+        "size": "5.3 MB",
+        "originPath": "macOS/macOS 14 Sonoma/origin/macOS-14-Sonoma-Graphic-Light.jpg",
+        "compressPath": "macOS/macOS 14 Sonoma/compress/macOS-14-Sonoma-Graphic-Light.webp",
+        "tag": ""
+      },
+      {
+        "name": "macOS-14-Sonoma-Radial-Blue",
+        "type": "image/jpeg",
+        "size": "5.7 MB",
+        "originPath": "macOS/macOS 14 Sonoma/origin/macOS-14-Sonoma-Radial-Blue.jpeg",
+        "compressPath": "macOS/macOS 14 Sonoma/compress/macOS-14-Sonoma-Radial-Blue.webp",
+        "tag": ""
+      },
+      {
+        "name": "macOS-14-Sonoma-Radial-Green",
+        "type": "image/jpeg",
+        "size": "5.7 MB",
+        "originPath": "macOS/macOS 14 Sonoma/origin/macOS-14-Sonoma-Radial-Green.jpeg",
+        "compressPath": "macOS/macOS 14 Sonoma/compress/macOS-14-Sonoma-Radial-Green.webp",
+        "tag": ""
+      },
+      {
+        "name": "macOS-14-Sonoma-Radial-Purple",
+        "type": "image/jpeg",
+        "size": "5.7 MB",
+        "originPath": "macOS/macOS 14 Sonoma/origin/macOS-14-Sonoma-Radial-Purple.jpeg",
+        "compressPath": "macOS/macOS 14 Sonoma/compress/macOS-14-Sonoma-Radial-Purple.webp",
+        "tag": ""
+      },
+      {
+        "name": "macOS-14-Sonoma-Radial-Yellow",
+        "type": "image/jpeg",
+        "size": "6 MB",
+        "originPath": "macOS/macOS 14 Sonoma/origin/macOS-14-Sonoma-Radial-Yellow.jpeg",
+        "compressPath": "macOS/macOS 14 Sonoma/compress/macOS-14-Sonoma-Radial-Yellow.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 13 Ventura Wallpapers",
+    "date": "2022/10",
+    "item": [
+      {
+        "name": "13-Ventura-Dark",
+        "type": "image/jpeg",
+        "size": "3.56 MB",
+        "originPath": "macOS/macOS 13 Ventura/origin/13-Ventura-Dark.jpg",
+        "compressPath": "macOS/macOS 13 Ventura/compress/13-Ventura-Dark.webp",
+        "tag": ""
+      },
+      {
+        "name": "13-Ventura-Light",
+        "type": "image/jpeg",
+        "size": "5.6 MB",
+        "originPath": "macOS/macOS 13 Ventura/origin/13-Ventura-Light.jpg",
+        "compressPath": "macOS/macOS 13 Ventura/compress/13-Ventura-Light.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 12 Monterey Wallpapers",
+    "date": "2021/10",
+    "item": [
+      {
+        "name": "12-Dark",
+        "type": "image/jpeg",
+        "size": "21.06 MB",
+        "originPath": "macOS/macOS 12 Monterey/origin/12-Dark.jpg",
+        "compressPath": "macOS/macOS 12 Monterey/compress/12-Dark.jpg",
+        "tag": ""
+      },
+      {
+        "name": "12-Light",
+        "type": "image/jpeg",
+        "size": "16.29 MB",
+        "originPath": "macOS/macOS 12 Monterey/origin/12-Light.jpg",
+        "compressPath": "macOS/macOS 12 Monterey/compress/12-Light.jpg",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 11 Big Sur Wallpapers",
+    "date": "2020/11",
+    "item": [
+      {
+        "name": "11-0-Color-Days",
+        "type": "image/jpeg",
+        "size": "3.97 MB",
+        "originPath": "macOS/macOS 11 Big Sur/origin/11-0-Color-Days.jpg",
+        "compressPath": "macOS/macOS 11 Big Sur/compress/11-0-Color-Days.webp",
+        "tag": ""
+      },
+      {
+        "name": "11-0-Color-Nights",
+        "type": "image/jpeg",
+        "size": "8.01 MB",
+        "originPath": "macOS/macOS 11 Big Sur/origin/11-0-Color-Nights.jpg",
+        "compressPath": "macOS/macOS 11 Big Sur/compress/11-0-Color-Nights.webp",
+        "tag": ""
+      },
+      {
+        "name": "11-0-Day",
+        "type": "image/jpeg",
+        "size": "10.39 MB",
+        "originPath": "macOS/macOS 11 Big Sur/origin/11-0-Day.jpg",
+        "compressPath": "macOS/macOS 11 Big Sur/compress/11-0-Day.webp",
+        "tag": ""
+      },
+      {
+        "name": "11-0-Night",
+        "type": "image/jpeg",
+        "size": "5.61 MB",
+        "originPath": "macOS/macOS 11 Big Sur/origin/11-0-Night.jpg",
+        "compressPath": "macOS/macOS 11 Big Sur/compress/11-0-Night.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 10.15 Catalina Wallpapers",
+    "date": "2019/10",
+    "item": [
+      {
+        "name": "10-15-Day",
+        "type": "image/jpeg",
+        "size": "30.27 MB",
+        "originPath": "macOS/macOS 10.15 Catalina/origin/10-15-Day.jpg",
+        "compressPath": "macOS/macOS 10.15 Catalina/compress/10-15-Day.webp",
+        "tag": ""
+      },
+      {
+        "name": "10-15-Night",
+        "type": "image/jpeg",
+        "size": "34.18 MB",
+        "originPath": "macOS/macOS 10.15 Catalina/origin/10-15-Night.jpg",
+        "compressPath": "macOS/macOS 10.15 Catalina/compress/10-15-Night.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 10.14 Mojave Wallpapers",
+    "date": "2018/09",
+    "item": [
+      {
+        "name": "10-14-Day",
+        "type": "image/jpeg",
+        "size": "6.89 MB",
+        "originPath": "macOS/macOS 10.14 Mojave/origin/10-14-Day.jpg",
+        "compressPath": "macOS/macOS 10.14 Mojave/compress/10-14-Day.webp",
+        "tag": ""
+      },
+      {
+        "name": "10-14-Night",
+        "type": "image/jpeg",
+        "size": "8.63 MB",
+        "originPath": "macOS/macOS 10.14 Mojave/origin/10-14-Night.jpg",
+        "compressPath": "macOS/macOS 10.14 Mojave/compress/10-14-Night.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 10.13 High Sierra Wallpapers",
+    "date": "2017/09",
+    "item": [
+      {
+        "name": "10.13 High Sierra",
+        "type": "image/jpeg",
+        "size": "19.47 MB",
+        "originPath": "macOS/macOS 10.13 High Sierra/origin/10.13 High Sierra.jpg",
+        "compressPath": "macOS/macOS 10.13 High Sierra/compress/10.13 High Sierra.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "macOS 10.12 Sierra Wallpapers",
+    "date": "2016/09",
+    "item": [
+      {
+        "name": "10.12 Sierra",
+        "type": "image/jpeg",
+        "size": "12.45 MB",
+        "originPath": "macOS/macOS 10.12 Sierra/origin/10.12 Sierra.jpg",
+        "compressPath": "macOS/macOS 10.12 Sierra/compress/10.12 Sierra.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "OS X 10.8-10.11 Wallpapers",
+    "date": "2012/07",
+    "item": [
+      {
+        "name": "10.10 Yosemite",
+        "type": "image/jpeg",
+        "size": "11.36 MB",
+        "originPath": "macOS/OS X 10.8-10.11/origin/10.10 Yosemite.jpg",
+        "compressPath": "macOS/OS X 10.8-10.11/compress/10.10 Yosemite.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.11 El Capitan",
+        "type": "image/jpeg",
+        "size": "12.44 MB",
+        "originPath": "macOS/OS X 10.8-10.11/origin/10.11 El Capitan.jpg",
+        "compressPath": "macOS/OS X 10.8-10.11/compress/10.11 El Capitan.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.8 Mountain Lion",
+        "type": "image/jpeg",
+        "size": "3.68 MB",
+        "originPath": "macOS/OS X 10.8-10.11/origin/10.8 Mountain Lion.jpg",
+        "compressPath": "macOS/OS X 10.8-10.11/compress/10.8 Mountain Lion.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.9 Mavericks",
+        "type": "image/jpeg",
+        "size": "8.92 MB",
+        "originPath": "macOS/OS X 10.8-10.11/origin/10.9 Mavericks.jpg",
+        "compressPath": "macOS/OS X 10.8-10.11/compress/10.9 Mavericks.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "Mac OS X 10.0-10.7 Wallpapers",
+    "date": "2001/03",
+    "item": [
+      {
+        "name": "10.0 Cheetah & 10.1 Puma",
+        "type": "image/png",
+        "size": "2.47 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.0 Cheetah & 10.1 Puma.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.0 Cheetah & 10.1 Puma.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.2 Jaguar",
+        "type": "image/png",
+        "size": "2.79 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.2 Jaguar.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.2 Jaguar.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.3 Panther",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.3 Panther.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.3 Panther.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.4 Tiger",
+        "type": "image/png",
+        "size": "5.8 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.4 Tiger.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.4 Tiger.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.5 Leopard Server",
+        "type": "image/jpeg",
+        "size": "5.94 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.5 Leopard Server.jpg",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.5 Leopard Server.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.5 Leopard",
+        "type": "image/png",
+        "size": "8.58 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.5 Leopard.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.5 Leopard.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.6 Snow Leopard1",
+        "type": "image/png",
+        "size": "8.95 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.6 Snow Leopard1.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.6 Snow Leopard1.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.6 Snow Leopard2",
+        "type": "image/jpeg",
+        "size": "8.08 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.6 Snow Leopard2.jpg",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.6 Snow Leopard2.webp",
+        "tag": ""
+      },
+      {
+        "name": "10.7 Lion",
+        "type": "image/png",
+        "size": "17.34 MB",
+        "originPath": "macOS/Mac OS X 10.0-10.7/origin/10.7 Lion.png",
+        "compressPath": "macOS/Mac OS X 10.0-10.7/compress/10.7 Lion.webp",
+        "tag": ""
+      }
+    ]
+  },
+  {
+    "name": "Mac OS 9 Wallpapers",
+    "date": "1990/10",
+    "item": [
+      {
+        "name": "9-Blue-Dalmation",
+        "type": "image/jpeg",
+        "size": "1.67 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Blue-Dalmation.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Blue-Dalmation.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Blueberry-Oxygen",
+        "type": "image/jpeg",
+        "size": "7.69 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Blueberry-Oxygen.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Blueberry-Oxygen.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Blueberry-Union",
+        "type": "image/jpeg",
+        "size": "2.1 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Blueberry-Union.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Blueberry-Union.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Bottles",
+        "type": "image/jpeg",
+        "size": "2.55 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Bottles.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Bottles.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Capsule",
+        "type": "image/jpeg",
+        "size": "1.6 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Capsule.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Capsule.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Flower-Power",
+        "type": "image/jpeg",
+        "size": "2.25 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Flower-Power.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Flower-Power.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Golden-Poppy",
+        "type": "image/jpeg",
+        "size": "1.76 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Golden-Poppy.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Golden-Poppy.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Grape-Gravity",
+        "type": "image/jpeg",
+        "size": "1.14 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Grape-Gravity.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Grape-Gravity.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Grape-Mission",
+        "type": "image/jpeg",
+        "size": "2.16 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Grape-Mission.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Grape-Mission.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Heavy-Petal-1",
+        "type": "image/jpeg",
+        "size": "1.23 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Heavy-Petal-1.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Heavy-Petal-1.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Heavy-Petal-2",
+        "type": "image/jpeg",
+        "size": "1.16 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Heavy-Petal-2.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Heavy-Petal-2.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Heavy-Petal-3",
+        "type": "image/jpeg",
+        "size": "1.24 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Heavy-Petal-3.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Heavy-Petal-3.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Heavy-Petal-4",
+        "type": "image/jpeg",
+        "size": "1.03 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Heavy-Petal-4.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Heavy-Petal-4.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Indigo-Foam",
+        "type": "image/jpeg",
+        "size": "802.28 KB",
+        "originPath": "macOS/Mac OS 9/origin/9-Indigo-Foam.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Indigo-Foam.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Lime-Horizon",
+        "type": "image/jpeg",
+        "size": "1.6 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Lime-Horizon.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Lime-Horizon.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Lime-Sharp",
+        "type": "image/jpeg",
+        "size": "1.38 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Lime-Sharp.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Lime-Sharp.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Mac-OS-Background",
+        "type": "image/jpeg",
+        "size": "983.37 KB",
+        "originPath": "macOS/Mac OS 9/origin/9-Mac-OS-Background.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Mac-OS-Background.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Metallic-Foam",
+        "type": "image/jpeg",
+        "size": "1.56 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Metallic-Foam.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Metallic-Foam.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Quantum-Foam",
+        "type": "image/jpeg",
+        "size": "5.87 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Quantum-Foam.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Quantum-Foam.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Ruby-Foam",
+        "type": "image/jpeg",
+        "size": "879.23 KB",
+        "originPath": "macOS/Mac OS 9/origin/9-Ruby-Foam.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Ruby-Foam.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Sage-Foam",
+        "type": "image/jpeg",
+        "size": "1.14 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Sage-Foam.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Sage-Foam.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Shutters",
+        "type": "image/jpeg",
+        "size": "2.58 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Shutters.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Shutters.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Strawberry-Parabola",
+        "type": "image/jpeg",
+        "size": "1.56 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Strawberry-Parabola.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Strawberry-Parabola.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Strawbery-Baby",
+        "type": "image/jpeg",
+        "size": "1.27 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Strawbery-Baby.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Strawbery-Baby.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Tangerine-Fusion",
+        "type": "image/jpeg",
+        "size": "1.84 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Tangerine-Fusion.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Tangerine-Fusion.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Tangerine-Melt",
+        "type": "image/jpeg",
+        "size": "1.41 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Tangerine-Melt.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Tangerine-Melt.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-Tub",
+        "type": "image/jpeg",
+        "size": "1.77 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-Tub.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-Tub.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-UFO-1",
+        "type": "image/jpeg",
+        "size": "1.09 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-UFO-1.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-UFO-1.webp",
+        "tag": ""
+      },
+      {
+        "name": "9-UFO-2",
+        "type": "image/jpeg",
+        "size": "1.3 MB",
+        "originPath": "macOS/Mac OS 9/origin/9-UFO-2.jpg",
+        "compressPath": "macOS/Mac OS 9/compress/9-UFO-2.webp",
+        "tag": ""
+      }
+    ]
+  }
+]

@@ -1,0 +1,129 @@
+# AppleWalls
+
+> Official Apple device wallpapers in high resolution, without watermarks, curated for every Apple device generation.
+
+Site: https://www.applewalls.com
+Sitemap: https://www.applewalls.com/sitemap.xml
+Languages: en, zh, ja, vi, zh-hant
+Last-Updated: 2026-03-13
+Canonical: https://www.applewalls.com/{lang}/... (language subpaths)
+Language-Resolution: user choice stored in localStorage + `applewalls-lang` cookie, otherwise IP country mapping
+
+---
+
+## About AppleWalls
+
+AppleWalls is a dedicated wallpaper library for Apple devices. Every wallpaper is sourced from official Apple releases, WWDC keynotes, and macOS/iOS launch events. All wallpapers are available at full original resolution and are completely free to download — no watermarks, no sign-up required.
+
+---
+
+## Content Categories
+
+### iPhone Wallpapers
+High-resolution wallpapers for all iPhone models including iPhone 16, 15, 14, 13, 12 series and older generations. Includes default iOS wallpapers, Dynamic wallpapers, and Lock Screen designs.
+URL: https://www.applewalls.com/en/iphone-wallpapers
+
+### iPad Wallpapers
+Wallpapers optimized for iPad Pro, iPad Air, iPad mini and standard iPad. Includes portrait and landscape orientations.
+URL: https://www.applewalls.com/en/ipad-wallpapers
+
+### macOS Wallpapers
+Official macOS desktop wallpapers from every macOS release: macOS Sequoia, Sonoma, Ventura, Monterey, Big Sur, Catalina, Mojave, High Sierra, Sierra, and earlier versions. Also includes iMac-specific wallpapers.
+URL: https://www.applewalls.com/en/macos-wallpapers
+
+### iOS Wallpapers
+Default wallpapers shipped with iOS releases from iOS 16 through iOS 18 and beyond.
+URL: https://www.applewalls.com/en/ios-wallpapers
+
+### iPadOS Wallpapers
+Official iPadOS wallpapers from Apple.
+URL: https://www.applewalls.com/en/ipados-wallpapers
+
+### WWDC Wallpapers
+Exclusive wallpapers released alongside Apple's annual Worldwide Developers Conference events.
+URL: https://www.applewalls.com/en/wwdc-wallpapers
+
+### New Year Wallpapers
+Special edition wallpapers from Apple for New Year celebrations.
+URL: https://www.applewalls.com/en/new-year-wallpapers
+
+### Custom Wallpaper Designer
+A browser-based tool to create custom gradient wallpapers in the Apple style.
+URL: https://www.applewalls.com/en/design
+
+---
+
+## Key Features
+
+- All wallpapers are official Apple originals — not fan-made or AI-generated
+- Full original resolution (up to 6K for macOS, 4K for iPhone and iPad)
+- Zero watermarks, zero cost, no account required
+- Supports 5 languages: English, Simplified Chinese, Traditional Chinese, Japanese, Vietnamese
+- Updated with each new Apple OS release and product launch
+- Works on all devices — iPhone, Android, desktop, tablet
+
+---
+
+## Coverage Signals
+
+- Latest iPhone collections include iPhone 16 and iPhone 16 Pro/Pro Max.
+- Latest iOS collections include iOS 18 and iOS 18.3.
+- Latest macOS collections include macOS 15 Sequoia.
+
+---
+
+## Frequently Asked Questions
+
+**Q: Are the wallpapers on AppleWalls official Apple wallpapers?**
+A: Yes. All wallpapers on AppleWalls are sourced directly from official Apple software releases, product pages, and WWDC events. They are the same wallpapers that ship with Apple devices and operating systems.
+
+**Q: Are the wallpapers free to download?**
+A: All wallpapers on AppleWalls are free to download. No account, sign-up, or payment is needed.
+
+**Q: Do the wallpapers have watermarks?**
+A: No. AppleWalls does not add any watermarks to wallpapers. You get the clean, original image exactly as Apple released it.
+
+**Q: What resolution are the wallpapers?**
+A: Wallpapers are provided at full original resolution. macOS wallpapers can be up to 6K resolution. iPhone wallpapers match the native screen resolution of each device model.
+
+**Q: How do I find the original macOS Big Sur wallpaper?**
+A: Visit https://www.applewalls.com/macos-wallpapers and look for the "macOS Big Sur" collection.
+
+**Q: Where can I find iPhone 16 wallpapers?**
+A: Visit https://www.applewalls.com/iphone-wallpapers and look for "iPhone 16" entries in the collection list.
+
+**Q: Does AppleWalls have WWDC wallpapers?**
+A: Yes. AppleWalls maintains an archive of exclusive WWDC wallpapers at https://www.applewalls.com/wwdc-wallpapers, updated each year.
+
+**Q: Can I use these wallpapers commercially?**
+A: These are Apple's copyrighted assets. Personal use is fine, but commercial use is subject to Apple's intellectual property policies.
+
+**Q: What is the difference between iOS and iPhone wallpapers?**
+A: iPhone wallpapers include device-specific defaults for each iPhone model. iOS wallpapers are the system defaults bundled with an iOS release, regardless of device variant.
+
+**Q: How often is the collection updated?**
+A: The collection is updated with every new Apple OS release and product announcement, typically in line with Apple's release schedule (WWDC in June, new iPhone releases in September, macOS releases in October/November).
+
+---
+
+## Update Frequency
+
+- Home and wallpaper collections: Updated with each new Apple OS or product release
+- WWDC wallpapers: Annually (June)
+- New Year wallpapers: Annually (December/January)
+- macOS wallpapers: With each macOS major release (typically October/November)
+- iOS/iPhone/iPad wallpapers: With each iOS major release (typically September)
+
+---
+
+## Technical Notes
+
+- All wallpaper detail pages follow the pattern: https://www.applewalls.com/{lang}/wallpapers/{device-category}/{collection-name}
+- The site uses hreflang for all 5 supported languages
+- Canonical URLs use language subpaths (no query params)
+
+---
+
+## Contact
+
+- Email: fenggit@163.com
