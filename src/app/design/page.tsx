@@ -116,10 +116,12 @@ const deviceConfigs: Record<DeviceType, DeviceConfig> = {
   }
 };
 
-// Apple logo SVG
-const AppleLogo = ({ color = '#000000' }: { color?: string }) => (
+// Brand mark preview
+const BrandLogo = ({ color = '#000000' }: { color?: string }) => (
   <svg viewBox="0 0 24 24" fill={color} className="w-full h-full">
-    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+    <circle cx="12" cy="12" r="9" />
+    <rect x="7.5" y="7.5" width="2.8" height="9" rx="1.2" fill="#ffffff" />
+    <rect x="7.5" y="7.5" width="7.2" height="2.8" rx="1.2" fill="#ffffff" />
   </svg>
 );
 
@@ -274,8 +276,10 @@ function DesignPageContent() {
     // 绘制 logo
     if (canvasRef.current) {
       const logoSvg = `
-        <svg viewBox="0 0 24 24" fill="${logoColor}" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" fill="${logoColor}" />
+          <rect x="7.5" y="7.5" width="2.8" height="9" rx="1.2" fill="#ffffff" />
+          <rect x="7.5" y="7.5" width="7.2" height="2.8" rx="1.2" fill="#ffffff" />
         </svg>
       `;
       
@@ -295,7 +299,7 @@ function DesignPageContent() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `apple-wallpaper-${Date.now()}.png`;
+            a.download = `phwalls-wallpaper-${Date.now()}.png`;
             a.click();
             URL.revokeObjectURL(url);
           }
@@ -312,7 +316,7 @@ function DesignPageContent() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `apple-wallpaper-${Date.now()}.png`;
+          a.download = `phwalls-wallpaper-${Date.now()}.png`;
           a.click();
           URL.revokeObjectURL(url);
         }
@@ -424,7 +428,7 @@ function DesignPageContent() {
                         filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
                       }}
                     >
-                      <AppleLogo color={logoColor} />
+                      <BrandLogo color={logoColor} />
                     </div>
                   </div>
                 </div>

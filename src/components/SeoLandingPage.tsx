@@ -8,11 +8,6 @@ import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
 import { buildWallpaperListTitle, getTabData } from '@/lib/data';
 import { Language, LanguageCode } from '@/types';
-import categoryDataEn from '@/data/info/en/category-data.json';
-import categoryDataZh from '@/data/info/zh/category-data.json';
-import categoryDataJa from '@/data/info/ja/category-data.json';
-import categoryDataVi from '@/data/info/vi/category-data.json';
-import categoryDataZhHant from '@/data/info/zh-hant/category-data.json';
 import { buildWallpaperDetailPath, type WallpaperCategory } from '@/lib/wallpapers';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
@@ -45,22 +40,6 @@ type SeoLandingPageProps = {
   cardAspect: string;
   gridClass: string;
   cards: LandingCard[];
-};
-
-type CategoryCopy = {
-  title: string;
-  desc: string;
-  subTitle: string;
-};
-
-type CategoryDataMap = Record<string, CategoryCopy>;
-
-const categoryDataByLang: Record<Language, CategoryDataMap> = {
-  [LanguageCode.EN]: categoryDataEn as CategoryDataMap,
-  [LanguageCode.ZH]: categoryDataZh as CategoryDataMap,
-  [LanguageCode.JA]: categoryDataJa as CategoryDataMap,
-  [LanguageCode.VI]: categoryDataVi as CategoryDataMap,
-  [LanguageCode.ZH_HANT]: categoryDataZhHant as CategoryDataMap,
 };
 
 const gradientPalette = [
@@ -116,17 +95,13 @@ export default function SeoLandingPage({
     setIsPreviewOpen(true);
   };
 
-  const currentLangData = categoryDataByLang[currentLang] || categoryDataByLang[LanguageCode.EN];
-  const copy = currentLangData[categoryKey] || categoryDataByLang[LanguageCode.EN][categoryKey];
-  const title = seoTitle || copy?.title || breadcrumbLabel;
+  const title = seoTitle || breadcrumbLabel;
   const pageTitle = buildWallpaperListTitle(title, texts.wallpapersTitleSuffix);
   const description =
     seoDescription ||
-    copy?.desc ||
     `Explore official ${breadcrumbLabel}. Download high-resolution, watermark-free wallpapers for free.`;
   const subtitle =
     seoSubtitle ||
-    copy?.subTitle ||
     `${cards.length} curated collections, continuously updated with the latest official releases.`;
   const breadcrumbAriaLabel = texts.breadcrumbNavigationLabel;
   const updatedLabel = texts.updatedLabel;

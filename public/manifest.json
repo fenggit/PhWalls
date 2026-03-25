@@ -1,7 +1,7 @@
 {
-  "name": "AppleWalls - Apple Device Wallpapers",
-  "short_name": "AppleWalls",
-  "description": "Download HD wallpapers for iPhone, iPad & Mac. High-quality, watermark-free Apple device collections.",
+  "name": "PhWalls - Phone Wallpaper",
+  "short_name": "PhWalls",
+  "description": "Download official built-in phone wallpapers in HD quality for Samsung, Xiaomi, Vivo, OPPO, Huawei, Google Pixel, and more.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

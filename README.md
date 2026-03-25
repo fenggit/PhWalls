@@ -189,7 +189,7 @@ npm start
 | `ADMIN_PASSWORD` | 管理员密码 | `your_secure_password` |
 | `R2_ACCESS_KEY_ID_PROD` | R2 Access Key ID | `your_r2_access_key_id` |
 | `R2_SECRET_ACCESS_KEY_PROD` | R2 Secret Access Key | `your_r2_secret_access_key` |
-| `R2_BUCKET_NAME_PROD` | R2 存储桶名称 | `applewalls` |
+| `R2_BUCKET_NAME_PROD` | R2 存储桶名称 | `phwalls` |
 | `R2_ENDPOINT_PROD` | R2 端点地址 | `https://xxx.r2.cloudflarestorage.com` |
 
 #### 可选配置
@@ -261,7 +261,7 @@ npm start
 
 #### 功能概述
 
-网站支持为每个 Apple 设备创建专属的壁纸展示页面，用户可以通过设备名称直接访问该设备的所有壁纸。
+网站支持为每个 手机品牌 设备创建专属的壁纸展示页面，用户可以通过设备名称直接访问该设备的所有壁纸。
 
 #### URL 格式
 
@@ -410,10 +410,10 @@ https://phwalls.com/{设备名称}
    EOF
 
    # 应用 CORS 配置
-   wrangler r2 bucket cors put applewalls --rules ./cors.json
+   wrangler r2 bucket cors put phwalls --rules ./cors.json
 
    # 验证 CORS 配置
-   wrangler r2 bucket cors get applewalls
+   wrangler r2 bucket cors get phwalls
    ```
 
    **生产环境建议**：
@@ -436,7 +436,7 @@ https://phwalls.com/{设备名称}
 
 ```typescript
 const command = new GetObjectCommand({
-  Bucket: 'applewalls',
+  Bucket: 'phwalls',
   Key: 'path/to/image.jpg',
   ResponseContentDisposition: 'attachment; filename="image.jpg"'
 });
@@ -597,10 +597,10 @@ POST /api/storage/switch                      # 切换存储类型（仅支持 r
 **解决方法**：
 ```bash
 # 检查当前 CORS 配置
-wrangler r2 bucket cors get applewalls
+wrangler r2 bucket cors get phwalls
 
 # 更新 CORS 配置
-wrangler r2 bucket cors put applewalls --rules ./cors.json
+wrangler r2 bucket cors put phwalls --rules ./cors.json
 ```
 
 ## 开发指南
