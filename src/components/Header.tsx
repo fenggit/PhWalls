@@ -36,8 +36,13 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMiniProgramMenuOpen, setIsMiniProgramMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [visibleDesktopTabs, setVisibleDesktopTabs] = useState<TabInfo[]>(tabData);
+  const [overflowDesktopTabs, setOverflowDesktopTabs] = useState<TabInfo[]>([]);
   const miniProgramMenuRef = useRef<HTMLDivElement>(null);
   const mobileMiniProgramPanelRef = useRef<HTMLDivElement>(null);
+  const desktopTabsViewportRef = useRef<HTMLDivElement>(null);
+  const desktopTabMeasureRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const moreTabMeasureRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
   const getLandingPathByCategoryType = useCallback(
@@ -76,6 +81,19 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
         : currentLang === LanguageCode.VI
           ? 'Tất cả'
           : 'All';
+  const desktopMoreLabel =
+    currentLang === LanguageCode.ZH || currentLang === LanguageCode.ZH_HANT
+      ? '更多'
+      : currentLang === LanguageCode.JA
+        ? 'その他'
+        : currentLang === LanguageCode.VI
+          ? 'Thêm'
+          : 'More';
+  const sameTabs = useCallback(
+    (left: TabInfo[], right: TabInfo[]) =>
+      left.length === right.length && left.every((item, index) => item.type === right[index]?.type),
+    []
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -127,6 +145,72 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
     ].join(' ');
   };
 
+  useEffect(() => {
+    const viewport = desktopTabsViewportRef.current;
+    if (!viewport) return;
+
+    const recalculateDesktopTabs = () => {
+      if (typeof window === 'undefined') return;
+
+      if (window.innerWidth < 1024) {
+        setVisibleDesktopTabs((prev) => (sameTabs(prev, tabData) ? prev : tabData));
+        setOverflowDesktopTabs((prev) => (prev.length === 0 ? prev : []));
+        return;
+      }
+
+      const availableWidth = viewport.clientWidth;
+      if (availableWidth <= 0) return;
+
+      const gap = 4; // px, matches `space-x-1`
+      const tabWidths = tabData.map((category) => {
+        const measured = desktopTabMeasureRefs.current[category.type]?.offsetWidth;
+        return measured ?? Math.max(88, category.title.length * 8 + 32);
+      });
+      const totalWidth = tabWidths.reduce((sum, width) => sum + width, 0) + Math.max(0, tabData.length - 1) * gap;
+
+      if (totalWidth <= availableWidth) {
+        setVisibleDesktopTabs((prev) => (sameTabs(prev, tabData) ? prev : tabData));
+        setOverflowDesktopTabs((prev) => (prev.length === 0 ? prev : []));
+        return;
+      }
+
+      const moreWidth = moreTabMeasureRef.current?.offsetWidth ?? 76;
+      const reserveForMore = moreWidth + gap;
+      const nextVisibleTabs: TabInfo[] = [];
+      let usedWidth = 0;
+
+      for (let index = 0; index < tabData.length; index += 1) {
+        const tabWidth = tabWidths[index];
+        const tabWidthWithGap = tabWidth + (nextVisibleTabs.length > 0 ? gap : 0);
+        const hasRemainingTabs = index < tabData.length - 1;
+        const reservedWidth = hasRemainingTabs ? reserveForMore : 0;
+        const canFit = usedWidth + tabWidthWithGap + reservedWidth <= availableWidth;
+
+        if (canFit || nextVisibleTabs.length === 0) {
+          nextVisibleTabs.push(tabData[index]);
+          usedWidth += tabWidthWithGap;
+          continue;
+        }
+
+        break;
+      }
+
+      const nextOverflowTabs = tabData.slice(nextVisibleTabs.length);
+      setVisibleDesktopTabs((prev) => (sameTabs(prev, nextVisibleTabs) ? prev : nextVisibleTabs));
+      setOverflowDesktopTabs((prev) => (sameTabs(prev, nextOverflowTabs) ? prev : nextOverflowTabs));
+    };
+
+    recalculateDesktopTabs();
+    const observer = new ResizeObserver(recalculateDesktopTabs);
+    observer.observe(viewport);
+    window.addEventListener('resize', recalculateDesktopTabs, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', recalculateDesktopTabs);
+    };
+  }, [desktopMoreLabel, sameTabs, tabData]);
+
   const handleMiniProgramClick = () => {
     setIsMiniProgramMenuOpen((prev) => !prev);
     setIsLanguageMenuOpen(false);
@@ -176,6 +260,27 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
           : 'bg-white/80 backdrop-blur-md border-b border-gray-200/50'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="pointer-events-none invisible fixed -top-24 left-0 hidden lg:flex items-center space-x-1">
+            {tabData.map((category) => (
+              <button
+                key={`measure-${category.type}`}
+                ref={(element) => {
+                  desktopTabMeasureRefs.current[category.type] = element;
+                }}
+                className="px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap"
+                type="button"
+              >
+                {category.title}
+              </button>
+            ))}
+            <button
+              ref={moreTabMeasureRef}
+              className="px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap"
+              type="button"
+            >
+              {desktopMoreLabel}
+            </button>
+          </div>
           <div className="flex items-center h-12 md:h-16 relative">
           <div className="flex-shrink-0">
             <Link
@@ -194,9 +299,9 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
             </Link>
           </div>
 
-          <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2">
-            <div className="flex items-center space-x-1">
-              {tabData.map((category) => {
+          <div ref={desktopTabsViewportRef} className="hidden lg:flex flex-1 justify-center min-w-0 px-4">
+            <div className="flex items-center space-x-1 min-w-0">
+              {visibleDesktopTabs.map((category) => {
                 const isActive = normalizeCategoryType(category.type) === activeMobileType;
                 const href = getCategoryHref(category.type);
                 return href ? (
@@ -220,10 +325,49 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                   </button>
                 );
               })}
+              {overflowDesktopTabs.length > 0 && (
+                <div className="relative group">
+                  <button
+                    type="button"
+                    className={getDesktopTabButtonClass(
+                      overflowDesktopTabs.some((category) => normalizeCategoryType(category.type) === activeMobileType)
+                    )}
+                  >
+                    {desktopMoreLabel}
+                  </button>
+                  <div className="absolute right-0 mt-2 min-w-[180px] rounded-xl border border-gray-100 bg-white/95 p-2 shadow-xl backdrop-blur-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-[90]">
+                    {overflowDesktopTabs.map((category) => {
+                      const isActive = normalizeCategoryType(category.type) === activeMobileType;
+                      const href = getCategoryHref(category.type);
+                      const itemClass = [
+                        'block w-full rounded-md px-3 py-2 text-left text-sm transition-colors',
+                        isActive
+                          ? 'bg-blue-50 text-blue-700 font-medium'
+                          : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600',
+                      ].join(' ');
+
+                      return href ? (
+                        <Link key={category.type} href={href} className={itemClass} prefetch>
+                          {category.title}
+                        </Link>
+                      ) : (
+                        <button
+                          key={category.type}
+                          type="button"
+                          onClick={() => handleCategorySelect(category.type)}
+                          className={itemClass}
+                        >
+                          {category.title}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 flex-shrink-0 ml-auto">
+          <div className="flex items-center space-x-4 flex-shrink-0 ml-auto lg:ml-0">
             <div
               className="hidden md:block relative"
               ref={miniProgramMenuRef}

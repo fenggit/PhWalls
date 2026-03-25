@@ -363,7 +363,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: '获取手机品牌设备最新内置壁纸合集，涵盖 iPhone、iPad 和 iMac 系统默认壁纸，支持高清无水印下载。',
+    heroDescription: '获取手机品牌设备最新内置壁纸合集，涵盖 Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel 等品牌，支持高清无水印下载。',
     loading: '加载中...',
     exploreButton: '开始探索',
     learnMore: '了解更多',
@@ -712,7 +712,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   en: {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: 'Explore the latest built-in Phone wallpaper collection, featuring iPhone, iPad, and iMac system default wallpapers in HD quality, free to download without watermarks.',
+    heroDescription: 'Explore the latest built-in phone wallpaper collection across Samsung, Xiaomi, Vivo, OPPO, Huawei, Honor, OnePlus, and Google Pixel. Download HD, watermark-free wallpapers for free.',
     loading: 'Loading...',
     exploreButton: 'Start Exploring',
     learnMore: 'Learn More',
@@ -1061,7 +1061,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   ja: {
     siteName: 'PhWalls',
     heroTitle: 'Phone 壁紙',
-    heroDescription: 'Phoneデバイスの最新内蔵壁紙コレクションを探索 — iPhone、iPad、iMacのシステム標準壁紙をHD品質で提供。無料で透かしなしのダウンロードが可能。',
+    heroDescription: 'Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel など主要ブランドの最新内蔵壁紙を収録。HD高画質・透かしなしで無料ダウンロードできます。',
     loading: '読み込み中...',
     exploreButton: '探索を開始',
     learnMore: '詳細を見る',
@@ -1410,7 +1410,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   vi: {
     siteName: 'PhWalls',
     heroTitle: 'Hình nền Phone',
-    heroDescription: 'Khám phá bộ sưu tập hình nền tích hợp mới nhất của Phone — bao gồm hình nền mặc định hệ thống cho iPhone, iPad và iMac với chất lượng HD, miễn phí và không có watermark.',
+    heroDescription: 'Khám phá bộ sưu tập hình nền tích hợp mới nhất từ các thương hiệu như Samsung, Xiaomi, Vivo, OPPO, Huawei, Honor, OnePlus và Google Pixel. Tải miễn phí hình nền HD không watermark.',
     loading: 'Đang tải...',
     exploreButton: 'Bắt đầu khám phá',
     learnMore: 'Tìm hiểu thêm',
@@ -1732,7 +1732,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   'zh-hant': {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: '獲取手機品牌設備最新內建壁紙合集，涵蓋 iPhone、iPad 和 iMac 系統預設壁紙，支援高清無浮水印下載。',
+    heroDescription: '獲取手機品牌設備最新內建壁紙合集，涵蓋 Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel 等品牌，支援高清無浮水印下載。',
     loading: '載入中...',
     exploreButton: '開始探索',
     learnMore: '了解更多',
