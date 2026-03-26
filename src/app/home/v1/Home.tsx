@@ -42,15 +42,16 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
   
   // 直接获取导航数据
   const tabData = useMemo(() => getTabData(currentLang), [currentLang]);
+  const contentTabs = useMemo(() => tabData.filter((tab) => !tab.link), [tabData]);
   const categoryDataMap = useMemo(() => {
-    return tabData.reduce<Record<string, any[]>>((acc, tab) => {
+    return contentTabs.reduce<Record<string, any[]>>((acc, tab) => {
       const normalized = normalizeCategoryType(tab.type);
       if (isWallpaperCategory(normalized)) {
         acc[normalized] = sortByDateDesc(getWallpaperCollections(normalized));
       }
       return acc;
     }, {});
-  }, [tabData]);
+  }, [contentTabs]);
 
   // 将 tab.type 转成可用于 DOM id 的锚点（避免空格导致 scroll 定位异常）
   const getCategoryAnchorId = useCallback((categoryType: string) => {
@@ -239,8 +240,8 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
   }, []);
 
   const visibleCategories = useMemo(
-    () => tabData.filter((cat) => cat.type.toLowerCase() !== 'design'),
-    [tabData]
+    () => contentTabs.filter((cat) => cat.type.toLowerCase() !== 'design'),
+    [contentTabs]
   );
 
   useEffect(() => {

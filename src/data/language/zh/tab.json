@@ -4,6 +4,11 @@
         "type": "xiaomi"
     },
     {
+        "title": "iPhone",
+        "type": "iPhone",
+        "link": "https://applewalls.com"
+    },
+    {
         "title": "vivo",
         "type": "vivo"
     },

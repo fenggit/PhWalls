@@ -306,9 +306,22 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
           <div ref={desktopTabsViewportRef} className="hidden lg:flex flex-1 justify-center min-w-0 px-4">
             <div className="flex items-center space-x-1 min-w-0">
               {visibleDesktopTabs.map((category) => {
-                const isActive = normalizeCategoryType(category.type) === activeMobileType;
-                const href = getCategoryHref(category.type);
+                const isExternal = Boolean(category.link?.trim());
+                const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
+                const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);
                 return href ? (
+                  isExternal ? (
+                    <a
+                      key={category.type}
+                      href={href}
+                      className={getDesktopTabButtonClass(false)}
+                      title={category.title}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {category.title}
+                    </a>
+                  ) : (
                   <Link
                     key={category.type}
                     href={href}
@@ -318,6 +331,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                   >
                     {category.title}
                   </Link>
+                  )
                 ) : (
                   <button
                     key={category.type}
@@ -341,8 +355,9 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                   </button>
                   <div className="absolute right-0 mt-2 min-w-[180px] rounded-xl border border-gray-100 bg-white/95 p-2 shadow-xl backdrop-blur-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-[90]">
                     {overflowDesktopTabs.map((category) => {
-                      const isActive = normalizeCategoryType(category.type) === activeMobileType;
-                      const href = getCategoryHref(category.type);
+                      const isExternal = Boolean(category.link?.trim());
+                      const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
+                      const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);
                       const itemClass = [
                         'block w-full rounded-md px-3 py-2 text-left text-sm transition-colors',
                         isActive
@@ -351,9 +366,21 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                       ].join(' ');
 
                       return href ? (
-                        <Link key={category.type} href={href} className={itemClass} prefetch>
-                          {category.title}
-                        </Link>
+                        isExternal ? (
+                          <a
+                            key={category.type}
+                            href={href}
+                            className={itemClass}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {category.title}
+                          </a>
+                        ) : (
+                          <Link key={category.type} href={href} className={itemClass} prefetch>
+                            {category.title}
+                          </Link>
+                        )
                       ) : (
                         <button
                           key={category.type}
@@ -505,25 +532,42 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
                   {mobileAllLabel}
                 </Link>
                 {tabData.map((category) => {
-                  const isActive = normalizeCategoryType(category.type) === activeMobileType;
-                  const href = getCategoryHref(category.type);
+                  const isExternal = Boolean(category.link?.trim());
+                  const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
+                  const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);
 
                   return href ? (
-                    <Link
-                      key={category.type}
-                      href={href}
-                      onClick={() => handleCategorySelect(category.type)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
-                        isActive
-                          ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
-                          : 'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                      role="tab"
-                      aria-selected={isActive}
-                      prefetch
-                    >
-                      {category.title}
-                    </Link>
+                    isExternal ? (
+                      <a
+                        key={category.type}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
+                          'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                        role="tab"
+                        aria-selected={false}
+                      >
+                        {category.title}
+                      </a>
+                    ) : (
+                      <Link
+                        key={category.type}
+                        href={href}
+                        onClick={() => handleCategorySelect(category.type)}
+                        className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
+                          isActive
+                            ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
+                            : 'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                        role="tab"
+                        aria-selected={isActive}
+                        prefetch
+                      >
+                        {category.title}
+                      </Link>
+                    )
                   ) : (
                     <button
                       key={category.type}

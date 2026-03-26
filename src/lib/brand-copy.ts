@@ -5,6 +5,7 @@ import { getTabData } from '@/lib/data';
 type BrandTab = {
   title: string;
   type: string;
+  link?: string;
 };
 
 const formatBrandList = (brandTitles: string[], language: Language): string => {
@@ -53,7 +54,7 @@ const formatBrandList = (brandTitles: string[], language: Language): string => {
 export const getBrandTitlesFromTabs = (language: Language = DEFAULT_LANGUAGE): string[] => {
   const tabs = (getTabData(language) as BrandTab[]).filter((item) => {
     const type = item.type?.toLowerCase().trim();
-    return Boolean(item.title?.trim()) && Boolean(type) && type !== 'design';
+    return Boolean(item.title?.trim()) && Boolean(type) && type !== 'design' && !item.link;
   });
 
   return Array.from(new Set(tabs.map((item) => item.title.trim())));

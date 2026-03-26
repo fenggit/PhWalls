@@ -21,6 +21,7 @@ export interface TabItem {
 export interface TabInfo {
   title: string;
   type: string;
+  link?: string;
   icon: string;
   items: TabItem[];
 }

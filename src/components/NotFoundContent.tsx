@@ -14,7 +14,7 @@ export default function NotFoundContent() {
     'from-sky-50 to-indigo-50 border-sky-100',
   ];
 
-  const brandLinks = getTabData(language).map((tab, index) => ({
+  const brandLinks = getTabData(language).filter((tab) => !tab.link).map((tab, index) => ({
     href: `/${tab.type}`,
     title: tab.title,
     description: texts.notFoundBrandLinksDescription,

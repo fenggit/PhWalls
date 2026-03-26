@@ -3,6 +3,7 @@ import tabDataEn from '@/data/language/en/tab.json';
 type RawTabCategory = {
   title: string;
   type: string;
+  link?: string;
 };
 
 export type BrandCategory = {
@@ -25,11 +26,13 @@ const safeDecodeURIComponent = (value: string): string => {
   }
 };
 
-export const BRAND_CATEGORIES: BrandCategory[] = (tabDataEn as RawTabCategory[]).map((item) => ({
-  title: item.title,
-  type: item.type,
-  slug: normalizeCategoryType(item.type),
-}));
+export const BRAND_CATEGORIES: BrandCategory[] = (tabDataEn as RawTabCategory[])
+  .filter((item) => !item.link)
+  .map((item) => ({
+    title: item.title,
+    type: item.type,
+    slug: normalizeCategoryType(item.type),
+  }));
 
 export function getBrandCategoryBySlug(slug: string): BrandCategory | null {
   const normalized = normalizeCategoryType(safeDecodeURIComponent(slug));

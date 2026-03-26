@@ -28,7 +28,9 @@ import {
 function AboutContent() {
   const { language, texts } = useLanguage();
   const homeHref = withLanguagePath('/', language);
-  const brandTabs = getTabData(language).filter((item) => normalizeCategoryType(item.type) !== 'design');
+  const brandTabs = getTabData(language).filter(
+    (item) => normalizeCategoryType(item.type) !== 'design' && !item.link
+  );
   const brandTitles = brandTabs.map((item) => item.title);
   const dynamicAboutCopy = getAboutBrandCopy(language, brandTitles);
   const dynamicFooterDescription = getFooterBrandDescription(language, brandTitles);
