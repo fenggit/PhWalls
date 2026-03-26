@@ -1,0 +1,62 @@
+[
+  {
+    "title": "サムスン",
+    "type": "samsung"
+  },
+  {
+    "title": "vivo",
+    "type": "vivo"
+  },
+  {
+    "title": "Google Pixel",
+    "type": "google-pixel"
+  },
+  {
+    "title": "realme",
+    "type": "realme"
+  },
+  {
+    "title": "Infinix",
+    "type": "transsion-infinix"
+  },
+  {
+    "title": "Tecno",
+    "type": "transsion-tecno"
+  },
+  {
+    "title": "シャオミ",
+    "type": "xiaomi"
+  },
+  {
+    "title": "ファーウェイ",
+    "type": "huawei"
+  },
+  {
+    "title": "OPPO",
+    "type": "oppo"
+  },
+  {
+    "title": "Honor",
+    "type": "honor"
+  },
+  {
+    "title": "モトローラ",
+    "type": "motorola"
+  },
+  {
+    "title": "Nothing",
+    "type": "nothing"
+  },
+  {
+    "title": "ワンプラス",
+    "type": "oneplus"
+  },
+  {
+    "title": "HarmonyOS",
+    "type": "harmonyos"
+  },
+  {
+    "title": "ファーウェイ MatePad",
+    "type": "huawei-matepad"
+  }
+]

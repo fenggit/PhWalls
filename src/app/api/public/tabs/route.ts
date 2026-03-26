@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import tabData from '@/data/tab.json';
+import { getTabData } from '@/lib/data';
+import { LANGUAGE_COOKIE_NAME, LANGUAGE_HEADER_NAME, resolveRequestLanguage } from '@/lib/language';
 
 export const runtime = 'edge';
 
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const data = tabData as unknown;
+    const searchLang = request.nextUrl.searchParams.get('lang');
+    const cookieLang = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value ?? null;
+    const headerLang = request.headers.get(LANGUAGE_HEADER_NAME);
+    const country = request.headers.get('cf-ipcountry');
+    const language = resolveRequestLanguage({
+      searchLang,
+      cookieLang,
+      headerLang,
+      country,
+    });
+
+    const data = getTabData(language) as unknown;
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching tabs:', error);

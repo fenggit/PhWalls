@@ -1,9 +1,22 @@
-import { TabInfo } from '@/types';
-import tabData from '@/data/tab.json';
+import type { Language, TabInfo } from '@/types';
+import { DEFAULT_LANGUAGE } from '@/lib/language';
+import tabDataEn from '@/data/language/en/tab.json';
+import tabDataZh from '@/data/language/zh/tab.json';
+import tabDataJa from '@/data/language/ja/tab.json';
+import tabDataVi from '@/data/language/vi/tab.json';
+import tabDataZhHant from '@/data/language/zh-hant/tab.json';
+
+const TAB_DATA_BY_LANGUAGE: Record<Language, TabInfo[]> = {
+  en: tabDataEn as TabInfo[],
+  zh: tabDataZh as TabInfo[],
+  ja: tabDataJa as TabInfo[],
+  vi: tabDataVi as TabInfo[],
+  'zh-hant': tabDataZhHant as TabInfo[],
+};
 
 // 获取导航数据
-export const getTabData = (): TabInfo[] => {
-  return tabData as TabInfo[];
+export const getTabData = (language: Language = DEFAULT_LANGUAGE): TabInfo[] => {
+  return TAB_DATA_BY_LANGUAGE[language] || TAB_DATA_BY_LANGUAGE[DEFAULT_LANGUAGE];
 };
 
 const escapeRegExp = (value: string): string => {

@@ -41,7 +41,7 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
   const [showBackToTop, setShowBackToTop] = useState(false);
   
   // 直接获取导航数据
-  const tabData = useMemo(() => getTabData(), []);
+  const tabData = useMemo(() => getTabData(currentLang), [currentLang]);
   const categoryDataMap = useMemo(() => {
     return tabData.reduce<Record<string, any[]>>((acc, tab) => {
       const normalized = normalizeCategoryType(tab.type);

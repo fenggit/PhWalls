@@ -1,4 +1,4 @@
-import tabData from '@/data/tab.json';
+import tabDataEn from '@/data/language/en/tab.json';
 
 type RawTabCategory = {
   title: string;
@@ -25,7 +25,7 @@ const safeDecodeURIComponent = (value: string): string => {
   }
 };
 
-export const BRAND_CATEGORIES: BrandCategory[] = (tabData as RawTabCategory[]).map((item) => ({
+export const BRAND_CATEGORIES: BrandCategory[] = (tabDataEn as RawTabCategory[]).map((item) => ({
   title: item.title,
   type: item.type,
   slug: normalizeCategoryType(item.type),

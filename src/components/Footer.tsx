@@ -4,9 +4,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
 import { withLanguagePath } from '@/lib/language';
+import { getBrandTitlesFromTabs, getFooterBrandDescription } from '@/lib/brand-copy';
 
 export default function Footer() {
 	const { language: currentLang, texts } = useLanguage();
+	const brandTitles = getBrandTitlesFromTabs(currentLang);
+	const footerDescription = getFooterBrandDescription(currentLang, brandTitles);
 
 	return (
 		<footer className="bg-gray-50 border-t border-gray-200/70 py-12 px-4 lg:px-10 mt-auto">
@@ -26,11 +29,7 @@ export default function Footer() {
 					</div>
 
 					<p className="text-gray-700 text-[15px] leading-relaxed font-medium">
-						{texts.footerDescription}
-					</p>
-
-					<p className="text-gray-500 text-xs leading-relaxed">
-						{texts.trademarkDisclaimer}
+						{footerDescription}
 					</p>
 
 					{texts.copyright && (

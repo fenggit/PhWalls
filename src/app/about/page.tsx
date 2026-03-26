@@ -10,7 +10,8 @@ import Footer from '@/components/Footer';
 import BackNavButton from '@/components/BackNavButton';
 import { useLanguage } from '@/components/LanguageProvider';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
-import { getTabData } from '@/lib/data';
+import { getAboutBrandCopy, getAboutFaqItems, getFooterBrandDescription } from '@/lib/brand-copy';
+import { buildWallpaperListTitle, getTabData } from '@/lib/data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
 import {
@@ -26,19 +27,22 @@ import {
 
 function AboutContent() {
   const { language, texts } = useLanguage();
+  const homeHref = withLanguagePath('/', language);
+  const brandTabs = getTabData(language).filter((item) => normalizeCategoryType(item.type) !== 'design');
+  const brandTitles = brandTabs.map((item) => item.title);
+  const dynamicAboutCopy = getAboutBrandCopy(language, brandTitles);
+  const dynamicFooterDescription = getFooterBrandDescription(language, brandTitles);
+
   const pageCopy = {
-    heroTagline: texts.aboutHeroTagline,
+    heroTagline: dynamicAboutCopy.heroTagline,
+    subtitle: dynamicAboutCopy.subtitle,
     resourceTitle: texts.aboutResourceTitle,
-    resourceDesc: texts.aboutResourceDesc,
+    resourceDesc: dynamicAboutCopy.resourceDesc,
     trustTitle: texts.aboutTrustTitle,
     trustDesc: texts.aboutTrustDesc,
-    supportTitle: texts.aboutSupportTitle,
-    supportDesc: texts.aboutSupportDesc,
     contactTitle: texts.aboutContactTitle,
     contactDesc: texts.aboutContactDesc,
   };
-  const homeHref = withLanguagePath('/', language);
-  const brandTabs = getTabData().filter((item) => normalizeCategoryType(item.type) !== 'design');
   const collectionTones = [
     'from-blue-50 to-cyan-50 border-blue-100',
     'from-green-50 to-emerald-50 border-green-100',
@@ -46,21 +50,23 @@ function AboutContent() {
     'from-sky-50 to-indigo-50 border-sky-100',
   ];
 
-  const collections = brandTabs.slice(0, 4).map((item, index) => ({
+  const collections = brandTabs.map((item, index) => ({
     href: withLanguagePath(buildBrandPath(item.type), language),
-    title: `${item.title} Wallpapers`,
-    desc: `Explore official ${item.title} wallpaper collections and download them in full resolution.`,
+    title: buildWallpaperListTitle(item.title, texts.wallpapersTitleSuffix),
+    desc:
+      language === 'zh'
+        ? `浏览 ${item.title} 官方壁纸合集，支持高清原图下载。`
+        : language === 'zh-hant'
+          ? `瀏覽 ${item.title} 官方桌布合集，支援高清原圖下載。`
+          : language === 'ja'
+            ? `${item.title} の公式壁紙コレクションを閲覧し、高解像度でダウンロードできます。`
+            : language === 'vi'
+              ? `Khám phá bộ sưu tập hình nền chính thức của ${item.title} và tải xuống chất lượng cao.`
+              : `Explore official ${item.title} wallpaper collections and download them in full resolution.`,
     tone: collectionTones[index % collectionTones.length],
   }));
 
-  const faqItems = [
-    { question: texts.faqQuestion2, answer: texts.faqAnswer2 },
-    { question: texts.faqQuestion3, answer: texts.faqAnswer3 },
-    { question: texts.faqQuestion4, answer: texts.faqAnswer4 },
-    { question: texts.faqQuestion5, answer: texts.faqAnswer5 },
-    { question: texts.faqQuestion6, answer: texts.faqAnswer6 },
-    { question: texts.faqQuestion7, answer: texts.faqAnswer7 },
-  ];
+  const faqItems = getAboutFaqItems(language);
 
   const seoStructuredData = {
     '@context': 'https://schema.org',
@@ -68,7 +74,7 @@ function AboutContent() {
       {
         '@type': 'AboutPage',
         name: texts.aboutTitle,
-        description: texts.aboutSubtitle,
+        description: pageCopy.subtitle,
         inLanguage: language,
         url: withLanguageUrl(`${SITE_URL}/about`, language),
         isPartOf: {
@@ -116,7 +122,7 @@ function AboutContent() {
               {texts.aboutTitle}
             </h1>
             <p className="mt-6 max-w-3xl text-base md:text-xl leading-relaxed text-white/90">
-              {texts.aboutSubtitle}
+              {pageCopy.subtitle}
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-6 text-white/90">
@@ -160,7 +166,7 @@ function AboutContent() {
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <p className="text-xs tracking-[0.18em] uppercase text-slate-500">4K / 5K / 6K</p>
-              <p className="mt-2 text-sm text-slate-600">{texts.footerDescription}</p>
+              <p className="mt-2 text-sm text-slate-600">{dynamicFooterDescription}</p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <p className="text-xs tracking-[0.18em] uppercase text-slate-500">{texts.faqTitle}</p>
@@ -196,7 +202,7 @@ function AboutContent() {
         </section>
 
         <section className="py-4 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
+          <div className="max-w-6xl mx-auto">
             <article className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
               <h2 className="inline-flex items-center gap-2 text-2xl font-semibold text-slate-900">
                 <ShieldCheck className="h-5 w-5 text-emerald-600" />
@@ -204,31 +210,6 @@ function AboutContent() {
               </h2>
               <p className="mt-4 text-slate-600 leading-relaxed">{texts.missionDescription}</p>
               <p className="mt-3 text-slate-600 leading-relaxed">{texts.missionDescription2}</p>
-            </article>
-
-            <article className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="inline-flex items-center gap-2 text-2xl font-semibold text-slate-900">
-                <Download className="h-5 w-5 text-blue-600" />
-                {pageCopy.supportTitle}
-              </h2>
-              <p className="mt-4 text-slate-600 leading-relaxed">{pageCopy.supportDesc}</p>
-              <div className="mt-6 grid sm:grid-cols-3 gap-3">
-                {brandTabs.slice(0, 3).map((item, index) => (
-                  <Link
-                    key={item.type}
-                    href={withLanguagePath(buildBrandPath(item.type), language)}
-                    className={`rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
-                      index === 0
-                        ? 'border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100'
-                        : index === 1
-                          ? 'border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
-                          : 'border border-violet-200 bg-violet-50 text-violet-800 hover:bg-violet-100'
-                    }`}
-                  >
-                    {item.title} Wallpapers
-                  </Link>
-                ))}
-              </div>
             </article>
           </div>
         </section>
@@ -286,7 +267,6 @@ function AboutContent() {
                   {texts.privacyPolicy}
                 </Link>
               </div>
-              <p className="mt-6 text-xs leading-relaxed text-slate-500">{texts.trademarkDisclaimer}</p>
             </aside>
           </div>
         </section>

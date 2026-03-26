@@ -41,7 +41,7 @@ type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop
 
 export default function DeviceWallpaperGrid({ category, deviceData, summarySection, initialImageUrls }: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
-  const tabData = useMemo(() => getTabData(), []);
+  const tabData = useMemo(() => getTabData(currentLang), [currentLang]);
   const pageTitle = useMemo(
     () => buildWallpaperListTitle(deviceData.name, texts.wallpapersTitleSuffix),
     [deviceData.name, texts.wallpapersTitleSuffix]

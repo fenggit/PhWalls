@@ -10,7 +10,7 @@ export const dynamic = 'force-static';
 export async function generateMetadata(): Promise<Metadata> {
   const language = await resolveMetadataLanguage();
   const texts = getI18nTexts(language);
-  const title = `${texts.notFoundHeroTitle} | ${texts.siteName}`;
+  const title = `404 | ${texts.siteName}`;
   const description = texts.notFoundHeroDescription;
 
   return {

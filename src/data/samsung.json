@@ -7445,54 +7445,6 @@
     ]
   },
   {
-    "name": "Samsung Galaxy S26 Ultra",
-    "date": "2026/01",
-    "item": [
-      {
-        "name": "samsung-galaxy-s26-ultra-beige-pink-gradient",
-        "type": "image/png",
-        "size": "4.93 MB",
-        "originPath": "samsung/Samsung Galaxy S26 Ultra/origin/samsung-galaxy-s26-ultra-beige-pink-gradient.png",
-        "compressPath": "samsung/Samsung Galaxy S26 Ultra/compress/samsung-galaxy-s26-ultra-beige-pink-gradient.webp"
-      },
-      {
-        "name": "samsung-galaxy-s26-ultra-beige-white-gradient",
-        "type": "image/png",
-        "size": "5.54 MB",
-        "originPath": "samsung/Samsung Galaxy S26 Ultra/origin/samsung-galaxy-s26-ultra-beige-white-gradient.png",
-        "compressPath": "samsung/Samsung Galaxy S26 Ultra/compress/samsung-galaxy-s26-ultra-beige-white-gradient.webp"
-      },
-      {
-        "name": "samsung-galaxy-s26-ultra-brown-gray-gradient",
-        "type": "image/png",
-        "size": "5.8 MB",
-        "originPath": "samsung/Samsung Galaxy S26 Ultra/origin/samsung-galaxy-s26-ultra-brown-gray-gradient.png",
-        "compressPath": "samsung/Samsung Galaxy S26 Ultra/compress/samsung-galaxy-s26-ultra-brown-gray-gradient.webp"
-      },
-      {
-        "name": "samsung-galaxy-s26-ultra-mint-silver-gradient",
-        "type": "image/png",
-        "size": "5.82 MB",
-        "originPath": "samsung/Samsung Galaxy S26 Ultra/origin/samsung-galaxy-s26-ultra-mint-silver-gradient.png",
-        "compressPath": "samsung/Samsung Galaxy S26 Ultra/compress/samsung-galaxy-s26-ultra-mint-silver-gradient.webp"
-      },
-      {
-        "name": "samsung-galaxy-s26-ultra-silver-gray-gradient",
-        "type": "image/png",
-        "size": "5.79 MB",
-        "originPath": "samsung/Samsung Galaxy S26 Ultra/origin/samsung-galaxy-s26-ultra-silver-gray-gradient.png",
-        "compressPath": "samsung/Samsung Galaxy S26 Ultra/compress/samsung-galaxy-s26-ultra-silver-gray-gradient.webp"
-      },
-      {
-        "name": "samsung-galaxy-s26-ultra-silver-purple-gradient",
-        "type": "image/png",
-        "size": "5.77 MB",
-        "originPath": "samsung/Samsung Galaxy S26 Ultra/origin/samsung-galaxy-s26-ultra-silver-purple-gradient.png",
-        "compressPath": "samsung/Samsung Galaxy S26 Ultra/compress/samsung-galaxy-s26-ultra-silver-purple-gradient.webp"
-      }
-    ]
-  },
-  {
     "name": "Samsung Galaxy S3",
     "date": "2012/05",
     "item": [

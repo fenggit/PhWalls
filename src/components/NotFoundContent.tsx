@@ -2,37 +2,24 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
+import { getTabData } from '@/lib/data';
 import { withLanguagePath } from '@/lib/language';
 
 export default function NotFoundContent() {
   const { language, texts } = useLanguage();
-
-  const quickLinks = [
-    {
-      href: '/google-pixel',
-      title: 'Google Pixel Wallpapers',
-      description: texts.notFoundQuickLinkIphoneDescription,
-      tone: 'from-blue-50 to-cyan-50 border-blue-100',
-    },
-    {
-      href: '/huawei',
-      title: 'Huawei Wallpapers',
-      description: texts.notFoundQuickLinkIpadDescription,
-      tone: 'from-emerald-50 to-green-50 border-emerald-100',
-    },
-    {
-      href: '/samsung',
-      title: 'Samsung Wallpapers',
-      description: texts.notFoundQuickLinkMacDescription,
-      tone: 'from-violet-50 to-fuchsia-50 border-violet-100',
-    },
-    {
-      href: '/xiaomi',
-      title: 'Xiaomi Wallpapers',
-      description: texts.notFoundQuickLinkWwdcDescription,
-      tone: 'from-sky-50 to-indigo-50 border-sky-100',
-    },
+  const brandLinkTones = [
+    'from-blue-50 to-cyan-50 border-blue-100',
+    'from-emerald-50 to-green-50 border-emerald-100',
+    'from-violet-50 to-fuchsia-50 border-violet-100',
+    'from-sky-50 to-indigo-50 border-sky-100',
   ];
+
+  const brandLinks = getTabData(language).map((tab, index) => ({
+    href: `/${tab.type}`,
+    title: tab.title,
+    description: texts.notFoundBrandLinksDescription,
+    tone: brandLinkTones[index % brandLinkTones.length],
+  }));
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -106,14 +93,14 @@ export default function NotFoundContent() {
               <div className="max-w-xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">{texts.allWallpapers}</p>
                 <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
-                  {texts.notFoundQuickLinksTitle}
+                  {texts.notFoundBrandLinksTitle}
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  {texts.notFoundQuickLinksDescription}
+                  {texts.notFoundBrandLinksDescription}
                 </p>
 
                 <div className="mt-8 space-y-4">
-                  {quickLinks.map((link) => (
+                  {brandLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={withLanguagePath(link.href, language)}

@@ -1,0 +1,62 @@
+[
+  {
+    "title": "三星",
+    "type": "samsung"
+  },
+  {
+    "title": "vivo",
+    "type": "vivo"
+  },
+  {
+    "title": "Google Pixel",
+    "type": "google-pixel"
+  },
+  {
+    "title": "realme 真我",
+    "type": "realme"
+  },
+  {
+    "title": "傳音 Infinix",
+    "type": "transsion-infinix"
+  },
+  {
+    "title": "傳音 Tecno",
+    "type": "transsion-tecno"
+  },
+  {
+    "title": "小米",
+    "type": "xiaomi"
+  },
+  {
+    "title": "華為",
+    "type": "huawei"
+  },
+  {
+    "title": "OPPO",
+    "type": "oppo"
+  },
+  {
+    "title": "榮耀",
+    "type": "honor"
+  },
+  {
+    "title": "摩托羅拉",
+    "type": "motorola"
+  },
+  {
+    "title": "Nothing",
+    "type": "nothing"
+  },
+  {
+    "title": "一加 OnePlus",
+    "type": "oneplus"
+  },
+  {
+    "title": "鴻蒙 HarmonyOS",
+    "type": "harmonyos"
+  },
+  {
+    "title": "華為 MatePad",
+    "type": "huawei-matepad"
+  }
+]
