@@ -357,7 +357,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: '获取手机品牌设备最新内置壁纸合集，涵盖 Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel 等品牌，支持高清无水印下载。',
+    heroDescription: '获取手机品牌设备最新内置壁纸合集，涵盖 iPhone、Samsung、小米、Vivo、OPPO、华为、荣耀、一加、Google Pixel 等品牌，支持高清无水印下载。',
     loading: '加载中...',
     exploreButton: '开始探索',
     learnMore: '了解更多',
@@ -1043,7 +1043,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   ja: {
     siteName: 'PhWalls',
     heroTitle: 'Phone 壁紙',
-    heroDescription: 'Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel など主要ブランドの最新内蔵壁紙を収録。HD高画質・透かしなしで無料ダウンロードできます。',
+    heroDescription: 'iPhone、Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel など主要ブランドの最新内蔵壁紙を収録。HD高画質・透かしなしで無料ダウンロードできます。',
     loading: '読み込み中...',
     exploreButton: '探索を開始',
     learnMore: '詳細を見る',
@@ -1702,7 +1702,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   'zh-hant': {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: '獲取手機品牌設備最新內建壁紙合集，涵蓋 Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel 等品牌，支援高清無浮水印下載。',
+    heroDescription: '獲取手機品牌設備最新內建壁紙合集，涵蓋 iPhone、Samsung、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel 等品牌，支援高清無浮水印下載。',
     loading: '載入中...',
     exploreButton: '開始探索',
     learnMore: '了解更多',

@@ -32,6 +32,7 @@ const languageOrder: Language[] = [
 ];
 
 const SHOW_MINI_PROGRAM = false;
+const MAX_VISIBLE_DESKTOP_TABS = 8;
 
 export default function Header({ tabData, currentLang, onLanguageChange }: HeaderProps) {
   const [isDeviceMenuOpen, setIsDeviceMenuOpen] = useState(false);
@@ -197,8 +198,13 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
         break;
       }
 
-      const nextOverflowTabs = tabData.slice(nextVisibleTabs.length);
-      setVisibleDesktopTabs((prev) => (sameTabs(prev, nextVisibleTabs) ? prev : nextVisibleTabs));
+      const limitedVisibleTabs = nextVisibleTabs.slice(0, MAX_VISIBLE_DESKTOP_TABS);
+      const nextOverflowTabs = [
+        ...nextVisibleTabs.slice(MAX_VISIBLE_DESKTOP_TABS),
+        ...tabData.slice(nextVisibleTabs.length),
+      ];
+
+      setVisibleDesktopTabs((prev) => (sameTabs(prev, limitedVisibleTabs) ? prev : limitedVisibleTabs));
       setOverflowDesktopTabs((prev) => (sameTabs(prev, nextOverflowTabs) ? prev : nextOverflowTabs));
     };
 
