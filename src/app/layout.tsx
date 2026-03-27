@@ -138,7 +138,7 @@ export default async function RootLayout({
         <Script
           id="google-tag-manager"
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-V98C3T2XRM"
+          src="https://www.googletagmanager.com/gtag/js?id=G-LFRHWNN448"
         />
         <Script
           id="google-tag-init"
@@ -148,7 +148,7 @@ export default async function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
-              gtag('config', 'G-V98C3T2XRM');
+              gtag('config', 'G-LFRHWNN448');
             `,
           }}
         />
