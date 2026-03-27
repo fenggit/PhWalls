@@ -138,7 +138,7 @@ export default async function RootLayout({
         <Script
           id="google-tag-manager"
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-LFRHWNN448"
+          src="https://www.googletagmanager.com/gtag/js?id=G-V98C3T2XRM"
         />
         <Script
           id="google-tag-init"
@@ -148,26 +148,10 @@ export default async function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
-              gtag('config', 'G-LFRHWNN448');
+              gtag('config', 'G-V98C3T2XRM');
             `,
           }}
         />
-
-        {/* <Script
-          id="baidu-analytics"
-          strategy="lazyOnload"
-          dangerouslySetInnerHTML={{
-            __html: `
-              var _hmt = _hmt || [];
-              (function() {
-                var hm = document.createElement("script");
-                hm.src = "https://hm.baidu.com/hm.js?0ae1c5f4a68fa083083259227ed8d4e2";
-                var s = document.getElementsByTagName("script")[0];
-                s.parentNode.insertBefore(hm, s);
-              })();
-            `,
-          }}
-        /> */}
 
         {/* 资源提示优化 */}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
