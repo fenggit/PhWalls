@@ -194,14 +194,6 @@ export default async function RootLayout({
               url: SITE_URL,
               description: 'Download built-in HD wallpapers for popular phone brands',
               inLanguage: ['en', 'zh-CN', 'ja', 'vi', 'zh-Hant'],
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: {
-                  '@type': 'EntryPoint',
-                  urlTemplate: `${SITE_URL}/?q={search_term_string}`,
-                },
-                'query-input': 'required name=search_term_string',
-              },
             })
           }}
         />

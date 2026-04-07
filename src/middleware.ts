@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { BRAND_CATEGORIES, normalizeCategoryType } from '@/lib/brands';
 import {
   DEFAULT_LANGUAGE,
   getLanguageFromPath,
   LANGUAGE_COOKIE_NAME,
   LANGUAGE_HEADER_NAME,
+  resolveLanguageFromAcceptLanguage,
   resolveRequestLanguage,
   stripLanguagePrefix,
+  withLanguagePath,
 } from '@/lib/language';
 
 const STATIC_PATHS = new Set([
@@ -19,24 +22,150 @@ const STATIC_PATHS = new Set([
   'browserconfig.xml',
 ]);
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com';
+const SITE_ORIGIN = new URL(SITE_URL);
+const BRAND_SLUGS = new Set(BRAND_CATEGORIES.map((brand) => brand.slug));
+
+const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
+
+function resolveCanonicalHost(hostname: string): string | null {
+  const incoming = hostname.toLowerCase();
+  const canonical = SITE_ORIGIN.hostname.toLowerCase();
+
+  if (incoming === canonical) {
+    return canonical;
+  }
+
+  if (canonical.startsWith('www.') && incoming === canonical.slice(4)) {
+    return canonical;
+  }
+
+  if (!canonical.startsWith('www.') && incoming === `www.${canonical}`) {
+    return canonical;
+  }
+
+  return null;
+}
+
+function safeDecodeURIComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function normalizePublicPath(pathname: string): string {
+  if (pathname === '/home/v1' || pathname === '/home/v1/') {
+    return '/';
+  }
+
+  if (pathname === '/privacy-policy' || pathname.startsWith('/privacy-policy/')) {
+    return pathname.replace('/privacy-policy', '/privacy');
+  }
+
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length === 1) {
+    const normalized = normalizeCategoryType(safeDecodeURIComponent(segments[0]));
+    if (BRAND_SLUGS.has(normalized)) {
+      return `/${normalized}`;
+    }
+  }
+
+  return pathname;
+}
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const trimmed = pathname.replace(/^\/+|\/+$/g, '');
-  const isStaticFile = Boolean(pathname.match(/\.[a-z0-9]+$/i));
+  const pathLanguage = getLanguageFromPath(pathname);
+  const strippedPath = pathLanguage ? stripLanguagePrefix(pathname).path : pathname;
+  const normalizedPath = normalizePublicPath(strippedPath);
+  const trimmed = normalizedPath.replace(/^\/+|\/+$/g, '');
+  const isStaticFile = Boolean(normalizedPath.match(/\.[a-z0-9]+$/i));
+  const isStaticPath = STATIC_PATHS.has(trimmed);
+  const isInternal =
+    normalizedPath.startsWith('/_next') ||
+    normalizedPath.startsWith('/api') ||
+    isStaticFile;
+
+  const canonicalHost = resolveCanonicalHost(request.nextUrl.hostname);
+  const shouldCanonicalizeProtocol =
+    canonicalHost !== null && request.nextUrl.protocol !== SITE_ORIGIN.protocol;
+
   const country =
     request.headers.get('cf-ipcountry') ||
     request.headers.get('x-country');
+  const acceptLanguageHeader = request.headers.get('accept-language');
+  const acceptLanguage = acceptLanguageHeader
+    ? resolveLanguageFromAcceptLanguage(acceptLanguageHeader)
+    : null;
   const resolvedLanguage = resolveRequestLanguage({
     cookieLang: request.cookies.get(LANGUAGE_COOKIE_NAME)?.value,
+    headerLang: acceptLanguage,
     country,
   });
 
-  if (pathname === '/privacy-policy' || pathname.startsWith('/privacy-policy/')) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = pathname.replace('/privacy-policy', '/privacy');
+  const preferredLanguage = pathLanguage || resolvedLanguage || DEFAULT_LANGUAGE;
+
+  const redirectUrl = request.nextUrl.clone();
+  let shouldRedirect = false;
+
+  if (canonicalHost && redirectUrl.hostname !== canonicalHost) {
+    redirectUrl.hostname = canonicalHost;
+    shouldRedirect = true;
+  }
+
+  if (shouldCanonicalizeProtocol) {
+    redirectUrl.protocol = SITE_ORIGIN.protocol;
+    shouldRedirect = true;
+  }
+
+  if (pathLanguage) {
+    const expectedPath = withLanguagePath(normalizedPath, pathLanguage);
+    if (redirectUrl.pathname !== expectedPath) {
+      redirectUrl.pathname = expectedPath;
+      shouldRedirect = true;
+    }
+  } else if (!isInternal && !isStaticPath) {
+    const expectedPath = withLanguagePath(normalizedPath, preferredLanguage);
+    if (redirectUrl.pathname !== expectedPath) {
+      redirectUrl.pathname = expectedPath;
+      shouldRedirect = true;
+    }
+  }
+
+  if (shouldRedirect) {
     const response = NextResponse.redirect(redirectUrl, 308);
-    response.cookies.set(LANGUAGE_COOKIE_NAME, resolvedLanguage, {
-      maxAge: 60 * 60 * 24 * 365,
+    response.cookies.set(LANGUAGE_COOKIE_NAME, preferredLanguage, {
+      maxAge: ONE_YEAR_SECONDS,
+      path: '/',
+      sameSite: 'lax',
+    });
+    return response;
+  }
+
+  if (pathLanguage) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(LANGUAGE_HEADER_NAME, pathLanguage);
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = normalizedPath;
+    const response = NextResponse.rewrite(rewriteUrl, {
+      request: {
+        headers: requestHeaders,
+      },
+    });
+    response.cookies.set(LANGUAGE_COOKIE_NAME, pathLanguage, {
+      maxAge: ONE_YEAR_SECONDS,
+      path: '/',
+      sameSite: 'lax',
+    });
+    return response;
+  }
+
+  if (isStaticPath || isInternal) {
+    const response = NextResponse.next();
+    response.cookies.set(LANGUAGE_COOKIE_NAME, preferredLanguage, {
+      maxAge: ONE_YEAR_SECONDS,
       path: '/',
       sameSite: 'lax',
     });
@@ -44,51 +173,6 @@ export function middleware(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers);
-  const pathLanguage = getLanguageFromPath(pathname);
-  if (pathLanguage) {
-    requestHeaders.set(LANGUAGE_HEADER_NAME, pathLanguage);
-    const stripped = stripLanguagePrefix(pathname).path;
-    const rewriteUrl = request.nextUrl.clone();
-    rewriteUrl.pathname = stripped === '/' ? '/' : stripped;
-    const response = NextResponse.rewrite(rewriteUrl, {
-      request: {
-        headers: requestHeaders,
-      },
-    });
-    response.cookies.set(LANGUAGE_COOKIE_NAME, pathLanguage, {
-      maxAge: 60 * 60 * 24 * 365,
-      path: '/',
-      sameSite: 'lax',
-    });
-    return response;
-  }
-
-  const isInternal =
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    isStaticFile;
-
-  if (STATIC_PATHS.has(trimmed)) {
-    const response = NextResponse.next();
-    response.cookies.set(LANGUAGE_COOKIE_NAME, resolvedLanguage, {
-      maxAge: 60 * 60 * 24 * 365,
-      path: '/',
-      sameSite: 'lax',
-    });
-    return response;
-  }
-
-  if (isInternal) {
-    const response = NextResponse.next();
-    response.cookies.set(LANGUAGE_COOKIE_NAME, resolvedLanguage, {
-      maxAge: 60 * 60 * 24 * 365,
-      path: '/',
-      sameSite: 'lax',
-    });
-    return response;
-  }
-
-  const preferredLanguage = resolvedLanguage || DEFAULT_LANGUAGE;
   requestHeaders.set(LANGUAGE_HEADER_NAME, preferredLanguage);
   const response = NextResponse.next({
     request: {
@@ -96,7 +180,7 @@ export function middleware(request: NextRequest) {
     },
   });
   response.cookies.set(LANGUAGE_COOKIE_NAME, preferredLanguage, {
-    maxAge: 60 * 60 * 24 * 365,
+    maxAge: ONE_YEAR_SECONDS,
     path: '/',
     sameSite: 'lax',
   });

@@ -44,5 +44,5 @@ export function getBrandCategoryBySlug(slug: string): BrandCategory | null {
 }
 
 export function buildBrandPath(type: string): string {
-  return `/${encodeURIComponent(type)}`;
+  return `/${normalizeCategoryType(type)}`;
 }

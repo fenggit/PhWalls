@@ -2,11 +2,11 @@
 
 > Official built-in phone wallpapers in high resolution, without watermarks.
 
-Site: https://www.phwalls.com
-Sitemap: https://www.phwalls.com/sitemap.xml
+Site: https://phwalls.com
+Sitemap: https://phwalls.com/sitemap.xml
 Languages: en, zh, ja, vi, zh-hant
 Last-Updated: 2026-03-25
-Canonical: https://www.phwalls.com/{lang}/... (language subpaths)
+Canonical: https://phwalls.com/{lang}/... (language subpaths)
 Language-Resolution: user choice stored in localStorage (`phwalls-language`) + `phwalls-lang` cookie, otherwise IP country mapping
 
 ---
@@ -19,21 +19,21 @@ PhWalls is a wallpaper library focused on built-in wallpapers from major phone b
 
 ## Brand Categories
 
-- Samsung: https://www.phwalls.com/samsung
-- Xiaomi: https://www.phwalls.com/xiaomi
-- Vivo: https://www.phwalls.com/vivo
-- OPPO: https://www.phwalls.com/oppo
-- Realme: https://www.phwalls.com/realme
-- Huawei: https://www.phwalls.com/huawei
-- Huawei MatePad: https://www.phwalls.com/huawei%20matepad
-- Honor: https://www.phwalls.com/honor
-- OnePlus: https://www.phwalls.com/oneplus
-- Google Pixel: https://www.phwalls.com/google%20pixel
-- Motorola: https://www.phwalls.com/motorola
-- Nothing: https://www.phwalls.com/nothing
-- HarmonyOS: https://www.phwalls.com/harmonyos
-- Infinix: https://www.phwalls.com/transsion%20infinix
-- Tecno: https://www.phwalls.com/transsion%20tecno
+- Samsung: https://phwalls.com/samsung
+- Xiaomi: https://phwalls.com/xiaomi
+- Vivo: https://phwalls.com/vivo
+- OPPO: https://phwalls.com/oppo
+- Realme: https://phwalls.com/realme
+- Huawei: https://phwalls.com/huawei
+- Huawei MatePad: https://phwalls.com/huawei-matepad
+- Honor: https://phwalls.com/honor
+- OnePlus: https://phwalls.com/oneplus
+- Google Pixel: https://phwalls.com/google-pixel
+- Motorola: https://phwalls.com/motorola
+- Nothing: https://phwalls.com/nothing
+- HarmonyOS: https://phwalls.com/harmonyos
+- Infinix: https://phwalls.com/transsion-infinix
+- Tecno: https://phwalls.com/transsion-tecno
 
 ---
 
@@ -48,8 +48,8 @@ PhWalls is a wallpaper library focused on built-in wallpapers from major phone b
 
 ## Technical Notes
 
-- Brand landing pages follow: https://www.phwalls.com/{brand-type}
-- Wallpaper detail pages follow: https://www.phwalls.com/{lang}/wallpapers/{brand-type}/{collection-name}
+- Brand landing pages follow: https://phwalls.com/{brand-type}
+- Wallpaper detail pages follow: https://phwalls.com/{lang}/wallpapers/{brand-type}/{collection-name}
 - Canonical and hreflang are configured for multilingual SEO
 
 ---
