@@ -1803,6 +1803,75 @@
     ]
   },
   {
+    "name": "Oppo K15 Pro",
+    "date": "2026/04",
+    "item": [
+      {
+        "name": "oppo-k15-pro-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.25 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-brown-abstract.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-brown-abstract.webp"
+      },
+      {
+        "name": "oppo-k15-pro-black-brown-gradient-01",
+        "type": "image/jpeg",
+        "size": "1.21 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-brown-gradient-01.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-brown-gradient-01.webp"
+      },
+      {
+        "name": "oppo-k15-pro-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "1.22 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-brown-gradient.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-brown-gradient.webp"
+      },
+      {
+        "name": "oppo-k15-pro-black-gray-abstract",
+        "type": "image/jpeg",
+        "size": "1.22 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-gray-abstract.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-gray-abstract.webp"
+      },
+      {
+        "name": "oppo-k15-pro-black-gray-gradient",
+        "type": "image/jpeg",
+        "size": "1.34 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-gray-gradient.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-gray-gradient.webp"
+      },
+      {
+        "name": "oppo-k15-pro-black-silver-abstract-01",
+        "type": "image/jpeg",
+        "size": "1.32 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-silver-abstract-01.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-silver-abstract-01.webp"
+      },
+      {
+        "name": "oppo-k15-pro-black-silver-abstract",
+        "type": "image/jpeg",
+        "size": "1.69 MB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-black-silver-abstract.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-black-silver-abstract.webp"
+      },
+      {
+        "name": "oppo-k15-pro-rose-beige-gradient",
+        "type": "image/jpeg",
+        "size": "1019.86 KB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-rose-beige-gradient.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-rose-beige-gradient.webp"
+      },
+      {
+        "name": "oppo-k15-pro-silver-beige-gradient",
+        "type": "image/jpeg",
+        "size": "1021.68 KB",
+        "originPath": "oppo/Oppo K15 Pro/origin/oppo-k15-pro-silver-beige-gradient.jpg",
+        "compressPath": "oppo/Oppo K15 Pro/compress/oppo-k15-pro-silver-beige-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Oppo K3",
     "date": "2019/06",
     "item": [
