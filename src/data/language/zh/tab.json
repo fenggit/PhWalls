@@ -16,6 +16,10 @@
         "title": "OPPO",
         "type": "oppo"
     },
+     {
+    "title": "Android",
+    "type": "android"
+    },
     {
         "title": "华为",
         "type": "huawei"

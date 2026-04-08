@@ -1,3 +1,4 @@
+import androidData from '@/data/android.json';
 import googlePixelData from '@/data/google pixel.json';
 import harmonyosData from '@/data/harmonyos.json';
 import honorData from '@/data/honor.json';
@@ -38,6 +39,7 @@ export type WallpaperCollectionEntry = {
 };
 
 const dataSources: Record<string, WallpaperCollection[]> = {
+  android: androidData as WallpaperCollection[],
   'google-pixel': googlePixelData as WallpaperCollection[],
   harmonyos: harmonyosData as WallpaperCollection[],
   honor: honorData as WallpaperCollection[],

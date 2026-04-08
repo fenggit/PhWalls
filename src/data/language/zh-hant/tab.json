@@ -16,6 +16,10 @@
     "title": "Google Pixel",
     "type": "google-pixel"
   },
+   {
+    "title": "Android",
+    "type": "android"
+  },
   {
     "title": "realme 真我",
     "type": "realme"
