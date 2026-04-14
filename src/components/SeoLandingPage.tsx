@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
-import { buildWallpaperListTitle, getTabData } from '@/lib/data';
+import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { Language, LanguageCode } from '@/types';
 import { buildWallpaperDetailPath, type WallpaperCategory } from '@/lib/wallpapers';
 import { SITE_URL } from '@/lib/seo';
@@ -90,7 +90,7 @@ export default function SeoLandingPage({
       return;
     }
     setPreviewWallpapers(card.wallpapers);
-    setPreviewCategory(card.name);
+    setPreviewCategory(formatWallpaperDisplayName(card.name));
     setPreviewIndex(0);
     setIsPreviewOpen(true);
   };
@@ -174,7 +174,7 @@ export default function SeoLandingPage({
                         {card.imageKey ? (
                           <img
                             src={buildCardImageUrl(card.imageKey)}
-                            alt={`${card.name} preview`}
+                            alt={`${formatWallpaperDisplayName(card.name)} preview`}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                             loading="lazy"
                             decoding="async"

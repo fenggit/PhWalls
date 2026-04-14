@@ -23,8 +23,17 @@ const escapeRegExp = (value: string): string => {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
+export const formatWallpaperDisplayName = (value: string): string => {
+  const raw = String(value || '').trim();
+  if (!raw) {
+    return '';
+  }
+
+  return raw.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+};
+
 export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string): string => {
-  const suffix = String(wallpapersSuffix || 'Wallpapers').trim();
+  const suffix = formatWallpaperDisplayName(String(wallpapersSuffix || 'Wallpapers').trim());
   const suffixPatterns = [
     /\s*wallpapers\s*$/i,
     suffix ? new RegExp(`\\s*${escapeRegExp(suffix)}\\s*$`, 'i') : null,
@@ -32,7 +41,7 @@ export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string)
 
   const baseTitle = suffixPatterns.reduce(
     (acc, pattern) => acc.replace(pattern, '').trim(),
-    String(title || '').trim(),
+    formatWallpaperDisplayName(String(title || '').trim()),
   );
 
   if (!baseTitle) {

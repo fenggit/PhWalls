@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
+import { formatWallpaperDisplayName } from '@/lib/data';
 
 interface WallpaperItem {
   name: string;
@@ -43,6 +44,8 @@ export default function WallpaperPreviewDownload({
   const preloadedUrlsRef = useRef<Record<string, string>>({});
 
   const currentWallpaper = wallpapers[currentIndex];
+  const displayCategoryName = formatWallpaperDisplayName(categoryName);
+  const displayWallpaperName = currentWallpaper ? formatWallpaperDisplayName(currentWallpaper.name) : '';
 
   const handleClose = useCallback(() => {
     onClose();
@@ -400,7 +403,7 @@ export default function WallpaperPreviewDownload({
                 <ChevronLeft className="w-5 h-5 text-white" />
               </button>
               <div className="text-white text-sm truncate max-w-[150px]">
-                <h2 className="font-medium truncate">{categoryName}</h2>
+                <h2 className="font-medium truncate">{displayCategoryName}</h2>
               </div>
             </div>
             
@@ -437,7 +440,7 @@ export default function WallpaperPreviewDownload({
                 <ChevronLeft className="w-6 h-6 text-white" />
               </button>
               <div className="text-white">
-                <h2 className="text-lg font-medium">{categoryName}</h2>
+                <h2 className="text-lg font-medium">{displayCategoryName}</h2>
               </div>
             </div>
             
@@ -535,7 +538,7 @@ export default function WallpaperPreviewDownload({
             ) : currentImageUrl ? (
               <img
                 src={currentImageUrl}
-                alt={currentWallpaper?.name}
+                alt={displayWallpaperName}
                 className={`transition-all duration-300 ease-out ${
                   categoryName.toLowerCase().includes('iphone')
                     ? 'w-full h-full object-cover'  // iPhone强制填满竖屏容器
@@ -589,7 +592,7 @@ export default function WallpaperPreviewDownload({
           <div className="p-6">
             {/* 壁纸信息 */}
             <div className="text-white mb-4">
-              <h3 className="text-lg font-medium mb-1">{currentWallpaper?.name}</h3>
+              <h3 className="text-lg font-medium mb-1">{displayWallpaperName}</h3>
               <div className="flex items-center space-x-4 text-sm text-white/70">
                 <span>{currentWallpaper?.size}</span>
                 <span>•</span>
@@ -617,7 +620,7 @@ export default function WallpaperPreviewDownload({
                       {thumbnailUrl ? (
                         <img
                           src={thumbnailUrl}
-                          alt={wallpaper.name}
+                          alt={formatWallpaperDisplayName(wallpaper.name)}
                           className="w-full h-full object-cover"
                         />
                       ) : (

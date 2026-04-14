@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import Footer from '@/components/Footer';
 import { Language } from '@/types';
-import { buildWallpaperListTitle, getTabData, sortByDateDesc } from '@/lib/data';
+import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData, sortByDateDesc } from '@/lib/data';
 import { useLanguage } from '@/components/LanguageProvider';
 import { normalizeCategoryType } from '@/lib/brands';
 import {
@@ -477,7 +477,7 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
                                 
                                 <img 
                                   src={imageUrls[cardImageKey]}
-                                  alt={`${item.name} ${texts.hdWallpaperDownloadAlt} - ${category.type}`}
+                                  alt={`${formatWallpaperDisplayName(item.name)} ${texts.hdWallpaperDownloadAlt} - ${category.type}`}
                                   className={`w-full h-full object-cover group-hover:scale-102 transition-all duration-500 ease-out will-change-transform ${
                                     imageLoadingStates[cardImageKey] ? 'opacity-0' : 'opacity-100 image-fade-in'
                                   }`}

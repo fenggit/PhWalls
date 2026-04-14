@@ -7,7 +7,7 @@ import { useLanguage } from '@/components/LanguageProvider';
 import { Language } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { buildWallpaperListTitle, getTabData } from '@/lib/data';
+import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpapers';
@@ -246,7 +246,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
   );
 
   const getWallpaperAlt = useCallback(
-    (item: DeviceItem) => `${item.name} - ${deviceData.name} ${texts.wallpaperAltSuffix}`,
+    (item: DeviceItem) => `${formatWallpaperDisplayName(item.name)} - ${formatWallpaperDisplayName(deviceData.name)} ${texts.wallpaperAltSuffix}`,
     [deviceData.name, texts.wallpaperAltSuffix]
   );
 
@@ -328,7 +328,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
                         type="button"
                         onClick={() => openPreview(index)}
                         className="block w-full text-left"
-                        aria-label={`${texts.preview} ${item.name}`}
+                        aria-label={`${texts.preview} ${formatWallpaperDisplayName(item.name)}`}
                       >
                         <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-lg">
                           <div className={`${group.aspectRatio} overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-white`}>
@@ -378,7 +378,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
                       </button>
 
                       <h3 className="mt-3 text-xs sm:text-sm font-semibold leading-tight text-gray-900">
-                        {item.name}
+                        {formatWallpaperDisplayName(item.name)}
                       </h3>
                       <p className="mt-1 text-xs text-gray-500">{item.size}</p>
                     </article>

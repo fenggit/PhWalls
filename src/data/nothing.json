@@ -561,11 +561,25 @@
     "date": "2026/03",
     "item": [
       {
-        "name": "nothing-phone-4a-pro-rose-glass-circles",
+        "name": "nothing-phone-4a-pro-black-brown-gradient-01",
         "type": "image/png",
-        "size": "2.51 MB",
-        "originPath": "nothing/Nothing Phone 4a Pro/origin/nothing-phone-4a-pro-rose-glass-circles.png",
-        "compressPath": "nothing/Nothing Phone 4a Pro/compress/nothing-phone-4a-pro-rose-glass-circles.webp"
+        "size": "2.79 MB",
+        "originPath": "nothing/Nothing Phone 4a Pro/origin/nothing-phone-4a-pro-black-brown-gradient-01.png",
+        "compressPath": "nothing/Nothing Phone 4a Pro/compress/nothing-phone-4a-pro-black-brown-gradient-01.webp"
+      },
+      {
+        "name": "nothing-phone-4a-pro-black-brown-gradient-02",
+        "type": "image/png",
+        "size": "2.77 MB",
+        "originPath": "nothing/Nothing Phone 4a Pro/origin/nothing-phone-4a-pro-black-brown-gradient-02.png",
+        "compressPath": "nothing/Nothing Phone 4a Pro/compress/nothing-phone-4a-pro-black-brown-gradient-02.webp"
+      },
+      {
+        "name": "nothing-phone-4a-pro-black-teal-gradient",
+        "type": "image/png",
+        "size": "2.67 MB",
+        "originPath": "nothing/Nothing Phone 4a Pro/origin/nothing-phone-4a-pro-black-teal-gradient.png",
+        "compressPath": "nothing/Nothing Phone 4a Pro/compress/nothing-phone-4a-pro-black-teal-gradient.webp"
       }
     ]
   }

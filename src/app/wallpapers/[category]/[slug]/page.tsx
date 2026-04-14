@@ -10,7 +10,7 @@ import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { SITE_URL, buildCollectionDescription, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { getI18nTexts } from '@/lib/i18n';
-import { buildWallpaperListTitle } from '@/lib/data';
+import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 
 export const runtime = 'edge';
@@ -143,21 +143,21 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: withLanguageUrl(SITE_URL, language) },
       { '@type': 'ListItem', position: 2, name: `${categoryLabel} Wallpapers`, item: categoryLandingUrl },
-      { '@type': 'ListItem', position: 3, name: collection.name, item: canonicalUrl },
+      { '@type': 'ListItem', position: 3, name: formatWallpaperDisplayName(collection.name), item: canonicalUrl },
     ],
   };
 
   const imageGallerySchema = {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
-    name: `${collection.name} ${categoryLabel} Wallpapers`,
-    description: `${collection.item.length} official ${categoryLabel} wallpapers from ${collection.name}. High resolution, watermark-free, free to download.`,
+    name: `${formatWallpaperDisplayName(collection.name)} ${categoryLabel} Wallpapers`,
+    description: `${collection.item.length} official ${categoryLabel} wallpapers from ${formatWallpaperDisplayName(collection.name)}. High resolution, watermark-free, free to download.`,
     url: canonicalUrl,
     numberOfItems: collection.item.length,
     associatedMedia: collection.item.map((item) => ({
       '@type': 'ImageObject',
-      name: item.name,
-      description: `${item.name} - ${collection.name} ${categoryLabel} wallpaper`,
+      name: formatWallpaperDisplayName(item.name),
+      description: `${formatWallpaperDisplayName(item.name)} - ${formatWallpaperDisplayName(collection.name)} ${categoryLabel} wallpaper`,
       contentSize: item.size,
       encodingFormat: item.type,
     })),
@@ -167,7 +167,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const summarySection = (
     <section className="mt-16 border-t border-gray-100 pt-8 pb-4">
       <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        {collection.name} {categoryLabel} Wallpapers — Full Collection
+        {formatWallpaperDisplayName(collection.name)} {categoryLabel} Wallpapers — Full Collection
       </h2>
       <p className="text-gray-600 mb-6 text-sm leading-relaxed">
         This collection includes <strong>{collection.item.length}</strong> official wallpapers
@@ -182,7 +182,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
             </h3>
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
               {deviceGroups[label].map((name) => (
-                <li key={name}>{name}</li>
+                <li key={name}>{formatWallpaperDisplayName(name)}</li>
               ))}
             </ul>
           </div>
