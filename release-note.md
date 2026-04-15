@@ -6,6 +6,7 @@
 - 新增 Android 模块壁纸
 - 新增 Oppo K15 Pro 壁纸
 - 新增 Huawei Pura 90 壁纸
+- 新增 Nokia 壁纸
 - 优化 SEO
 - 修改 logo
 
