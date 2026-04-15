@@ -90,6 +90,47 @@
     ]
   },
   {
+    "name": "Huawei Pura 90",
+    "date": "2026/04",
+    "item": [
+      {
+        "name": "huawei-pura-90-beige-yellow-gradient",
+        "type": "image/png",
+        "size": "3.48 MB",
+        "originPath": "huawei/Huawei Pura 90/origin/huawei-pura-90-beige-yellow-gradient.png",
+        "compressPath": "huawei/Huawei Pura 90/compress/huawei-pura-90-beige-yellow-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-90-black-blue-gradient",
+        "type": "image/png",
+        "size": "4.02 MB",
+        "originPath": "huawei/Huawei Pura 90/origin/huawei-pura-90-black-blue-gradient.png",
+        "compressPath": "huawei/Huawei Pura 90/compress/huawei-pura-90-black-blue-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-90-black-gold-gradient",
+        "type": "image/png",
+        "size": "4.55 MB",
+        "originPath": "huawei/Huawei Pura 90/origin/huawei-pura-90-black-gold-gradient.png",
+        "compressPath": "huawei/Huawei Pura 90/compress/huawei-pura-90-black-gold-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-90-orange-silver-gradient",
+        "type": "image/png",
+        "size": "3.66 MB",
+        "originPath": "huawei/Huawei Pura 90/origin/huawei-pura-90-orange-silver-gradient.png",
+        "compressPath": "huawei/Huawei Pura 90/compress/huawei-pura-90-orange-silver-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-90-purple-rose-gradient",
+        "type": "image/png",
+        "size": "4.05 MB",
+        "originPath": "huawei/Huawei Pura 90/origin/huawei-pura-90-purple-rose-gradient.png",
+        "compressPath": "huawei/Huawei Pura 90/compress/huawei-pura-90-purple-rose-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Huawei Brand",
     "date": "N/A",
     "item": [

@@ -5,6 +5,7 @@
 ### v1.0.1 - 2026-04-08
 - 新增 Android 模块壁纸
 - 新增 Oppo K15 Pro 壁纸
+- 新增 Huawei Pura 90 壁纸
 - 优化 SEO
 - 修改 logo
 
