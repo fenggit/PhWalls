@@ -131,6 +131,236 @@
     ]
   },
   {
+    "name": "Huawei Pura X Max",
+    "date": "2026/04",
+    "item": [
+      {
+        "name": "huawei-pura-x-max-blue-orb-aod-center",
+        "type": "image/jpeg",
+        "size": "1.14 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-blue-orb-aod-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-blue-orb-aod-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-blue-orb-aod-crescent",
+        "type": "image/jpeg",
+        "size": "598.68 KB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-blue-orb-aod-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-blue-orb-aod-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-blue-orb-center",
+        "type": "image/jpeg",
+        "size": "4.43 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-blue-orb-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-blue-orb-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-blue-orb-close",
+        "type": "image/jpeg",
+        "size": "1.91 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-blue-orb-close.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-blue-orb-close.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-blue-orb-crescent",
+        "type": "image/jpeg",
+        "size": "1.93 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-blue-orb-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-blue-orb-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-blue-orb-glow",
+        "type": "image/jpeg",
+        "size": "4.57 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-blue-orb-glow.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-blue-orb-glow.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-gold-orb-aod-center",
+        "type": "image/jpeg",
+        "size": "1.15 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-gold-orb-aod-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-gold-orb-aod-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-gold-orb-aod-crescent",
+        "type": "image/jpeg",
+        "size": "596.81 KB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-gold-orb-aod-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-gold-orb-aod-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-gold-orb-center",
+        "type": "image/jpeg",
+        "size": "2.84 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-gold-orb-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-gold-orb-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-gold-orb-close",
+        "type": "image/jpeg",
+        "size": "1.57 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-gold-orb-close.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-gold-orb-close.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-gold-orb-crescent",
+        "type": "image/jpeg",
+        "size": "1.45 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-gold-orb-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-gold-orb-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-gold-orb-glow",
+        "type": "image/jpeg",
+        "size": "2.89 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-gold-orb-glow.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-gold-orb-glow.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-neon-feather-wave-alt",
+        "type": "image/jpeg",
+        "size": "3.04 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-neon-feather-wave-alt.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-neon-feather-wave-alt.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-neon-feather-wave",
+        "type": "image/jpeg",
+        "size": "3.04 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-neon-feather-wave.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-neon-feather-wave.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-orange-orb-aod-center",
+        "type": "image/jpeg",
+        "size": "1.22 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-orange-orb-aod-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-orange-orb-aod-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-orange-orb-aod-crescent",
+        "type": "image/jpeg",
+        "size": "638.48 KB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-orange-orb-aod-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-orange-orb-aod-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-orange-orb-center",
+        "type": "image/jpeg",
+        "size": "3.83 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-orange-orb-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-orange-orb-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-orange-orb-close",
+        "type": "image/jpeg",
+        "size": "2.16 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-orange-orb-close.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-orange-orb-close.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-orange-orb-crescent",
+        "type": "image/jpeg",
+        "size": "1.98 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-orange-orb-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-orange-orb-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-orange-orb-glow",
+        "type": "image/jpeg",
+        "size": "3.97 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-orange-orb-glow.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-orange-orb-glow.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-radiant-wing-burst-crop",
+        "type": "image/jpeg",
+        "size": "2.26 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-radiant-wing-burst-crop.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-radiant-wing-burst-crop.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-radiant-wing-burst",
+        "type": "image/jpeg",
+        "size": "4.21 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-radiant-wing-burst.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-radiant-wing-burst.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-silver-orb-aod-center",
+        "type": "image/jpeg",
+        "size": "1.14 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-silver-orb-aod-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-silver-orb-aod-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-silver-orb-aod-crescent",
+        "type": "image/jpeg",
+        "size": "609.74 KB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-silver-orb-aod-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-silver-orb-aod-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-silver-orb-center",
+        "type": "image/jpeg",
+        "size": "3.2 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-silver-orb-center.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-silver-orb-center.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-silver-orb-close",
+        "type": "image/jpeg",
+        "size": "1.75 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-silver-orb-close.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-silver-orb-close.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-silver-orb-crescent",
+        "type": "image/jpeg",
+        "size": "1.64 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-silver-orb-crescent.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-silver-orb-crescent.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-silver-orb-glow",
+        "type": "image/jpeg",
+        "size": "3.27 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-silver-orb-glow.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-silver-orb-glow.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-violet-offset-panels-portrait",
+        "type": "image/jpeg",
+        "size": "375.06 KB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-violet-offset-panels-portrait.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-violet-offset-panels-portrait.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-violet-offset-panels-square",
+        "type": "image/jpeg",
+        "size": "3.18 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-violet-offset-panels-square.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-violet-offset-panels-square.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-violet-shadow-panels-portrait",
+        "type": "image/jpeg",
+        "size": "713.21 KB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-violet-shadow-panels-portrait.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-violet-shadow-panels-portrait.webp"
+      },
+      {
+        "name": "huawei-pura-x-max-violet-shadow-panels-square",
+        "type": "image/jpeg",
+        "size": "3.33 MB",
+        "originPath": "huawei/Huawei Pura X Max/origin/huawei-pura-x-max-violet-shadow-panels-square.jpg",
+        "compressPath": "huawei/Huawei Pura X Max/compress/huawei-pura-x-max-violet-shadow-panels-square.webp"
+      }
+    ]
+  },
+  {
     "name": "Huawei Brand",
     "date": "N/A",
     "item": [

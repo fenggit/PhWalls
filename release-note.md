@@ -9,6 +9,7 @@
 - 新增 Nokia 壁纸
 - 优化 SEO
 - 修改 logo
+- 新增 Huawei Pura X Max 壁纸
 
 ### v1.0.0 - 2026-03-25
 - 从3/21开始通过 AI 整理资源
