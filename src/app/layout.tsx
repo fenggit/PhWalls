@@ -134,6 +134,14 @@ export default async function RootLayout({
   return (
     <html lang={currentLanguage} className="scroll-smooth">
       <head>
+        {/* Google Ads */}
+        <Script
+          id="google-adsense"
+          async
+          crossOrigin="anonymous"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4449597016215208"
+        />
+
         {/* Google tag (gtag.js) */}
         <Script
           id="google-tag-manager"
@@ -154,6 +162,7 @@ export default async function RootLayout({
         />
 
         {/* 资源提示优化 */}
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
         {/* PWA Manifest */}

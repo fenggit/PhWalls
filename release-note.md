@@ -10,6 +10,7 @@
 - 优化 SEO
 - 修改 logo
 - 新增 Huawei Pura X Max 壁纸
+- 新增 google ads（2026-05-05）
 
 ### v1.0.0 - 2026-03-25
 - 从3/21开始通过 AI 整理资源
