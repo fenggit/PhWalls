@@ -329,6 +329,54 @@
       }
     ]
   },
+    {
+      "name": "Oppo A6s",
+      "date": "2026/01",
+      "item": [
+        {
+          "name": "oppo-a6s-beige-brown-gradient",
+          "type": "image/png",
+          "size": "2.77 MB",
+          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-beige-brown-gradient.png",
+          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-beige-brown-gradient.webp"
+        },
+        {
+          "name": "oppo-a6s-beige-red-gradient",
+          "type": "image/png",
+          "size": "2.82 MB",
+          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-beige-red-gradient.png",
+          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-beige-red-gradient.webp"
+        },
+        {
+          "name": "oppo-a6s-black-brown-gradient",
+          "type": "image/png",
+          "size": "3.09 MB",
+          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-black-brown-gradient.png",
+          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-black-brown-gradient.webp"
+        },
+        {
+          "name": "oppo-a6s-black-cyan-gradient",
+          "type": "image/png",
+          "size": "3.87 MB",
+          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-black-cyan-gradient.png",
+          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-black-cyan-gradient.webp"
+        },
+        {
+          "name": "oppo-a6s-cyan-teal-gradient",
+          "type": "image/png",
+          "size": "2.79 MB",
+          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-cyan-teal-gradient.png",
+          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-cyan-teal-gradient.webp"
+        },
+        {
+          "name": "oppo-a6s-silver-blue-gradient",
+          "type": "image/png",
+          "size": "2.75 MB",
+          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-silver-blue-gradient.png",
+          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-silver-blue-gradient.webp"
+        }
+      ]
+    },
   {
     "name": "Oppo A72 (5G)",
     "date": "2020/05",
@@ -1656,6 +1704,54 @@
         "size": "2.35 MB",
         "originPath": "oppo/Oppo Find X9 Pro/origin/oppo-find-x9-pro-brown-red-gradient.png",
         "compressPath": "oppo/Oppo Find X9 Pro/compress/oppo-find-x9-pro-brown-red-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Oppo Find X9 Ultra",
+    "date": "2026/04",
+    "item": [
+      {
+        "name": "oppo-find-x9-ultra-black-rose-gradient",
+        "type": "image/png",
+        "size": "8.94 MB",
+        "originPath": "oppo/OPPO Find X9 Ultra/origin/oppo-find-x9-ultra-black-rose-gradient.png",
+        "compressPath": "oppo/OPPO Find X9 Ultra/compress/oppo-find-x9-ultra-black-rose-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x9-ultra-black-teal-gradient",
+        "type": "image/png",
+        "size": "5.89 MB",
+        "originPath": "oppo/OPPO Find X9 Ultra/origin/oppo-find-x9-ultra-black-teal-gradient.png",
+        "compressPath": "oppo/OPPO Find X9 Ultra/compress/oppo-find-x9-ultra-black-teal-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x9-ultra-brown-black-gradient",
+        "type": "image/png",
+        "size": "3.32 MB",
+        "originPath": "oppo/OPPO Find X9 Ultra/origin/oppo-find-x9-ultra-brown-black-gradient.png",
+        "compressPath": "oppo/OPPO Find X9 Ultra/compress/oppo-find-x9-ultra-brown-black-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x9-ultra-purple-silver-gradient",
+        "type": "image/png",
+        "size": "6.77 MB",
+        "originPath": "oppo/OPPO Find X9 Ultra/origin/oppo-find-x9-ultra-purple-silver-gradient.png",
+        "compressPath": "oppo/OPPO Find X9 Ultra/compress/oppo-find-x9-ultra-purple-silver-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x9-ultra-rose-brown-gradient",
+        "type": "image/png",
+        "size": "3.51 MB",
+        "originPath": "oppo/OPPO Find X9 Ultra/origin/oppo-find-x9-ultra-rose-brown-gradient.png",
+        "compressPath": "oppo/OPPO Find X9 Ultra/compress/oppo-find-x9-ultra-rose-brown-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x9-ultra-teal-mint-gradient",
+        "type": "image/png",
+        "size": "6.56 MB",
+        "originPath": "oppo/OPPO Find X9 Ultra/origin/oppo-find-x9-ultra-teal-mint-gradient.png",
+        "compressPath": "oppo/OPPO Find X9 Ultra/compress/oppo-find-x9-ultra-teal-mint-gradient.webp"
       }
     ]
   },

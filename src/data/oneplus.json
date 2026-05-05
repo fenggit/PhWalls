@@ -970,6 +970,26 @@
       }
     ]
   },
+    {
+      "name": "OnePlus Ace 6 Ultra",
+      "date": "2026/04",
+      "item": [
+        {
+          "name": "oneplus-ace-6-ultra-black-gray-abstract",
+          "type": "image/png",
+          "size": "2.85 MB",
+          "originPath": "oneplus/OnePlus Ace 6 Ultra/origin/oneplus-ace-6-ultra-black-gray-abstract.png",
+          "compressPath": "oneplus/OnePlus Ace 6 Ultra/compress/oneplus-ace-6-ultra-black-gray-abstract.webp"
+        },
+        {
+          "name": "oneplus-ace-6-ultra-black-purple-abstract",
+          "type": "image/png",
+          "size": "2.86 MB",
+          "originPath": "oneplus/OnePlus Ace 6 Ultra/origin/oneplus-ace-6-ultra-black-purple-abstract.png",
+          "compressPath": "oneplus/OnePlus Ace 6 Ultra/compress/oneplus-ace-6-ultra-black-purple-abstract.webp"
+        }
+      ]
+    },
   {
     "name": "OnePlus Nord",
     "date": "2020/07",
