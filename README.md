@@ -47,7 +47,7 @@
 - **多语言支持** - 支持 5 种语言自动切换
 - **静态页面生成** - 所有设备页面预渲染，SEO 友好
 - **图片懒加载** - 优化性能，提升用户体验
-- **私有存储支持** - 使用签名 URL 保护图片资源
+- **Cloudflare R2 防盗链** - 预览图走公开静态域名，原图下载走站内代理
 
 ### 📱 产品展示
 - **iPhone** - 展示历代 iPhone 型号和壁纸
@@ -205,9 +205,9 @@ npm start
 以下配置在代码中已有默认值，无需在环境变量中设置：
 
 - `R2_REGION_PROD`: 默认 `auto`
-- `R2_IS_PRIVATE_PROD`: 默认 `true`（使用私有存储桶和签名 URL）
+- R2 公开访问域名固定为 `https://static.phwalls.com`
+- R2 访问模式固定为公开存储桶（代码中直接使用 `false`）
 - `R2_URL_EXPIRES_PROD`: 默认 `3600` 秒（1小时）
-- `R2_PUBLIC_DOMAIN_PROD`: 默认空字符串（使用签名 URL）
 - `JWT_SECRET`: 默认 `fallback-secret-key`（生产环境建议配置）
 - `SESSION_EXPIRE_HOURS`: 默认 `24` 小时
 
@@ -373,7 +373,7 @@ https://phwalls.com/{设备名称}
    - 进入 R2 对象存储服务
    - 创建存储桶（Bucket）
    - 创建 API Token，获取 Access Key ID 和 Secret Access Key
-   - 配置自定义域名（可选）
+   - 配置自定义域名 `static.phwalls.com`
 
 2. **配置环境变量**
    ```env
@@ -398,42 +398,110 @@ https://phwalls.com/{设备名称}
 
    # 创建 cors.json 文件
    cat > cors.json << 'EOF'
+
+   4. **配置静态访问域名**
+
+      当前项目已将公开访问域名固定写死为 `https://static.phwalls.com`，无需再通过环境变量配置。
+
+      当前代码固定值：
+
+      - R2 公开访问域名：`https://static.phwalls.com`
+      - R2 存储桶模式：公开存储桶
+      - 原图下载方式：`/api/files/download` 服务端代理下载
+
+   5. **配置 Cloudflare 防盗链规则**
+
+      在 Cloudflare Dashboard 中进入：
+
+      - `Security` → `WAF` → `Custom Rules` → `Create rule`
+
+      推荐规则：只拦截带外站 Referer 的 `/origin/` 直链请求，不拦截空 Referer。
+
+      ```txt
+      http.host eq "static.phwalls.com"
+      and http.request.method in {"GET" "HEAD"}
+      and lower(http.request.uri.path) contains "/origin/"
+      and len(http.referer) gt 0
+      and not starts_with(lower(http.referer), "https://phwalls.com/")
+      and not starts_with(lower(http.referer), "https://www.phwalls.com/")
+      ```
+
+      动作选择：`Block`
+
+      这条规则的目的：
+
+      - 允许站内页面从 `phwalls.com` 加载 `origin` 原图
+      - 拦截外站直接盗链 `static.phwalls.com/.../origin/...`
+      - 保留空 Referer 请求，确保 `/api/files/download` 的服务端二跳抓图可用
+
+      如果你需要在浏览器里直接测试 `static.phwalls.com/.../origin/...`，可以额外放行本地开发 Referer：
+
+      ```txt
+      http.host eq "static.phwalls.com"
+      and http.request.method in {"GET" "HEAD"}
+      and lower(http.request.uri.path) contains "/origin/"
+      and len(http.referer) gt 0
+      and not starts_with(lower(http.referer), "https://phwalls.com/")
+      and not starts_with(lower(http.referer), "https://www.phwalls.com/")
+      and not starts_with(lower(http.referer), "http://localhost:3000/")
+      and not starts_with(lower(http.referer), "http://127.0.0.1:3000/")
+      ```
+
+      注意：
+
+      - 本地访问 `/api/files/download` 一般不需要放行 `localhost`
+      - 因为 Cloudflare 实际看到的是服务端到 `static.phwalls.com` 的第二跳请求，这一跳通常没有 Referer
+      - 只有你在浏览器或脚本里直接请求 `static.phwalls.com/.../origin/...` 时，`localhost` Referer 才会影响结果
    [
      {
        "AllowedOrigins": ["*"],
-       "AllowedMethods": ["GET", "HEAD", "PUT", "POST"],
+   系统当前的下载链路支持：
        "AllowedHeaders": ["*"],
-       "ExposeHeaders": ["ETag", "Content-Length", "Content-Type"],
-       "MaxAgeSeconds": 3600
-     }
-   ]
+   - ✅ 公开静态域名直连预览图
+   - ✅ `origin` 原图通过站内接口下载
+   - ✅ 中文等 Unicode 文件名
+   - ✅ Cloudflare 防盗链规则与站内下载共存
    EOF
+   **当前访问流程**：
 
-   # 应用 CORS 配置
-   wrangler r2 bucket cors put phwalls --rules ./cors.json
-
-   # 验证 CORS 配置
-   wrangler r2 bucket cors get phwalls
-   ```
-
-   **生产环境建议**：
-   - 将实际的生产域名添加到 `AllowedOrigins`
-   - 移除 `localhost` 和开发环境的域名
-   - 考虑安全性，不建议在生产环境使用 `"*"`
-
-#### R2 下载功能
+   预览图加载：
 
 系统已实现完整的 R2 图片下载功能，支持：
-
+   页面渲染壁纸卡片 / 预览弹窗
 - ✅ 私有和公开存储桶
-- ✅ 中文等 Unicode 文件名
+   前端生成 https://static.phwalls.com/.../compress/... 或 .../origin/...
 - ✅ 双重下载机制（fetch + iframe 回退）
-- ✅ 详细的调试日志
+   浏览器直接请求 static.phwalls.com
 
-**技术实现**：
+   Cloudflare 根据 Referer 和路径判断是否放行
 
-使用 AWS S3 兼容 API 的 `ResponseContentDisposition` 参数：
+   ✅ 返回图片内容
+   ```
 
+   原图下载：
+
+   ```txt
+   用户点击下载
+      ↓
+   前端请求 /api/files/download?key=...
+      ↓
+   服务端生成 https://static.phwalls.com/.../origin/...
+      ↓
+   服务端 fetch 原图
+      ↓
+   服务端返回 attachment 响应
+      ↓
+   前端 fetch + blob 下载
+      ↓
+   ✅ 浏览器直接下载文件
+
+
+   **为什么下载不直接打开 `static.phwalls.com`：**
+
+   - 这样可以统一设置 `Content-Disposition: attachment`
+   - 可以避免浏览器把图片直接当预览打开
+   - 可以兼容 Cloudflare 对 `/origin/` 的防盗链规则
+   - 本地开发访问 `/api/files/download` 时，通常不需要额外放行 `localhost`
 ```typescript
 const command = new GetObjectCommand({
   Bucket: 'phwalls',
@@ -458,17 +526,16 @@ const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
 ✅ 文件直接下载（不打开新标签页）
 ```
 
-#### 私有存储桶配置
+#### R2 访问配置
 
-系统默认使用私有存储桶和签名 URL：
+系统当前固定使用以下配置：
 
-- **默认配置**：`R2_IS_PRIVATE_PROD=true`（代码中已设置）
-- **URL 过期时间**：默认 3600 秒（1小时），代码中已设置
-- **签名 URL**：自动生成，包含过期时间，防篡改
-- **安全特性**：
-  - 自动过期（默认1小时）
-  - 防篡改（任何参数修改都会导致签名失效）
-  - 秘钥安全（SecretAccessKey 仅在服务端使用）
+- **公开访问域名**：`https://static.phwalls.com`
+- **存储桶模式**：公开存储桶
+- **预览图片**：优先直连 `static.phwalls.com`
+- **原图下载**：继续走 `/api/files/download`，由站内接口返回附件下载响应
+- **防盗链策略**：Cloudflare 只拦外站带 Referer 的 `/origin/` 直链
+- **本地开发**：通过 `/api/files/download` 下载原图时，通常不需要将 `localhost` 加入白名单
 
 ## API 文档
 
@@ -580,17 +647,23 @@ POST /api/storage/switch                      # 切换存储类型（仅支持 r
 **症状**：点击下载按钮后没有反应或报错
 
 **解决方法**：
-1. 代码已添加了回退机制，会自动尝试直接打开链接
-2. 如果还是失败，检查 CORS 配置
-3. 确认 R2 存储桶权限设置正确
+1. 先检查 `https://static.phwalls.com/.../origin/...` 是否可直接访问
+2. 如果返回 `403`，优先检查 Cloudflare WAF 自定义规则是否误伤
+3. 如果只是在浏览器里直接访问 `static` 域名失败，但 `/api/files/download` 正常，通常说明防盗链规则工作正常
+4. 如果 `/api/files/download` 也失败，检查 Cloudflare 规则是否把空 Referer 请求也拦掉了
 
-### 7. 签名 URL 过期
+### 7. Cloudflare 防盗链误伤
 
-**症状**：第一次可以访问，过一段时间后无法访问
+**症状**：
+
+- 页面里下载原图时报 `Failed to download file`
+- 访问 `static.phwalls.com/.../origin/...` 返回 `403 Forbidden`
 
 **解决方法**：
-- 默认过期时间为 1 小时（3600 秒）
-- 如需调整，修改代码中的 `urlExpires` 默认值
+
+- 确认规则只拦截 `len(http.referer) gt 0` 的请求
+- 不要把空 Referer 请求一起拦截，否则 `/api/files/download` 的服务端二跳抓图也会失败
+- 如需调试浏览器直连 `static.phwalls.com`，临时把 `http://localhost:3000/` 加入允许列表
 
 ### 8. CORS 错误
 
@@ -668,8 +741,8 @@ npm start
 
 ### 2. 数据保护
 
-- 使用私有存储桶存储敏感文件（默认已启用）
-- 生成带签名的临时访问 URL（默认已启用）
+- 使用 Cloudflare WAF 规则限制 `origin` 原图的外站盗链
+- 下载统一走站内 `/api/files/download`，避免直接暴露下载行为
 - 定期轮换访问密钥
 - 加密存储敏感配置
 

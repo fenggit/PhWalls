@@ -32,11 +32,7 @@ export async function POST(request: NextRequest) {
         true // forceDownload = true, 会添加 ResponseContentDisposition 参数
       );
     } else {
-      // 公开存储桶需要配置自定义域名
-      return NextResponse.json(
-        { error: 'Public buckets require custom domain configuration. Please set R2_IS_PRIVATE_PROD=true to use signed URLs.' },
-        { status: 500 }
-      );
+      downloadUrl = `/api/files/download?key=${encodeURIComponent(key)}`;
     }
 
     return NextResponse.json({

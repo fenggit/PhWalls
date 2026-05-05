@@ -16,25 +16,14 @@ export async function GET(request: NextRequest) {
     // 获取环境配置
     const environment = getCurrentEnvironment();
     
-    // 检查是否为私有空间
-    if (!environment.r2.isPrivate) {
-      // 如果是公开空间，需要配置自定义域名
-      return NextResponse.json(
-        { error: 'Public buckets require custom domain configuration. Please set R2_IS_PRIVATE_PROD=true to use signed URLs.' },
-        { status: 500 }
-      );
-    }
-
     // 创建 R2 服务实例
     const r2Service = new R2Service(environment);
-    
-    // 生成私有URL（不需要 domain 参数，使用 endpoint）
-    const privateUrl = await r2Service.getPrivateFileUrl(
-      key, 
-      environment.r2.urlExpires
-    );
 
-    return NextResponse.json({ url: privateUrl });
+    const url = environment.r2.isPrivate
+      ? await r2Service.getPrivateFileUrl(key, environment.r2.urlExpires)
+      : r2Service.getPublicFileUrl(key);
+
+    return NextResponse.json({ url });
   } catch (error) {
     console.error('Error generating private URL:', error);
     return NextResponse.json(

@@ -8,6 +8,7 @@ import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { Language, LanguageCode } from '@/types';
+import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildWallpaperDetailPath, type WallpaperCategory } from '@/lib/wallpapers';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
@@ -55,9 +56,9 @@ const gradientPalette = [
 
 /** compress/ 路径直接使用 CDN URL（无需签名），其他路径退回 API proxy */
 function buildCardImageUrl(key: string): string {
-  const cdnUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_CDN_URL;
-  if (cdnUrl && key.includes('/compress/')) {
-    return `${cdnUrl}/${key}`;
+  const publicUrl = buildPublicR2Url(key);
+  if (publicUrl) {
+    return publicUrl;
   }
   return `/api/public/wallpaper-image?key=${encodeURIComponent(key)}`;
 }

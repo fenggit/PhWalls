@@ -12,6 +12,7 @@ import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl
 import { getI18nTexts } from '@/lib/i18n';
 import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
 import { resolveMetadataLanguage } from '@/lib/metadata';
+import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
 
 export const runtime = 'edge';
 
@@ -124,14 +125,14 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const deviceLabels = Object.keys(deviceGroups);
 
   // 构建服务端 CDN 图片 URL，使 SSR HTML 包含真实 src，搜索引擎/AI 爬虫可直接抓取图片
-  const cdnBaseUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_CDN_URL;
-  const initialImageUrls: Record<string, string> | undefined = cdnBaseUrl
+  const initialImageUrls: Record<string, string> | undefined = hasPublicR2Cdn()
     ? Object.fromEntries(
         collection.item
           .map((item, index) => {
-            const path = item.compressPath;
-            if (!path) return null;
-            return [`${collection.name}-${index}`, `${cdnBaseUrl}/${path}`] as [string, string];
+            const path = item.compressPath || item.originPath;
+            const publicUrl = path ? buildPublicR2Url(path) : null;
+            if (!publicUrl) return null;
+            return [`${collection.name}-${index}`, publicUrl] as [string, string];
           })
           .filter((entry): entry is [string, string] => entry !== null)
       )

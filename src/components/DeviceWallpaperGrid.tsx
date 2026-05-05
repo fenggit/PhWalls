@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
+import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpapers';
 
 interface DeviceItem {
@@ -58,7 +59,17 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
     setMounted(true);
   }, []);
 
-  const generateBatchPrivateUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
+  const resolveImageUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
+    const publicUrls = Object.fromEntries(
+      keys
+        .map((key) => [key, buildPublicR2Url(key)] as const)
+        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+    );
+
+    if (Object.keys(publicUrls).length === keys.length) {
+      return publicUrls;
+    }
+
     try {
       const response = await fetch('/api/files/batch-private-urls', {
         method: 'POST',
@@ -76,10 +87,10 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
       }
 
       const data = (await response.json()) as { urls?: Record<string, string> };
-      return data.urls || {};
+      return data.urls || publicUrls;
     } catch (error) {
       console.error('Failed to generate batch private URLs:', error);
-      return {};
+      return publicUrls;
     }
   }, []);
 
@@ -123,7 +134,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
         setImageLoadingStates(initialLoadingStates);
       }
 
-      const batchUrls = await generateBatchPrivateUrls(imageKeys);
+      const batchUrls = await resolveImageUrls(imageKeys);
       if (!active) return;
 
       const urls: Record<string, string> = { ...(initialImageUrls ?? {}) };
@@ -151,7 +162,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
     return () => {
       active = false;
     };
-  }, [deviceData, generateBatchPrivateUrls, initialImageUrls]);
+  }, [deviceData, initialImageUrls, resolveImageUrls]);
 
   const handleImageLoad = useCallback((key: string) => {
     setImageLoadingStates((prev) => {

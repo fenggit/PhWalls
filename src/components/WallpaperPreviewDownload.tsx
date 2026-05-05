@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { formatWallpaperDisplayName } from '@/lib/data';
+import { buildPublicR2Url } from '@/lib/r2-public-url';
 
 interface WallpaperItem {
   name: string;
@@ -51,8 +52,17 @@ export default function WallpaperPreviewDownload({
     onClose();
   }, [onClose]);
 
-  // 批量生成私有URL
-  const generateBatchPrivateUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
+  const resolveImageUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
+    const publicUrls = Object.fromEntries(
+      keys
+        .map((key) => [key, buildPublicR2Url(key)] as const)
+        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+    );
+
+    if (Object.keys(publicUrls).length === keys.length) {
+      return publicUrls;
+    }
+
     try {
       const response = await fetch('/api/files/batch-private-urls', {
         method: 'POST',
@@ -70,10 +80,10 @@ export default function WallpaperPreviewDownload({
       }
 
       const data = (await response.json()) as { urls?: Record<string, string> };
-      return data.urls || {};
+      return data.urls || publicUrls;
     } catch (error) {
       console.error('Failed to generate batch private URLs:', error);
-      return {};
+      return publicUrls;
     }
   }, []);
 
@@ -135,7 +145,7 @@ export default function WallpaperPreviewDownload({
         return;
       }
 
-      const urls = await generateBatchPrivateUrls(displayKeys as string[]);
+      const urls = await resolveImageUrls(displayKeys as string[]);
       if (cancelled) return;
 
       mergePreloadedUrls(urls);
@@ -147,7 +157,7 @@ export default function WallpaperPreviewDownload({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, wallpapers, generateBatchPrivateUrls, mergePreloadedUrls]);
+  }, [isOpen, mergePreloadedUrls, resolveImageUrls, wallpapers]);
 
   // 加载当前壁纸
   useEffect(() => {
@@ -169,7 +179,7 @@ export default function WallpaperPreviewDownload({
       let url = preloadedUrlsRef.current[displayPath];
 
       if (!url) {
-        const urls = await generateBatchPrivateUrls([displayPath]);
+        const urls = await resolveImageUrls([displayPath]);
         if (cancelled) return;
 
         url = urls[displayPath] || '';
@@ -195,7 +205,7 @@ export default function WallpaperPreviewDownload({
     return () => {
       cancelled = true;
     };
-  }, [currentWallpaper, generateBatchPrivateUrls, isOpen, mergePreloadedUrls]);
+  }, [currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
 
   // 切换到上一张
   const goToPrevious = useCallback(() => {
@@ -309,7 +319,7 @@ export default function WallpaperPreviewDownload({
     setImageError(false);
     setCurrentImageUrl('');
 
-    const urls = await generateBatchPrivateUrls([displayPath]);
+    const urls = await resolveImageUrls([displayPath]);
     const refreshedUrl = urls[displayPath] || preloadedUrlsRef.current[displayPath] || '';
 
     if (!refreshedUrl) {
@@ -321,7 +331,7 @@ export default function WallpaperPreviewDownload({
     mergePreloadedUrls({ [displayPath]: refreshedUrl });
     setCurrentImageUrl(refreshedUrl);
     setIsLoading(false);
-  }, [currentWallpaper, generateBatchPrivateUrls, isOpen, mergePreloadedUrls]);
+  }, [currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
 
   // 键盘事件处理
   useEffect(() => {

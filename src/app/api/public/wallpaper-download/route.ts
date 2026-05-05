@@ -15,20 +15,15 @@ export async function GET(request: NextRequest) {
 
     const environment = getCurrentEnvironment();
 
-    if (!environment.r2.isPrivate) {
-      return NextResponse.json(
-        { error: 'Public buckets require custom domain configuration. Please set R2_IS_PRIVATE_PROD=true to use signed URLs.' },
-        { status: 500 }
-      );
-    }
-
     const r2Service = new R2Service(environment);
-    const fileUrl = await r2Service.getPrivateFileUrl(
-      key,
-      environment.r2.urlExpires,
-      undefined,
-      false
-    );
+    const fileUrl = environment.r2.isPrivate
+      ? await r2Service.getPrivateFileUrl(
+          key,
+          environment.r2.urlExpires,
+          undefined,
+          false
+        )
+      : r2Service.getPublicFileUrl(key);
 
     const fileResponse = await fetch(fileUrl, { method: 'GET' });
 

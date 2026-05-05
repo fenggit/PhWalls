@@ -9,6 +9,7 @@ import { Language } from '@/types';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData, sortByDateDesc } from '@/lib/data';
 import { useLanguage } from '@/components/LanguageProvider';
 import { normalizeCategoryType } from '@/lib/brands';
+import { buildPublicR2Url } from '@/lib/r2-public-url';
 import {
   buildWallpaperDetailPath,
   getWallpaperCollections,
@@ -58,8 +59,17 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
     return normalizeCategoryType(categoryType);
   }, []);
   
-  // 批量生成私有URL的函数
-  const generateBatchPrivateUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
+  const resolveImageUrls = useCallback(async (keys: string[]): Promise<Record<string, string>> => {
+    const publicUrls = Object.fromEntries(
+      keys
+        .map((key) => [key, buildPublicR2Url(key)] as const)
+        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+    );
+
+    if (Object.keys(publicUrls).length === keys.length) {
+      return publicUrls;
+    }
+
     try {
       const response = await fetch('/api/files/batch-private-urls', {
         method: 'POST',
@@ -77,10 +87,10 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
       }
 
       const data = (await response.json()) as { urls?: Record<string, string> };
-      return data.urls || {};
+      return data.urls || publicUrls;
     } catch (error) {
       console.error('Failed to generate batch private URLs:', error);
-      return {};
+      return publicUrls;
     }
   }, []);
 
@@ -139,7 +149,7 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
       });
       setImageLoadingStates(initialLoadingStates);
 
-      const batchUrls = await generateBatchPrivateUrls(allImageKeys);
+      const batchUrls = await resolveImageUrls(allImageKeys);
       if (cancelled) return;
 
       setImageUrls((prev) => {
@@ -179,7 +189,7 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
         (window as any).cancelIdleCallback(idleCallbackId);
       }
     };
-  }, [categoryDataMap, generateBatchPrivateUrls, initialImageUrls]);
+  }, [categoryDataMap, initialImageUrls, resolveImageUrls]);
 
   // 语言切换处理
   const handleLanguageChange = useCallback((lang: Language) => {

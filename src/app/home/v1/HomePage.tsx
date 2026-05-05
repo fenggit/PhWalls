@@ -1,6 +1,7 @@
 import Home from './Home';
 import { headers } from 'next/headers';
 import { getAllWallpaperCollections } from '@/lib/wallpapers';
+import { buildPublicR2Url } from '@/lib/r2-public-url';
 
 type WallpaperEntry = {
   name: string;
@@ -11,15 +12,13 @@ type WallpaperEntry = {
 };
 
 const buildInitialHomeImageUrls = () => {
-  const cdnBaseUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_CDN_URL;
-  if (!cdnBaseUrl) return {};
-
   const map: Record<string, string> = {};
   const addEntry = (entry: WallpaperEntry, categorySlug: string) => {
     const firstImage = entry.item?.[0];
     const path = firstImage?.compressPath || firstImage?.originPath;
-    if (path && path.includes('/compress/')) {
-      map[`${categorySlug}::${entry.name}`] = `${cdnBaseUrl}/${path}`;
+    const publicUrl = path ? buildPublicR2Url(path) : null;
+    if (publicUrl) {
+      map[`${categorySlug}::${entry.name}`] = publicUrl;
     }
   };
 

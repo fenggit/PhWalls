@@ -106,14 +106,14 @@ export async function POST(request: NextRequest) {
 
       await Promise.all(Array.from({ length: workerCount }, () => worker()));
     } else {
-      // 公开存储桶需要配置自定义域名
-      return NextResponse.json(
-        { 
-          error: 'Public buckets require custom domain configuration. Please set R2_IS_PRIVATE_PROD=true to use signed URLs.',
-          urls: {}
-        },
-        { status: 500 }
-      );
+      normalizedKeys.forEach((key) => {
+        try {
+          results[key] = r2Service.getPublicFileUrl(key);
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          errors.push(`Failed to build public URL for ${key}: ${errorMessage}`);
+        }
+      });
     }
 
     // 如果有错误，返回错误信息

@@ -112,6 +112,7 @@ export class R2Service {
   private bucket: string;
   private endpoint: string;
   private region: string;
+  private publicCdnUrl: string;
   private urlExpires: number;
 
   constructor(environment: Environment) {
@@ -122,7 +123,29 @@ export class R2Service {
     this.bucket = r2Config.bucket;
     this.endpoint = r2Config.endpoint;
     this.region = r2Config.region || 'auto';
+    this.publicCdnUrl = r2Config.publicCdnUrl || '';
     this.urlExpires = r2Config.urlExpires;
+  }
+
+  private normalizePublicDomain(domain?: string): string {
+    const candidate = (domain || this.publicCdnUrl || '').trim();
+    if (!candidate) {
+      throw new Error('Public CDN domain is required for public bucket access.');
+    }
+
+    return candidate.replace(/\/+$/, '');
+  }
+
+  private encodeObjectKey(key: string): string {
+    return key
+      .split('/')
+      .map((segment) => {
+        if (!segment) return '';
+        return encodeURIComponent(segment)
+          .replace(/\(/g, '%28')
+          .replace(/\)/g, '%29');
+      })
+      .join('/');
   }
 
   async listFiles(prefix: string = '', marker: string = '') {
@@ -357,10 +380,15 @@ export class R2Service {
       console.warn('R2 endpoint is for API operations only. For public access, you need to configure a custom domain in Cloudflare dashboard.');
     }
     
-    const normalizedDomain = domain.endsWith('/') ? domain : `${domain}/`;
-    const fileUrl = `${normalizedDomain}${key}`;
+    const normalizedDomain = this.normalizePublicDomain(domain);
+    const normalizedKey = key.startsWith('/') ? key.substring(1) : key;
+    const fileUrl = `${normalizedDomain}/${this.encodeObjectKey(normalizedKey)}`;
     
     return fileUrl;
+  }
+
+  getPublicFileUrl(key: string, domain?: string) {
+    return this.getFileUrl(key, domain || this.publicCdnUrl);
   }
 
   async getPrivateFileUrl(key: string, expiresOrDomain?: string | number, expires?: number, forceDownload: boolean = false) {
@@ -421,25 +449,9 @@ export class R2Service {
     // 例如：/bucket/path/to/file with spaces.png -> /bucket/path/to/file%20with%20spaces.png
     // 注意：必须使用相同的编码函数确保规范化路径和最终URL一致
     // AWS S3规范要求对括号进行编码：() -> %28%29
-    const encodePathSegment = (path: string): string => {
-      // 分割路径，对每个段进行编码，然后重新连接
-      // 处理空字符串段（连续斜杠的情况）
-      // 注意：AWS S3要求对括号进行编码，所以需要额外处理
-      return path.split('/')
-        .map(seg => {
-          if (seg === '') return '';
-          // 先使用encodeURIComponent编码，然后确保括号也被编码
-          // encodeURIComponent不会编码括号，但AWS S3需要编码
-          return encodeURIComponent(seg)
-            .replace(/\(/g, '%28')
-            .replace(/\)/g, '%29');
-        })
-        .join('/');
-    };
-    
     // 规范化路径：对每个路径段进行编码
     // 使用同一个编码函数确保一致性
-    const encodedKey = encodePathSegment(normalizedKey);
+    const encodedKey = this.encodeObjectKey(normalizedKey);
     const canonicalPath = `/${this.bucket}/${encodedKey}`;
 
     // 规范化查询字符串（按字母顺序排序）

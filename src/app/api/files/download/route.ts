@@ -28,11 +28,7 @@ export async function GET(request: NextRequest) {
         false // 不需要强制下载头，因为我们会在响应中设置
       );
     } else {
-      // 公开存储桶需要配置自定义域名
-      return NextResponse.json(
-        { error: 'Public buckets require custom domain configuration. Please set R2_IS_PRIVATE_PROD=true to use signed URLs.' },
-        { status: 500 }
-      );
+      fileUrl = r2Service.getPublicFileUrl(key);
     }
 
     // 在服务器端获取文件
