@@ -24,6 +24,14 @@ interface WallpaperPreviewDownloadProps {
   categoryName: string;
 }
 
+type GtagEventParams = Record<string, string | number | boolean | undefined>;
+
+declare global {
+  interface Window {
+    gtag?: (command: 'event', eventName: string, eventParams?: GtagEventParams) => void;
+  }
+}
+
 export default function WallpaperPreviewDownload({
   isOpen,
   onClose,
@@ -270,6 +278,16 @@ export default function WallpaperPreviewDownload({
       link.click();
       document.body.removeChild(link);
 
+      window.gtag?.('event', 'wallpaper_download_click', {
+        event_category: 'engagement',
+        event_label: `${displayCategoryName} / ${displayWallpaperName}`,
+        wallpaper_category: categoryName,
+        wallpaper_collection: categoryName,
+        wallpaper_name: currentWallpaper.name,
+        file_type: currentWallpaper.type,
+        file_size: currentWallpaper.size,
+      });
+
       // 延迟释放blob URL，确保下载完成
       setTimeout(() => {
         window.URL.revokeObjectURL(blobUrl);
@@ -280,7 +298,16 @@ export default function WallpaperPreviewDownload({
     } finally {
       setIsDownloading(false);
     }
-  }, [currentWallpaper, isDownloading, texts.downloadFailed, texts.errorDetails, texts.unknownError]);
+  }, [
+    categoryName,
+    currentWallpaper,
+    displayCategoryName,
+    displayWallpaperName,
+    isDownloading,
+    texts.downloadFailed,
+    texts.errorDetails,
+    texts.unknownError,
+  ]);
 
   // 处理下载按钮点击
   const handleDownloadClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {

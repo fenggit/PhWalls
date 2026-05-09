@@ -7,7 +7,7 @@ import {
   isWallpaperCategory,
 } from '@/lib/wallpapers';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
-import { SITE_URL, buildCollectionDescription, getCategoryLabelForLanguage } from '@/lib/seo';
+import { SITE_URL, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { getI18nTexts } from '@/lib/i18n';
 import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
@@ -25,6 +25,38 @@ type WallpaperDetailPageProps = {
     lang?: string | string[];
   }>;
 };
+
+const SEO_VARIANT_RULES: Array<{ token: string; label: string }> = [
+  { token: 'pro', label: 'Pro' },
+  { token: 'ultra', label: 'Ultra' },
+  { token: 'plus', label: 'Plus' },
+  { token: 'max', label: 'Max' },
+  { token: 'fe', label: 'FE' },
+  { token: 'fold', label: 'Fold' },
+  { token: 'flip', label: 'Flip' },
+  { token: 'lite', label: 'Lite' },
+  { token: 'se', label: 'SE' },
+];
+
+function collectVariantLabels(collectionName: string, itemNames: string[]): string[] {
+  const source = `${collectionName} ${itemNames.join(' ')}`.toLowerCase();
+  const collectionNameLower = collectionName.toLowerCase();
+
+  return SEO_VARIANT_RULES
+    .filter(({ token }) => source.includes(token) && !collectionNameLower.includes(token))
+    .map(({ label }) => label)
+    .slice(0, 2);
+}
+
+function buildSeoTitle(baseName: string, variantLabels: string[]): string {
+  const variantText = variantLabels.length > 0 ? ` (${variantLabels.join(', ')})` : '';
+  return `${baseName}${variantText} Wallpapers in 4K HD (Official, Free Download) | PhWalls`;
+}
+
+function buildSeoDescription(baseName: string, variantLabels: string[]): string {
+  const variantText = variantLabels.length > 0 ? `, including ${variantLabels.join(' and ')} variants,` : '';
+  return `Download official ${baseName} wallpapers${variantText} in 4K/HD, full resolution, no watermark. Preview all stock wallpapers and download free.`;
+}
 
 // 服务端（爬虫可见）设备类型推断，基于路径和名称
 function detectDeviceGroup(item: { name: string; originPath: string; compressPath: string }): string {
@@ -54,13 +86,12 @@ export async function generateMetadata({ params, searchParams }: WallpaperDetail
   const detailPath = buildWallpaperDetailPath(category, collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const collectionTitle = buildWallpaperListTitle(collection.name, texts.wallpapersTitleSuffix);
-  const categoryTitle = buildWallpaperListTitle(categoryLabel, texts.wallpapersTitleSuffix);
-  const title = `${collectionTitle} - ${categoryTitle} | PhWalls`;
-  const description = buildCollectionDescription(language, {
-    count: collection.item.length,
-    collectionName: collection.name,
-    categoryLabel,
-  });
+  const variantLabels = collectVariantLabels(
+    formatWallpaperDisplayName(collection.name),
+    collection.item.map((item) => item.name)
+  );
+  const title = buildSeoTitle(formatWallpaperDisplayName(collectionTitle), variantLabels);
+  const description = buildSeoDescription(formatWallpaperDisplayName(collection.name), variantLabels);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
 
   return {
@@ -164,6 +195,37 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     })),
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Are these ${formatWallpaperDisplayName(collection.name)} wallpapers official?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Yes. We collect official stock wallpapers for ${formatWallpaperDisplayName(collection.name)} from software releases.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Are the wallpapers available in 4K/HD?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Many wallpapers are available in 4K/HD full resolution, depending on the original release files.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can I download these wallpapers for free?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes. All wallpapers on this page are free to preview and download.',
+        },
+      },
+    ],
+  };
+
   // 服务端渲染的摘要区块 — 供 AI 爬虫和搜索引擎抓取
   const summarySection = (
     <section className="mt-16 border-t border-gray-100 pt-8 pb-4">
@@ -201,6 +263,10 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <DeviceWallpaperGrid category={category} deviceData={collection} summarySection={summarySection} initialImageUrls={initialImageUrls} />
     </>

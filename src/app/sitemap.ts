@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/seo'
-import { SUPPORTED_LANGUAGES, withLanguageUrl } from '@/lib/language'
+import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, withLanguageUrl } from '@/lib/language'
 import { BRAND_CATEGORIES, buildBrandPath } from '@/lib/brands'
 import {
   buildWallpaperDetailPath,
@@ -33,22 +33,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ]
 
-  const routes: MetadataRoute.Sitemap = SUPPORTED_LANGUAGES.flatMap((language) =>
-    staticPaths.map((entry) => ({
-      url: withLanguageUrl(`${SITE_URL}${entry.path}`, language),
+  const buildLanguageAlternates = (absolutePath: string) => ({
+    languages: Object.fromEntries(
+      SUPPORTED_LANGUAGES.map((language) => [language, withLanguageUrl(absolutePath, language)])
+    ),
+  })
+
+  const routes: MetadataRoute.Sitemap = staticPaths.map((entry) => {
+    const absolutePath = `${SITE_URL}${entry.path}`
+    return {
+      url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
+      alternates: buildLanguageAlternates(absolutePath),
       changeFrequency: entry.changeFrequency,
       priority: entry.priority,
-    }))
-  )
+    }
+  })
 
-  const detailRoutes: MetadataRoute.Sitemap = SUPPORTED_LANGUAGES.flatMap((language) =>
-    allCollections.map(({ category, collection }) => ({
-      url: withLanguageUrl(`${SITE_URL}${buildWallpaperDetailPath(category, collection.name)}`, language),
+  const detailRoutes: MetadataRoute.Sitemap = allCollections.map(({ category, collection }) => {
+    const absolutePath = `${SITE_URL}${buildWallpaperDetailPath(category, collection.name)}`
+    return {
+      url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
+      alternates: buildLanguageAlternates(absolutePath),
       lastModified: parseWallpaperDate(collection.date) || latestCollectionDate,
       changeFrequency: 'monthly',
       priority: 0.8,
-    }))
-  )
+    }
+  })
 
   return [...routes, ...detailRoutes]
 }
