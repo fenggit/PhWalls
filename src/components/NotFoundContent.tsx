@@ -66,7 +66,7 @@ export default function NotFoundContent() {
                   {texts.aboutUs}
                 </Link>
                 <a
-                  href={`mailto:fenggit@163.com?subject=${encodeURIComponent(`${texts.siteName} 404`)}`}
+                  href={`mailto:fenggit@gmail.com?subject=${encodeURIComponent(`${texts.siteName} 404`)}`}
                   className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-6 py-3 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:border-violet-200 hover:text-violet-600"
                 >
                   {texts.notFoundReportBrokenLink}
@@ -84,7 +84,7 @@ export default function NotFoundContent() {
                 </div>
                 <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{texts.notFoundSupportLabel}</p>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">fenggit@163.com</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-900">fenggit@gmail.com</p>
                 </div>
               </div>
             </div>

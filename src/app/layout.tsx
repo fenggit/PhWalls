@@ -181,7 +181,7 @@ export default async function RootLayout({
               description: 'Download built-in HD phone wallpapers. High-quality, watermark-free collections.',
               contactPoint: {
                 '@type': 'ContactPoint',
-                email: 'fenggit@163.com',
+                email: 'fenggit@gmail.com',
                 contactType: 'Customer Service'
               },
               sameAs: [

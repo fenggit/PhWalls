@@ -256,11 +256,11 @@ function AboutContent() {
                   <span>Telegram</span>
                 </a>
                 <a
-                  href="mailto:fenggit@163.com"
+                  href="mailto:fenggit@gmail.com"
                   className="inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
                 >
                   <Mail className="h-4 w-4 text-slate-500" />
-                  <span>fenggit@163.com</span>
+                  <span>fenggit@gmail.com</span>
                 </a>
                 <Link
                   href={withLanguagePath('/privacy', language)}

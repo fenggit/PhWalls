@@ -56,4 +56,4 @@ PhWalls is a wallpaper library focused on built-in wallpapers from major phone b
 
 ## Contact
 
-- Email: fenggit@163.com
+- Email: fenggit@gmail.com

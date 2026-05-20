@@ -53,7 +53,7 @@ export default function Footer() {
 						{texts.privacyPolicy}
 					</Link>
 					<a
-						href="mailto:fenggit@163.com"
+						href="mailto:fenggit@gmail.com"
 						className="text-gray-700 hover:text-blue-600 text-sm font-semibold transition-colors"
 					>
 						{texts.contactUs}

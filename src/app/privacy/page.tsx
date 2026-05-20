@@ -150,10 +150,10 @@ function PrivacyPolicyContent() {
                       <div>
                         <p className="font-semibold text-blue-900">{texts.contactEmail}</p>
                         <a 
-                          href="mailto:fenggit@163.com" 
+                          href="mailto:fenggit@gmail.com" 
                           className="text-blue-700 hover:text-blue-800 transition-colors duration-200"
                         >
-                          fenggit@163.com
+                          fenggit@gmail.com
                         </a>
                       </div>
                     </div>
