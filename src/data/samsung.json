@@ -2703,6 +2703,40 @@
     ]
   },
   {
+    "name": "Samsung Galaxy F70e",
+    "date": "2026/02",
+    "item": [
+      {
+        "name": "samsung-galaxy-f70e-beige-purple-gradient-alt-a",
+        "type": "image/png",
+        "size": "2.74 MB",
+        "originPath": "samsung/Samsung Galaxy F70e/origin/samsung-galaxy-f70e-beige-purple-gradient-alt-a.png",
+        "compressPath": "samsung/Samsung Galaxy F70e/compress/samsung-galaxy-f70e-beige-purple-gradient-alt-a.webp"
+      },
+      {
+        "name": "samsung-galaxy-f70e-beige-purple-gradient",
+        "type": "image/png",
+        "size": "2.39 MB",
+        "originPath": "samsung/Samsung Galaxy F70e/origin/samsung-galaxy-f70e-beige-purple-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy F70e/compress/samsung-galaxy-f70e-beige-purple-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-f70e-beige-white-abstract",
+        "type": "image/png",
+        "size": "3.77 MB",
+        "originPath": "samsung/Samsung Galaxy F70e/origin/samsung-galaxy-f70e-beige-white-abstract.png",
+        "compressPath": "samsung/Samsung Galaxy F70e/compress/samsung-galaxy-f70e-beige-white-abstract.webp"
+      },
+      {
+        "name": "samsung-galaxy-f70e-purple-white-abstract",
+        "type": "image/png",
+        "size": "4.47 MB",
+        "originPath": "samsung/Samsung Galaxy F70e/origin/samsung-galaxy-f70e-purple-white-abstract.png",
+        "compressPath": "samsung/Samsung Galaxy F70e/compress/samsung-galaxy-f70e-purple-white-abstract.webp"
+      }
+    ]
+  },
+  {
     "name": "Samsung Galaxy M01",
     "date": "2020/05",
     "item": [
@@ -8719,6 +8753,96 @@
         "size": "3.67 MB",
         "originPath": "samsung/Samsung Galaxy W26/origin/samsung-galaxy-w26-black-brown-gradient.png",
         "compressPath": "samsung/Samsung Galaxy W26/compress/samsung-galaxy-w26-black-brown-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Samsung W26 Fold",
+    "date": "2025/10",
+    "item": [
+      {
+        "name": "samsung-w26-fold-black-brown-abstract-alt-a",
+        "type": "image/webp",
+        "size": "966.70 KB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-brown-abstract-alt-a.webp",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-brown-abstract",
+        "type": "image/webp",
+        "size": "419.44 KB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-brown-abstract.webp",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-brown-abstract.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "2.63 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-brown-photo-alt-a.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-brown-photo",
+        "type": "image/png",
+        "size": "4.03 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-brown-photo.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-brown-photo.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "6.44 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-gray-abstract-alt-a.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-gray-abstract-alt-b",
+        "type": "image/png",
+        "size": "4.87 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-gray-abstract-alt-b.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-gray-abstract-alt-b.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-gray-abstract",
+        "type": "image/png",
+        "size": "3.42 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-gray-abstract.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-gray-abstract.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-gray-pattern",
+        "type": "image/jpeg",
+        "size": "114.92 KB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-gray-pattern.jpeg",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-gray-pattern.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-gray-photo",
+        "type": "image/webp",
+        "size": "653.74 KB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-gray-photo.webp",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-gray-photo.webp"
+      },
+      {
+        "name": "samsung-w26-fold-black-teal-photo",
+        "type": "image/png",
+        "size": "4.84 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-black-teal-photo.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-black-teal-photo.webp"
+      },
+      {
+        "name": "samsung-w26-fold-brown-black-photo",
+        "type": "image/png",
+        "size": "4.10 MB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-brown-black-photo.png",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-brown-black-photo.webp"
+      },
+      {
+        "name": "samsung-w26-fold-purple-black-photo",
+        "type": "image/webp",
+        "size": "680.44 KB",
+        "originPath": "samsung/Samsung W26 Fold/origin/samsung-w26-fold-purple-black-photo.webp",
+        "compressPath": "samsung/Samsung W26 Fold/compress/samsung-w26-fold-purple-black-photo.webp"
       }
     ]
   },

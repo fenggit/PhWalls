@@ -3712,6 +3712,47 @@
     ]
   },
   {
+    "name": "Honor 600",
+    "date": "2026/05",
+    "item": [
+      {
+        "name": "honor-600-brown-gold-gradient",
+        "type": "image/png",
+        "size": "11.26 MB",
+        "originPath": "honor/Honor 600/origin/honor-600-brown-gold-gradient.png",
+        "compressPath": "honor/Honor 600/compress/honor-600-brown-gold-gradient.webp"
+      },
+      {
+        "name": "honor-600-mint-beige-gradient",
+        "type": "image/png",
+        "size": "14.29 MB",
+        "originPath": "honor/Honor 600/origin/honor-600-mint-beige-gradient.png",
+        "compressPath": "honor/Honor 600/compress/honor-600-mint-beige-gradient.webp"
+      },
+      {
+        "name": "honor-600-mint-white-gradient",
+        "type": "image/png",
+        "size": "13.98 MB",
+        "originPath": "honor/Honor 600/origin/honor-600-mint-white-gradient.png",
+        "compressPath": "honor/Honor 600/compress/honor-600-mint-white-gradient.webp"
+      },
+      {
+        "name": "honor-600-silver-white-gradient-alt-a",
+        "type": "image/png",
+        "size": "14.29 MB",
+        "originPath": "honor/Honor 600/origin/honor-600-silver-white-gradient-alt-a.png",
+        "compressPath": "honor/Honor 600/compress/honor-600-silver-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "honor-600-silver-white-gradient",
+        "type": "image/png",
+        "size": "13.64 MB",
+        "originPath": "honor/Honor 600/origin/honor-600-silver-white-gradient.png",
+        "compressPath": "honor/Honor 600/compress/honor-600-silver-white-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Honor X10",
     "date": "2020/05",
     "item": [

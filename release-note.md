@@ -4,6 +4,7 @@
 
 ### v1.0.2 - 2026-05-05
 - 修改桶数据的存储结构
+- 新增Honor 600、Samsung Galaxy F70e、Samsung W26 Fold
 
 ### v1.0.1 - 2026-04-08
 - 新增 Android 模块壁纸
