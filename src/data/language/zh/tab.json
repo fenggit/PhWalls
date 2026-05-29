@@ -1,5 +1,13 @@
 [
     {
+        "title": "三星",
+        "type": "samsung"
+    },
+    {
+        "title": "索尼",
+        "type": "sony"
+    },
+    {
         "title": "小米",
         "type": "xiaomi"
     },
@@ -31,10 +39,6 @@
     {
         "title": "Google Pixel",
         "type": "google-pixel"
-    },
-    {
-        "title": "三星",
-        "type": "samsung"
     },
     {
         "title": "真我",

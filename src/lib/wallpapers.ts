@@ -11,6 +11,7 @@ import oneplusData from '@/data/oneplus.json';
 import oppoData from '@/data/oppo.json';
 import realmeData from '@/data/realme.json';
 import samsungData from '@/data/samsung.json';
+import sonyData from '@/data/sony.json';
 import transsionInfinixData from '@/data/transsion infinix.json';
 import transsionTecnoData from '@/data/transsion tecno.json';
 import vivoData from '@/data/vivo.json';
@@ -53,6 +54,7 @@ const dataSources: Record<string, WallpaperCollection[]> = {
   oppo: oppoData as WallpaperCollection[],
   realme: realmeData as WallpaperCollection[],
   samsung: samsungData as WallpaperCollection[],
+  sony: sonyData as WallpaperCollection[],
   'transsion-infinix': transsionInfinixData as WallpaperCollection[],
   'transsion-tecno': transsionTecnoData as WallpaperCollection[],
   vivo: vivoData as WallpaperCollection[],
