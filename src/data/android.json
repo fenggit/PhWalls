@@ -1,7 +1,7 @@
 [
   {
     "name": "Android 4.4 (KitKat)",
-    "date": "2013/10",
+    "date": "2013/10/31",
     "item": [
       {
         "name": "android-4-4-kitkat-beige-mint-abstract",
@@ -70,7 +70,7 @@
   },
   {
     "name": "Android 5 (Lollipop)",
-    "date": "2014/11",
+    "date": "2014/11/03",
     "item": [
       {
         "name": "android-5-lollipop-teal-cyan-gradient",
@@ -153,7 +153,7 @@
   },
   {
     "name": "Android 6 (Marshmallow)",
-    "date": "2015/10",
+    "date": "2015/10/05",
     "item": [
       {
         "name": "android-6-marshmallow-black-brown-gradient",
@@ -222,7 +222,7 @@
   },
   {
     "name": "Android 7 (Nougat)",
-    "date": "2016/08",
+    "date": "2016/08/22",
     "item": [
       {
         "name": "android-7-nougat-dusk",
@@ -263,7 +263,7 @@
   },
   {
     "name": "Android 8 (Oreo)",
-    "date": "2017/08",
+    "date": "2017/08/21",
     "item": [
       {
         "name": "android-8-oreo-black-purple-gradient",
@@ -276,7 +276,7 @@
   },
   {
     "name": "Android 9 (Pie)",
-    "date": "2018/08",
+    "date": "2018/08/06",
     "item": [
       {
         "name": "android-9-pie-black-brown-gradient-01",
@@ -415,7 +415,7 @@
   },
   {
     "name": "Android 10 (Quince Tart)",
-    "date": "2019/09",
+    "date": "2019/09/03",
     "item": [
       {
         "name": "android-10-quince-tart-black-gradient",
@@ -554,7 +554,7 @@
   },
   {
     "name": "Android 11 (Red Velvet Cake)",
-    "date": "2020/09",
+    "date": "2020/09/08",
     "item": [
       {
         "name": "android-11-red-velvet-cake-beige-silver-gradient",
@@ -714,7 +714,7 @@
   },
   {
     "name": "Android 12 (Snow Cone)",
-    "date": "2021/10",
+    "date": "2021/10/04",
     "item": [
       {
         "name": "android-12-snow-cone-black-gradient",
@@ -755,7 +755,7 @@
   },
   {
     "name": "Android 13 (Tiramisu)",
-    "date": "2022/08",
+    "date": "2022/08/15",
     "item": [
       {
         "name": "android-13-tiramisu-black-silver-gradient",
@@ -768,7 +768,7 @@
   },
   {
     "name": "Android 14 (Upside Down Cake)",
-    "date": "2023/10",
+    "date": "2023/10/04",
     "item": [
       {
         "name": "android-14-upside-down-cake-black-gray-gradient",
@@ -781,7 +781,7 @@
   },
   {
     "name": "Android 15 (Vanilla Ice Cream)",
-    "date": "2024/10",
+    "date": "2024/10/15",
     "item": [
       {
         "name": "android-15-vanilla-ice-cream-logo-k-7",
@@ -808,7 +808,7 @@
   },
   {
     "name": "Android 16 (Baklava)",
-    "date": "2025/06",
+    "date": "2025/06/10",
     "item": [
       {
         "name": "android-16-baklava-beige-gold-abstract",

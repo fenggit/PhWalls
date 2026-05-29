@@ -1,7 +1,7 @@
 [
   {
     "name": "Samsung Galaxy A01",
-    "date": "2019/12",
+    "date": "2019/12/17",
     "item": [
       {
         "name": "samsung-galaxy-a01-black-gray-photo",
@@ -42,7 +42,7 @@
   },
   {
     "name": "Samsung Galaxy A02",
-    "date": "2020/11",
+    "date": "2021/01/27",
     "item": [
       {
         "name": "samsung-galaxy-a02-beige-gray-gradient",
@@ -132,7 +132,7 @@
   },
   {
     "name": "Samsung Galaxy A02s",
-    "date": "2021/01",
+    "date": "2021/01/27",
     "item": [
       {
         "name": "samsung-galaxy-a02s-beige-silver-abstract-01",
@@ -180,7 +180,7 @@
   },
   {
     "name": "Samsung Galaxy A03",
-    "date": "2021/12",
+    "date": "2021/11/26",
     "item": [
       {
         "name": "samsung-galaxy-a03-beige-black-abstract",
@@ -283,7 +283,7 @@
   },
   {
     "name": "Samsung Galaxy A03s",
-    "date": "2021/07",
+    "date": "2021/08/18",
     "item": [
       {
         "name": "samsung-galaxy-a03s-pink-purple-abstract",
@@ -323,7 +323,7 @@
   },
   {
     "name": "Samsung Galaxy A04e",
-    "date": "2022/10",
+    "date": "2022/10/21",
     "item": [
       {
         "name": "samsung-galaxy-a04e-beige-rose-abstract-01",
@@ -343,7 +343,7 @@
   },
   {
     "name": "Samsung Galaxy A04s",
-    "date": "2022/08",
+    "date": "2022/08/31",
     "item": [
       {
         "name": "samsung-galaxy-a04s-beige-gold-photo",
@@ -363,7 +363,7 @@
   },
   {
     "name": "Samsung Galaxy A05",
-    "date": "2023/10",
+    "date": "2023/10/15",
     "item": [
       {
         "name": "samsung-galaxy-a05-a05s-1",
@@ -397,7 +397,7 @@
   },
   {
     "name": "Samsung Galaxy A05s",
-    "date": "2023/10",
+    "date": "2023/10/18",
     "item": [
       {
         "name": "samsung-galaxy-a05s-blue-cyan-gradient",
@@ -457,7 +457,7 @@
   },
   {
     "name": "Samsung Galaxy A11",
-    "date": "2020/03",
+    "date": "2020/03/30",
     "item": [
       {
         "name": "samsung-galaxy-a11-beige-gray-photo",
@@ -533,7 +533,7 @@
   },
   {
     "name": "Samsung Galaxy A12",
-    "date": "2020/11",
+    "date": "2020/11/24",
     "item": [
       {
         "name": "samsung-galaxy-a12-beige-gray-abstract",
@@ -609,7 +609,7 @@
   },
   {
     "name": "Samsung Galaxy A13 5G",
-    "date": "2021/12",
+    "date": "2021/12/01",
     "item": [
       {
         "name": "samsung-galaxy-a13-5g-beige-orange-abstract-01",
@@ -629,7 +629,7 @@
   },
   {
     "name": "Samsung Galaxy A14 (5G)",
-    "date": "2023/01",
+    "date": "2023/03/27",
     "item": [
       {
         "name": "samsung-galaxy-a14-5g-beige-black-gradient",
@@ -677,7 +677,7 @@
   },
   {
     "name": "Samsung Galaxy A15",
-    "date": "2023/12",
+    "date": "2023/12/11",
     "item": [
       {
         "name": "samsung-galaxy-a15-4g-1",
@@ -711,7 +711,7 @@
   },
   {
     "name": "Samsung Galaxy A16",
-    "date": "2024/10",
+    "date": "2024/10/07",
     "item": [
       {
         "name": "samsung-galaxy-a16-cyan-mint-gradient",
@@ -744,7 +744,7 @@
   },
   {
     "name": "Samsung Galaxy A20s",
-    "date": "2019/09",
+    "date": "2019/09/24",
     "item": [
       {
         "name": "samsung-galaxy-a20s-beige-gray-abstract",
@@ -889,7 +889,7 @@
   },
   {
     "name": "Samsung Galaxy A22",
-    "date": "2021/06",
+    "date": "2021/06/03",
     "item": [
       {
         "name": "samsung-galaxy-a22-4g-1",
@@ -986,7 +986,7 @@
   },
   {
     "name": "Samsung Galaxy A23",
-    "date": "2022/04",
+    "date": "2022/03/04",
     "item": [
       {
         "name": "samsung-galaxy-a23-purple-cyan-abstract",
@@ -1006,7 +1006,7 @@
   },
   {
     "name": "Samsung Galaxy A25",
-    "date": "2023/12",
+    "date": "2023/12/11",
     "item": [
       {
         "name": "samsung-galaxy-a25-cyan-beige-gradient",
@@ -1040,7 +1040,7 @@
   },
   {
     "name": "Samsung Galaxy A26",
-    "date": "2025/03",
+    "date": "2025/03/02",
     "item": [
       {
         "name": "samsung-galaxy-a26-beige-teal-gradient",
@@ -1060,7 +1060,7 @@
   },
   {
     "name": "Samsung Galaxy A31",
-    "date": "2020/04",
+    "date": "2020/04/27",
     "item": [
       {
         "name": "samsung-galaxy-a31-beige-pink-abstract",
@@ -1108,7 +1108,7 @@
   },
   {
     "name": "Samsung Galaxy A32",
-    "date": "2021/02",
+    "date": "2021/02/26",
     "item": [
       {
         "name": "samsung-galaxy-a32-4g-1",
@@ -1205,7 +1205,7 @@
   },
   {
     "name": "Samsung Galaxy A33 5G",
-    "date": "2022/04",
+    "date": "2022/03/17",
     "item": [
       {
         "name": "samsung-galaxy-a33-5g-beige-gray-gradient",
@@ -1309,7 +1309,7 @@
   },
   {
     "name": "Samsung Galaxy A35",
-    "date": "2024/03",
+    "date": "2024/03/11",
     "item": [
       {
         "name": "samsung-galaxy-a35-silver-purple-gradient",
@@ -1329,7 +1329,7 @@
   },
   {
     "name": "Samsung Galaxy A36",
-    "date": "2025/03",
+    "date": "2025/03/02",
     "item": [
       {
         "name": "samsung-galaxy-a36-blue-silver-gradient",
@@ -1445,7 +1445,7 @@
   },
   {
     "name": "Samsung Galaxy A51",
-    "date": "2019/12",
+    "date": "2019/12/16",
     "item": [
       {
         "name": "samsung-galaxy-a51-5g-6",
@@ -1583,7 +1583,7 @@
   },
   {
     "name": "Samsung Galaxy A53",
-    "date": "2022/03",
+    "date": "2022/03/17",
     "item": [
       {
         "name": "samsung-galaxy-a53-beige-gray-gradient",
@@ -1694,7 +1694,7 @@
   },
   {
     "name": "Samsung Galaxy A55",
-    "date": "2024/03",
+    "date": "2024/03/15",
     "item": [
       {
         "name": "samsung-galaxy-a55-mint-cyan-gradient",
@@ -1714,7 +1714,7 @@
   },
   {
     "name": "Samsung Galaxy A56",
-    "date": "2025/03",
+    "date": "2025/03/19",
     "item": [
       {
         "name": "samsung-galaxy-a56-gray-beige-gradient",
@@ -1892,7 +1892,7 @@
   },
   {
     "name": "Samsung Galaxy A71 5G",
-    "date": "2020/07",
+    "date": "2020/07/21",
     "item": [
       {
         "name": "samsung-galaxy-a71-5g-beige-pink-abstract",
@@ -1954,7 +1954,7 @@
   },
   {
     "name": "Samsung Galaxy A72",
-    "date": "2021/03",
+    "date": "2021/03/26",
     "item": [
       {
         "name": "samsung-galaxy-a72-white-gold-abstract",
@@ -1974,7 +1974,7 @@
   },
   {
     "name": "Samsung Galaxy A73",
-    "date": "2022/04",
+    "date": "2022/04/09",
     "item": [
       {
         "name": "samsung-galaxy-a73-1-exclusive",
@@ -2384,7 +2384,7 @@
   },
   {
     "name": "Samsung Galaxy F34",
-    "date": "2023/08",
+    "date": "2023/08/07",
     "item": [
       {
         "name": "samsung-galaxy-f34-gold-silver-gradient",
@@ -2424,7 +2424,7 @@
   },
   {
     "name": "Samsung Galaxy F41",
-    "date": "2020/10",
+    "date": "2020/10/16",
     "item": [
       {
         "name": "samsung-galaxy-f41-beige-pink-abstract",
@@ -2472,7 +2472,7 @@
   },
   {
     "name": "Samsung Galaxy F42 5G",
-    "date": "2021/10",
+    "date": "2021/10/03",
     "item": [
       {
         "name": "samsung-galaxy-f42-5g-blue-red-abstract",
@@ -2621,7 +2621,7 @@
   },
   {
     "name": "Samsung Galaxy F62",
-    "date": "2021/02",
+    "date": "2021/02/24",
     "item": [
       {
         "name": "samsung-galaxy-f62-beige-silver-gradient",
@@ -2704,7 +2704,7 @@
   },
   {
     "name": "Samsung Galaxy F70e",
-    "date": "2026/02",
+    "date": "2026/02/09",
     "item": [
       {
         "name": "samsung-galaxy-f70e-beige-purple-gradient-alt-a",
@@ -2792,7 +2792,7 @@
   },
   {
     "name": "Samsung Galaxy M01s",
-    "date": "2020/07",
+    "date": "2020/07/16",
     "item": [
       {
         "name": "samsung-galaxy-m01s-beige-silver-abstract",
@@ -2992,7 +2992,7 @@
   },
   {
     "name": "Samsung Galaxy M04",
-    "date": "2022/12",
+    "date": "2022/12/16",
     "item": [
       {
         "name": "samsung-galaxy-m04-blue-orange-abstract",
@@ -3094,7 +3094,7 @@
   },
   {
     "name": "Samsung Galaxy M11",
-    "date": "2020/03",
+    "date": "2020/03/30",
     "item": [
       {
         "name": "samsung-galaxy-m11-beige-gray-photo",
@@ -3218,7 +3218,7 @@
   },
   {
     "name": "Samsung Galaxy M13 (5G)",
-    "date": "2022/07",
+    "date": "2022/07/14",
     "item": [
       {
         "name": "samsung-galaxy-m13-5g-mint-yellow-gradient",
@@ -3238,7 +3238,7 @@
   },
   {
     "name": "Samsung Galaxy M14 (4G & 5G)",
-    "date": "2023/03",
+    "date": "2023/03/08",
     "item": [
       {
         "name": "samsung-galaxy-m14-4g-5g-mint-gold-abstract",
@@ -3339,7 +3339,7 @@
   },
   {
     "name": "Samsung Galaxy M21",
-    "date": "2020/03",
+    "date": "2020/03/18",
     "item": [
       {
         "name": "samsung-galaxy-m21-beige-pink-abstract",
@@ -3449,7 +3449,7 @@
   },
   {
     "name": "Samsung Galaxy M31",
-    "date": "2020/03",
+    "date": "2020/03/05",
     "item": [
       {
         "name": "samsung-galaxy-m31-silver-purple-abstract",
@@ -3476,7 +3476,7 @@
   },
   {
     "name": "Samsung Galaxy M31s",
-    "date": "2020/07",
+    "date": "2020/07/30",
     "item": [
       {
         "name": "samsung-galaxy-m31s-beige-silver-abstract",
@@ -3524,7 +3524,7 @@
   },
   {
     "name": "Samsung Galaxy M32",
-    "date": "2021/06",
+    "date": "2021/06/28",
     "item": [
       {
         "name": "samsung-galaxy-m32-beige-silver-gradient",
@@ -3647,7 +3647,7 @@
   },
   {
     "name": "Samsung Galaxy M40",
-    "date": "2019/06",
+    "date": "2019/06/18",
     "item": [
       {
         "name": "samsung-galaxy-m40-black-cyan-abstract",
@@ -3730,7 +3730,7 @@
   },
   {
     "name": "Samsung Galaxy M42 5G",
-    "date": "2021/04",
+    "date": "2021/04/28",
     "item": [
       {
         "name": "samsung-galaxy-m42-5g-beige-gray-gradient",
@@ -3806,7 +3806,7 @@
   },
   {
     "name": "Samsung Galaxy M51",
-    "date": "2020/09",
+    "date": "2020/09/11",
     "item": [
       {
         "name": "samsung-galaxy-m51-beige-silver-abstract",
@@ -3914,7 +3914,7 @@
   },
   {
     "name": "Samsung Galaxy M62",
-    "date": "2021/02",
+    "date": "2021/02/24",
     "item": [
       {
         "name": "samsung-galaxy-m62-beige-gray-gradient",
@@ -3997,7 +3997,7 @@
   },
   {
     "name": "Samsung Galaxy Note 1",
-    "date": "2011/10",
+    "date": "2011/10/29",
     "item": [
       {
         "name": "samsung-galaxy-note-1-sammobile-003",
@@ -4157,7 +4157,7 @@
   },
   {
     "name": "Samsung Galaxy Note 10",
-    "date": "2019/08",
+    "date": "2019/08/23",
     "item": [
       {
         "name": "samsung-galaxy-note-10-blue",
@@ -4233,7 +4233,7 @@
   },
   {
     "name": "Samsung Galaxy Note 10 (Plus)",
-    "date": "2019/08",
+    "date": "2019/08/23",
     "item": [
       {
         "name": "samsung-galaxy-note-10-plus-beige-white-gradient",
@@ -4440,7 +4440,7 @@
   },
   {
     "name": "Samsung Galaxy Note 2",
-    "date": "2012/09",
+    "date": "2012/09/26",
     "item": [
       {
         "name": "samsung-galaxy-note-2-ii-sammobile-001",
@@ -4579,7 +4579,7 @@
   },
   {
     "name": "Samsung Galaxy Note 20",
-    "date": "2020/08",
+    "date": "2020/08/21",
     "item": [
       {
         "name": "samsung-galaxy-note-20-ultra-1",
@@ -4606,7 +4606,7 @@
   },
   {
     "name": "Samsung Galaxy Note 3",
-    "date": "2013/09",
+    "date": "2013/09/25",
     "item": [
       {
         "name": "samsung-galaxy-note-3-note3-fhd-01-droidviews",
@@ -4717,7 +4717,7 @@
   },
   {
     "name": "Samsung Galaxy Note 4",
-    "date": "2014/10",
+    "date": "2014/10/17",
     "item": [
       {
         "name": "samsung-galaxy-note-4-black-blue-photo",
@@ -4814,7 +4814,7 @@
   },
   {
     "name": "Samsung Galaxy Note 5",
-    "date": "2015/08",
+    "date": "2015/08/21",
     "item": [
       {
         "name": "samsung-galaxy-note-5-2560x2560-001",
@@ -5028,7 +5028,7 @@
   },
   {
     "name": "Samsung Galaxy Note 9",
-    "date": "2018/08",
+    "date": "2018/08/24",
     "item": [
       {
         "name": "samsung-galaxy-note-9-blue",
@@ -5194,7 +5194,7 @@
   },
   {
     "name": "Samsung Galaxy S1",
-    "date": "2010/06",
+    "date": "2010/06/04",
     "item": [
       {
         "name": "samsung-galaxy-s1-beige-gold-photo",
@@ -6336,7 +6336,7 @@
   },
   {
     "name": "Samsung Galaxy S21",
-    "date": "2021/01",
+    "date": "2021/01/29",
     "item": [
       {
         "name": "samsung-galaxy-s21-black-blue-gradient",
@@ -6565,7 +6565,7 @@
   },
   {
     "name": "Samsung Galaxy S22",
-    "date": "2022/02",
+    "date": "2022/02/25",
     "item": [
       {
         "name": "samsung-galaxy-s22-black-brown-abstract",
@@ -6662,7 +6662,7 @@
   },
   {
     "name": "Samsung Galaxy S23",
-    "date": "2023/02",
+    "date": "2023/02/17",
     "item": [
       {
         "name": "samsung-galaxy-s23-black-brown-gradient-01",
@@ -6856,7 +6856,7 @@
   },
   {
     "name": "Samsung Galaxy S23 Ultra & BMW",
-    "date": "2023/02",
+    "date": "2023/02/01",
     "item": [
       {
         "name": "samsung-galaxy-s23-ultra-bmw-m",
@@ -6939,7 +6939,7 @@
   },
   {
     "name": "Samsung Galaxy S24",
-    "date": "2024/01",
+    "date": "2024/01/31",
     "item": [
       {
         "name": "samsung-galaxy-s24-beige-brown-abstract",
@@ -7266,7 +7266,7 @@
   },
   {
     "name": "Samsung Galaxy S25",
-    "date": "2025/01",
+    "date": "2025/01/22",
     "item": [
       {
         "name": "samsung-galaxy-s25-beige-pink-gradient",
@@ -7480,7 +7480,7 @@
   },
   {
     "name": "Samsung Galaxy S3",
-    "date": "2012/05",
+    "date": "2012/05/29",
     "item": [
       {
         "name": "samsung-galaxy-s3-hd-01",
@@ -7528,7 +7528,7 @@
   },
   {
     "name": "Samsung Galaxy S4",
-    "date": "2013/04",
+    "date": "2013/04/27",
     "item": [
       {
         "name": "samsung-galaxy-s4-fhd-01",
@@ -8758,7 +8758,7 @@
   },
   {
     "name": "Samsung W26 Fold",
-    "date": "2025/10",
+    "date": "2025/10/11",
     "item": [
       {
         "name": "samsung-w26-fold-black-brown-abstract-alt-a",
@@ -8956,7 +8956,7 @@
   },
   {
     "name": "Samsung Galaxy Z Flip",
-    "date": "2020/02",
+    "date": "2020/02/12",
     "item": [
       {
         "name": "samsung-galaxy-z-flip-black-brown-gradient",
@@ -9032,7 +9032,7 @@
   },
   {
     "name": "Samsung Galaxy Z Flip 3",
-    "date": "2021/08",
+    "date": "2021/08/11",
     "item": [
       {
         "name": "samsung-galaxy-z-flip-3-black-brown-gradient-01",
@@ -9183,7 +9183,7 @@
   },
   {
     "name": "Samsung Galaxy Z Flip 4",
-    "date": "2022/08",
+    "date": "2022/08/10",
     "item": [
       {
         "name": "samsung-galaxy-z-flip-4-black-beige-gradient",
@@ -9814,7 +9814,7 @@
   },
   {
     "name": "Samsung Galaxy Z Fold 3",
-    "date": "2021/08",
+    "date": "2021/08/11",
     "item": [
       {
         "name": "samsung-galaxy-z-fold-3-wallpaper0",
@@ -9890,7 +9890,7 @@
   },
   {
     "name": "Samsung Galaxy Z Fold 4",
-    "date": "2022/08",
+    "date": "2022/08/26",
     "item": [
       {
         "name": "samsung-galaxy-z-fold-4-black-brown-abstract-01",
@@ -10112,7 +10112,7 @@
   },
   {
     "name": "Samsung Galaxy Z Fold 6",
-    "date": "2024/07",
+    "date": "2024/07/10",
     "item": [
       {
         "name": "samsung-galaxy-z-fold-6-black-brown-gradient",
@@ -10167,7 +10167,7 @@
   },
   {
     "name": "Samsung Galaxy Z Fold 7",
-    "date": "2025/07",
+    "date": "2025/07/25",
     "item": [
       {
         "name": "samsung-galaxy-z-fold-7-black-brown-gradient-01",

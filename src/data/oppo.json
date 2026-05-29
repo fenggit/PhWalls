@@ -69,7 +69,7 @@
   },
   {
     "name": "Oppo A17",
-    "date": "2022/09",
+    "date": "2022/09/26",
     "item": [
       {
         "name": "oppo-a17-silver-cyan-abstract",
@@ -163,7 +163,7 @@
   },
   {
     "name": "Oppo A5 Pro",
-    "date": "2025/03",
+    "date": "2025/03/17",
     "item": [
       {
         "name": "oppo-a5-pro-black-purple-abstract",
@@ -197,7 +197,7 @@
   },
   {
     "name": "Oppo A52",
-    "date": "2020/04",
+    "date": "2020/04/20",
     "item": [
       {
         "name": "oppo-a52-a72-1",
@@ -298,7 +298,7 @@
   },
   {
     "name": "Oppo A55 & A55s",
-    "date": "2021/10",
+    "date": "2021/10/01",
     "item": [
       {
         "name": "oppo-a55-a55s-5g",
@@ -329,57 +329,57 @@
       }
     ]
   },
-    {
-      "name": "Oppo A6s",
-      "date": "2026/01",
-      "item": [
-        {
-          "name": "oppo-a6s-beige-brown-gradient",
-          "type": "image/png",
-          "size": "2.77 MB",
-          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-beige-brown-gradient.png",
-          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-beige-brown-gradient.webp"
-        },
-        {
-          "name": "oppo-a6s-beige-red-gradient",
-          "type": "image/png",
-          "size": "2.82 MB",
-          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-beige-red-gradient.png",
-          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-beige-red-gradient.webp"
-        },
-        {
-          "name": "oppo-a6s-black-brown-gradient",
-          "type": "image/png",
-          "size": "3.09 MB",
-          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-black-brown-gradient.png",
-          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-black-brown-gradient.webp"
-        },
-        {
-          "name": "oppo-a6s-black-cyan-gradient",
-          "type": "image/png",
-          "size": "3.87 MB",
-          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-black-cyan-gradient.png",
-          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-black-cyan-gradient.webp"
-        },
-        {
-          "name": "oppo-a6s-cyan-teal-gradient",
-          "type": "image/png",
-          "size": "2.79 MB",
-          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-cyan-teal-gradient.png",
-          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-cyan-teal-gradient.webp"
-        },
-        {
-          "name": "oppo-a6s-silver-blue-gradient",
-          "type": "image/png",
-          "size": "2.75 MB",
-          "originPath": "oppo/OPPO A6s/origin/oppo-a6s-silver-blue-gradient.png",
-          "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-silver-blue-gradient.webp"
-        }
-      ]
-    },
+  {
+    "name": "Oppo A6s",
+    "date": "2026/01/13",
+    "item": [
+      {
+        "name": "oppo-a6s-beige-brown-gradient",
+        "type": "image/png",
+        "size": "2.77 MB",
+        "originPath": "oppo/OPPO A6s/origin/oppo-a6s-beige-brown-gradient.png",
+        "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-beige-brown-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-beige-red-gradient",
+        "type": "image/png",
+        "size": "2.82 MB",
+        "originPath": "oppo/OPPO A6s/origin/oppo-a6s-beige-red-gradient.png",
+        "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-beige-red-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-black-brown-gradient",
+        "type": "image/png",
+        "size": "3.09 MB",
+        "originPath": "oppo/OPPO A6s/origin/oppo-a6s-black-brown-gradient.png",
+        "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-black-brown-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-black-cyan-gradient",
+        "type": "image/png",
+        "size": "3.87 MB",
+        "originPath": "oppo/OPPO A6s/origin/oppo-a6s-black-cyan-gradient.png",
+        "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-black-cyan-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-cyan-teal-gradient",
+        "type": "image/png",
+        "size": "2.79 MB",
+        "originPath": "oppo/OPPO A6s/origin/oppo-a6s-cyan-teal-gradient.png",
+        "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-cyan-teal-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-silver-blue-gradient",
+        "type": "image/png",
+        "size": "2.75 MB",
+        "originPath": "oppo/OPPO A6s/origin/oppo-a6s-silver-blue-gradient.png",
+        "compressPath": "oppo/OPPO A6s/compress/oppo-a6s-silver-blue-gradient.webp"
+      }
+    ]
+  },
   {
     "name": "Oppo A72 (5G)",
-    "date": "2020/05",
+    "date": "2020/05/04",
     "item": [
       {
         "name": "oppo-a72-5g-cyan-blue-photo",
@@ -419,7 +419,7 @@
   },
   {
     "name": "Oppo A74 5G",
-    "date": "2021/04",
+    "date": "2021/04/13",
     "item": [
       {
         "name": "oppo-a74-5g-black-brown-gradient",
@@ -480,7 +480,7 @@
   },
   {
     "name": "Oppo A91",
-    "date": "2020/01",
+    "date": "2020/01/16",
     "item": [
       {
         "name": "oppo-a91-a8-1",
@@ -664,7 +664,7 @@
   },
   {
     "name": "Oppo F15",
-    "date": "2020/01",
+    "date": "2020/01/16",
     "item": [
       {
         "name": "oppo-f15-black-blue-abstract",
@@ -858,7 +858,7 @@
   },
   {
     "name": "Oppo F19",
-    "date": "2021/03",
+    "date": "2021/03/25",
     "item": [
       {
         "name": "oppo-f19-cyan-gray-gradient",
@@ -884,7 +884,7 @@
   },
   {
     "name": "Oppo F21 Pro (5G)",
-    "date": "2022/04",
+    "date": "2022/04/12",
     "item": [
       {
         "name": "oppo-f21-pro-5g-silver-blue-abstract",
@@ -1311,7 +1311,7 @@
   },
   {
     "name": "Oppo Find X2 (Pro)",
-    "date": "2020/03",
+    "date": "2020/03/06",
     "item": [
       {
         "name": "oppo-find-x2-pro-beige-white-abstract",
@@ -1484,7 +1484,7 @@
   },
   {
     "name": "Oppo Find X5 (Pro)",
-    "date": "2022/02",
+    "date": "2022/02/24",
     "item": [
       {
         "name": "oppo-find-x5-pro-black-purple-abstract",
@@ -1511,7 +1511,7 @@
   },
   {
     "name": "Oppo Find X6 Pro",
-    "date": "2023/03",
+    "date": "2023/03/21",
     "item": [
       {
         "name": "oppo-find-x6-pro-black-green-abstract",

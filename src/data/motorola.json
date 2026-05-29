@@ -853,7 +853,7 @@
   },
   {
     "name": "Moto G 5G",
-    "date": "2020/12",
+    "date": "2020/12/07",
     "item": [
       {
         "name": "moto-g-5g-black-brown-abstract",
@@ -981,7 +981,7 @@
   },
   {
     "name": "Moto G Power (2021)",
-    "date": "2021/01",
+    "date": "2021/01/13",
     "item": [
       {
         "name": "moto-g-power-2021-cyan-gray-abstract",
@@ -2723,54 +2723,54 @@
       }
     ]
   },
-    {
-      "name": "Moto Razr 70 Ultra",
-      "date": "2026/04",
-      "item": [
-        {
-          "name": "motorola-razr-70-ultra-black-beige-gradient",
-          "type": "image/png",
-          "size": "3.23 MB",
-          "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-beige-gradient.png",
-          "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-beige-gradient.webp"
-        },
-        {
-          "name": "motorola-razr-70-ultra-black-brown-gradient",
-          "type": "image/png",
-          "size": "8.27 MB",
-          "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-brown-gradient.png",
-          "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-brown-gradient.webp"
-        },
-        {
-          "name": "motorola-razr-70-ultra-black-gray-gradient",
-          "type": "image/png",
-          "size": "6.06 MB",
-          "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-gray-gradient.png",
-          "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-gray-gradient.webp"
-        },
-        {
-          "name": "motorola-razr-70-ultra-black-green-gradient",
-          "type": "image/png",
-          "size": "5.52 MB",
-          "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-green-gradient.png",
-          "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-green-gradient.webp"
-        },
-        {
-          "name": "motorola-razr-70-ultra-brown-rose-gradient",
-          "type": "image/png",
-          "size": "3.88 MB",
-          "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-brown-rose-gradient.png",
-          "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-brown-rose-gradient.webp"
-        },
-        {
-          "name": "motorola-razr-70-ultra-brown-silver-abstract",
-          "type": "image/png",
-          "size": "2.17 MB",
-          "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-brown-silver-abstract.png",
-          "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-brown-silver-abstract.webp"
-        }
-      ]
-    },
+  {
+    "name": "Moto Razr 70 Ultra",
+    "date": "2026/04",
+    "item": [
+      {
+        "name": "motorola-razr-70-ultra-black-beige-gradient",
+        "type": "image/png",
+        "size": "3.23 MB",
+        "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-beige-gradient.png",
+        "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-beige-gradient.webp"
+      },
+      {
+        "name": "motorola-razr-70-ultra-black-brown-gradient",
+        "type": "image/png",
+        "size": "8.27 MB",
+        "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-brown-gradient.png",
+        "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-brown-gradient.webp"
+      },
+      {
+        "name": "motorola-razr-70-ultra-black-gray-gradient",
+        "type": "image/png",
+        "size": "6.06 MB",
+        "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-gray-gradient.png",
+        "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-gray-gradient.webp"
+      },
+      {
+        "name": "motorola-razr-70-ultra-black-green-gradient",
+        "type": "image/png",
+        "size": "5.52 MB",
+        "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-black-green-gradient.png",
+        "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-black-green-gradient.webp"
+      },
+      {
+        "name": "motorola-razr-70-ultra-brown-rose-gradient",
+        "type": "image/png",
+        "size": "3.88 MB",
+        "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-brown-rose-gradient.png",
+        "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-brown-rose-gradient.webp"
+      },
+      {
+        "name": "motorola-razr-70-ultra-brown-silver-abstract",
+        "type": "image/png",
+        "size": "2.17 MB",
+        "originPath": "motorola/Motorola Razr 70 Ultra/origin/motorola-razr-70-ultra-brown-silver-abstract.png",
+        "compressPath": "motorola/Motorola Razr 70 Ultra/compress/motorola-razr-70-ultra-brown-silver-abstract.webp"
+      }
+    ]
+  },
   {
     "name": "Moto Razr 5G",
     "date": "2020/09",
