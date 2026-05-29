@@ -414,6 +414,75 @@
     ]
   },
   {
+    "name": "Poco X8 Pro",
+    "date": "2026/03/17",
+    "item": [
+      {
+        "name": "xiaomi-poco-x8-pro-black-brown-abstract",
+        "type": "image/png",
+        "size": "6.81 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-black-brown-abstract.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-black-brown-abstract.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-black-brown-gradient",
+        "type": "image/png",
+        "size": "6.15 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-black-brown-gradient.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-black-brown-gradient.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-black-gray-gradient",
+        "type": "image/png",
+        "size": "6.95 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-black-gray-gradient.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-black-gray-gradient.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-black-silver-gradient",
+        "type": "image/png",
+        "size": "5.92 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-black-silver-gradient.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-black-silver-gradient.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-blue-black-gradient",
+        "type": "image/png",
+        "size": "4.45 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-blue-black-gradient.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-blue-black-gradient.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-brown-gradient",
+        "type": "image/png",
+        "size": "2.47 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-brown-gradient.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-brown-gradient.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-brown-yellow-abstract",
+        "type": "image/png",
+        "size": "8.2 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-brown-yellow-abstract.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-brown-yellow-abstract.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-gray-black-abstract",
+        "type": "image/png",
+        "size": "8.44 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-gray-black-abstract.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-gray-black-abstract.webp"
+      },
+      {
+        "name": "xiaomi-poco-x8-pro-silver-brown-abstract",
+        "type": "image/png",
+        "size": "7.77 MB",
+        "originPath": "xiaomi/Poco X8 Pro/origin/xiaomi-poco-x8-pro-silver-brown-abstract.png",
+        "compressPath": "xiaomi/Poco X8 Pro/compress/xiaomi-poco-x8-pro-silver-brown-abstract.webp"
+      }
+    ]
+  },
+  {
     "name": "Redmi 10",
     "date": "2021/08/20",
     "item": [
