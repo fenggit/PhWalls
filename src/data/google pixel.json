@@ -1,5 +1,163 @@
 [
   {
+    "name": "Google Pixel 11",
+    "date": "2026/06/05",
+    "item": [
+      {
+        "name": "google-pixel-11-fuchsia-dark",
+        "type": "image/jpeg",
+        "size": "2.53 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-fuchsia-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-fuchsia-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-fuchsia-light",
+        "type": "image/jpeg",
+        "size": "2.99 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-fuchsia-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-fuchsia-light.webp"
+      },
+      {
+        "name": "google-pixel-11-midnight-haze-dark",
+        "type": "image/jpeg",
+        "size": "2.29 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-midnight-haze-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-midnight-haze-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-midnight-haze-light",
+        "type": "image/jpeg",
+        "size": "2.94 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-midnight-haze-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-midnight-haze-light.webp"
+      },
+      {
+        "name": "google-pixel-11-moss-dark",
+        "type": "image/jpeg",
+        "size": "1.65 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-moss-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-moss-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-moss-light",
+        "type": "image/jpeg",
+        "size": "2.01 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-moss-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-moss-light.webp"
+      },
+      {
+        "name": "google-pixel-11-sterling-light-dark",
+        "type": "image/jpeg",
+        "size": "1.9 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-sterling-light-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-sterling-light-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-sterling-light",
+        "type": "image/jpeg",
+        "size": "2.39 MB",
+        "originPath": "google pixel/Google Pixel 11/origin/google-pixel-11-sterling-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11/compress/google-pixel-11-sterling-light.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google Pixel 11 Pro",
+    "date": "2026/06/05",
+    "item": [
+      {
+        "name": "google-pixel-11-pro-beg",
+        "type": "image/jpeg",
+        "size": "1.44 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro/origin/google-pixel-11-pro-beg.jpeg",
+        "compressPath": "google pixel/Google Pixel 11 Pro/compress/google-pixel-11-pro-beg.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-blk",
+        "type": "image/jpeg",
+        "size": "1.69 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro/origin/google-pixel-11-pro-blk.jpeg",
+        "compressPath": "google pixel/Google Pixel 11 Pro/compress/google-pixel-11-pro-blk.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-gry",
+        "type": "image/jpeg",
+        "size": "1.28 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro/origin/google-pixel-11-pro-gry.jpeg",
+        "compressPath": "google pixel/Google Pixel 11 Pro/compress/google-pixel-11-pro-gry.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-slv",
+        "type": "image/jpeg",
+        "size": "1.41 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro/origin/google-pixel-11-pro-slv.jpeg",
+        "compressPath": "google pixel/Google Pixel 11 Pro/compress/google-pixel-11-pro-slv.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google Pixel 11 Pro XL",
+    "date": "2026/06/05",
+    "item": [
+      {
+        "name": "google-pixel-11-pro-xl-dune-dark",
+        "type": "image/jpeg",
+        "size": "5.05 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-dune-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-dune-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-dune-light",
+        "type": "image/jpeg",
+        "size": "5.54 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-dune-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-dune-light.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-fog-light-dark",
+        "type": "image/jpeg",
+        "size": "4.65 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-fog-light-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-fog-light-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-fog-light",
+        "type": "image/jpeg",
+        "size": "6.65 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-fog-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-fog-light.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-midnight-haze-dark",
+        "type": "image/jpeg",
+        "size": "5.99 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-midnight-haze-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-midnight-haze-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-midnight-haze-light",
+        "type": "image/jpeg",
+        "size": "6.63 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-midnight-haze-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-midnight-haze-light.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-pine-dark",
+        "type": "image/jpeg",
+        "size": "4.7 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-pine-dark.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-pine-dark.webp"
+      },
+      {
+        "name": "google-pixel-11-pro-xl-pine-light",
+        "type": "image/jpeg",
+        "size": "6.16 MB",
+        "originPath": "google pixel/Google Pixel 11 Pro XL/origin/google-pixel-11-pro-xl-pine-light.jpg",
+        "compressPath": "google pixel/Google Pixel 11 Pro XL/compress/google-pixel-11-pro-xl-pine-light.webp"
+      }
+    ]
+  },
+  {
     "name": "Google Pixel 10",
     "date": "2025/08/28",
     "item": [
