@@ -27,7 +27,7 @@ const safeDecodeURIComponent = (value: string): string => {
 };
 
 export const BRAND_CATEGORIES: BrandCategory[] = (tabDataEn as RawTabCategory[])
-  .filter((item) => !item.link)
+  .filter((item) => !item.link && normalizeCategoryType(item.type) !== 'desktop')
   .map((item) => ({
     title: item.title,
     type: item.type,

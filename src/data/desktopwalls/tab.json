@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Windows",
+    "type": "microsoft-windows"
+  },
+  {
+    "title": "Ubuntu",
+    "type": "ubuntu"
+  },
+  {
+    "title": "ChromeOS",
+    "type": "google-chromeos"
+  },
+  {
+    "title": "Surface",
+    "type": "microsoft-surface"
+  },
+  {
+    "title": "Aluminium OS",
+    "type": "google-aluminium-os"
+  }
+]

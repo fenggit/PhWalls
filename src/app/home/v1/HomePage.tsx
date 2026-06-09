@@ -2,6 +2,7 @@ import Home from './Home';
 import { headers } from 'next/headers';
 import { getAllWallpaperCollections } from '@/lib/wallpapers';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
+import { getTabData } from '@/lib/data';
 
 type WallpaperEntry = {
   name: string;
@@ -34,5 +35,12 @@ export default async function HomePage() {
   const userAgent = headerList.get('user-agent') || '';
   const isMobileRequest = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
   const initialImageUrls = buildInitialHomeImageUrls();
-  return <Home initialImageUrls={initialImageUrls} isMobilePriority={isMobileRequest} />;
+  return (
+    <Home
+      initialImageUrls={initialImageUrls}
+      isMobilePriority={isMobileRequest}
+      contentTabs={getTabData().filter((tab) => tab.type.toLowerCase() !== 'desktop')}
+      navigationTabsExtra={[{ title: 'Desktop', type: 'desktop', icon: '', items: [] }]}
+    />
+  );
 }

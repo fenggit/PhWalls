@@ -13,6 +13,10 @@
     "link": "https://applewalls.com"
   },
   {
+    "title": "Desktop",
+    "type": "desktop"
+  },
+  {
     "title": "vivo",
     "type": "vivo"
   },
@@ -20,7 +24,7 @@
     "title": "Google Pixel",
     "type": "google-pixel"
   },
-   {
+  {
     "title": "Android",
     "type": "android"
   },

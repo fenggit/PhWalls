@@ -357,7 +357,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: '获取手机品牌设备最新内置壁纸合集，涵盖 iPhone、Samsung、Android、小米、Vivo、OPPO、华为、荣耀、一加、Google Pixel 等品牌，支持高清无水印下载。',
+    heroDescription: '下载官方内置手机与桌面壁纸，涵盖 iPhone、Samsung、小米、vivo、OPPO、华为、Google Pixel，以及 Windows、Ubuntu、ChromeOS、Surface，高清无水印免费下载。',
     loading: '加载中...',
     exploreButton: '开始探索',
     learnMore: '了解更多',
@@ -700,7 +700,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   en: {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: 'Explore the latest built-in phone wallpaper collection across Samsung, Android, Xiaomi, Vivo, OPPO, Huawei, Honor, OnePlus, and Google Pixel. Download HD, watermark-free wallpapers for free.',
+    heroDescription: 'Download official built-in phone and desktop wallpapers for iPhone, Samsung, Xiaomi, Vivo, OPPO, Huawei, Google Pixel, Windows, Ubuntu, ChromeOS, and Surface. HD, watermark-free, and free.',
     loading: 'Loading...',
     exploreButton: 'Start Exploring',
     learnMore: 'Learn More',
@@ -1043,7 +1043,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   ja: {
     siteName: 'PhWalls',
     heroTitle: 'Phone 壁紙',
-    heroDescription: 'iPhone、Samsung、Android、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel など主要ブランドの最新内蔵壁紙を収録。HD高画質・透かしなしで無料ダウンロードできます。',
+    heroDescription: 'iPhone、Samsung、Xiaomi、Vivo、OPPO、Huawei、Google Pixel、Windows、Ubuntu、ChromeOS、Surface の公式内蔵壁紙を収録。HD高画質・透かしなしで無料ダウンロードできます。',
     loading: '読み込み中...',
     exploreButton: '探索を開始',
     learnMore: '詳細を見る',
@@ -1386,7 +1386,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   vi: {
     siteName: 'PhWalls',
     heroTitle: 'Hình nền Phone',
-    heroDescription: 'Khám phá bộ sưu tập hình nền tích hợp mới nhất từ các thương hiệu như Samsung, Android, Xiaomi, Vivo, OPPO, Huawei, Honor, OnePlus và Google Pixel. Tải miễn phí hình nền HD không watermark.',
+    heroDescription: 'Tải hình nền chính thức cho điện thoại và desktop: iPhone, Samsung, Xiaomi, Vivo, OPPO, Huawei, Google Pixel, Windows, Ubuntu, ChromeOS và Surface. HD, miễn phí, không watermark.',
     loading: 'Đang tải...',
     exploreButton: 'Bắt đầu khám phá',
     learnMore: 'Tìm hiểu thêm',
@@ -1702,7 +1702,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   'zh-hant': {
     siteName: 'PhWalls',
     heroTitle: 'Phone Wallpaper',
-    heroDescription: '獲取手機品牌設備最新內建壁紙合集，涵蓋 iPhone、Samsung、Android、Xiaomi、Vivo、OPPO、Huawei、Honor、OnePlus、Google Pixel 等品牌，支援高清無浮水印下載。',
+    heroDescription: '下載官方內建手機與桌面桌布，涵蓋 iPhone、Samsung、Xiaomi、vivo、OPPO、Huawei、Google Pixel，以及 Windows、Ubuntu、ChromeOS、Surface，高清無浮水印免費下載。',
     loading: '載入中...',
     exploreButton: '開始探索',
     learnMore: '了解更多',

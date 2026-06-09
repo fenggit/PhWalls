@@ -5,7 +5,7 @@ import { Fragment, useState, useEffect, useCallback, useMemo } from 'react';
 import Header from '@/components/Header';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import Footer from '@/components/Footer';
-import { Language } from '@/types';
+import { Language, TabInfo } from '@/types';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData, sortByDateDesc } from '@/lib/data';
 import { useLanguage } from '@/components/LanguageProvider';
 import { normalizeCategoryType } from '@/lib/brands';
@@ -14,6 +14,7 @@ import {
   buildWallpaperDetailPath,
   getWallpaperCollections,
   isWallpaperCategory,
+  type WallpaperCollection,
   type WallpaperCategory,
 } from '@/lib/wallpapers';
 import { withLanguagePath } from '@/lib/language';
@@ -21,10 +22,33 @@ import { withLanguagePath } from '@/lib/language';
 type HomeProps = {
   initialImageUrls?: Record<string, string>;
   isMobilePriority?: boolean;
+  contentTabs?: TabInfo[];
+  navigationTabs?: TabInfo[];
+  navigationTabsExtra?: TabInfo[];
+  contentCollectionsByCategory?: Record<string, WallpaperCollection[]>;
+  isContentCategory?: (category: string) => boolean;
+  detailPathPrefix?: string;
+  categoryPathPrefix?: string;
+  forceDesktopCards?: boolean;
+  heroTitle?: string;
+  heroDescription?: string;
 };
 
 // 首页组件：聚合展示所有壁纸分类、卡片预览和广告位。
-export default function Home({ initialImageUrls = {}, isMobilePriority = false }: HomeProps) {
+export default function Home({
+  initialImageUrls = {},
+  isMobilePriority = false,
+  contentTabs,
+  navigationTabs,
+  navigationTabsExtra = [],
+  contentCollectionsByCategory,
+  isContentCategory = isWallpaperCategory,
+  detailPathPrefix,
+  categoryPathPrefix,
+  forceDesktopCards = false,
+  heroTitle,
+  heroDescription,
+}: HomeProps) {
   // 使用LanguageProvider
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(initialImageUrls);
@@ -42,17 +66,24 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
   const [showBackToTop, setShowBackToTop] = useState(false);
   
   // 直接获取导航数据
-  const tabData = useMemo(() => getTabData(currentLang), [currentLang]);
-  const contentTabs = useMemo(() => tabData.filter((tab) => !tab.link), [tabData]);
+  const baseTabData = useMemo(() => getTabData(currentLang), [currentLang]);
+  const tabData = useMemo(
+    () => navigationTabs || [...baseTabData, ...navigationTabsExtra],
+    [baseTabData, navigationTabs, navigationTabsExtra]
+  );
+  const pageContentTabs = useMemo(() => {
+    const tabs = contentTabs || tabData;
+    return tabs.filter((tab) => !tab.link);
+  }, [contentTabs, tabData]);
   const categoryDataMap = useMemo(() => {
-    return contentTabs.reduce<Record<string, any[]>>((acc, tab) => {
+    return pageContentTabs.reduce<Record<string, any[]>>((acc, tab) => {
       const normalized = normalizeCategoryType(tab.type);
-      if (isWallpaperCategory(normalized)) {
-        acc[normalized] = sortByDateDesc(getWallpaperCollections(normalized));
+      if (contentCollectionsByCategory || isContentCategory(normalized)) {
+        acc[normalized] = sortByDateDesc(contentCollectionsByCategory?.[normalized] || getWallpaperCollections(normalized));
       }
       return acc;
     }, {});
-  }, [contentTabs]);
+  }, [contentCollectionsByCategory, isContentCategory, pageContentTabs]);
 
   // 将 tab.type 转成可用于 DOM id 的锚点（避免空格导致 scroll 定位异常）
   const getCategoryAnchorId = useCallback((categoryType: string) => {
@@ -250,8 +281,8 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
   }, []);
 
   const visibleCategories = useMemo(
-    () => contentTabs.filter((cat) => cat.type.toLowerCase() !== 'design'),
-    [contentTabs]
+    () => pageContentTabs.filter((cat) => cat.type.toLowerCase() !== 'design'),
+    [pageContentTabs]
   );
 
   useEffect(() => {
@@ -270,6 +301,12 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
 
   const getColumnsForCategory = useCallback((categoryType: string) => {
     const width = viewportWidth;
+    if (forceDesktopCards) {
+      if (width >= 1536) return 4;
+      if (width >= 1024) return 3;
+      if (width >= 640) return 2;
+      return 1;
+    }
     if (categoryType === 'iphone' || categoryType === 'ios') {
       if (width >= 1536) return 6;
       if (width >= 1280) return 5;
@@ -286,11 +323,11 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
 
   const getDetailCategory = useCallback((categoryType: string): WallpaperCategory | null => {
     const normalized = normalizeCategoryType(categoryType);
-    if (isWallpaperCategory(normalized)) {
+    if (contentCollectionsByCategory ? normalized in contentCollectionsByCategory : isContentCategory(normalized)) {
       return normalized;
     }
     return null;
-  }, []);
+  }, [contentCollectionsByCategory, isContentCategory]);
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 scroll-container">
@@ -299,24 +336,25 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
         tabData={tabData}
         currentLang={currentLang} 
         onLanguageChange={handleLanguageChange}
+        categoryPathPrefix={categoryPathPrefix}
       />
 
       {/* 主要内容区域 */}
       <main className="pt-24 md:pt-20">
 
         <div className="sr-only md:hidden">
-          <h1>{texts.heroTitle}</h1>
-          <p>{texts.heroDescription}</p>
+          <h1>{heroTitle || texts.heroTitle}</h1>
+          <p>{heroDescription || texts.heroDescription}</p>
         </div>
 
         {/* 英雄区域 */}
         <section className="hidden md:block text-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
-              {texts.heroTitle}
+              {heroTitle || texts.heroTitle}
             </h1>
             <p className="text-xl text-gray-600 mb-4 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-              {texts.heroDescription}
+              {heroDescription || texts.heroDescription}
             </p>
           </div>
         </section>
@@ -334,6 +372,17 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
 
           // 根据平台类型设置不同的卡片样式
           const cardStyle = (() => {
+            if (forceDesktopCards) {
+              return {
+                aspectRatio: 'aspect-[16/9]',
+                gridCols: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4',
+                cardClass: 'rounded-xl',
+                shadowClass: 'shadow-lg hover:shadow-xl',
+                gradientFrom: 'from-slate-50',
+                gradientTo: 'to-blue-50'
+              };
+            }
+
             switch (categoryType) {
               case 'iphone':
                 return {
@@ -450,7 +499,17 @@ export default function Home({ initialImageUrls = {}, isMobilePriority = false }
 
                     const detailCategory = getDetailCategory(categoryType);
                     const detailHref = detailCategory
-                      ? withLanguagePath(buildWallpaperDetailPath(detailCategory, item.name), currentLang)
+                      ? withLanguagePath(
+                          detailPathPrefix
+                            ? `${detailPathPrefix}/${detailCategory}/${item.name
+                                .toLowerCase()
+                                .trim()
+                                .replace(/&/g, ' and ')
+                                .replace(/[^a-z0-9]+/g, '-')
+                                .replace(/^-+|-+$/g, '')}`
+                            : buildWallpaperDetailPath(detailCategory, item.name),
+                          currentLang
+                        )
                       : null;
                     const itemTitle = buildWallpaperListTitle(item.name, texts.wallpapersTitleSuffix);
                     const isPriorityImage = isMobilePriority && index === 0 && listIndex < 2;

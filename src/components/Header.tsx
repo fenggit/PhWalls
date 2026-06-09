@@ -13,6 +13,7 @@ export interface HeaderProps {
   tabData: TabInfo[];
   currentLang: Language;
   onLanguageChange: (lang: Language) => void;
+  categoryPathPrefix?: string;
 }
 
 const languageConfig: Record<Language, { flag: string; name: string; key: keyof I18nTexts; priority: number }> = {
@@ -34,7 +35,7 @@ const languageOrder: Language[] = [
 const SHOW_MINI_PROGRAM = false;
 const MAX_VISIBLE_DESKTOP_TABS = 8;
 
-export default function Header({ tabData, currentLang, onLanguageChange }: HeaderProps) {
+export default function Header({ tabData, currentLang, onLanguageChange, categoryPathPrefix }: HeaderProps) {
   const [isDeviceMenuOpen, setIsDeviceMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMiniProgramMenuOpen, setIsMiniProgramMenuOpen] = useState(false);
@@ -53,6 +54,8 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
       const normalizedType = normalizeCategoryType(categoryType);
 
       if (normalizedType === 'design') return '/design';
+      if (normalizedType === 'desktop') return '/desktop';
+      if (categoryPathPrefix) return `${categoryPathPrefix}#${normalizedType}`;
       return buildBrandPath(categoryType);
     },
     []
@@ -62,6 +65,7 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
     const normalizedPath = stripLanguagePrefix(currentPath).path;
     if (normalizedPath === '/') return 'all';
     if (normalizedPath === '/design') return 'design';
+    if (normalizedPath === '/desktop') return 'desktop';
     const topLevelMatch = normalizedPath.match(/^\/([^/]+)$/);
     if (topLevelMatch?.[1]) {
       try {
@@ -199,10 +203,11 @@ export default function Header({ tabData, currentLang, onLanguageChange }: Heade
       }
 
       const limitedVisibleTabs = nextVisibleTabs.slice(0, MAX_VISIBLE_DESKTOP_TABS);
+      const visibleTypes = new Set(limitedVisibleTabs.map((item) => item.type));
       const nextOverflowTabs = [
         ...nextVisibleTabs.slice(MAX_VISIBLE_DESKTOP_TABS),
         ...tabData.slice(nextVisibleTabs.length),
-      ];
+      ].filter((item) => !visibleTypes.has(item.type));
 
       setVisibleDesktopTabs((prev) => (sameTabs(prev, limitedVisibleTabs) ? prev : limitedVisibleTabs));
       setOverflowDesktopTabs((prev) => (sameTabs(prev, nextOverflowTabs) ? prev : nextOverflowTabs));

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
-import { Language } from '@/types';
+import { Language, TabInfo } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
@@ -36,13 +36,26 @@ interface DeviceWallpaperGridProps {
    *  提供后可跳过 batch-private-urls API 调用，SSR 即包含 src，搜索引擎可抓取。
    */
   initialImageUrls?: Record<string, string>;
+  tabDataOverride?: TabInfo[];
+  categoryLabelOverride?: string;
+  categoryLandingPathOverride?: string;
+  categoryPathPrefixOverride?: string;
 }
 
 type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
 
-export default function DeviceWallpaperGrid({ category, deviceData, summarySection, initialImageUrls }: DeviceWallpaperGridProps) {
+export default function DeviceWallpaperGrid({
+  category,
+  deviceData,
+  summarySection,
+  initialImageUrls,
+  tabDataOverride,
+  categoryLabelOverride,
+  categoryLandingPathOverride,
+  categoryPathPrefixOverride,
+}: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
-  const tabData = useMemo(() => getTabData(currentLang), [currentLang]);
+  const tabData = useMemo(() => tabDataOverride || getTabData(currentLang), [currentLang, tabDataOverride]);
   const pageTitle = useMemo(
     () => buildWallpaperListTitle(deviceData.name, texts.wallpapersTitleSuffix),
     [deviceData.name, texts.wallpapersTitleSuffix]
@@ -193,7 +206,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
     const combined = `${name} ${path}`;
 
     if (combined.includes('watch')) return 'watch';
-    if (combined.includes('mac') || combined.includes('imac') || combined.includes('macos/')) return 'desktop';
+    if (combined.includes('desktopwalls/') || combined.includes('mac') || combined.includes('imac') || combined.includes('macos/')) return 'desktop';
     if (combined.includes('iphone') || combined.includes('ios/')) return 'phone';
     if (combined.includes('landscape')) return 'tablet-landscape';
     if (combined.includes('portrait')) return 'tablet-portrait';
@@ -236,20 +249,26 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
     if (kind === 'phone') return texts.phoneWallpapersGroupTitle;
     if (kind === 'tablet-portrait') return texts.ipadPortraitWallpapersGroupTitle;
     if (kind === 'tablet-landscape') return texts.ipadLandscapeWallpapersGroupTitle;
-    if (kind === 'desktop') return texts.desktopWallpapersGroupTitle;
+    if (kind === 'desktop') return categoryLabelOverride || texts.desktopWallpapersGroupTitle;
     return texts.watchWallpapersGroupTitle;
-  }, [texts]);
+  }, [categoryLabelOverride, texts]);
 
   const hdFreeLabel = texts.hdFreeLabel;
   const backToTopLabel = texts.backToTopLabel;
   const breadcrumbAriaLabel = texts.breadcrumbNavigationLabel;
   const categoryBreadcrumbLabel = useMemo(() => {
+    if (categoryLabelOverride) {
+      return buildWallpaperListTitle(categoryLabelOverride, texts.wallpapersTitleSuffix);
+    }
     return buildWallpaperListTitle(getWallpaperCategoryLabel(category), texts.wallpapersTitleSuffix);
-  }, [category, texts.wallpapersTitleSuffix]);
+  }, [category, categoryLabelOverride, texts.wallpapersTitleSuffix]);
   const categoryLandingPath = useMemo(() => {
+    if (categoryLandingPathOverride) {
+      return categoryLandingPathOverride;
+    }
     const brand = getBrandCategoryBySlug(category);
     return brand ? buildBrandPath(brand.type) : `/${category}`;
-  }, [category]);
+  }, [category, categoryLandingPathOverride]);
 
   const pageDescription = useMemo(
     () => texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
@@ -286,6 +305,7 @@ export default function DeviceWallpaperGrid({ category, deviceData, summarySecti
         tabData={tabData}
         currentLang={currentLang}
         onLanguageChange={handleLanguageChange}
+        categoryPathPrefix={categoryPathPrefixOverride}
       />
 
       <main className={`mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>

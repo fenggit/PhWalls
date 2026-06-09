@@ -17,6 +17,10 @@
         "link": "https://applewalls.com"
     },
     {
+        "title": "Desktop",
+        "type": "desktop"
+    },
+    {
         "title": "vivo",
         "type": "vivo"
     },
@@ -24,9 +28,9 @@
         "title": "OPPO",
         "type": "oppo"
     },
-     {
-    "title": "Android",
-    "type": "android"
+    {
+        "title": "Android",
+        "type": "android"
     },
     {
         "title": "华为",

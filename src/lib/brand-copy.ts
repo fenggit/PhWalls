@@ -54,7 +54,7 @@ const formatBrandList = (brandTitles: string[], language: Language): string => {
 export const getBrandTitlesFromTabs = (language: Language = DEFAULT_LANGUAGE): string[] => {
   const tabs = (getTabData(language) as BrandTab[]).filter((item) => {
     const type = item.type?.toLowerCase().trim();
-    return Boolean(item.title?.trim()) && Boolean(type) && type !== 'design' && !item.link;
+    return Boolean(item.title?.trim()) && Boolean(type) && type !== 'design' && type !== 'desktop' && !item.link;
   });
 
   return Array.from(new Set(tabs.map((item) => item.title.trim())));
@@ -68,16 +68,16 @@ export const getFooterBrandDescription = (
 
   switch (language) {
     case 'zh':
-      return `PhWalls 收录 ${brandList} 等品牌官方内置壁纸，支持 4K/5K/6K 高清无水印下载。`;
+      return `PhWalls 收录 ${brandList} 等手机品牌官方内置壁纸，并提供 Windows、Ubuntu、ChromeOS、Surface 等 Desktop/PC 桌面壁纸合集，支持 4K/5K/6K 高清原图、无水印免费下载。`;
     case 'zh-hant':
-      return `PhWalls 收錄 ${brandList} 等品牌官方內建桌布，支援 4K/5K/6K 高清無浮水印下載。`;
+      return `PhWalls 收錄 ${brandList} 等手機品牌官方內建桌布，並提供 Windows、Ubuntu、ChromeOS、Surface 等 Desktop/PC 桌面桌布合集，支援 4K/5K/6K 高清原圖、無浮水印免費下載。`;
     case 'ja':
-      return `PhWalls は ${brandList} などの公式内蔵壁紙を収録し、4K/5K/6K の高解像度ダウンロードに対応しています。`;
+      return `PhWalls は ${brandList} などのスマートフォン公式内蔵壁紙に加え、Windows、Ubuntu、ChromeOS、Surface などの Desktop/PC 壁紙コレクションを収録。4K/5K/6K の高解像度・透かしなしダウンロードに対応しています。`;
     case 'vi':
-      return `PhWalls tổng hợp hình nền hệ thống chính thức từ các thương hiệu như ${brandList}, hỗ trợ tải xuống 4K/5K/6K không watermark.`;
+      return `PhWalls tổng hợp hình nền điện thoại tích hợp sẵn từ các thương hiệu như ${brandList}, cùng bộ sưu tập hình nền Desktop/PC cho Windows, Ubuntu, ChromeOS và Surface. Hỗ trợ tải ảnh gốc 4K/5K/6K không watermark.`;
     case 'en':
     default:
-      return `PhWalls curates official built-in wallpapers for brands like ${brandList}, with 4K/5K/6K high-resolution watermark-free downloads.`;
+      return `PhWalls curates official built-in phone wallpapers for brands like ${brandList}, plus Desktop/PC wallpaper collections for Windows, Ubuntu, ChromeOS, and Surface. Download 4K/5K/6K original wallpapers with no watermark.`;
   }
 };
 
