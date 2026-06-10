@@ -9,11 +9,11 @@ import {
   DEFAULT_LANGUAGE,
   getOpenGraphLocaleForLanguage,
   LANGUAGE_HEADER_NAME,
+  REQUEST_PATH_HEADER_NAME,
   isLanguage,
   withLanguageUrl,
 } from '@/lib/language';
 import { headers } from 'next/headers';
-import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getI18nTexts } from '@/lib/i18n';
 
 const inter = Inter({
@@ -23,16 +23,15 @@ const inter = Inter({
   fallback: ['system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const currentLanguage = (await resolveMetadataLanguage()) || DEFAULT_LANGUAGE;
-  const texts = getI18nTexts(currentLanguage);
-  const title = `${texts.heroTitle} | ${texts.siteName}`;
-  const description = texts.heroDescription;
-  const canonicalUrl = withLanguageUrl(SITE_URL, currentLanguage);
+const defaultTexts = getI18nTexts(DEFAULT_LANGUAGE);
+const defaultTitle = `${defaultTexts.heroTitle} | ${defaultTexts.siteName}`;
+const defaultDescription = defaultTexts.heroDescription;
+const defaultCanonicalUrl = withLanguageUrl(SITE_URL, DEFAULT_LANGUAGE);
 
+export const metadata: Metadata = (() => {
   return {
-    title,
-    description,
+    title: defaultTitle,
+    description: defaultDescription,
     keywords:
       'phone wallpaper, android wallpaper, samsung wallpaper, xiaomi wallpaper, oppo wallpaper, vivo wallpaper, huawei wallpaper, HD wallpaper',
     authors: [{ name: 'PhWalls Team' }],
@@ -73,12 +72,12 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     openGraph: {
-      title,
-      description,
+      title: defaultTitle,
+      description: defaultDescription,
       type: 'website',
-      locale: getOpenGraphLocaleForLanguage(currentLanguage),
+      locale: getOpenGraphLocaleForLanguage(DEFAULT_LANGUAGE),
       alternateLocale: ['en_US', 'zh_CN', 'ja_JP', 'vi_VN', 'zh_HK'],
-      url: canonicalUrl,
+      url: defaultCanonicalUrl,
       siteName: 'PhWalls',
       images: [
         {
@@ -89,14 +88,14 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
+      title: defaultTitle,
+      description: defaultDescription,
       images: [`${SITE_URL}/logo.png`],
       creator: '@phwalls',
       site: '@phwalls',
     },
     alternates: {
-      canonical: canonicalUrl,
+      canonical: defaultCanonicalUrl,
       languages: buildLanguageAlternates(SITE_URL),
     },
     metadataBase: new URL(SITE_URL),
@@ -112,7 +111,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'msapplication-config': '/browserconfig.xml',
     },
   };
-}
+})();
 
 export const viewport = {
   width: 'device-width',
@@ -130,10 +129,25 @@ export default async function RootLayout({
   const headersList = await headers();
   const rawLang = headersList.get(LANGUAGE_HEADER_NAME);
   const currentLanguage = isLanguage(rawLang) ? rawLang : DEFAULT_LANGUAGE;
+  const requestPath = headersList.get(REQUEST_PATH_HEADER_NAME) || '/';
+  const shouldRenderHomeSeoFallback = requestPath === '/';
 
   return (
     <html lang={currentLanguage} className="scroll-smooth">
       <head>
+        {shouldRenderHomeSeoFallback ? (
+          <>
+            <title>{defaultTitle}</title>
+            <meta name="description" content={defaultDescription} />
+            <meta name="robots" content="index, follow" />
+            <meta
+              name="googlebot"
+              content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+            />
+            <link rel="canonical" href={defaultCanonicalUrl} />
+          </>
+        ) : null}
+
         {/* Google Ads */}
         <Script
           id="google-adsense"

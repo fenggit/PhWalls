@@ -6,6 +6,7 @@ import {
   getLanguageFromPath,
   LANGUAGE_COOKIE_NAME,
   LANGUAGE_HEADER_NAME,
+  REQUEST_PATH_HEADER_NAME,
   resolveLanguageFromAcceptLanguage,
   resolveRequestLanguage,
   stripLanguagePrefix,
@@ -147,6 +148,7 @@ export function middleware(request: NextRequest) {
   if (pathLanguage) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set(LANGUAGE_HEADER_NAME, pathLanguage);
+    requestHeaders.set(REQUEST_PATH_HEADER_NAME, normalizedPath);
     const rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = normalizedPath;
     const response = NextResponse.rewrite(rewriteUrl, {
@@ -174,6 +176,7 @@ export function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(LANGUAGE_HEADER_NAME, preferredLanguage);
+  requestHeaders.set(REQUEST_PATH_HEADER_NAME, normalizedPath);
   const response = NextResponse.next({
     request: {
       headers: requestHeaders,

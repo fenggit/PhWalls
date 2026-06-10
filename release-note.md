@@ -2,6 +2,12 @@
 
 ## 版本历史
 
+### v1.1.1 - 2026-06-10
+- 修复 PageSpeed SEO 报告中首页被识别为 noindex、缺少 meta description 的问题
+- 首页初始 HTML head 直接输出 title、description、robots、googlebot、canonical，提升搜索引擎抓取稳定性
+- 仅对首页路径启用 SEO 兜底标签，避免影响品牌页和详情页的 canonical
+- 调整 HTML-only bot 的 metadata 输出策略，降低流式 metadata 被抓取工具误判的风险
+
 ### v1.1.0 - 2026-06-09
 - 新增桌面端壁纸
 - 优化 Cloudflare Pages 静态资源缓存策略，图片和带 hash 的构建资源缓存 1 年，减少每次部署导致的重复拉取

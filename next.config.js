@@ -4,6 +4,10 @@ const { setupDevPlatform } = require('@cloudflare/next-on-pages/next-dev');
 const nextConfig = {
   // 启用压缩
   compress: true,
+
+  // SEO 抓取稳定性：让 HTML-only bot 尽量走阻塞 metadata。
+  // Edge 渲染路径仍由 app/layout.tsx 的显式 head 标签兜底。
+  htmlLimitedBots: /.*/,
   
   // 压缩配置
   webpack: (config, { dev, isServer }) => {
