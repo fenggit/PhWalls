@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
+import { DOWNLOAD_CACHE_CONTROL } from '@/lib/cache-control';
 
 export const runtime = 'edge';
 
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': contentType,
         'Content-Disposition': `attachment; filename="${filename.replace(/[^\x00-\x7F]/g, '_')}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
-        'Cache-Control': 'no-cache',
+        'Cache-Control': DOWNLOAD_CACHE_CONTROL,
         // 传递原始响应的大小（如果可用）
         ...(fileResponse.headers.get('content-length') && {
           'Content-Length': fileResponse.headers.get('content-length')!,
@@ -70,4 +71,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

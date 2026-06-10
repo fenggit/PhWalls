@@ -1,4 +1,5 @@
 import { Environment } from '@/lib/config/environments';
+import { getR2ObjectCacheControl } from '@/lib/cache-control';
 
 // AWS Signature V4 辅助函数 - 使用 Web Crypto API
 async function sha256(data: string): Promise<string> {
@@ -276,6 +277,10 @@ export class R2Service {
       'Content-Length': file.length.toString(),
       'x-amz-content-sha256': 'UNSIGNED-PAYLOAD',
     };
+    const cacheControl = getR2ObjectCacheControl(contentType);
+    if (cacheControl) {
+      headers['Cache-Control'] = cacheControl;
+    }
 
     const signedHeaders = await signRequest(
       'PUT',

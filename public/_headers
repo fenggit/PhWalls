@@ -1,0 +1,33 @@
+# Cloudflare Pages 静态资源缓存策略：
+# - /_next/static/* 是带构建 hash 的 Next.js 资源，可缓存 1 年。
+# - public 根目录图片和图标通常不会被部署内容变更影响，缓存 1 年；替换内容时应换文件名或 purge。
+# - robots/manifest/browserconfig/文本配置保留 1 天缓存，便于 SEO 和站点配置调整快速生效。
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.xml
+  Cache-Control: public, max-age=86400
+
+/*.txt
+  Cache-Control: public, max-age=86400
+
+/*.json
+  Cache-Control: public, max-age=86400

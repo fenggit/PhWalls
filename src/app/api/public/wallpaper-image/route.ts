@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
+import { IMAGE_IMMUTABLE_CACHE_CONTROL } from '@/lib/cache-control';
 
 export const runtime = 'edge';
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=2592000, s-maxage=2592000, immutable',
+        'Cache-Control': IMAGE_IMMUTABLE_CACHE_CONTROL,
         ...(contentLength ? { 'Content-Length': contentLength } : {}),
         ...(etag ? { ETag: etag } : {}),
         ...(lastModified ? { 'Last-Modified': lastModified } : {}),
