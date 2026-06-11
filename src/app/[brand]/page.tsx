@@ -6,7 +6,7 @@ import { sortByDateDesc } from '@/lib/data';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { SITE_URL } from '@/lib/seo';
-import { getWallpaperCollections } from '@/lib/wallpapers';
+import { loadWallpaperCollections } from '@/lib/wallpaper-data';
 
 export const runtime = 'edge';
 
@@ -58,7 +58,7 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
     notFound();
   }
 
-  const cards = sortByDateDesc(getWallpaperCollections(brandInfo.slug)).map((collection) => ({
+  const cards = sortByDateDesc(await loadWallpaperCollections(brandInfo.slug)).map((collection) => ({
     name: collection.name,
     date: collection.date,
     count: collection.item?.length || 0,

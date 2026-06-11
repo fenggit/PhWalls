@@ -1,5 +1,5 @@
 import { getI18nTexts, type Language } from '@/lib/i18n';
-import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpapers';
+import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { getBrandCategoryBySlug } from '@/lib/brands';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com';

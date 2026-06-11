@@ -17,29 +17,30 @@ import transsionTecnoData from '@/data/transsion tecno.json';
 import vivoData from '@/data/vivo.json';
 import xiaomiData from '@/data/xiaomi.json';
 import { BRAND_CATEGORIES, type WallpaperCategory } from '@/lib/brands';
+import {
+  slugifyWallpaperName,
+  type WallpaperCollection,
+  type WallpaperCollectionEntry,
+} from '@/lib/wallpaper-data';
 
 export type { WallpaperCategory } from '@/lib/brands';
+export type {
+  WallpaperAsset,
+  WallpaperCollection,
+  WallpaperCollectionEntry,
+} from '@/lib/wallpaper-data';
 
-export type WallpaperAsset = {
-  name: string;
-  type: string;
-  size: string;
-  originPath: string;
-  compressPath: string;
-  tag: string;
-};
+// 纯工具与类目判断从 wallpaper-data 统一导出，避免在仅需工具函数的
+// 模块（如 seo.ts、品牌页）里被迫加载全部品牌 JSON。
+export {
+  slugifyWallpaperName,
+  buildWallpaperDetailPath,
+  parseWallpaperDate,
+  getWallpaperCategoryLabel,
+  isWallpaperCategory,
+} from '@/lib/wallpaper-data';
 
-export type WallpaperCollection = {
-  name: string;
-  date: string;
-  item: WallpaperAsset[];
-};
-
-export type WallpaperCollectionEntry = {
-  category: WallpaperCategory;
-  collection: WallpaperCollection;
-};
-
+// 以下全量数据访问供首页聚合、sitemap、公开 API 等确需全部数据的场景使用。
 const dataSources: Record<string, WallpaperCollection[]> = {
   android: androidData as WallpaperCollection[],
   'google-pixel': googlePixelData as WallpaperCollection[],
@@ -82,51 +83,8 @@ export function getAllWallpaperCollections(): WallpaperCollectionEntry[] {
   );
 }
 
-export function isWallpaperCategory(value: string): value is WallpaperCategory {
-  return Object.prototype.hasOwnProperty.call(wallpaperCollections, value);
-}
-
-export function slugifyWallpaperName(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-export function buildWallpaperDetailPath(category: WallpaperCategory, name: string): string {
-  return `/wallpapers/${category}/${slugifyWallpaperName(name)}`;
-}
-
 export function findWallpaperCollection(category: WallpaperCategory, slug: string): WallpaperCollection | null {
   return (
     getWallpaperCollections(category).find((collection) => slugifyWallpaperName(collection.name) === slug) || null
   );
-}
-
-export function parseWallpaperDate(value: string): Date | null {
-  if (!value) {
-    return null;
-  }
-
-  const parts = value.split('/').map((part) => part.trim()).filter(Boolean);
-  if (parts.length === 0) {
-    return null;
-  }
-
-  const year = Number(parts[0]);
-  const month = Number(parts[1] || 1);
-  const day = Number(parts[2] || 1);
-
-  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
-    return null;
-  }
-
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-export function getWallpaperCategoryLabel(category: WallpaperCategory): string {
-  return BRAND_CATEGORIES.find((item) => item.slug === category)?.title || category;
 }

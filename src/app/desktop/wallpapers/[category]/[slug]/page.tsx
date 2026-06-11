@@ -3,11 +3,11 @@ import { notFound } from 'next/navigation';
 import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
 import {
   buildDesktopWallpaperDetailPath,
-  findDesktopWallpaperCollection,
   getDesktopTabData,
   getDesktopWallpaperCategoryLabel,
   isDesktopWallpaperCategory,
-} from '@/lib/desktop-wallpapers';
+  loadDesktopWallpaperCollection,
+} from '@/lib/desktop-data';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildDesktopDetailSeoCopy, getDesktopCategoryLabel } from '@/lib/desktop-seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
     return {};
   }
 
-  const collection = findDesktopWallpaperCollection(category, slug);
+  const collection = await loadDesktopWallpaperCollection(category, slug);
   if (!collection) {
     return {};
   }
@@ -74,7 +74,7 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
     notFound();
   }
 
-  const collection = findDesktopWallpaperCollection(category, slug);
+  const collection = await loadDesktopWallpaperCollection(category, slug);
   if (!collection) {
     notFound();
   }

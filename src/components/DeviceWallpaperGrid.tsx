@@ -11,7 +11,7 @@ import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from 
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpapers';
+import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
 
 interface DeviceItem {
   name: string;

@@ -14,7 +14,7 @@ const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPre
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { Language, LanguageCode } from '@/types';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import { buildWallpaperDetailPath, type WallpaperCategory } from '@/lib/wallpapers';
+import { buildWallpaperDetailPath, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
 

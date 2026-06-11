@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation';
 import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
 import {
   buildWallpaperDetailPath,
-  findWallpaperCollection,
   isWallpaperCategory,
-} from '@/lib/wallpapers';
+  loadWallpaperCollection,
+} from '@/lib/wallpaper-data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { SITE_URL, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
@@ -78,7 +78,7 @@ export async function generateMetadata({ params, searchParams }: WallpaperDetail
     return {};
   }
 
-  const collection = findWallpaperCollection(category, slug);
+  const collection = await loadWallpaperCollection(category, slug);
   if (!collection) {
     return {};
   }
@@ -130,7 +130,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     notFound();
   }
 
-  const collection = findWallpaperCollection(category, slug);
+  const collection = await loadWallpaperCollection(category, slug);
 
   if (!collection) {
     notFound();
