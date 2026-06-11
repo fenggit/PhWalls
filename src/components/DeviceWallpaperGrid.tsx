@@ -91,7 +91,6 @@ export default function DeviceWallpaperGrid({
         },
         body: JSON.stringify({
           keys,
-          env: 'production',
         }),
       });
 
@@ -403,7 +402,7 @@ export default function DeviceWallpaperGrid({
                           </div>
 
                           <span className="absolute bottom-3 right-3 inline-flex items-center rounded-xl bg-black/45 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
-                            {item.type.split('/')[1].toUpperCase()}
+                            {(item.type.split('/')[1] || item.type).toUpperCase()}
                           </span>
                         </div>
                       </button>

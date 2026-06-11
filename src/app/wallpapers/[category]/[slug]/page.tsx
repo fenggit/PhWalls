@@ -69,7 +69,7 @@ function detectDeviceGroup(item: { name: string; originPath: string; compressPat
   return 'Phone';
 }
 
-export async function generateMetadata({ params, searchParams }: WallpaperDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: WallpaperDetailPageProps): Promise<Metadata> {
   const { category, slug } = await params;
   const language = await resolveMetadataLanguage();
   const texts = getI18nTexts(language);
@@ -84,7 +84,6 @@ export async function generateMetadata({ params, searchParams }: WallpaperDetail
   }
 
   const detailPath = buildWallpaperDetailPath(category, collection.name);
-  const categoryLabel = getCategoryLabelForLanguage(language, category);
   const collectionTitle = buildWallpaperListTitle(collection.name, texts.wallpapersTitleSuffix);
   const variantLabels = collectVariantLabels(
     formatWallpaperDisplayName(collection.name),

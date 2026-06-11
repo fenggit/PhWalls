@@ -79,7 +79,6 @@ export default function WallpaperPreviewDownload({
         },
         body: JSON.stringify({
           keys,
-          env: 'production'
         }),
       });
 
@@ -221,7 +220,7 @@ export default function WallpaperPreviewDownload({
       const nextIndex = currentIndex - 1;
       onIndexChange(nextIndex);
     }
-  }, [currentIndex, onIndexChange, wallpapers]);
+  }, [currentIndex, onIndexChange]);
 
   // 切换到下一张
   const goToNext = useCallback(() => {

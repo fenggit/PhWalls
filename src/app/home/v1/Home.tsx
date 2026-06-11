@@ -19,10 +19,17 @@ import {
   buildWallpaperDetailPath,
   getWallpaperCollections,
   isWallpaperCategory,
+  type WallpaperAsset,
   type WallpaperCollection,
   type WallpaperCategory,
 } from '@/lib/wallpapers';
 import { withLanguagePath } from '@/lib/language';
+
+// requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
+type IdleWindow = Window & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
 
 type HomeProps = {
   initialImageUrls?: Record<string, string>;
@@ -62,7 +69,7 @@ export default function Home({
   
   // 预览模态框状态
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewWallpapers, setPreviewWallpapers] = useState<any[]>([]);
+  const [previewWallpapers, setPreviewWallpapers] = useState<WallpaperAsset[]>([]);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [previewCategory, setPreviewCategory] = useState('');
   
@@ -71,16 +78,26 @@ export default function Home({
   
   // 直接获取导航数据
   const baseTabData = useMemo(() => getTabData(currentLang), [currentLang]);
-  const tabData = useMemo(
-    () => navigationTabs || [...baseTabData, ...navigationTabsExtra],
-    [baseTabData, navigationTabs, navigationTabsExtra]
-  );
+  const tabData = useMemo(() => {
+    const combined = navigationTabs || [...baseTabData, ...navigationTabsExtra];
+    // 按归一化 type 去重：baseTabData 可能已含 desktop，navigationTabsExtra 也会再加一个，
+    // 不去重会导致导航出现重复项并触发 React 重复 key 警告。
+    const seen = new Set<string>();
+    return combined.filter((tab) => {
+      const key = normalizeCategoryType(tab.type);
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }, [baseTabData, navigationTabs, navigationTabsExtra]);
   const pageContentTabs = useMemo(() => {
     const tabs = contentTabs || tabData;
     return tabs.filter((tab) => !tab.link);
   }, [contentTabs, tabData]);
   const categoryDataMap = useMemo(() => {
-    return pageContentTabs.reduce<Record<string, any[]>>((acc, tab) => {
+    return pageContentTabs.reduce<Record<string, WallpaperCollection[]>>((acc, tab) => {
       const normalized = normalizeCategoryType(tab.type);
       if (contentCollectionsByCategory || isContentCategory(normalized)) {
         acc[normalized] = sortByDateDesc(contentCollectionsByCategory?.[normalized] || getWallpaperCollections(normalized));
@@ -113,7 +130,6 @@ export default function Home({
         },
         body: JSON.stringify({
           keys,
-          env: 'production'
         }),
       });
 
@@ -206,7 +222,7 @@ export default function Home({
     };
 
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      idleCallbackId = (window as any).requestIdleCallback(() => {
+      idleCallbackId = (window as IdleWindow).requestIdleCallback!(() => {
         void loadImages();
       }, { timeout: 5000 });
     } else {
@@ -221,7 +237,7 @@ export default function Home({
         clearTimeout(timeoutId);
       }
       if (idleCallbackId !== null && typeof window !== 'undefined' && 'cancelIdleCallback' in window) {
-        (window as any).cancelIdleCallback(idleCallbackId);
+        (window as IdleWindow).cancelIdleCallback!(idleCallbackId);
       }
     };
   }, [categoryDataMap, initialImageUrls, resolveImageUrls]);
@@ -266,7 +282,7 @@ export default function Home({
   }, []);
 
   // 打开预览模态框
-  const openPreview = useCallback((categoryName: string, wallpapers: any[]) => {
+  const openPreview = useCallback((categoryName: string, wallpapers: WallpaperAsset[]) => {
     // 打开预览
     setPreviewCategory(categoryName);
     setPreviewWallpapers(wallpapers);
@@ -323,7 +339,7 @@ export default function Home({
     if (width >= 1024) return 4;
     if (width >= 640) return 3;
     return 2;
-  }, [viewportWidth]);
+  }, [viewportWidth, forceDesktopCards]);
 
   const getDetailCategory = useCallback((categoryType: string): WallpaperCategory | null => {
     const normalized = normalizeCategoryType(categoryType);
@@ -485,7 +501,7 @@ export default function Home({
 
                   {/* 产品列表 */}
                   <div className={`grid ${cardStyle.gridCols} gap-6`}>
-                    {listData && Array.isArray(listData) && listData.map((item: any, listIndex: number) => {
+                    {listData && Array.isArray(listData) && listData.map((item: WallpaperCollection, listIndex: number) => {
                     // 获取第一个图片用于所有模块
                     const getFirstImage = () => {
                       if (item.item && item.item.length > 0) {
@@ -633,7 +649,7 @@ export default function Home({
                               // 其他平台：显示标题和平台标识
                               <div>
                                 <div className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 min-h-[2.5rem]" role="heading" aria-level={3}>
-                                  {item.title}
+                                  {itemTitle}
                                 </div>
                                 
                                 {/* 平台标识 */}

@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
+import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
 
 export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as { key?: string };
-    const { key } = body;
+    const { key: rawKey } = body;
 
-    if (!key) {
+    if (!rawKey) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+    }
+
+    const key = sanitizeWallpaperKey(rawKey);
+    if (!key) {
+      return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
     }
 
     // 获取环境配置

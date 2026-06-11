@@ -1,5 +1,4 @@
 import { Environment } from '@/lib/config/environments';
-import { getR2ObjectCacheControl } from '@/lib/cache-control';
 
 // AWS Signature V4 辅助函数 - 使用 Web Crypto API
 async function sha256(data: string): Promise<string> {
@@ -13,8 +12,6 @@ async function sha256(data: string): Promise<string> {
 async function hmacSha256(key: Uint8Array, data: string): Promise<Uint8Array> {
   const encoder = new TextEncoder();
   const dataBuffer = encoder.encode(data);
-  // 确保key是BufferSource类型（Uint8Array是BufferSource的子类型）
-  // 使用类型断言确保类型正确
   const keyBuffer: BufferSource = key as BufferSource;
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
@@ -37,76 +34,6 @@ async function getSignatureKey(key: string, dateStamp: string, regionName: strin
   return kSigning;
 }
 
-async function signRequest(
-  method: string,
-  uri: string,
-  query: string,
-  headers: Record<string, string>,
-  payload: string,
-  accessKeyId: string,
-  secretAccessKey: string,
-  region: string,
-  service: string = 's3'
-): Promise<Record<string, string>> {
-  const now = new Date();
-  const amzDate = now.toISOString().replace(/[:\-]|\.\d{3}/g, '');
-  const dateStamp = amzDate.substring(0, 8);
-
-  // 规范化请求
-  const canonicalUri = uri;
-  const canonicalQueryString = query || '';
-  
-  // 规范化请求头
-  const canonicalHeaders = Object.keys(headers)
-    .sort()
-    .map(key => `${key.toLowerCase()}:${headers[key].trim()}\n`)
-    .join('');
-  
-  const signedHeaders = Object.keys(headers)
-    .sort()
-    .map(key => key.toLowerCase())
-    .join(';');
-
-  // 如果 payload 是 'UNSIGNED-PAYLOAD'，直接使用它；否则计算哈希
-  const payloadHash = payload === 'UNSIGNED-PAYLOAD' ? 'UNSIGNED-PAYLOAD' : await sha256(payload);
-
-  const canonicalRequest = [
-    method,
-    canonicalUri,
-    canonicalQueryString,
-    canonicalHeaders,
-    signedHeaders,
-    payloadHash,
-  ].join('\n');
-
-  // 创建待签名字符串
-  const algorithm = 'AWS4-HMAC-SHA256';
-  const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
-  const canonicalRequestHash = await sha256(canonicalRequest);
-  const stringToSign = [
-    algorithm,
-    amzDate,
-    credentialScope,
-    canonicalRequestHash,
-  ].join('\n');
-
-  // 计算签名
-  const signingKey = await getSignatureKey(secretAccessKey, dateStamp, region, service);
-  const signatureBuffer = await hmacSha256(signingKey, stringToSign);
-  const signature = Array.from(signatureBuffer)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-
-  // 添加授权头
-  const authorization = `${algorithm} Credential=${accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-
-  return {
-    ...headers,
-    'Authorization': authorization,
-    'X-Amz-Date': amzDate,
-  };
-}
-
 export class R2Service {
   private accessKeyId: string;
   private secretAccessKey: string;
@@ -118,7 +45,7 @@ export class R2Service {
 
   constructor(environment: Environment) {
     const r2Config = environment.r2;
-    
+
     this.accessKeyId = r2Config.accessKeyId;
     this.secretAccessKey = r2Config.secretAccessKey;
     this.bucket = r2Config.bucket;
@@ -149,246 +76,21 @@ export class R2Service {
       .join('/');
   }
 
-  async listFiles(prefix: string = '', marker: string = '') {
-    // 规范化前缀：如果有前缀且不以/结尾，添加/；如果是空字符串则保持为空
-    let normalizedPrefix = prefix;
-    if (prefix && !prefix.endsWith('/')) {
-      normalizedPrefix = prefix + '/';
-    }
-
-    const queryParams = new URLSearchParams();
-    queryParams.set('list-type', '2');
-    if (normalizedPrefix) {
-      queryParams.set('prefix', normalizedPrefix);
-    }
-    queryParams.set('delimiter', '/');
-    queryParams.set('max-keys', '1000');
-    if (marker) {
-      queryParams.set('continuation-token', marker);
-    }
-
-    try {
-      const url = new URL(`${this.endpoint}/${this.bucket}`);
-      url.search = queryParams.toString();
-
-      const headers: Record<string, string> = {
-        'Host': url.hostname,
-      };
-
-      const signedHeaders = await signRequest(
-        'GET',
-        `/${this.bucket}`,
-        queryParams.toString(),
-        headers,
-        '',
-        this.accessKeyId,
-        this.secretAccessKey,
-        this.region
-      );
-
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        headers: signedHeaders,
-      });
-
-      if (!response.ok) {
-        throw new Error(`R2 listFiles failed: ${response.status} ${response.statusText}`);
-      }
-
-      const xmlText = await response.text();
-      const result = this.parseListObjectsV2Response(xmlText);
-
-      return {
-        items: (result.Contents || []).map((item: any) => ({
-          key: item.Key || '',
-          fsize: parseInt(item.Size || '0', 10),
-          mimeType: this.getMimeType(item.Key || ''),
-          putTime: item.LastModified ? new Date(item.LastModified).getTime() * 10000 : Date.now() * 10000,
-        })),
-        commonPrefixes: (result.CommonPrefixes || []).map((item: any) => ({
-          prefix: item.Prefix || '',
-        })),
-        marker: result.NextContinuationToken || '',
-      };
-    } catch (error) {
-      console.error('R2Service.listFiles error:', error);
-      if (error instanceof Error) {
-        console.error('Error details:', {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        });
-        if (error.message.includes('timeout')) {
-          throw new Error(`R2 request timeout: ${error.message}`);
-        }
-      }
-      throw error;
-    }
-  }
-
-  private parseListObjectsV2Response(xmlText: string): any {
-    // 简单的 XML 解析（生产环境建议使用 XML 解析库）
-    const result: any = {
-      Contents: [],
-      CommonPrefixes: [],
-    };
-
-    // 解析 Contents
-    const contentsMatches = xmlText.matchAll(/<Contents>([\s\S]*?)<\/Contents>/g);
-    for (const match of Array.from(contentsMatches)) {
-      const contentXml = match[1];
-      const keyMatch = contentXml.match(/<Key>(.*?)<\/Key>/);
-      const sizeMatch = contentXml.match(/<Size>(.*?)<\/Size>/);
-      const lastModifiedMatch = contentXml.match(/<LastModified>(.*?)<\/LastModified>/);
-      
-      if (keyMatch) {
-        result.Contents.push({
-          Key: keyMatch[1],
-          Size: sizeMatch ? sizeMatch[1] : '0',
-          LastModified: lastModifiedMatch ? lastModifiedMatch[1] : new Date().toISOString(),
-        });
-      }
-    }
-
-    // 解析 CommonPrefixes
-    const prefixMatches = xmlText.matchAll(/<CommonPrefixes>[\s\S]*?<Prefix>(.*?)<\/Prefix>[\s\S]*?<\/CommonPrefixes>/g);
-    for (const match of Array.from(prefixMatches)) {
-      result.CommonPrefixes.push({
-        Prefix: match[1],
-      });
-    }
-
-    // 解析 NextContinuationToken
-    const tokenMatch = xmlText.match(/<NextContinuationToken>(.*?)<\/NextContinuationToken>/);
-    if (tokenMatch) {
-      result.NextContinuationToken = tokenMatch[1];
-    }
-
-    return result;
-  }
-
-  async uploadFile(file: Buffer, key: string) {
-    const contentType = this.getMimeType(key);
-    
-    // 对于二进制文件，使用 UNSIGNED-PAYLOAD 或计算实际的 payload hash
-    // 为了简化，我们使用 UNSIGNED-PAYLOAD 方式
-    const headers: Record<string, string> = {
-      'Content-Type': contentType,
-      'Content-Length': file.length.toString(),
-      'x-amz-content-sha256': 'UNSIGNED-PAYLOAD',
-    };
-    const cacheControl = getR2ObjectCacheControl(contentType);
-    if (cacheControl) {
-      headers['Cache-Control'] = cacheControl;
-    }
-
-    const signedHeaders = await signRequest(
-      'PUT',
-      `/${this.bucket}/${key}`,
-      '',
-      headers,
-      'UNSIGNED-PAYLOAD',
-      this.accessKeyId,
-      this.secretAccessKey,
-      this.region
-    );
-
-    const url = new URL(`${this.endpoint}/${this.bucket}/${key}`);
-    // 确保file是BodyInit类型（Buffer需要转换为Uint8Array或ArrayBuffer）
-    // 使用类型断言确保类型正确
-    const body: BodyInit = (file instanceof Uint8Array ? file : new Uint8Array(file)) as BodyInit;
-    const response = await fetch(url.toString(), {
-      method: 'PUT',
-      headers: signedHeaders,
-      body: body,
-    });
-
-    if (!response.ok) {
-      throw new Error(`R2 uploadFile failed: ${response.status} ${response.statusText}`);
-    }
-
-    return {
-      key,
-      hash: '',
-      fsize: file.length,
-    };
-  }
-
-  async deleteFile(key: string) {
-    const headers: Record<string, string> = {};
-
-    const signedHeaders = await signRequest(
-      'DELETE',
-      `/${this.bucket}/${key}`,
-      '',
-      headers,
-      '',
-      this.accessKeyId,
-      this.secretAccessKey,
-      this.region
-    );
-
-    const url = new URL(`${this.endpoint}/${this.bucket}/${key}`);
-    const response = await fetch(url.toString(), {
-      method: 'DELETE',
-      headers: signedHeaders,
-    });
-
-    if (!response.ok && response.status !== 204) {
-      throw new Error(`R2 deleteFile failed: ${response.status} ${response.statusText}`);
-    }
-  }
-
-  async getFileInfo(key: string) {
-    const headers: Record<string, string> = {};
-
-    const signedHeaders = await signRequest(
-      'HEAD',
-      `/${this.bucket}/${key}`,
-      '',
-      headers,
-      '',
-      this.accessKeyId,
-      this.secretAccessKey,
-      this.region
-    );
-
-    const url = new URL(`${this.endpoint}/${this.bucket}/${key}`);
-    const response = await fetch(url.toString(), {
-      method: 'HEAD',
-      headers: signedHeaders,
-    });
-
-    if (!response.ok) {
-      throw new Error(`R2 getFileInfo failed: ${response.status} ${response.statusText}`);
-    }
-
-    const contentLength = response.headers.get('content-length');
-    const contentType = response.headers.get('content-type');
-    const lastModified = response.headers.get('last-modified');
-
-    return {
-      fsize: contentLength ? parseInt(contentLength, 10) : 0,
-      mimeType: contentType || 'application/octet-stream',
-      putTime: lastModified ? new Date(lastModified).getTime() * 10000 : Date.now() * 10000,
-    };
-  }
-
   getFileUrl(key: string, domain: string) {
     if (!domain) {
       throw new Error('Domain is required for public file URL. Use getPrivateFileUrl for private buckets.');
     }
-    
+
     // 如果domain看起来是API endpoint而不是public domain，给出警告
     if (domain.includes('.r2.cloudflarestorage.com')) {
       console.warn('Warning: R2 endpoint URL cannot be used as public domain.');
       console.warn('R2 endpoint is for API operations only. For public access, you need to configure a custom domain in Cloudflare dashboard.');
     }
-    
+
     const normalizedDomain = this.normalizePublicDomain(domain);
     const normalizedKey = key.startsWith('/') ? key.substring(1) : key;
     const fileUrl = `${normalizedDomain}/${this.encodeObjectKey(normalizedKey)}`;
-    
+
     return fileUrl;
   }
 
@@ -401,7 +103,7 @@ export class R2Service {
     // 1. R2: getPrivateFileUrl(key, expires, forceDownload)
     // 2. 统一接口: getPrivateFileUrl(key, domain, expires, forceDownload)
     let expiresIn: number;
-    
+
     if (typeof expiresOrDomain === 'number') {
       // R2调用方式：第二个参数是expires
       expiresIn = expiresOrDomain || this.urlExpires;
@@ -442,20 +144,14 @@ export class R2Service {
     let endpointUrl: URL;
     try {
       endpointUrl = new URL(this.endpoint);
-    } catch (e) {
+    } catch {
       // 如果 endpoint 不包含协议，添加 https://
       endpointUrl = new URL(`https://${this.endpoint}`);
     }
-    
+
     const hostname = endpointUrl.hostname;
-    
-    // 对于 S3/R2 API，路径格式是 /bucket/key
-    // 在规范化请求中，路径部分需要对每个路径段进行编码，但保留斜杠
-    // 例如：/bucket/path/to/file with spaces.png -> /bucket/path/to/file%20with%20spaces.png
-    // 注意：必须使用相同的编码函数确保规范化路径和最终URL一致
-    // AWS S3规范要求对括号进行编码：() -> %28%29
-    // 规范化路径：对每个路径段进行编码
-    // 使用同一个编码函数确保一致性
+
+    // 对每个路径段编码但保留斜杠，确保规范化路径和最终 URL 一致
     const encodedKey = this.encodeObjectKey(normalizedKey);
     const canonicalPath = `/${this.bucket}/${encodedKey}`;
 
@@ -465,8 +161,6 @@ export class R2Service {
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
       .join('&');
 
-    // 构建规范化请求
-    // 注意：在规范化请求中，路径部分需要对每个路径段进行编码
     const canonicalRequest = [
       'GET',
       canonicalPath,
@@ -504,11 +198,9 @@ export class R2Service {
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
       .join('&');
 
-    // 构建最终 URL - 使用 endpoint 的 origin
-    // 使用与规范化路径相同的编码方式，确保一致性
     const encodedPath = `/${this.bucket}/${encodedKey}`;
     const finalUrl = `${endpointUrl.origin}${encodedPath}?${finalQueryString}`;
-    
+
     return finalUrl;
   }
 
@@ -522,16 +214,5 @@ export class R2Service {
 
   private getCredentialScope(): string {
     return `${this.getDateStamp()}/${this.region}/s3/aws4_request`;
-  }
-
-  private getMimeType(filename: string): string {
-    const ext = filename.split('.').pop()?.toLowerCase();
-    const mimeTypes: { [key: string]: string } = {
-      'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png',
-      'gif': 'image/gif', 'webp': 'image/webp', 'svg': 'image/svg+xml',
-      'mp4': 'video/mp4', 'webm': 'video/webm', 'mov': 'video/quicktime',
-      'pdf': 'application/pdf', 'json': 'application/json',
-    };
-    return mimeTypes[ext || ''] || 'application/octet-stream';
   }
 }

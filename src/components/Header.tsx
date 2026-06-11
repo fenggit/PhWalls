@@ -58,7 +58,7 @@ export default function Header({ tabData, currentLang, onLanguageChange, categor
       if (categoryPathPrefix) return `${categoryPathPrefix}#${normalizedType}`;
       return buildBrandPath(categoryType);
     },
-    []
+    [categoryPathPrefix]
   );
 
   const getActiveTypeFromPath = useCallback((currentPath: string): string => {

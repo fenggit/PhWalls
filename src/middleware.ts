@@ -165,13 +165,9 @@ export function middleware(request: NextRequest) {
   }
 
   if (isStaticPath || isInternal) {
-    const response = NextResponse.next();
-    response.cookies.set(LANGUAGE_COOKIE_NAME, preferredLanguage, {
-      maxAge: ONE_YEAR_SECONDS,
-      path: '/',
-      sameSite: 'lax',
-    });
-    return response;
+    // 静态资源与内部请求（_next、api、静态文件）不写语言 cookie：
+    // 带 Set-Cookie 的响应会削弱 Cloudflare 对不可变资源的缓存。
+    return NextResponse.next();
   }
 
   const requestHeaders = new Headers(request.headers);

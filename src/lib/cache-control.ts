@@ -4,8 +4,3 @@ export const IMAGE_IMMUTABLE_CACHE_CONTROL = 'public, max-age=31536000, s-maxage
 
 // 下载接口会带 Content-Disposition，避免不同文件名或权限场景被浏览器/CDN 复用。
 export const DOWNLOAD_CACHE_CONTROL = 'no-store';
-
-export const getR2ObjectCacheControl = (contentType: string): string | undefined => {
-  // 仅给 R2 图片对象写入长缓存元数据，其他文件类型维持默认策略。
-  return contentType.startsWith('image/') ? IMAGE_IMMUTABLE_CACHE_CONTROL : undefined;
-};

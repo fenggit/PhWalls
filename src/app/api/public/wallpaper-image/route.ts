@@ -2,16 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
 import { IMAGE_IMMUTABLE_CACHE_CONTROL } from '@/lib/cache-control';
+import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
 
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const key = searchParams.get('key');
+    const rawKey = searchParams.get('key');
 
-    if (!key) {
+    if (!rawKey) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+    }
+
+    const key = sanitizeWallpaperKey(rawKey);
+    if (!key) {
+      return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
     }
 
     const environment = getCurrentEnvironment();

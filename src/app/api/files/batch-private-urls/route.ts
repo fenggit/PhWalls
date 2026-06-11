@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
+import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
 
 export const runtime = 'edge';
 const SIGNING_CONCURRENCY = 8;
@@ -32,15 +33,15 @@ export async function POST(request: NextRequest) {
       new Set(
         keys
           .filter((key: unknown): key is string => typeof key === 'string')
-          .map((key) => key.trim())
-          .filter(Boolean)
+          .map((key) => sanitizeWallpaperKey(key))
+          .filter((key): key is string => Boolean(key))
       )
     );
 
     if (normalizedKeys.length === 0) {
       return NextResponse.json(
         {
-          error: 'Keys array must contain valid non-empty string keys',
+          error: 'Keys array must contain valid wallpaper object keys',
           urls: {},
         },
         { status: 400 }
@@ -152,7 +153,7 @@ export async function POST(request: NextRequest) {
 }
 
 // 处理 GET 请求，返回错误信息
-export async function GET(request: NextRequest) {
+export async function GET() {
   return NextResponse.json(
     { 
       error: 'This endpoint only accepts POST requests',

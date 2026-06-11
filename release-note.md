@@ -3,6 +3,14 @@
 ## 版本历史
 
 ### v1.1.1 - 2026-06-11
+- 修复项目无法通过 `npm run lint` 与 `npm run build`：清理首页与 R2 服务中的 `any` 类型错误（构建此前被 ESLint error 阻断）
+- 安全加固：图片/下载/URL 签发等接口在透传 R2 对象 key 前统一做白名单校验（`sanitizeWallpaperKey`），仅放行壁纸命名空间内的图片对象，阻断路径穿越与被当作通用代理/绕过防盗链的滥用
+- 精简 R2 服务：移除从未被调用的 listFiles/uploadFile/deleteFile/getFileInfo 及 XML 解析等死代码，仅保留公开/签名 URL 构建
+- 移除无引用的 Node 专有依赖（jsonwebtoken、bcryptjs、jose、mz、graceful-fs 及相关类型），减小安装体积
+- 中间件不再对静态资源与内部请求写语言 cookie，避免 Set-Cookie 削弱 Cloudflare 对不可变资源的缓存
+- 安全响应头：关闭已废弃的 X-XSS-Protection，新增保守的 CSP（frame-ancestors/base-uri/object-src）
+- 修复设备类型角标在 `type` 不含 `/` 时可能导致整页崩溃的隐患
+- 修复首页导航出现两个「Desktop」标签并触发 React 重复 key 警告：tabData 按归一化 type 去重
 - 修复 Cloudflare Pages 出现大量「已超出 CPU 时间限制」错误：品牌页与壁纸详情页此前每次请求都会解析全部品牌数据，冷启动 CPU 开销过高
 - 壁纸数据改为按品牌惰性加载（动态 import），品牌页/详情页仅解析所需的单个品牌 JSON，大幅降低单请求 CPU 时间
 - 拆分纯工具函数与全量数据模块，避免 seo 等仅需工具函数的模块被迫加载全部壁纸数据

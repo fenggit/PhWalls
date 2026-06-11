@@ -56,8 +56,16 @@ const nextConfig = {
             value: 'DENY',
           },
           {
+            // 旧版 XSS Auditor 已被主流浏览器废弃，且自身可能引入漏洞，
+            // 现代建议显式关闭，由 CSP 提供防护。
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
+          },
+          {
+            // 保守的基线 CSP：限制框架嵌入、base 标签与插件，
+            // 不限制 script/img 来源以避免破坏 GA、广告与 R2 图片加载。
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
           },
           {
             key: 'Referrer-Policy',
