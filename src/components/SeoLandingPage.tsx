@@ -1,11 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useMemo, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
+
+// 预览模态按需懒加载，减小品牌页首屏 JS
+const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPreviewDownload'), {
+  ssr: false,
+});
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { Language, LanguageCode } from '@/types';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
@@ -177,7 +182,8 @@ export default function SeoLandingPage({
                             src={buildCardImageUrl(card.imageKey)}
                             alt={`${formatWallpaperDisplayName(card.name)} preview`}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            loading="lazy"
+                            loading={index < 4 ? 'eager' : 'lazy'}
+                            fetchPriority={index < 2 ? 'high' : 'low'}
                             decoding="async"
                           />
                         ) : (
@@ -215,14 +221,16 @@ export default function SeoLandingPage({
         </section>
       </main>
 
-      <WallpaperPreviewDownload
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        wallpapers={previewWallpapers}
-        currentIndex={previewIndex}
-        onIndexChange={setPreviewIndex}
-        categoryName={previewCategory}
-      />
+      {isPreviewOpen && (
+        <WallpaperPreviewDownload
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          wallpapers={previewWallpapers}
+          currentIndex={previewIndex}
+          onIndexChange={setPreviewIndex}
+          categoryName={previewCategory}
+        />
+      )}
 
       <Footer />
     </div>

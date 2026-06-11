@@ -175,7 +175,9 @@ export default async function RootLayout({
           }}
         />
 
-        {/* 资源提示优化 */}
+        {/* 资源提示优化：为 LCP 图片来源提前建连 */}
+        <link rel="preconnect" href="https://static.phwalls.com" />
+        <link rel="dns-prefetch" href="https://static.phwalls.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 

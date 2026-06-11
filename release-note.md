@@ -2,6 +2,13 @@
 
 ## 版本历史
 
+### v1.1.2 - 2026-06-11
+- 优化移动端 Core Web Vitals（LCP/INP），针对 PageSpeed「未通过」做首批优化（暂不含图片自适应 srcset）
+- 首屏首个分类前几张壁纸图固定 eager + 高优先级加载，不再依赖不可靠的 UA 嗅探，改善 LCP
+- 为 LCP 图片来源 static.phwalls.com 增加 preconnect 预连接
+- 壁纸预览模态改为 next/dynamic 按需懒加载并按需挂载，减小首屏 JS 体积
+- 品牌落地页（SeoLandingPage）同步应用首屏图片优先级与模态懒加载优化
+
 ### v1.1.1 - 2026-06-10
 - 修复 PageSpeed SEO 报告中首页被识别为 noindex、缺少 meta description 的问题
 - 首页初始 HTML head 直接输出 title、description、robots、googlebot、canonical，提升搜索引擎抓取稳定性

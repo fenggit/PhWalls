@@ -2,9 +2,14 @@
 
 import Link from 'next/link';
 import { Fragment, useState, useEffect, useCallback, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
-import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import Footer from '@/components/Footer';
+
+// 预览模态体积较大且仅在点击后使用，按需懒加载以减小首屏 JS、降低 INP/TBT
+const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPreviewDownload'), {
+  ssr: false,
+});
 import { Language, TabInfo } from '@/types';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData, sortByDateDesc } from '@/lib/data';
 import { useLanguage } from '@/components/LanguageProvider';
@@ -37,7 +42,6 @@ type HomeProps = {
 // 首页组件：聚合展示所有壁纸分类、卡片预览和广告位。
 export default function Home({
   initialImageUrls = {},
-  isMobilePriority = false,
   contentTabs,
   navigationTabs,
   navigationTabsExtra = [],
@@ -512,7 +516,9 @@ export default function Home({
                         )
                       : null;
                     const itemTitle = buildWallpaperListTitle(item.name, texts.wallpapersTitleSuffix);
-                    const isPriorityImage = isMobilePriority && index === 0 && listIndex < 2;
+                    // 首屏首个分类的前几张作为 LCP 候选，固定 eager + high，避免依赖不可靠的 UA 嗅探
+                    const isAboveFold = index === 0 && listIndex < 4;
+                    const isLcpCandidate = index === 0 && listIndex < 2;
 
                     return (
                       <div 
@@ -550,8 +556,8 @@ export default function Home({
                                   className={`w-full h-full object-cover group-hover:scale-102 transition-all duration-500 ease-out will-change-transform ${
                                     imageLoadingStates[cardImageKey] ? 'opacity-0' : 'opacity-100 image-fade-in'
                                   }`}
-                                  loading={isPriorityImage ? 'eager' : 'lazy'}
-                                  fetchPriority={isPriorityImage ? 'high' : 'low'}
+                                  loading={isAboveFold ? 'eager' : 'lazy'}
+                                  fetchPriority={isLcpCandidate ? 'high' : 'low'}
                                   decoding="async"
                                   onLoad={() => {
                                     handleImageLoad(cardImageKey);
@@ -729,15 +735,17 @@ export default function Home({
 
       <Footer />
 
-      {/* 壁纸预览模态框 */}
-      <WallpaperPreviewDownload
-        isOpen={isPreviewOpen}
-        onClose={closePreview}
-        wallpapers={previewWallpapers}
-        currentIndex={previewIndex}
-        onIndexChange={handlePreviewIndexChange}
-        categoryName={previewCategory}
-      />
+      {/* 壁纸预览模态框：按需挂载，首次点击预览时才加载其 JS */}
+      {isPreviewOpen && (
+        <WallpaperPreviewDownload
+          isOpen={isPreviewOpen}
+          onClose={closePreview}
+          wallpapers={previewWallpapers}
+          currentIndex={previewIndex}
+          onIndexChange={handlePreviewIndexChange}
+          categoryName={previewCategory}
+        />
+      )}
 
       {/* 返回顶部按钮 - 预览时不显示 */}
       <button
