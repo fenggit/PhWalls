@@ -17,12 +17,11 @@ import { normalizeCategoryType } from '@/lib/brands';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import {
   buildWallpaperDetailPath,
-  getWallpaperCollections,
   isWallpaperCategory,
   type WallpaperAsset,
   type WallpaperCollection,
   type WallpaperCategory,
-} from '@/lib/wallpapers';
+} from '@/lib/wallpaper-data';
 import { withLanguagePath } from '@/lib/language';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
@@ -100,7 +99,7 @@ export default function Home({
     return pageContentTabs.reduce<Record<string, WallpaperCollection[]>>((acc, tab) => {
       const normalized = normalizeCategoryType(tab.type);
       if (contentCollectionsByCategory || isContentCategory(normalized)) {
-        acc[normalized] = sortByDateDesc(contentCollectionsByCategory?.[normalized] || getWallpaperCollections(normalized));
+        acc[normalized] = sortByDateDesc(contentCollectionsByCategory?.[normalized] || []);
       }
       return acc;
     }, {});
@@ -282,12 +281,38 @@ export default function Home({
   }, []);
 
   // 打开预览模态框
-  const openPreview = useCallback((categoryName: string, wallpapers: WallpaperAsset[]) => {
-    // 打开预览
-    setPreviewCategory(categoryName);
-    setPreviewWallpapers(wallpapers);
+  // 首页使用轻量索引（每个集合仅含封面图），点击预览时需按需拉取完整 item 列表。
+  // 完整数据来源（如桌面页）本地已有全部 item，则直接使用，不发起请求。
+  const openPreview = useCallback(async (categoryType: string, collection: WallpaperCollection) => {
+    const localItems = collection.item || [];
+    const expectedCount = collection.count ?? localItems.length;
+
+    setPreviewCategory(collection.name);
     setPreviewIndex(0);
+    setPreviewWallpapers(localItems);
     setIsPreviewOpen(true);
+
+    // 本地已是完整列表，无需请求
+    if (localItems.length >= expectedCount) {
+      return;
+    }
+
+    try {
+      const params = new URLSearchParams({ type: categoryType, device: collection.name });
+      const response = await fetch(`/api/public/wallpapers?${params.toString()}`);
+      if (!response.ok) {
+        return;
+      }
+      const data = (await response.json()) as {
+        data?: Array<{ name: string; item: WallpaperAsset[] }>;
+      };
+      const match = data.data?.find((entry) => entry.name === collection.name) || data.data?.[0];
+      if (match?.item?.length) {
+        setPreviewWallpapers(match.item);
+      }
+    } catch (error) {
+      console.error('Failed to load wallpapers for preview:', error);
+    }
   }, []);
 
   // 关闭预览模态框
@@ -511,6 +536,8 @@ export default function Home({
                     };
 
                     const firstImage = getFirstImage();
+                    // 集合内壁纸总数：首页轻量数据用 count，完整数据回退到 item.length
+                    const itemCount = item.count ?? (item.item?.length || 0);
                     // 使用稳定的 key，确保服务器端和客户端一致
                     // 使用 categoryType 和 item.name 组合，确保唯一性和稳定性
                     const itemKey = `${categoryType}-${item.name}`;
@@ -641,7 +668,7 @@ export default function Home({
                                   
                                   {/* 数量 */}
                                   <div className="font-medium">
-                                    {item.item ? item.item.length : 0} {texts.count}
+                                    {itemCount} {texts.count}
                                   </div>
                                 </div>
                               </div>
@@ -669,8 +696,8 @@ export default function Home({
                             <button
                               type="button"
                               onClick={() => {
-                                if (item.item && item.item.length > 0) {
-                                  openPreview(item.name, item.item);
+                                if (itemCount > 0) {
+                                  void openPreview(categoryType, item);
                                 } else {
                                   alert(texts.noWallpaperData);
                                 }
@@ -686,13 +713,13 @@ export default function Home({
                             </button>
                           )}
 
-                          {item.item && item.item.length > 0 && (
+                          {itemCount > 0 && (
                             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/20">
                               <button 
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  openPreview(item.name, item.item);
+                                  void openPreview(categoryType, item);
                                 }}
                                 className="pointer-events-auto opacity-0 group-hover:opacity-100 bg-white/90 text-gray-900 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0 hover:bg-white will-change-transform"
                               >

@@ -1,6 +1,6 @@
 import Home from './Home';
 import { headers } from 'next/headers';
-import { getAllWallpaperCollections } from '@/lib/wallpapers';
+import { getAllHomeCollections, getHomeCollectionsByCategory } from '@/lib/home-index';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { getTabData } from '@/lib/data';
 
@@ -23,7 +23,7 @@ const buildInitialHomeImageUrls = () => {
     }
   };
 
-  getAllWallpaperCollections().forEach(({ category, collection }) => {
+  getAllHomeCollections().forEach(({ category, collection }) => {
     addEntry(collection as WallpaperEntry, category);
   });
 
@@ -40,6 +40,7 @@ export default async function HomePage() {
       initialImageUrls={initialImageUrls}
       isMobilePriority={isMobileRequest}
       contentTabs={getTabData().filter((tab) => tab.type.toLowerCase() !== 'desktop')}
+      contentCollectionsByCategory={getHomeCollectionsByCategory()}
       navigationTabsExtra={[{ title: 'Desktop', type: 'desktop', icon: '', items: [] }]}
     />
   );

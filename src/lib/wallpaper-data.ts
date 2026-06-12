@@ -15,6 +15,9 @@ export type WallpaperCollection = {
   name: string;
   date: string;
   item: WallpaperAsset[];
+  // 首页轻量索引专用：集合内壁纸总数。
+  // 完整数据（品牌页 / 桌面页）不带此字段，按 item.length 计算即可。
+  count?: number;
 };
 
 export type WallpaperCollectionEntry = {
