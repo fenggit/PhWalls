@@ -228,6 +228,9 @@ export interface I18nTexts {
   aboutTrustDesc: string;
   aboutContactTitle: string;
   aboutContactDesc: string;
+  aboutDesktopTitle: string;
+  aboutDesktopDesc: string;
+  aboutDesktopItemDescTemplate: string;
   systemNative: string;
   hdWatermarkFree: string;
   regularUpdates: string;
@@ -573,6 +576,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     aboutTrustDesc: '我们持续整理原厂资源，提供清晰分类、稳定链接与高分辨率下载。',
     aboutContactTitle: '联系与反馈',
     aboutContactDesc: '欢迎提交补充资源、版本纠错与版权反馈，我们会尽快处理。',
+    aboutDesktopTitle: '桌面壁纸',
+    aboutDesktopDesc: '涵盖 Windows、Ubuntu、ChromeOS、Surface、Aluminium OS 等主流桌面系统官方内置壁纸，高清原图免费下载。',
+    aboutDesktopItemDescTemplate: '浏览 {brand} 官方桌面壁纸合集，支持高清原图下载。',
     systemNative: '系统原生壁纸',
     hdWatermarkFree: '高清无水印',
     regularUpdates: '定期更新',
@@ -916,6 +922,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     aboutTrustDesc: 'We keep original resources organized, searchable, and downloadable in high resolution.',
     aboutContactTitle: 'Contact and Feedback',
     aboutContactDesc: 'Send corrections, missing versions, or copyright issues and we will handle them quickly.',
+    aboutDesktopTitle: 'Desktop Wallpapers',
+    aboutDesktopDesc: 'Official built-in wallpapers for Windows, Ubuntu, ChromeOS, Surface, Aluminium OS and more. HD downloads, free.',
+    aboutDesktopItemDescTemplate: 'Explore official {brand} desktop wallpaper collections and download them in full resolution.',
     systemNative: 'System Native',
     hdWatermarkFree: 'HD Watermark-Free',
     regularUpdates: 'Regular Updates',
@@ -1259,6 +1268,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     aboutTrustDesc: '純正リソースを継続的に整理し、高解像度で安定配信します。',
     aboutContactTitle: 'お問い合わせ',
     aboutContactDesc: '不足リソース、誤記、著作権関連のご連絡を受け付けています。',
+    aboutDesktopTitle: 'デスクトップ壁紙',
+    aboutDesktopDesc: 'Windows、Ubuntu、ChromeOS、Surface、Aluminium OS など主要デスクトップシステムの公式壁紙を高解像度でダウンロード。',
+    aboutDesktopItemDescTemplate: '{brand} の公式デスクトップ壁紙コレクションを閲覧し、高解像度でダウンロードできます。',
     systemNative: 'システムネイティブ',
     hdWatermarkFree: 'HD透かしなし',
     regularUpdates: '定期的な更新',
@@ -1575,6 +1587,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     aboutTrustDesc: 'Chúng tôi tập hợp tài nguyên gốc, phân loại rõ ràng và tải xuống độ phân giải cao.',
     aboutContactTitle: 'Liên hệ và phản hồi',
     aboutContactDesc: 'Gửi bổ sung dữ liệu, sửa lỗi phiên bản hoặc phản hồi bản quyền để chúng tôi xử lý.',
+    aboutDesktopTitle: 'Hình nền máy tính',
+    aboutDesktopDesc: 'Bao gồm hình nền chính thức cho Windows, Ubuntu, ChromeOS, Surface, Aluminium OS và nhiều hệ thống khác. Tải xuống HD miễn phí.',
+    aboutDesktopItemDescTemplate: 'Khám phá bộ sưu tập hình nền máy tính chính thức của {brand} và tải xuống chất lượng cao.',
     systemNative: 'Hình nền gốc hệ thống',
     hdWatermarkFree: 'HD không có watermark',
     regularUpdates: 'Cập nhật thường xuyên',
@@ -1918,6 +1933,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     aboutTrustDesc: '我們持續整理原廠資源，提供清楚分類與高解析下載。',
     aboutContactTitle: '聯絡與回饋',
     aboutContactDesc: '歡迎提交補充資源、版本修正與版權回報。',
+    aboutDesktopTitle: '桌面桌布',
+    aboutDesktopDesc: '涵蓋 Windows、Ubuntu、ChromeOS、Surface、Aluminium OS 等主流桌面系統官方內置桌布，高清原圖免費下載。',
+    aboutDesktopItemDescTemplate: '瀏覽 {brand} 官方桌面桌布合集，支援高清原圖下載。',
     systemNative: '系統原生壁紙',
     hdWatermarkFree: '高清無浮水印',
     regularUpdates: '定期更新',

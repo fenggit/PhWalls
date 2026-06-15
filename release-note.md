@@ -2,7 +2,11 @@
 
 ## 版本历史
 
-### v1.1.2 - 2026-06-12
+### v1.1.1 - 2026-06-15
+- 桌面壁纸页（/desktop）tabbar 新增「macOS」分类，点击直接跳转外部站点（applewalls.com macOS 壁纸页），在新标签页打开
+- About 页面「资源合集」模块下方新增 Desktop 壁纸分类区块，展示 Windows、Ubuntu、ChromeOS、Surface、Aluminium OS、macOS 六个分类
+
+### v1.1.1 - 2026-06-12
 - 修复首页（/、/zh、/en 等）在 Cloudflare Pages 大量出现 503「已超出 CPU 时间限制」：此前首页每次请求都会解析全部品牌壁纸数据（约 2.2MB），冷启动 CPU 开销过高
 - 新增构建期生成的首页轻量索引（`src/data/home-index.json`，仅含每个集合的封面图与数量，约 264KB），首页改为只解析该索引渲染卡片，单请求 CPU 时间大幅下降
 - 首页壁纸预览改为按需通过 `/api/public/wallpapers` 拉取完整 item 列表，封面与数量展示保持不变

@@ -8,6 +8,11 @@
     "type": "ubuntu"
   },
   {
+    "title": "macOS",
+    "type": "macOS",
+    "link":"https://www.applewalls.com/zh/macos-wallpapers"
+  },
+  {
     "title": "ChromeOS",
     "type": "google-chromeos"
   },

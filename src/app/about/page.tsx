@@ -14,6 +14,7 @@ import { getAboutBrandCopy, getAboutFaqItems, getFooterBrandDescription } from '
 import { buildWallpaperListTitle, getTabData } from '@/lib/data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
+import { getDesktopTabData } from '@/lib/desktop-data';
 import {
   CheckCircle2,
   Clock3,
@@ -21,6 +22,7 @@ import {
   ExternalLink,
   Mail,
   MessageCircle,
+  Monitor,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -66,6 +68,15 @@ function AboutContent() {
               ? `Khám phá bộ sưu tập hình nền chính thức của ${item.title} và tải xuống chất lượng cao.`
               : `Explore official ${item.title} wallpaper collections and download them in full resolution.`,
     tone: collectionTones[index % collectionTones.length],
+  }));
+
+  const desktopTabs = getDesktopTabData();
+  const desktopCollections = desktopTabs.map((item, index) => ({
+    href: item.link ? item.link : withLanguagePath(`/desktop#${item.type}`, language),
+    title: buildWallpaperListTitle(item.title, texts.wallpapersTitleSuffix),
+    desc: texts.aboutDesktopItemDescTemplate.replace('{brand}', item.title),
+    tone: collectionTones[index % collectionTones.length],
+    external: !!item.link,
   }));
 
   const faqItems = getAboutFaqItems(language);
@@ -189,6 +200,36 @@ function AboutContent() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  className={`group rounded-2xl border bg-gradient-to-br ${item.tone} p-5 transition-transform duration-200 hover:-translate-y-0.5`}
+                >
+                  <h3 className="font-semibold text-slate-900">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.desc}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-700">
+                    {texts.learnMore}
+                    <ExternalLink className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50/60">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 flex items-center gap-3">
+              <Monitor className="h-7 w-7 text-slate-600" />
+              {texts.aboutDesktopTitle}
+            </h2>
+            <p className="mt-4 max-w-3xl text-slate-600 text-lg leading-relaxed">
+              {texts.aboutDesktopDesc}
+            </p>
+
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {desktopCollections.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   className={`group rounded-2xl border bg-gradient-to-br ${item.tone} p-5 transition-transform duration-200 hover:-translate-y-0.5`}
                 >
                   <h3 className="font-semibold text-slate-900">{item.title}</h3>
