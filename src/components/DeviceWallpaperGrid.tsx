@@ -40,6 +40,7 @@ interface DeviceWallpaperGridProps {
   categoryLabelOverride?: string;
   categoryLandingPathOverride?: string;
   categoryPathPrefixOverride?: string;
+  activeCategoryTypeOverride?: string;
 }
 
 type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
@@ -53,6 +54,7 @@ export default function DeviceWallpaperGrid({
   categoryLabelOverride,
   categoryLandingPathOverride,
   categoryPathPrefixOverride,
+  activeCategoryTypeOverride,
 }: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const tabData = useMemo(() => tabDataOverride || getTabData(currentLang), [currentLang, tabDataOverride]);
@@ -305,6 +307,7 @@ export default function DeviceWallpaperGrid({
         currentLang={currentLang}
         onLanguageChange={handleLanguageChange}
         categoryPathPrefix={categoryPathPrefixOverride}
+        activeCategoryTypeOverride={activeCategoryTypeOverride}
       />
 
       <main className={`mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>

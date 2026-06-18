@@ -1,4 +1,4 @@
-import googleAluminiumOsData from '@/data/desktopwalls/google-aluminium-os.json';
+import googleOsData from '@/data/desktopwalls/google-os.json';
 import googleChromeosData from '@/data/desktopwalls/google-chromeos.json';
 import microsoftSurfaceData from '@/data/desktopwalls/microsoft-surface.json';
 import microsoftWindowsData from '@/data/desktopwalls/microsoft-windows.json';
@@ -22,7 +22,7 @@ export {
 
 // 以下全量数据访问供 desktop 首页聚合与 sitemap 使用。
 const desktopDataSources: Record<string, WallpaperCollection[]> = {
-  'google-aluminium-os': googleAluminiumOsData as WallpaperCollection[],
+  'google-os': googleOsData as WallpaperCollection[],
   'google-chromeos': googleChromeosData as WallpaperCollection[],
   'microsoft-surface': microsoftSurfaceData as WallpaperCollection[],
   'microsoft-windows': microsoftWindowsData as WallpaperCollection[],

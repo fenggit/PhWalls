@@ -1,20 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageProvider';
-
-// 预览模态按需懒加载，减小品牌页首屏 JS
-const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPreviewDownload'), {
-  ssr: false,
-});
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
-import { Language, LanguageCode } from '@/types';
+import { Language, LanguageCode, TabInfo } from '@/types';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import { buildWallpaperDetailPath, type WallpaperCategory } from '@/lib/wallpaper-data';
+import { buildWallpaperDetailPath, slugifyWallpaperName, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
 
@@ -41,11 +35,15 @@ type SeoLandingPageProps = {
   categoryPath?: string;
   detailCategory?: WallpaperCategory;
   seoTitle?: string;
+  detailPathPrefix?: string;
   seoDescription?: string;
   seoSubtitle?: string;
   cardAspect: string;
   gridClass: string;
   cards: LandingCard[];
+  navigationTabs?: TabInfo[];
+  categoryPagePrefix?: string;
+  activeCategoryTypeOverride?: string;
 };
 
 const gradientPalette = [
@@ -74,31 +72,21 @@ export default function SeoLandingPage({
   categoryPath,
   detailCategory,
   seoTitle,
+  detailPathPrefix,
   seoDescription,
   seoSubtitle,
   cardAspect,
   gridClass,
   cards,
+  navigationTabs,
+  categoryPagePrefix,
+  activeCategoryTypeOverride,
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
-  const tabData = useMemo(() => getTabData(currentLang), [currentLang]);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewWallpapers, setPreviewWallpapers] = useState<LandingWallpaperItem[]>([]);
-  const [previewIndex, setPreviewIndex] = useState(0);
-  const [previewCategory, setPreviewCategory] = useState('');
+  const tabData = useMemo(() => navigationTabs ?? getTabData(currentLang), [navigationTabs, currentLang]);
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
-  };
-
-  const openPreview = (card: LandingCard) => {
-    if (!card.wallpapers || card.wallpapers.length === 0) {
-      return;
-    }
-    setPreviewWallpapers(card.wallpapers);
-    setPreviewCategory(formatWallpaperDisplayName(card.name));
-    setPreviewIndex(0);
-    setIsPreviewOpen(true);
   };
 
   const title = seoTitle || breadcrumbLabel;
@@ -151,7 +139,13 @@ export default function SeoLandingPage({
           })
         }}
       />
-      <Header tabData={tabData} currentLang={currentLang} onLanguageChange={handleLanguageChange} />
+      <Header
+        tabData={tabData}
+        currentLang={currentLang}
+        onLanguageChange={handleLanguageChange}
+        categoryPagePrefix={categoryPagePrefix}
+        activeCategoryTypeOverride={activeCategoryTypeOverride}
+      />
 
       <main className="mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8">
         <nav aria-label={breadcrumbAriaLabel} className="mb-6 text-sm text-gray-500">
@@ -170,7 +164,9 @@ export default function SeoLandingPage({
           <div className={`grid ${gridClass} gap-6`}>
             {cards.map((card, index) => {
               const gradient = gradientPalette[index % gradientPalette.length];
-              const detailHref = withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.name), currentLang);
+              const detailHref = detailPathPrefix
+                ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.name)}`,currentLang)
+                : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.name), currentLang);
               const cardTitle = buildWallpaperListTitle(card.name, texts.wallpapersTitleSuffix);
               return (
                 <article key={card.name} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
@@ -199,19 +195,12 @@ export default function SeoLandingPage({
                     </div>
                   </Link>
 
-                  <div className="mt-3 flex items-start justify-between gap-3">
+                  <div className="mt-3">
                     <h2 className="text-sm sm:text-base leading-tight font-semibold text-gray-900">
                       <Link href={detailHref} className="hover:text-blue-600">
                         {cardTitle}
                       </Link>
                     </h2>
-                    <button
-                      type="button"
-                      onClick={() => openPreview(card)}
-                      className="shrink-0 rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:border-blue-200 hover:text-blue-600"
-                    >
-                      {texts.preview}
-                    </button>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">{card.date} {updatedLabel}</p>
                 </article>
@@ -220,17 +209,6 @@ export default function SeoLandingPage({
           </div>
         </section>
       </main>
-
-      {isPreviewOpen && (
-        <WallpaperPreviewDownload
-          isOpen={isPreviewOpen}
-          onClose={() => setIsPreviewOpen(false)}
-          wallpapers={previewWallpapers}
-          currentIndex={previewIndex}
-          onIndexChange={setPreviewIndex}
-          categoryName={previewCategory}
-        />
-      )}
 
       <Footer />
     </div>

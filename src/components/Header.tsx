@@ -14,6 +14,8 @@ export interface HeaderProps {
   currentLang: Language;
   onLanguageChange: (lang: Language) => void;
   categoryPathPrefix?: string;
+  categoryPagePrefix?: string;
+  activeCategoryTypeOverride?: string;
 }
 
 const languageConfig: Record<Language, { flag: string; name: string; key: keyof I18nTexts; priority: number }> = {
@@ -35,7 +37,14 @@ const languageOrder: Language[] = [
 const SHOW_MINI_PROGRAM = false;
 const MAX_VISIBLE_DESKTOP_TABS = 8;
 
-export default function Header({ tabData, currentLang, onLanguageChange, categoryPathPrefix }: HeaderProps) {
+export default function Header({
+  tabData,
+  currentLang,
+  onLanguageChange,
+  categoryPathPrefix,
+  categoryPagePrefix,
+  activeCategoryTypeOverride,
+}: HeaderProps) {
   const [isDeviceMenuOpen, setIsDeviceMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMiniProgramMenuOpen, setIsMiniProgramMenuOpen] = useState(false);
@@ -55,10 +64,11 @@ export default function Header({ tabData, currentLang, onLanguageChange, categor
 
       if (normalizedType === 'design') return '/design';
       if (normalizedType === 'desktop') return '/desktop';
+      if (categoryPagePrefix) return `${categoryPagePrefix}/${normalizedType}`;
       if (categoryPathPrefix) return `${categoryPathPrefix}#${normalizedType}`;
       return buildBrandPath(categoryType);
     },
-    [categoryPathPrefix]
+    [categoryPathPrefix, categoryPagePrefix]
   );
 
   const getActiveTypeFromPath = useCallback((currentPath: string): string => {
@@ -66,6 +76,14 @@ export default function Header({ tabData, currentLang, onLanguageChange, categor
     if (normalizedPath === '/') return 'all';
     if (normalizedPath === '/design') return 'design';
     if (normalizedPath === '/desktop') return 'desktop';
+    const desktopCatMatch = normalizedPath.match(/^\/desktop\/([^/]+)$/);
+    if (desktopCatMatch?.[1]) {
+      try {
+        return normalizeCategoryType(decodeURIComponent(desktopCatMatch[1]));
+      } catch {
+        return normalizeCategoryType(desktopCatMatch[1]);
+      }
+    }
     const topLevelMatch = normalizedPath.match(/^\/([^/]+)$/);
     if (topLevelMatch?.[1]) {
       try {
@@ -77,7 +95,15 @@ export default function Header({ tabData, currentLang, onLanguageChange, categor
     return '';
   }, []);
 
-  const [activeMobileType, setActiveMobileType] = useState(() => getActiveTypeFromPath(pathname));
+  const resolveActiveType = useCallback(
+    (currentPath: string) =>
+      activeCategoryTypeOverride
+        ? normalizeCategoryType(activeCategoryTypeOverride)
+        : getActiveTypeFromPath(currentPath),
+    [activeCategoryTypeOverride, getActiveTypeFromPath]
+  );
+
+  const [activeMobileType, setActiveMobileType] = useState(() => resolveActiveType(pathname));
 
   const texts = getI18nTexts(currentLang);
   const mobileAllLabel =
@@ -114,8 +140,8 @@ export default function Header({ tabData, currentLang, onLanguageChange, categor
   }, []);
 
   useEffect(() => {
-    setActiveMobileType(getActiveTypeFromPath(pathname));
-  }, [getActiveTypeFromPath, pathname]);
+    setActiveMobileType(resolveActiveType(pathname));
+  }, [pathname, resolveActiveType]);
 
   const getCategoryHref = useCallback(
     (categoryType: string): string | null => {

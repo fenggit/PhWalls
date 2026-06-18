@@ -1,15 +1,13 @@
 // 生成首页轻量索引：src/data/home-index.json
 //
 // 首页（/、/zh、/en 等）需要展示「全部品牌的所有壁纸集合」概览，
-// 若在 Edge Function 里直接解析全部品牌 JSON（约 2.2MB），冷启动 CPU 时间
-// 会超出 Cloudflare 限制，导致 503「已超出 CPU 时间限制」。
+// 若在 Edge Function 里直接解析全部品牌 JSON，冷启动 CPU 时间
+// 可能超出 Cloudflare 限制。
 //
 // 本脚本在构建前把每个集合裁剪为「封面图 + 数量」的极小数据：
 //   { name, date, count, item: [firstImage] }
 // 首页只解析这个极小索引即可渲染卡片；完整 item 列表由预览时按需经
 // /api/public/wallpapers 拉取。
-//
-// 数据更新（新增品牌/壁纸）后会随构建自动重新生成，无需手动维护。
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -51,7 +49,6 @@ for (const [slug, file] of Object.entries(brandFiles)) {
       name: collection.name,
       date: collection.date,
       count: items.length,
-      // 仅保留首图用于封面缩略图
       item: items.length > 0 ? [items[0]] : [],
     };
   });

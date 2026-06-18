@@ -2,6 +2,11 @@
 
 ## 版本历史
 
+### v1.1.1 - 2026-06-18
+- 桌面壁纸 tab 调整：原「Aluminium OS」分类更名为「Google OS」（type 由 google-aluminium-os 改为 google-os），首页/导航模块同步更新
+- 新增「Microsoft Surface」分类
+- 删除品牌页与 Desktop 分类页卡片右侧的“预览”按钮，保留点击卡片进入详情页的主路径
+
 ### v1.1.1 - 2026-06-15
 - 桌面壁纸页（/desktop）tabbar 新增「macOS」分类，点击直接跳转外部站点（applewalls.com macOS 壁纸页），在新标签页打开
 - About 页面「资源合集」模块下方新增 Desktop 壁纸分类区块，展示 Windows、Ubuntu、ChromeOS、Surface、Aluminium OS、macOS 六个分类

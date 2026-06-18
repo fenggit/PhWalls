@@ -40,6 +40,8 @@ type HomeProps = {
   isContentCategory?: (category: string) => boolean;
   detailPathPrefix?: string;
   categoryPathPrefix?: string;
+  categoryPagePrefix?: string;
+  activeCategoryTypeOverride?: string;
   forceDesktopCards?: boolean;
   heroTitle?: string;
   heroDescription?: string;
@@ -56,6 +58,8 @@ export default function Home({
   detailPathPrefix,
   categoryPathPrefix,
   forceDesktopCards = false,
+  categoryPagePrefix,
+  activeCategoryTypeOverride,
   heroTitle,
   heroDescription,
 }: HomeProps) {
@@ -382,6 +386,8 @@ export default function Home({
         currentLang={currentLang} 
         onLanguageChange={handleLanguageChange}
         categoryPathPrefix={categoryPathPrefix}
+        categoryPagePrefix={categoryPagePrefix}
+        activeCategoryTypeOverride={activeCategoryTypeOverride}
       />
 
       {/* 主要内容区域 */}

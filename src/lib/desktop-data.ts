@@ -7,8 +7,8 @@ export type DesktopWallpaperCategory = string;
 // 按品牌的惰性数据加载器：不静态 import 任何 desktop JSON，
 // 详情页等 Edge Function 只解析所需的单个品牌数据。
 const desktopBrandLoaders: Record<string, () => Promise<WallpaperCollection[]>> = {
-  'google-aluminium-os': () =>
-    import('@/data/desktopwalls/google-aluminium-os.json').then((m) => m.default as WallpaperCollection[]),
+  'google-os': () =>
+    import('@/data/desktopwalls/google-os.json').then((m) => m.default as WallpaperCollection[]),
   'google-chromeos': () =>
     import('@/data/desktopwalls/google-chromeos.json').then((m) => m.default as WallpaperCollection[]),
   'microsoft-surface': () =>
