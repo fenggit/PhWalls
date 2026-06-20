@@ -2,6 +2,9 @@
 
 ## 版本历史
 
+### v1.1.1 - 2026-06-20
+- 新增页面分享功能
+
 ### v1.1.1 - 2026-06-18
 - 桌面壁纸 tab 调整：原「Aluminium OS」分类更名为「Google OS」（type 由 google-aluminium-os 改为 google-os），首页/导航模块同步更新
 - 新增「Microsoft Surface」分类

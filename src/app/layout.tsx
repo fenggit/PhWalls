@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { LanguageProvider } from '@/components/LanguageProvider';
+import { ShareProvider } from '@/components/ShareProvider';
 import Script from 'next/script';
 import { Inter } from 'next/font/google';
 import { SITE_URL } from '@/lib/seo';
@@ -226,9 +227,11 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.className} antialiased bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen`}>
         <LanguageProvider initialLanguage={currentLanguage}>
-          <div id="__next">
-            {children}
-          </div>
+          <ShareProvider>
+            <div id="__next">
+              {children}
+            </div>
+          </ShareProvider>
         </LanguageProvider>
       </body>
     </html>

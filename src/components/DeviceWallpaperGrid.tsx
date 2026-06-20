@@ -2,16 +2,19 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
 import { Language, TabInfo } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ShareRegistration from '@/components/ShareRegistration';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
+import { SITE_URL } from '@/lib/seo';
 
 interface DeviceItem {
   name: string;
@@ -69,6 +72,7 @@ export default function DeviceWallpaperGrid({
   const [previewWallpapers, setPreviewWallpapers] = useState<DeviceItem[]>([]);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -275,6 +279,17 @@ export default function DeviceWallpaperGrid({
     () => texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
     [pageTitle, texts.multiResolutionPageDescription]
   );
+  const sharePayload = useMemo(() => {
+    return {
+      title: pageTitle,
+      url: new URL(pathname, SITE_URL).toString(),
+      brand: texts.siteName,
+      images: deviceData.item
+        .slice(0, 6)
+        .map((item, index) => imageUrls[`${deviceData.name}-${index}`] || item.compressPath || '')
+        .filter(Boolean),
+    };
+  }, [deviceData.item, deviceData.name, imageUrls, pageTitle, pathname, texts.siteName]);
 
   const getWallpaperAlt = useCallback(
     (item: DeviceItem) => `${formatWallpaperDisplayName(item.name)} - ${formatWallpaperDisplayName(deviceData.name)} ${texts.wallpaperAltSuffix}`,
@@ -302,6 +317,7 @@ export default function DeviceWallpaperGrid({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <ShareRegistration payload={sharePayload} />
       <Header
         tabData={tabData}
         currentLang={currentLang}

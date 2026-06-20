@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Globe } from 'lucide-react';
+import { Globe, Info, Share2 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useShare } from '@/components/ShareProvider';
 import { Language, LanguageCode, TabInfo } from '@/types';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
+import { getShareTexts } from '@/lib/share';
 
 export interface HeaderProps {
   tabData: TabInfo[];
@@ -57,6 +59,7 @@ export default function Header({
   const desktopTabMeasureRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const moreTabMeasureRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
+  const { sharePayload, setSharePayload, openShare } = useShare();
 
   const getLandingPathByCategoryType = useCallback(
     (categoryType: string): string | null => {
@@ -106,6 +109,7 @@ export default function Header({
   const [activeMobileType, setActiveMobileType] = useState(() => resolveActiveType(pathname));
 
   const texts = getI18nTexts(currentLang);
+  const shareTexts = getShareTexts(currentLang);
   const mobileAllLabel =
     currentLang === LanguageCode.ZH || currentLang === LanguageCode.ZH_HANT
       ? '全部'
@@ -168,6 +172,22 @@ export default function Header({
     onLanguageChange(lang);
   };
 
+  const handleShareClick = useCallback(() => {
+    if (!sharePayload && typeof window !== 'undefined') {
+      setSharePayload({
+        title: document.title.replace(/\s+\|\s+PhWalls$/, '').trim() || texts.siteName,
+        url: window.location.href,
+        brand: texts.siteName,
+        images: [],
+      });
+    }
+
+    setIsDeviceMenuOpen(false);
+    setIsLanguageMenuOpen(false);
+    setIsMiniProgramMenuOpen(false);
+    openShare();
+  }, [openShare, setSharePayload, sharePayload, texts.siteName]);
+
   const getDesktopTabButtonClass = (isActive: boolean) => {
     return [
       'px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
@@ -177,6 +197,13 @@ export default function Header({
         : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/80',
     ].join(' ');
   };
+
+  const getDesktopUtilityButtonClass = (isActive = false) =>
+    `inline-flex h-10 w-10 items-center justify-center rounded-lg text-sm transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 active:bg-gradient-to-r active:from-blue-50 active:to-purple-50 ${
+      isActive
+        ? 'text-gray-900 bg-gradient-to-r from-blue-50 to-purple-50'
+        : 'text-gray-600 hover:text-gray-900'
+    }`;
 
   useEffect(() => {
     const viewport = desktopTabsViewportRef.current;
@@ -435,7 +462,19 @@ export default function Header({
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 flex-shrink-0 ml-auto lg:ml-0">
+          <div className="flex items-center space-x-0 flex-shrink-0 ml-auto lg:ml-0">
+            <div className="hidden md:block">
+              <button
+                type="button"
+                onClick={handleShareClick}
+                className={getDesktopUtilityButtonClass()}
+                aria-label={shareTexts.share}
+                title={shareTexts.share}
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </div>
+
             {SHOW_MINI_PROGRAM && (
               <div
                 className="hidden md:block relative"
@@ -477,9 +516,11 @@ export default function Header({
             <div className="hidden md:block">
               <Link
                 href={withLanguagePath('/about', currentLang)}
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 rounded-md hover:bg-blue-50"
+                className={getDesktopUtilityButtonClass()}
+                aria-label={texts.about}
+                title={texts.about}
               >
-                {texts.about}
+                <Info className="h-4 w-4" />
               </Link>
             </div>
             
@@ -491,11 +532,7 @@ export default function Header({
                     setIsDeviceMenuOpen(false);
                     setIsMiniProgramMenuOpen(false);
                   }}
-                  className={`flex items-center text-sm transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 active:bg-gradient-to-r active:from-blue-50 active:to-purple-50 ${
-                    isLanguageMenuOpen
-                      ? 'text-gray-900 bg-gradient-to-r from-blue-50 to-purple-50'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={getDesktopUtilityButtonClass(isLanguageMenuOpen)}
                   aria-label="Change language"
                 >
                   <Globe className="w-4 h-4" />
@@ -529,17 +566,28 @@ export default function Header({
               </div>
             </div>
 
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center justify-center">
+              <button
+                type="button"
+                onClick={handleShareClick}
+                className={getDesktopUtilityButtonClass()}
+                aria-label={shareTexts.share}
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="md:hidden flex items-center justify-center">
               <button
                 onClick={() => {
                   setIsDeviceMenuOpen((prev) => !prev);
                   setIsLanguageMenuOpen(false);
                   setIsMiniProgramMenuOpen(false);
                 }}
-                className="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600"
+                className={getDesktopUtilityButtonClass(isDeviceMenuOpen)}
                 aria-label="Toggle menu"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {isDeviceMenuOpen ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   ) : (

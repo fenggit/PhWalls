@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageProvider';
+import ShareRegistration from '@/components/ShareRegistration';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
 import { Language, LanguageCode, TabInfo } from '@/types';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
@@ -84,6 +86,7 @@ export default function SeoLandingPage({
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const tabData = useMemo(() => navigationTabs ?? getTabData(currentLang), [navigationTabs, currentLang]);
+  const pathname = usePathname();
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
@@ -104,9 +107,21 @@ export default function SeoLandingPage({
 
   const localizedHomeUrl = withLanguageUrl(SITE_URL, currentLang);
   const localizedCategoryUrl = withLanguageUrl(`${SITE_URL}${resolvedCategoryPath}`, currentLang);
+  const sharePayload = useMemo(() => {
+    return {
+      title: pageTitle,
+      url: new URL(pathname, SITE_URL).toString(),
+      brand: texts.siteName,
+      images: cards
+        .slice(0, 6)
+        .map((card) => (card.imageKey ? buildCardImageUrl(card.imageKey) : ''))
+        .filter(Boolean),
+    };
+  }, [cards, pageTitle, pathname, texts.siteName]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <ShareRegistration payload={sharePayload} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

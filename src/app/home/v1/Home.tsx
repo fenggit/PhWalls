@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { Fragment, useState, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ShareRegistration from '@/components/ShareRegistration';
 
 // 预览模态体积较大且仅在点击后使用，按需懒加载以减小首屏 JS、降低 INP/TBT
 const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPreviewDownload'), {
@@ -23,6 +25,7 @@ import {
   type WallpaperCategory,
 } from '@/lib/wallpaper-data';
 import { withLanguagePath } from '@/lib/language';
+import { SITE_URL } from '@/lib/seo';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
 type IdleWindow = Window & {
@@ -78,6 +81,7 @@ export default function Home({
   
   // 返回顶部按钮显示状态
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const pathname = usePathname();
   
   // 直接获取导航数据
   const baseTabData = useMemo(() => getTabData(currentLang), [currentLang]);
@@ -334,6 +338,25 @@ export default function Home({
     [pageContentTabs]
   );
 
+  const sharePayload = useMemo(() => {
+    const previewImages = visibleCategories
+      .flatMap((category) => {
+        const categoryType = normalizeCategoryType(category.type);
+        return (categoryDataMap[categoryType] || []).slice(0, 2).map((collection) => {
+          return imageUrls[`${categoryType}::${collection.name}`] || collection.item?.[0]?.compressPath || '';
+        });
+      })
+      .filter(Boolean)
+      .slice(0, 6);
+
+    return {
+      title: heroTitle || texts.heroTitle,
+      url: new URL(pathname, SITE_URL).toString(),
+      brand: texts.siteName,
+      images: previewImages,
+    };
+  }, [categoryDataMap, heroTitle, imageUrls, pathname, texts.heroTitle, texts.siteName, visibleCategories]);
+
   useEffect(() => {
     const updateViewportWidth = () => {
       const width = window.innerWidth;
@@ -380,6 +403,7 @@ export default function Home({
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 scroll-container">
+      <ShareRegistration payload={sharePayload} />
       {/* 导航栏 */}
       <Header 
         tabData={tabData}
