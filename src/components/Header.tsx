@@ -59,7 +59,7 @@ export default function Header({
   const desktopTabMeasureRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const moreTabMeasureRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  const { sharePayload, setSharePayload, openShare } = useShare();
+  const { sharePayload, setSharePayload } = useShare();
 
   const getLandingPathByCategoryType = useCallback(
     (categoryType: string): string | null => {
@@ -173,20 +173,47 @@ export default function Header({
   };
 
   const handleShareClick = useCallback(() => {
-    if (!sharePayload && typeof window !== 'undefined') {
-      setSharePayload({
-        title: document.title.replace(/\s+\|\s+PhWalls$/, '').trim() || texts.siteName,
-        url: window.location.href,
-        brand: texts.siteName,
-        images: [],
-      });
-    }
-
     setIsDeviceMenuOpen(false);
     setIsLanguageMenuOpen(false);
     setIsMiniProgramMenuOpen(false);
-    openShare();
-  }, [openShare, setSharePayload, sharePayload, texts.siteName]);
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const payload = sharePayload ?? {
+      title: document.title.replace(/\s+\|\s+PhWalls$/, '').trim() || texts.siteName,
+      url: window.location.href,
+      brand: texts.siteName,
+      images: [],
+    };
+
+    setSharePayload(payload);
+
+    if (typeof navigator.share === 'function') {
+      navigator.share({
+        title: payload.title,
+        text: payload.brand || texts.siteName,
+        url: payload.url,
+      }).catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+
+        console.error('System share failed:', error);
+      });
+      return;
+    }
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(payload.url).catch((error: unknown) => {
+        console.error('Copy share link failed:', error);
+      });
+      return;
+    }
+
+    window.prompt(shareTexts.share, payload.url);
+  }, [setSharePayload, sharePayload, shareTexts.share, texts.siteName]);
 
   const getDesktopTabButtonClass = (isActive: boolean) => {
     return [

@@ -8,20 +8,17 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import ShareCardDialog from '@/components/ShareCardDialog';
 import { normalizeShareImages, type ShareCardPayload } from '@/lib/share';
 
 interface ShareContextValue {
   sharePayload: ShareCardPayload | null;
   setSharePayload: (payload: ShareCardPayload | null) => void;
-  openShare: () => void;
 }
 
 const ShareContext = createContext<ShareContextValue | undefined>(undefined);
 
 export function ShareProvider({ children }: { children: ReactNode }) {
   const [sharePayload, setSharePayloadState] = useState<ShareCardPayload | null>(null);
-  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const setSharePayload = useCallback((payload: ShareCardPayload | null) => {
     if (!payload) {
@@ -38,31 +35,17 @@ export function ShareProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const openShare = useCallback(() => {
-    setIsShareOpen(true);
-  }, []);
-
-  const closeShare = useCallback(() => {
-    setIsShareOpen(false);
-  }, []);
-
   const value = useMemo(
     () => ({
       sharePayload,
       setSharePayload,
-      openShare,
     }),
-    [openShare, setSharePayload, sharePayload]
+    [setSharePayload, sharePayload]
   );
 
   return (
     <ShareContext.Provider value={value}>
       {children}
-      <ShareCardDialog
-        isOpen={isShareOpen}
-        onClose={closeShare}
-        payload={sharePayload}
-      />
     </ShareContext.Provider>
   );
 }
