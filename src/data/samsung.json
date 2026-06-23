@@ -1059,6 +1059,54 @@
     ]
   },
   {
+    "name": "Samsung Galaxy A27",
+    "date": "2026/06/14",
+    "item": [
+      {
+        "name": "samsung-galaxy-a27-cyan-beige-gradient",
+        "type": "image/png",
+        "size": "10.24 MB",
+        "originPath": "samsung/Samsung Galaxy A27/origin/samsung-galaxy-a27-cyan-beige-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy A27/compress/samsung-galaxy-a27-cyan-beige-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-a27-cyan-mint-gradient",
+        "type": "image/png",
+        "size": "10.64 MB",
+        "originPath": "samsung/Samsung Galaxy A27/origin/samsung-galaxy-a27-cyan-mint-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy A27/compress/samsung-galaxy-a27-cyan-mint-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-a27-mint-cyan-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "482.8 KB",
+        "originPath": "samsung/Samsung Galaxy A27/origin/samsung-galaxy-a27-mint-cyan-gradient-alt-a.jpeg",
+        "compressPath": "samsung/Samsung Galaxy A27/compress/samsung-galaxy-a27-mint-cyan-gradient-alt-a.webp"
+      },
+      {
+        "name": "samsung-galaxy-a27-mint-cyan-gradient",
+        "type": "image/jpeg",
+        "size": "1.58 MB",
+        "originPath": "samsung/Samsung Galaxy A27/origin/samsung-galaxy-a27-mint-cyan-gradient.jpeg",
+        "compressPath": "samsung/Samsung Galaxy A27/compress/samsung-galaxy-a27-mint-cyan-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-a27-teal-yellow-gradient-alt-a",
+        "type": "image/png",
+        "size": "12.52 MB",
+        "originPath": "samsung/Samsung Galaxy A27/origin/samsung-galaxy-a27-teal-yellow-gradient-alt-a.png",
+        "compressPath": "samsung/Samsung Galaxy A27/compress/samsung-galaxy-a27-teal-yellow-gradient-alt-a.webp"
+      },
+      {
+        "name": "samsung-galaxy-a27-teal-yellow-gradient",
+        "type": "image/png",
+        "size": "12.62 MB",
+        "originPath": "samsung/Samsung Galaxy A27/origin/samsung-galaxy-a27-teal-yellow-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy A27/compress/samsung-galaxy-a27-teal-yellow-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Samsung Galaxy A31",
     "date": "2020/04/27",
     "item": [
