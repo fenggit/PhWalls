@@ -2,6 +2,9 @@
 
 ## 版本历史
 
+### v1.1.1 - 2026-06-30
+- 新增 Huawei Nova 15 Max 壁纸数据
+
 ### v1.1.1 - 2026-06-23
 - 新增 Samsung Galaxy A27 与 Vivo X Fold 6 壁纸数据
 

@@ -2448,6 +2448,47 @@
     ]
   },
   {
+    "name": "Huawei Nova 15 Max",
+    "date": "2026/05/07",
+    "item": [
+      {
+        "name": "huawei-nova-15-max-black-mint-gradient",
+        "type": "image/jpeg",
+        "size": "445.62 KB",
+        "originPath": "huawei/Huawei Nova 15 Max/origin/huawei-nova-15-max-black-mint-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 15 Max/compress/huawei-nova-15-max-black-mint-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-15-max-black-silver-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "1.99 MB",
+        "originPath": "huawei/Huawei Nova 15 Max/origin/huawei-nova-15-max-black-silver-gradient-alt-a.jpg",
+        "compressPath": "huawei/Huawei Nova 15 Max/compress/huawei-nova-15-max-black-silver-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-nova-15-max-black-silver-gradient",
+        "type": "image/jpeg",
+        "size": "3.05 MB",
+        "originPath": "huawei/Huawei Nova 15 Max/origin/huawei-nova-15-max-black-silver-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 15 Max/compress/huawei-nova-15-max-black-silver-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-15-max-mint-black-abstract",
+        "type": "image/jpeg",
+        "size": "2.27 MB",
+        "originPath": "huawei/Huawei Nova 15 Max/origin/huawei-nova-15-max-mint-black-abstract.jpg",
+        "compressPath": "huawei/Huawei Nova 15 Max/compress/huawei-nova-15-max-mint-black-abstract.webp"
+      },
+      {
+        "name": "huawei-nova-15-max-teal-black-gradient",
+        "type": "image/jpeg",
+        "size": "5.55 MB",
+        "originPath": "huawei/Huawei Nova 15 Max/origin/huawei-nova-15-max-teal-black-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 15 Max/compress/huawei-nova-15-max-teal-black-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Huawei Nova 4e",
     "date": "2019/03",
     "item": [
