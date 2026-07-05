@@ -5,12 +5,12 @@ import {
   buildWallpaperDetailPath,
   isWallpaperCategory,
   loadWallpaperCollection,
+  type WallpaperAsset,
 } from '@/lib/wallpaper-data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { SITE_URL, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
-import { getI18nTexts } from '@/lib/i18n';
-import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
+import { formatWallpaperDisplayName } from '@/lib/data';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
 
@@ -49,13 +49,25 @@ function collectVariantLabels(collectionName: string, itemNames: string[]): stri
 }
 
 function buildSeoTitle(baseName: string, variantLabels: string[]): string {
-  const variantText = variantLabels.length > 0 ? ` (${variantLabels.join(', ')})` : '';
-  return `${baseName}${variantText} Wallpapers in 4K HD (Official, Free Download) | PhWalls`;
+  const cleanBaseName = baseName.replace(/\s+wallpapers$/i, '');
+  const variantText = variantLabels.length > 0 ? ` ${variantLabels.join(' ')}` : '';
+  return `${cleanBaseName}${variantText} Wallpapers in 4K HD (Official Download) | PhWalls`;
 }
 
 function buildSeoDescription(baseName: string, variantLabels: string[]): string {
   const variantText = variantLabels.length > 0 ? `, including ${variantLabels.join(' and ')} variants,` : '';
   return `Download official ${baseName} wallpapers${variantText} in 4K/HD, full resolution, no watermark. Preview all stock wallpapers and download free.`;
+}
+
+function normalizeImageEncodingFormat(type: string): string | undefined {
+  const normalized = type.trim().toLowerCase();
+  if (!normalized) return undefined;
+  return normalized.startsWith('image/') ? normalized : `image/${normalized}`;
+}
+
+function buildWallpaperPublicUrl(item: WallpaperAsset): string | null {
+  const path = item.compressPath || item.originPath;
+  return path ? buildPublicR2Url(path) : null;
 }
 
 // 服务端（爬虫可见）设备类型推断，基于路径和名称
@@ -72,7 +84,6 @@ function detectDeviceGroup(item: { name: string; originPath: string; compressPat
 export async function generateMetadata({ params }: WallpaperDetailPageProps): Promise<Metadata> {
   const { category, slug } = await params;
   const language = await resolveMetadataLanguage();
-  const texts = getI18nTexts(language);
 
   if (!isWallpaperCategory(category)) {
     return {};
@@ -84,14 +95,17 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
   }
 
   const detailPath = buildWallpaperDetailPath(category, collection.name);
-  const collectionTitle = buildWallpaperListTitle(collection.name, texts.wallpapersTitleSuffix);
+  const collectionDisplayName = formatWallpaperDisplayName(collection.name);
   const variantLabels = collectVariantLabels(
-    formatWallpaperDisplayName(collection.name),
+    collectionDisplayName,
     collection.item.map((item) => item.name)
   );
-  const title = buildSeoTitle(formatWallpaperDisplayName(collectionTitle), variantLabels);
-  const description = buildSeoDescription(formatWallpaperDisplayName(collection.name), variantLabels);
+  const title = buildSeoTitle(collectionDisplayName, variantLabels);
+  const description = buildSeoDescription(collectionDisplayName, variantLabels);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
+  const primaryImageUrl = collection.item[0]
+    ? buildWallpaperPublicUrl(collection.item[0]) || `${SITE_URL}/logo.png`
+    : `${SITE_URL}/logo.png`;
 
   return {
     title,
@@ -108,7 +122,7 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
       locale: getOpenGraphLocaleForLanguage(language),
       images: [
         {
-          url: `${SITE_URL}/logo.png`,
+          url: primaryImageUrl,
           alt: title,
         },
       ],
@@ -117,6 +131,7 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
       card: 'summary_large_image',
       title,
       description,
+      images: [primaryImageUrl],
     },
   };
 }
@@ -139,6 +154,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const detailPath = buildWallpaperDetailPath(category, collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
+  const collectionDisplayName = formatWallpaperDisplayName(collection.name);
   const categoryBrand = getBrandCategoryBySlug(category);
   const categoryLandingUrl = withLanguageUrl(
     `${SITE_URL}${categoryBrand ? buildBrandPath(categoryBrand.type) : `/${category}`}`,
@@ -153,6 +169,20 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     deviceGroups[group].push(item.name);
   }
   const deviceLabels = Object.keys(deviceGroups);
+  const itemTypes = Array.from(
+    new Set(collection.item.map((item) => item.type.trim().toUpperCase()).filter(Boolean))
+  ).slice(0, 4);
+  const variantLabels = collectVariantLabels(
+    collectionDisplayName,
+    collection.item.map((item) => item.name)
+  );
+  const searchExamples = [
+    `${collectionDisplayName} wallpaper`,
+    `${collectionDisplayName} wallpapers 4K`,
+    ...(variantLabels.length > 0
+      ? variantLabels.map((label) => `${collectionDisplayName} ${label} wallpaper`)
+      : [`${collectionDisplayName} stock wallpapers`]),
+  ].slice(0, 4);
 
   // 构建服务端 CDN 图片 URL，使 SSR HTML 包含真实 src，搜索引擎/AI 爬虫可直接抓取图片
   const initialImageUrls: Record<string, string> | undefined = hasPublicR2Cdn()
@@ -174,24 +204,29 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: withLanguageUrl(SITE_URL, language) },
       { '@type': 'ListItem', position: 2, name: `${categoryLabel} Wallpapers`, item: categoryLandingUrl },
-      { '@type': 'ListItem', position: 3, name: formatWallpaperDisplayName(collection.name), item: canonicalUrl },
+      { '@type': 'ListItem', position: 3, name: collectionDisplayName, item: canonicalUrl },
     ],
   };
 
   const imageGallerySchema = {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
-    name: `${formatWallpaperDisplayName(collection.name)} ${categoryLabel} Wallpapers`,
-    description: `${collection.item.length} official ${categoryLabel} wallpapers from ${formatWallpaperDisplayName(collection.name)}. High resolution, watermark-free, free to download.`,
+    name: `${collectionDisplayName} ${categoryLabel} Wallpapers`,
+    description: `${collection.item.length} official ${categoryLabel} wallpapers from ${collectionDisplayName}. High resolution, watermark-free, free to download.`,
     url: canonicalUrl,
     numberOfItems: collection.item.length,
-    associatedMedia: collection.item.map((item) => ({
-      '@type': 'ImageObject',
-      name: formatWallpaperDisplayName(item.name),
-      description: `${formatWallpaperDisplayName(item.name)} - ${formatWallpaperDisplayName(collection.name)} ${categoryLabel} wallpaper`,
-      contentSize: item.size,
-      encodingFormat: item.type,
-    })),
+    datePublished: collection.date,
+    associatedMedia: collection.item.map((item, index) => {
+      const imageUrl = initialImageUrls?.[`${collection.name}-${index}`] || buildWallpaperPublicUrl(item);
+      return {
+        '@type': 'ImageObject',
+        name: formatWallpaperDisplayName(item.name),
+        description: `${formatWallpaperDisplayName(item.name)} - ${collectionDisplayName} ${categoryLabel} wallpaper`,
+        contentSize: item.size,
+        encodingFormat: normalizeImageEncodingFormat(item.type),
+        ...(imageUrl ? { contentUrl: imageUrl, thumbnailUrl: imageUrl } : {}),
+      };
+    }),
   };
 
   const faqSchema = {
@@ -200,10 +235,10 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     mainEntity: [
       {
         '@type': 'Question',
-        name: `Are these ${formatWallpaperDisplayName(collection.name)} wallpapers official?`,
+        name: `Are these ${collectionDisplayName} wallpapers official?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `Yes. We collect official stock wallpapers for ${formatWallpaperDisplayName(collection.name)} from software releases.`,
+          text: `Yes. We collect official stock wallpapers for ${collectionDisplayName} from software releases.`,
         },
       },
       {
@@ -229,12 +264,39 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const summarySection = (
     <section className="mt-16 border-t border-gray-100 pt-8 pb-4">
       <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        {formatWallpaperDisplayName(collection.name)} {categoryLabel} Wallpapers — Full Collection
+        {collectionDisplayName} {categoryLabel} Wallpapers — Collection Facts
       </h2>
       <p className="text-gray-600 mb-6 text-sm leading-relaxed">
-        This collection includes <strong>{collection.item.length}</strong> official wallpapers
-        for {deviceLabels.join(' and ')}. All images are sourced from original software
-        releases — full resolution, no watermarks, free to download.
+        This page catalogs the official {collectionDisplayName} stock wallpaper set for
+        {' '}{deviceLabels.join(' and ')}. It includes <strong>{collection.item.length}</strong>
+        {' '}wallpaper files{itemTypes.length > 0 ? ` in ${itemTypes.join(', ')} format` : ''},
+        with web previews and original downloads available without watermarks.
+      </p>
+      <dl className="mb-6 grid gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <dt className="font-semibold text-gray-800">Collection</dt>
+          <dd>{collectionDisplayName}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold text-gray-800">Brand</dt>
+          <dd>{categoryLabel}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold text-gray-800">Files</dt>
+          <dd>{collection.item.length} wallpapers</dd>
+        </div>
+        <div>
+          <dt className="font-semibold text-gray-800">Updated</dt>
+          <dd>{collection.date || 'Recently updated'}</dd>
+        </div>
+      </dl>
+      <p className="mb-6 text-sm leading-relaxed text-gray-600">
+        Common ways people find this collection include {searchExamples.map((term, index) => (
+          <span key={term}>
+            {index > 0 ? (index === searchExamples.length - 1 ? ' and ' : ', ') : ''}
+            <strong>{term}</strong>
+          </span>
+        ))}.
       </p>
       <div className="space-y-6">
         {deviceLabels.map((label) => (
