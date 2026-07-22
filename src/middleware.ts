@@ -101,8 +101,8 @@ export function middleware(request: NextRequest) {
     ? resolveLanguageFromAcceptLanguage(acceptLanguageHeader)
     : null;
   const resolvedLanguage = resolveRequestLanguage({
+    browserLang: acceptLanguage,
     cookieLang: request.cookies.get(LANGUAGE_COOKIE_NAME)?.value,
-    headerLang: acceptLanguage,
     country,
   });
 

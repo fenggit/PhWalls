@@ -582,5 +582,39 @@
         "compressPath": "nothing/Nothing Phone 4a Pro/compress/nothing-phone-4a-pro-black-teal-gradient.webp"
       }
     ]
+  },
+  {
+    "name": "Nothing Phone 4b",
+    "date": "2026/07/07",
+    "item": [
+      {
+        "name": "nothing-phone-4b-black-brown-gradient",
+        "type": "image/png",
+        "size": "6.1 MB",
+        "originPath": "nothing/Nothing Phone 4b/origin/nothing-phone-4b-black-brown-gradient.png",
+        "compressPath": "nothing/Nothing Phone 4b/compress/nothing-phone-4b-black-brown-gradient.webp"
+      },
+      {
+        "name": "nothing-phone-4b-brown-rose-gradient",
+        "type": "image/png",
+        "size": "12.67 MB",
+        "originPath": "nothing/Nothing Phone 4b/origin/nothing-phone-4b-brown-rose-gradient.png",
+        "compressPath": "nothing/Nothing Phone 4b/compress/nothing-phone-4b-brown-rose-gradient.webp"
+      },
+      {
+        "name": "nothing-phone-4b-gray-purple-gradient",
+        "type": "image/png",
+        "size": "10.93 MB",
+        "originPath": "nothing/Nothing Phone 4b/origin/nothing-phone-4b-gray-purple-gradient.png",
+        "compressPath": "nothing/Nothing Phone 4b/compress/nothing-phone-4b-gray-purple-gradient.webp"
+      },
+      {
+        "name": "nothing-phone-4b-silver-beige-gradient",
+        "type": "image/png",
+        "size": "6.1 MB",
+        "originPath": "nothing/Nothing Phone 4b/origin/nothing-phone-4b-silver-beige-gradient.png",
+        "compressPath": "nothing/Nothing Phone 4b/compress/nothing-phone-4b-silver-beige-gradient.webp"
+      }
+    ]
   }
 ]

@@ -11,7 +11,7 @@ import {
   LANGUAGE_LOCAL_STORAGE_KEY,
   getLanguageFromPath,
   normalizeLanguage,
-  SUPPORTED_LANGUAGES,
+  resolveLanguageFromAcceptLanguage,
   withLanguagePath,
 } from '@/lib/language';
 
@@ -64,7 +64,6 @@ export function LanguageProvider({
   useEffect(() => {
     if (typeof window === 'undefined' || isInitialized) return;
 
-    const savedLanguage = normalizeLanguage(localStorage.getItem(LANGUAGE_LOCAL_STORAGE_KEY));
     const pathLanguage = getLanguageFromPath(window.location.pathname);
 
     if (pathLanguage) {
@@ -74,18 +73,13 @@ export function LanguageProvider({
       return;
     }
 
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-      persistLanguage(savedLanguage);
-      const targetPath = withLanguagePath(window.location.pathname, savedLanguage);
-      const search = window.location.search || '';
-      router.replace(`${targetPath}${search}`);
-      setIsInitialized(true);
-      return;
-    }
-
-    const ipLanguage = normalizeLanguage(document.documentElement.lang);
-    const resolvedLanguage = ipLanguage && SUPPORTED_LANGUAGES.includes(ipLanguage) ? ipLanguage : DEFAULT_LANGUAGE;
+    const browserLanguages = navigator.languages?.length
+      ? navigator.languages.join(',')
+      : navigator.language;
+    const browserLanguage = resolveLanguageFromAcceptLanguage(browserLanguages);
+    const savedLanguage = normalizeLanguage(localStorage.getItem(LANGUAGE_LOCAL_STORAGE_KEY));
+    const serverLanguage = normalizeLanguage(document.documentElement.lang);
+    const resolvedLanguage = browserLanguage || savedLanguage || serverLanguage || DEFAULT_LANGUAGE;
     setLanguage(resolvedLanguage);
     persistLanguage(resolvedLanguage);
     const targetPath = withLanguagePath(window.location.pathname, resolvedLanguage);

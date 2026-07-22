@@ -29,7 +29,7 @@ const LANGUAGE_TO_LOCALE: Record<Language, string> = {
 };
 
 const ACCEPT_LANGUAGE_MAP: Array<{ pattern: RegExp; language: Language }> = [
-  { pattern: /^zh-(hk|mo|tw)/i, language: LanguageCode.ZH_HANT },
+  { pattern: /^zh-(hant|hk|mo|tw)/i, language: LanguageCode.ZH_HANT },
   { pattern: /^zh/i, language: LanguageCode.ZH },
   { pattern: /^ja/i, language: LanguageCode.JA },
   { pattern: /^vi/i, language: LanguageCode.VI },
@@ -66,9 +66,9 @@ export function resolveLanguageFromCountry(countryCode: string | null | undefine
   }
 }
 
-export function resolveLanguageFromAcceptLanguage(value: string | null | undefined): Language {
+export function resolveLanguageFromAcceptLanguage(value: string | null | undefined): Language | null {
   if (!value) {
-    return DEFAULT_LANGUAGE;
+    return null;
   }
 
   const candidates = value
@@ -84,7 +84,7 @@ export function resolveLanguageFromAcceptLanguage(value: string | null | undefin
     }
   }
 
-  return DEFAULT_LANGUAGE;
+  return null;
 }
 
 export function getLanguageFromPath(pathname: string): Language | null {
@@ -150,12 +150,14 @@ export function resolveRequestLanguage(input: {
   searchLang?: string | null;
   cookieLang?: string | null;
   headerLang?: string | null;
+  browserLang?: string | null;
   country?: string | null;
 }): Language {
   return (
     normalizeLanguage(input.searchLang) ||
-    normalizeLanguage(input.cookieLang) ||
     normalizeLanguage(input.headerLang) ||
+    normalizeLanguage(input.browserLang) ||
+    normalizeLanguage(input.cookieLang) ||
     resolveLanguageFromCountry(input.country) ||
     DEFAULT_LANGUAGE
   );

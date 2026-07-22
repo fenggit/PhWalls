@@ -1708,6 +1708,61 @@
     ]
   },
   {
+    "name": "Redmi Note 17",
+    "date": "2026/07/14",
+    "item": [
+      {
+        "name": "redmi-note-17-beige-pink-gradient",
+        "type": "image/png",
+        "size": "5.04 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-beige-pink-gradient.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-beige-pink-gradient.webp"
+      },
+      {
+        "name": "redmi-note-17-black-blue-gradient",
+        "type": "image/png",
+        "size": "4.53 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-black-blue-gradient.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-black-blue-gradient.webp"
+      },
+      {
+        "name": "redmi-note-17-black-gray-gradient",
+        "type": "image/png",
+        "size": "3.68 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-black-gray-gradient.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-black-gray-gradient.webp"
+      },
+      {
+        "name": "redmi-note-17-black-purple-gradient",
+        "type": "image/png",
+        "size": "4.67 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-black-purple-gradient.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-black-purple-gradient.webp"
+      },
+      {
+        "name": "redmi-note-17-cyan-white-abstract",
+        "type": "image/png",
+        "size": "3.34 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-cyan-white-abstract.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-cyan-white-abstract.webp"
+      },
+      {
+        "name": "redmi-note-17-white-black-abstract",
+        "type": "image/png",
+        "size": "3.71 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-white-black-abstract.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-white-black-abstract.webp"
+      },
+      {
+        "name": "redmi-note-17-white-purple-abstract",
+        "type": "image/png",
+        "size": "3.68 MB",
+        "originPath": "xiaomi/Redmi Note 17/origin/redmi-note-17-white-purple-abstract.png",
+        "compressPath": "xiaomi/Redmi Note 17/compress/redmi-note-17-white-purple-abstract.webp"
+      }
+    ]
+  },
+  {
     "name": "Redmi Note 7",
     "date": "2019/01/10",
     "item": [

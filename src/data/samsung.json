@@ -3079,6 +3079,40 @@
     ]
   },
   {
+    "name": "Samsung Galaxy M07",
+    "date": "2025/09/01",
+    "item": [
+      {
+        "name": "samsung-galaxy-m07-cyan-mint-gradient",
+        "type": "image/jpeg",
+        "size": "552.18 KB",
+        "originPath": "samsung/Samsung Galaxy M07/origin/samsung-galaxy-m07-cyan-mint-gradient.jpg",
+        "compressPath": "samsung/Samsung Galaxy M07/compress/samsung-galaxy-m07-cyan-mint-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m07-mint-teal-gradient",
+        "type": "image/jpeg",
+        "size": "915.78 KB",
+        "originPath": "samsung/Samsung Galaxy M07/origin/samsung-galaxy-m07-mint-teal-gradient.jpg",
+        "compressPath": "samsung/Samsung Galaxy M07/compress/samsung-galaxy-m07-mint-teal-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m07-teal-mint-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "870.15 KB",
+        "originPath": "samsung/Samsung Galaxy M07/origin/samsung-galaxy-m07-teal-mint-gradient-alt-a.jpg",
+        "compressPath": "samsung/Samsung Galaxy M07/compress/samsung-galaxy-m07-teal-mint-gradient-alt-a.webp"
+      },
+      {
+        "name": "samsung-galaxy-m07-teal-mint-gradient",
+        "type": "image/jpeg",
+        "size": "1.12 MB",
+        "originPath": "samsung/Samsung Galaxy M07/origin/samsung-galaxy-m07-teal-mint-gradient.jpg",
+        "compressPath": "samsung/Samsung Galaxy M07/compress/samsung-galaxy-m07-teal-mint-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Samsung Galaxy M10s",
     "date": "2019/09",
     "item": [

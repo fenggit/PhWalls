@@ -378,6 +378,96 @@
     ]
   },
   {
+    "name": "Oppo A6s Pro",
+    "date": "2026/03/01",
+    "item": [
+      {
+        "name": "oppo-a6s-pro-beige-brown-gradient",
+        "type": "image/jpeg",
+        "size": "734.74 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-beige-brown-gradient.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-beige-brown-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-beige-gold-abstract",
+        "type": "image/jpeg",
+        "size": "714.45 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-beige-gold-abstract.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-beige-gold-abstract.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-beige-rose-abstract",
+        "type": "image/jpeg",
+        "size": "735.91 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-beige-rose-abstract.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-beige-rose-abstract.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "585.75 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-black-brown-abstract.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-black-brown-abstract.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "978.95 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-black-brown-gradient.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-black-brown-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-black-cyan-gradient",
+        "type": "image/jpeg",
+        "size": "999.88 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-black-cyan-gradient.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-black-cyan-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-black-teal-abstract",
+        "type": "image/jpeg",
+        "size": "619.5 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-black-teal-abstract.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-black-teal-abstract.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-mint-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "791.19 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-mint-cyan-abstract.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-mint-cyan-abstract.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-red-beige-gradient",
+        "type": "image/jpeg",
+        "size": "611.3 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-red-beige-gradient.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-red-beige-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-silver-blue-gradient",
+        "type": "image/jpeg",
+        "size": "748.47 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-silver-blue-gradient.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-silver-blue-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-teal-mint-gradient",
+        "type": "image/jpeg",
+        "size": "757.65 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-teal-mint-gradient.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-teal-mint-gradient.webp"
+      },
+      {
+        "name": "oppo-a6s-pro-white-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "794.46 KB",
+        "originPath": "oppo/Oppo A6s Pro/origin/oppo-a6s-pro-white-cyan-abstract.jpg",
+        "compressPath": "oppo/Oppo A6s Pro/compress/oppo-a6s-pro-white-cyan-abstract.webp"
+      }
+    ]
+  },
+  {
     "name": "Oppo A72 (5G)",
     "date": "2020/05/04",
     "item": [
