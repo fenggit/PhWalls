@@ -9,6 +9,9 @@ import {
   DEFAULT_LANGUAGE,
   LANGUAGE_COOKIE_NAME,
   LANGUAGE_LOCAL_STORAGE_KEY,
+  LANGUAGE_PREFERENCE_COOKIE_NAME,
+  LANGUAGE_PREFERENCE_LOCAL_STORAGE_KEY,
+  LANGUAGE_PREFERENCE_MARKER_VALUE,
   getLanguageFromPath,
   normalizeLanguage,
   resolveLanguageFromAcceptLanguage,
@@ -38,16 +41,21 @@ export function LanguageProvider({
   // 小程序二维码弹窗
   const [isMiniProgramOpen, setIsMiniProgramOpen] = useState(false);
   
-  const persistLanguage = useCallback((lang: Language) => {
+  const persistLanguagePreference = useCallback((lang: Language) => {
     if (typeof window === 'undefined') return;
     localStorage.setItem(LANGUAGE_LOCAL_STORAGE_KEY, lang);
+    localStorage.setItem(
+      LANGUAGE_PREFERENCE_LOCAL_STORAGE_KEY,
+      LANGUAGE_PREFERENCE_MARKER_VALUE
+    );
     document.cookie = `${LANGUAGE_COOKIE_NAME}=${lang}; path=/; max-age=31536000; samesite=lax`;
+    document.cookie = `${LANGUAGE_PREFERENCE_COOKIE_NAME}=${LANGUAGE_PREFERENCE_MARKER_VALUE}; path=/; max-age=31536000; samesite=lax`;
     document.documentElement.lang = lang;
   }, []);
 
   const setLanguageAndPersist = useCallback((lang: Language) => {
     setLanguage(lang);
-    persistLanguage(lang);
+    persistLanguagePreference(lang);
     if (!isInitialized) {
       setIsInitialized(true);
     }
@@ -58,7 +66,7 @@ export function LanguageProvider({
         router.replace(`${targetPath}${search}`);
       }
     }
-  }, [isInitialized, pathname, persistLanguage, router]);
+  }, [isInitialized, pathname, persistLanguagePreference, router]);
 
   // 初始化语言设置（仅在客户端执行一次）
   useEffect(() => {
@@ -68,7 +76,7 @@ export function LanguageProvider({
 
     if (pathLanguage) {
       setLanguage(pathLanguage);
-      persistLanguage(pathLanguage);
+      document.documentElement.lang = pathLanguage;
       setIsInitialized(true);
       return;
     }
@@ -77,16 +85,21 @@ export function LanguageProvider({
       ? navigator.languages.join(',')
       : navigator.language;
     const browserLanguage = resolveLanguageFromAcceptLanguage(browserLanguages);
-    const savedLanguage = normalizeLanguage(localStorage.getItem(LANGUAGE_LOCAL_STORAGE_KEY));
+    const hasExplicitLanguagePreference =
+      localStorage.getItem(LANGUAGE_PREFERENCE_LOCAL_STORAGE_KEY) ===
+      LANGUAGE_PREFERENCE_MARKER_VALUE;
+    const savedLanguage = hasExplicitLanguagePreference
+      ? normalizeLanguage(localStorage.getItem(LANGUAGE_LOCAL_STORAGE_KEY))
+      : null;
     const serverLanguage = normalizeLanguage(document.documentElement.lang);
-    const resolvedLanguage = browserLanguage || savedLanguage || serverLanguage || DEFAULT_LANGUAGE;
+    const resolvedLanguage = savedLanguage || browserLanguage || serverLanguage || DEFAULT_LANGUAGE;
     setLanguage(resolvedLanguage);
-    persistLanguage(resolvedLanguage);
+    document.documentElement.lang = resolvedLanguage;
     const targetPath = withLanguagePath(window.location.pathname, resolvedLanguage);
     const search = window.location.search || '';
     router.replace(`${targetPath}${search}`);
     setIsInitialized(true);
-  }, [isInitialized, persistLanguage, router]);
+  }, [isInitialized, router]);
 
   // 监听全局事件：导航栏点击“小程序”时弹出（手动打开不自动关闭）
   useEffect(() => {

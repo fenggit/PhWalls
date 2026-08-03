@@ -5,6 +5,8 @@ import { BRAND_CATEGORIES, buildBrandPath } from '@/lib/brands'
 import {
   buildDesktopWallpaperDetailPath,
   getAllDesktopWallpaperCollections,
+  getDesktopTabData,
+  isDesktopWallpaperCategory,
 } from '@/lib/desktop-wallpapers'
 import {
   buildWallpaperDetailPath,
@@ -32,6 +34,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/about', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/design', changeFrequency: 'weekly', priority: 0.9 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.4 },
+    ...getDesktopTabData()
+      .filter((category) => isDesktopWallpaperCategory(category.type))
+      .map((category) => ({
+        path: `/desktop/${category.type}`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+      })),
     ...BRAND_CATEGORIES.map((brand) => ({
       path: buildBrandPath(brand.type),
       changeFrequency: 'weekly' as const,

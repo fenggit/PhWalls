@@ -5,9 +5,9 @@
 Site: https://phwalls.com
 Sitemap: https://phwalls.com/sitemap.xml
 Languages: en, zh, ja, vi, zh-hant
-Last-Updated: 2026-07-05
+Last-Updated: 2026-08-03
 Canonical: https://phwalls.com/{lang}/... (language subpaths)
-Language-Resolution: user choice stored in localStorage (`phwalls-language`) + `phwalls-lang` cookie, otherwise IP country mapping
+Language-Resolution: explicit user choice first; otherwise browser Accept-Language, then IP country mapping, then English
 
 ---
 

@@ -5,6 +5,7 @@ import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, Ref
 import { useLanguage } from '@/components/LanguageProvider';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 interface WallpaperItem {
   name: string;
@@ -22,14 +23,6 @@ interface WallpaperPreviewDownloadProps {
   currentIndex: number;
   onIndexChange: (index: number) => void;
   categoryName: string;
-}
-
-type GtagEventParams = Record<string, string | number | boolean | undefined>;
-
-declare global {
-  interface Window {
-    gtag?: (command: 'event', eventName: string, eventParams?: GtagEventParams) => void;
-  }
 }
 
 export default function WallpaperPreviewDownload({
@@ -218,17 +211,27 @@ export default function WallpaperPreviewDownload({
   const goToPrevious = useCallback(() => {
     if (currentIndex > 0) {
       const nextIndex = currentIndex - 1;
+      trackAnalyticsEvent('w_preview_navigate', {
+        direction: 'previous',
+        category_name: categoryName,
+        wallpaper_name: wallpapers[nextIndex]?.name,
+      });
       onIndexChange(nextIndex);
     }
-  }, [currentIndex, onIndexChange]);
+  }, [categoryName, currentIndex, onIndexChange, wallpapers]);
 
   // 切换到下一张
   const goToNext = useCallback(() => {
     if (currentIndex < wallpapers.length - 1) {
       const nextIndex = currentIndex + 1;
+      trackAnalyticsEvent('w_preview_navigate', {
+        direction: 'next',
+        category_name: categoryName,
+        wallpaper_name: wallpapers[nextIndex]?.name,
+      });
       onIndexChange(nextIndex);
     }
-  }, [currentIndex, onIndexChange, wallpapers]);
+  }, [categoryName, currentIndex, onIndexChange, wallpapers]);
 
   // 实际执行下载
   const downloadWallpaper = useCallback(async () => {
@@ -277,11 +280,8 @@ export default function WallpaperPreviewDownload({
       link.click();
       document.body.removeChild(link);
 
-      window.gtag?.('event', 'wallpaper_download_click', {
-        event_category: 'engagement',
-        event_label: `${displayCategoryName} / ${displayWallpaperName}`,
-        wallpaper_category: categoryName,
-        wallpaper_collection: categoryName,
+      trackAnalyticsEvent('w_wallpaper_download_success', {
+        category_name: categoryName,
         wallpaper_name: currentWallpaper.name,
         file_type: currentWallpaper.type,
         file_size: currentWallpaper.size,
@@ -293,6 +293,12 @@ export default function WallpaperPreviewDownload({
       }, 100);
     } catch (error) {
       console.error('Download failed:', error);
+      trackAnalyticsEvent('w_wallpaper_download_fail', {
+        category_name: categoryName,
+        wallpaper_name: currentWallpaper.name,
+        file_type: currentWallpaper.type,
+        file_size: currentWallpaper.size,
+      });
       alert(texts.downloadFailed + '\n\n' + texts.errorDetails + ': ' + (error instanceof Error ? error.message : texts.unknownError));
     } finally {
       setIsDownloading(false);
@@ -300,8 +306,6 @@ export default function WallpaperPreviewDownload({
   }, [
     categoryName,
     currentWallpaper,
-    displayCategoryName,
-    displayWallpaperName,
     isDownloading,
     texts.downloadFailed,
     texts.errorDetails,
@@ -317,27 +321,53 @@ export default function WallpaperPreviewDownload({
       return;
     }
 
+    trackAnalyticsEvent('w_wallpaper_download_click', {
+      category_name: categoryName,
+      wallpaper_name: currentWallpaper.name,
+      file_type: currentWallpaper.type,
+      file_size: currentWallpaper.size,
+    });
     downloadWallpaper();
-  }, [currentWallpaper, currentImageUrl, downloadWallpaper, isDownloading, isLoading]);
+  }, [categoryName, currentWallpaper, currentImageUrl, downloadWallpaper, isDownloading, isLoading]);
 
   // 缩放功能
   const handleZoomIn = useCallback(() => {
     const nextZoom = Math.min(zoomLevel + 0.5, 3);
+    trackAnalyticsEvent('w_preview_zoom', {
+      action: 'zoom_in',
+      zoom_level: nextZoom,
+      wallpaper_name: currentWallpaper?.name,
+    });
     setZoomLevel(nextZoom);
-  }, [zoomLevel]);
+  }, [currentWallpaper, zoomLevel]);
 
   const handleZoomOut = useCallback(() => {
     const nextZoom = Math.max(zoomLevel - 0.5, 0.5);
+    trackAnalyticsEvent('w_preview_zoom', {
+      action: 'zoom_out',
+      zoom_level: nextZoom,
+      wallpaper_name: currentWallpaper?.name,
+    });
     setZoomLevel(nextZoom);
-  }, [zoomLevel]);
+  }, [currentWallpaper, zoomLevel]);
 
   const handleResetZoom = useCallback(() => {
+    trackAnalyticsEvent('w_preview_zoom', {
+      action: 'reset',
+      zoom_level: 1,
+      wallpaper_name: currentWallpaper?.name,
+    });
     setZoomLevel(1);
-  }, []);
+  }, [currentWallpaper]);
 
   // 刷新当前图片
   const handleRefreshImage = useCallback(async () => {
     if (!currentWallpaper || !isOpen) return;
+
+    trackAnalyticsEvent('w_preview_refresh', {
+      category_name: categoryName,
+      wallpaper_name: currentWallpaper.name,
+    });
 
     const displayPath = currentWallpaper.compressPath || currentWallpaper.originPath;
 
@@ -357,7 +387,7 @@ export default function WallpaperPreviewDownload({
     mergePreloadedUrls({ [displayPath]: refreshedUrl });
     setCurrentImageUrl(refreshedUrl);
     setIsLoading(false);
-  }, [currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
+  }, [categoryName, currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
 
   // 键盘事件处理
   useEffect(() => {

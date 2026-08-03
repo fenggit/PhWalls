@@ -26,6 +26,7 @@ import {
 } from '@/lib/wallpaper-data';
 import { withLanguagePath } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
 type IdleWindow = Window & {
@@ -295,6 +296,14 @@ export default function Home({
     const localItems = collection.item || [];
     const expectedCount = collection.count ?? localItems.length;
 
+    trackAnalyticsEvent('w_preview_wallpaper', {
+      action: 'open',
+      category_name: collection.name,
+      wallpaper_name: localItems[0]?.name || collection.name,
+      wallpaper_category: categoryType,
+      page_path: pathname,
+    });
+
     setPreviewCategory(collection.name);
     setPreviewIndex(0);
     setPreviewWallpapers(localItems);
@@ -321,12 +330,18 @@ export default function Home({
     } catch (error) {
       console.error('Failed to load wallpapers for preview:', error);
     }
-  }, []);
+  }, [pathname]);
 
   // 关闭预览模态框
   const closePreview = useCallback(() => {
+    trackAnalyticsEvent('w_preview_wallpaper', {
+      action: 'close',
+      category_name: previewCategory,
+      wallpaper_name: previewWallpapers[previewIndex]?.name,
+      page_path: pathname,
+    });
     setIsPreviewOpen(false);
-  }, []);
+  }, [pathname, previewCategory, previewIndex, previewWallpapers]);
 
   // 处理预览索引变化
   const handlePreviewIndexChange = useCallback((index: number) => {
@@ -417,13 +432,8 @@ export default function Home({
       {/* 主要内容区域 */}
       <main className="pt-24 md:pt-20">
 
-        <div className="sr-only md:hidden">
-          <h1>{heroTitle || texts.heroTitle}</h1>
-          <p>{heroDescription || texts.heroDescription}</p>
-        </div>
-
         {/* 英雄区域 */}
-        <section className="hidden md:block text-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <section className="sr-only text-center md:not-sr-only md:block md:py-8 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
               {heroTitle || texts.heroTitle}

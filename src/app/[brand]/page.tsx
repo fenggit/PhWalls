@@ -5,7 +5,7 @@ import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { sortByDateDesc } from '@/lib/data';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
-import { SITE_URL } from '@/lib/seo';
+import { getCategorySeoCopy, SITE_URL } from '@/lib/seo';
 import { loadWallpaperCollections } from '@/lib/wallpaper-data';
 
 export const runtime = 'edge';
@@ -24,10 +24,11 @@ export async function generateMetadata({ params }: BrandLandingPageProps): Promi
   }
 
   const language = await resolveMetadataLanguage();
+  const seoCopy = getCategorySeoCopy(language, brandInfo.slug);
   const canonicalPath = buildBrandPath(brandInfo.type);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${canonicalPath}`, language);
-  const title = `${brandInfo.title} Wallpapers | PhWalls`;
-  const description = `Download official ${brandInfo.title} built-in wallpapers in HD quality. Free and watermark-free.`;
+  const title = `${seoCopy.title} | PhWalls`;
+  const description = seoCopy.description;
 
   return {
     title,
@@ -65,16 +66,18 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
     imageKey: collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || null,
     wallpapers: collection.item || [],
   }));
+  const language = await resolveMetadataLanguage();
+  const seoCopy = getCategorySeoCopy(language, brandInfo.slug, cards.length);
 
   return (
     <SeoLandingPage
-      breadcrumbLabel={`${brandInfo.title} Wallpapers`}
+      breadcrumbLabel={seoCopy.title}
       categoryKey={brandInfo.slug}
       categoryPath={buildBrandPath(brandInfo.type)}
       detailCategory={brandInfo.slug}
-      seoTitle={`${brandInfo.title} Wallpapers`}
-      seoDescription={`Download official ${brandInfo.title} built-in wallpapers in HD quality. Free, watermark-free, and regularly updated.`}
-      seoSubtitle={`${cards.length} official ${brandInfo.title} wallpaper collections.`}
+      seoTitle={seoCopy.title}
+      seoDescription={seoCopy.description}
+      seoSubtitle={seoCopy.subtitle}
       cardAspect="aspect-[9/16]"
       gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
       cards={cards}

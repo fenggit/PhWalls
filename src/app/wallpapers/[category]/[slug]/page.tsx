@@ -5,6 +5,7 @@ import {
   buildWallpaperDetailPath,
   isWallpaperCategory,
   loadWallpaperCollection,
+  parseWallpaperDate,
   type WallpaperAsset,
 } from '@/lib/wallpaper-data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
@@ -68,6 +69,10 @@ function normalizeImageEncodingFormat(type: string): string | undefined {
 function buildWallpaperPublicUrl(item: WallpaperAsset): string | null {
   const path = item.compressPath || item.originPath;
   return path ? buildPublicR2Url(path) : null;
+}
+
+function getWallpaperPublicEncodingFormat(item: WallpaperAsset): string | undefined {
+  return item.compressPath ? 'image/webp' : normalizeImageEncodingFormat(item.type);
 }
 
 // 服务端（爬虫可见）设备类型推断，基于路径和名称
@@ -155,6 +160,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const collectionDisplayName = formatWallpaperDisplayName(collection.name);
+  const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
   const categoryBrand = getBrandCategoryBySlug(category);
   const categoryLandingUrl = withLanguageUrl(
     `${SITE_URL}${categoryBrand ? buildBrandPath(categoryBrand.type) : `/${category}`}`,
@@ -172,18 +178,6 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const itemTypes = Array.from(
     new Set(collection.item.map((item) => item.type.trim().toUpperCase()).filter(Boolean))
   ).slice(0, 4);
-  const variantLabels = collectVariantLabels(
-    collectionDisplayName,
-    collection.item.map((item) => item.name)
-  );
-  const searchExamples = [
-    `${collectionDisplayName} wallpaper`,
-    `${collectionDisplayName} wallpapers 4K`,
-    ...(variantLabels.length > 0
-      ? variantLabels.map((label) => `${collectionDisplayName} ${label} wallpaper`)
-      : [`${collectionDisplayName} stock wallpapers`]),
-  ].slice(0, 4);
-
   // 构建服务端 CDN 图片 URL，使 SSR HTML 包含真实 src，搜索引擎/AI 爬虫可直接抓取图片
   const initialImageUrls: Record<string, string> | undefined = hasPublicR2Cdn()
     ? Object.fromEntries(
@@ -215,49 +209,18 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     description: `${collection.item.length} official ${categoryLabel} wallpapers from ${collectionDisplayName}. High resolution, watermark-free, free to download.`,
     url: canonicalUrl,
     numberOfItems: collection.item.length,
-    datePublished: collection.date,
+    ...(publishedDate ? { datePublished: publishedDate } : {}),
     associatedMedia: collection.item.map((item, index) => {
       const imageUrl = initialImageUrls?.[`${collection.name}-${index}`] || buildWallpaperPublicUrl(item);
       return {
         '@type': 'ImageObject',
         name: formatWallpaperDisplayName(item.name),
         description: `${formatWallpaperDisplayName(item.name)} - ${collectionDisplayName} ${categoryLabel} wallpaper`,
-        contentSize: item.size,
-        encodingFormat: normalizeImageEncodingFormat(item.type),
+        encodingFormat: getWallpaperPublicEncodingFormat(item),
+        ...(!item.compressPath ? { contentSize: item.size } : {}),
         ...(imageUrl ? { contentUrl: imageUrl, thumbnailUrl: imageUrl } : {}),
       };
     }),
-  };
-
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `Are these ${collectionDisplayName} wallpapers official?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Yes. We collect official stock wallpapers for ${collectionDisplayName} from software releases.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Are the wallpapers available in 4K/HD?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Many wallpapers are available in 4K/HD full resolution, depending on the original release files.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Can I download these wallpapers for free?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Yes. All wallpapers on this page are free to preview and download.',
-        },
-      },
-    ],
   };
 
   // 服务端渲染的摘要区块 — 供 AI 爬虫和搜索引擎抓取
@@ -290,14 +253,6 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
           <dd>{collection.date || 'Recently updated'}</dd>
         </div>
       </dl>
-      <p className="mb-6 text-sm leading-relaxed text-gray-600">
-        Common ways people find this collection include {searchExamples.map((term, index) => (
-          <span key={term}>
-            {index > 0 ? (index === searchExamples.length - 1 ? ' and ' : ', ') : ''}
-            <strong>{term}</strong>
-          </span>
-        ))}.
-      </p>
       <div className="space-y-6">
         {deviceLabels.map((label) => (
           <div key={label}>
@@ -324,10 +279,6 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <DeviceWallpaperGrid category={category} deviceData={collection} summarySection={summarySection} initialImageUrls={initialImageUrls} />
     </>

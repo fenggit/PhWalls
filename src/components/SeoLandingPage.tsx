@@ -92,8 +92,7 @@ export default function SeoLandingPage({
     setCurrentLang(lang);
   };
 
-  const title = seoTitle || breadcrumbLabel;
-  const pageTitle = buildWallpaperListTitle(title, texts.wallpapersTitleSuffix);
+  const pageTitle = seoTitle || buildWallpaperListTitle(breadcrumbLabel, texts.wallpapersTitleSuffix);
   const description =
     seoDescription ||
     `Explore official ${breadcrumbLabel}. Download high-resolution, watermark-free wallpapers for free.`;
@@ -129,7 +128,7 @@ export default function SeoLandingPage({
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Home', item: localizedHomeUrl },
+              { '@type': 'ListItem', position: 1, name: texts.home, item: localizedHomeUrl },
               { '@type': 'ListItem', position: 2, name: pageTitle, item: localizedCategoryUrl },
             ],
           })

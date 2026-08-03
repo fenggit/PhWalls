@@ -132,20 +132,24 @@ export default async function RootLayout({
   const currentLanguage = isLanguage(rawLang) ? rawLang : DEFAULT_LANGUAGE;
   const requestPath = headersList.get(REQUEST_PATH_HEADER_NAME) || '/';
   const shouldRenderHomeSeoFallback = requestPath === '/';
+  const homeTexts = getI18nTexts(currentLanguage);
+  const homeTitle = `${homeTexts.heroTitle} | ${homeTexts.siteName}`;
+  const homeDescription = homeTexts.heroDescription;
+  const homeCanonicalUrl = withLanguageUrl(SITE_URL, currentLanguage);
 
   return (
     <html lang={currentLanguage} className="scroll-smooth">
       <head>
         {shouldRenderHomeSeoFallback ? (
           <>
-            <title>{defaultTitle}</title>
-            <meta name="description" content={defaultDescription} />
+            <title>{homeTitle}</title>
+            <meta name="description" content={homeDescription} />
             <meta name="robots" content="index, follow" />
             <meta
               name="googlebot"
               content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
             />
-            <link rel="canonical" href={defaultCanonicalUrl} />
+            <link rel="canonical" href={homeCanonicalUrl} />
           </>
         ) : null}
 

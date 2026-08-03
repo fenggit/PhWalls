@@ -10,6 +10,9 @@ export const SUPPORTED_LANGUAGES: Language[] = [
 export const DEFAULT_LANGUAGE: Language = LanguageCode.EN;
 export const LANGUAGE_LOCAL_STORAGE_KEY = 'phwalls-language';
 export const LANGUAGE_COOKIE_NAME = 'phwalls-lang';
+export const LANGUAGE_PREFERENCE_LOCAL_STORAGE_KEY = 'phwalls-language-selected';
+export const LANGUAGE_PREFERENCE_COOKIE_NAME = 'phwalls-lang-selected';
+export const LANGUAGE_PREFERENCE_MARKER_VALUE = '1';
 export const LANGUAGE_HEADER_NAME = 'x-phwalls-lang';
 export const REQUEST_PATH_HEADER_NAME = 'x-phwalls-path';
 export const LANGUAGE_PATH_SEGMENTS: Record<Language, string> = {
@@ -156,8 +159,8 @@ export function resolveRequestLanguage(input: {
   return (
     normalizeLanguage(input.searchLang) ||
     normalizeLanguage(input.headerLang) ||
-    normalizeLanguage(input.browserLang) ||
     normalizeLanguage(input.cookieLang) ||
+    normalizeLanguage(input.browserLang) ||
     resolveLanguageFromCountry(input.country) ||
     DEFAULT_LANGUAGE
   );

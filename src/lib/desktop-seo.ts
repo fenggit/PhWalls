@@ -1,5 +1,6 @@
 import { LanguageCode, type Language } from '@/types';
 import { formatWallpaperDisplayName } from '@/lib/data';
+import { getI18nTexts } from '@/lib/i18n';
 
 type DesktopHomeSeoCopy = {
   title: string;
@@ -52,6 +53,25 @@ const desktopHomeSeoByLanguage: Record<Language, DesktopHomeSeoCopy> = {
 
 export function getDesktopHomeSeoCopy(language: Language): DesktopHomeSeoCopy {
   return desktopHomeSeoByLanguage[language] || desktopHomeSeoByLanguage[LanguageCode.EN];
+}
+
+export function getDesktopCategorySeoCopy(
+  language: Language,
+  categoryLabel: string,
+  collectionCount?: number
+) {
+  const texts = getI18nTexts(language);
+
+  return {
+    title: texts.desktopCategorySeoTitleTemplate.replace('{category}', categoryLabel),
+    description: texts.desktopCategorySeoDescriptionTemplate.replace('{category}', categoryLabel),
+    subtitle:
+      collectionCount === undefined
+        ? ''
+        : texts.desktopCategorySeoSubtitleTemplate
+            .replace('{count}', String(collectionCount))
+            .replace('{category}', categoryLabel),
+  };
 }
 
 export function getDesktopCategoryLabel(language: Language): string {

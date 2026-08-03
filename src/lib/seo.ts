@@ -1,17 +1,31 @@
 import { getI18nTexts, type Language } from '@/lib/i18n';
+import { getTabData } from '@/lib/data';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
-import { getBrandCategoryBySlug } from '@/lib/brands';
+import { getBrandCategoryBySlug, normalizeCategoryType } from '@/lib/brands';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com';
 
-export function getCategorySeoCopy(language: Language, categoryKey: string) {
-  void language;
+export function getCategorySeoCopy(
+  language: Language,
+  categoryKey: string,
+  collectionCount?: number
+) {
   const brand = getBrandCategoryBySlug(categoryKey);
-  const label = brand?.title || categoryKey;
+  const localizedTab = getTabData(language).find(
+    (tab) => normalizeCategoryType(tab.type) === brand?.slug
+  );
+  const label = localizedTab?.title.trim() || brand?.title || categoryKey;
+  const texts = getI18nTexts(language);
 
   return {
-    title: `${label} Wallpapers`,
-    description: `Download official ${label} built-in wallpapers in HD quality. Free and watermark-free.`,
+    title: texts.brandCategorySeoTitleTemplate.replace('{brand}', label),
+    description: texts.brandCategorySeoDescriptionTemplate.replace('{brand}', label),
+    subtitle:
+      collectionCount === undefined
+        ? ''
+        : texts.brandCategorySeoSubtitleTemplate
+            .replace('{count}', String(collectionCount))
+            .replace('{brand}', label),
   };
 }
 

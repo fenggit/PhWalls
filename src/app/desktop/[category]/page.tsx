@@ -10,6 +10,7 @@ import {
 import { sortByDateDesc } from "@/lib/data";
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from "@/lib/language";
 import { resolveMetadataLanguage } from "@/lib/metadata";
+import { getDesktopCategorySeoCopy } from "@/lib/desktop-seo";
 import { SITE_URL } from "@/lib/seo";
 
 export const runtime = "edge";
@@ -23,9 +24,10 @@ export async function generateMetadata({ params }: DesktopCategoryPageProps): Pr
  if (!isDesktopWallpaperCategory(category)) return {};
  const language = await resolveMetadataLanguage();
  const label = getDesktopWallpaperCategoryLabel(category);
+ const seoCopy = getDesktopCategorySeoCopy(language, label);
  const canonicalUrl = withLanguageUrl(`${SITE_URL}/desktop/${category}`, language);
- const title = `${label} Wallpapers | PhWalls`;
- const description = `Download official ${label} built-in desktop wallpapers in HD. Free, watermark-free.`;
+ const title = `${seoCopy.title} | PhWalls`;
+ const description = seoCopy.description;
  return {
   title,
   description,
@@ -51,16 +53,18 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
   imageKey: c.item?.[0]?.compressPath || c.item?.[0]?.originPath || null,
   wallpapers: c.item || [],
  }));
+ const language = await resolveMetadataLanguage();
+ const seoCopy = getDesktopCategorySeoCopy(language, label, cards.length);
  return (
   <SeoLandingPage
-   breadcrumbLabel={`${label} Wallpapers`}
+   breadcrumbLabel={seoCopy.title}
    categoryKey={category}
    categoryPath={`/desktop/${category}`}
    detailCategory={category}
    detailPathPrefix="/desktop/wallpapers"
-   seoTitle={`${label} Wallpapers`}
-   seoDescription={`Download official ${label} built-in desktop wallpapers in HD. Free, watermark-free, regularly updated.`}
-   seoSubtitle={`${cards.length} official ${label} wallpaper collections.`}
+   seoTitle={seoCopy.title}
+   seoDescription={seoCopy.description}
+   seoSubtitle={seoCopy.subtitle}
    cardAspect="aspect-video"
    gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
    cards={cards}

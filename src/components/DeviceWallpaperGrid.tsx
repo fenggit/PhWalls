@@ -15,6 +15,7 @@ import { withLanguagePath } from '@/lib/language';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { SITE_URL } from '@/lib/seo';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 interface DeviceItem {
   name: string;
@@ -192,18 +193,31 @@ export default function DeviceWallpaperGrid({
   }, []);
 
   const openPreview = useCallback((index: number) => {
+    const wallpaper = deviceData.item[index];
+    trackAnalyticsEvent('w_preview_wallpaper', {
+      action: 'open',
+      category_name: deviceData.name,
+      wallpaper_name: wallpaper?.name,
+      page_path: pathname,
+    });
     setPreviewWallpapers(deviceData.item);
     setPreviewIndex(index);
     setIsPreviewOpen(true);
-  }, [deviceData]);
+  }, [deviceData, pathname]);
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
   };
 
   const closePreview = useCallback(() => {
+    trackAnalyticsEvent('w_preview_wallpaper', {
+      action: 'close',
+      category_name: deviceData.name,
+      wallpaper_name: deviceData.item[previewIndex]?.name,
+      page_path: pathname,
+    });
     setIsPreviewOpen(false);
-  }, []);
+  }, [deviceData, pathname, previewIndex]);
 
   const getWallpaperKind = useCallback((item: DeviceItem): WallpaperKind => {
     const name = item.name.toLowerCase();

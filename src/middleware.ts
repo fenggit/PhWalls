@@ -6,6 +6,8 @@ import {
   getLanguageFromPath,
   LANGUAGE_COOKIE_NAME,
   LANGUAGE_HEADER_NAME,
+  LANGUAGE_PREFERENCE_COOKIE_NAME,
+  LANGUAGE_PREFERENCE_MARKER_VALUE,
   REQUEST_PATH_HEADER_NAME,
   resolveLanguageFromAcceptLanguage,
   resolveRequestLanguage,
@@ -26,8 +28,6 @@ const STATIC_PATHS = new Set([
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com';
 const SITE_ORIGIN = new URL(SITE_URL);
 const BRAND_SLUGS = new Set(BRAND_CATEGORIES.map((brand) => brand.slug));
-
-const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 function resolveCanonicalHost(hostname: string): string | null {
   const incoming = hostname.toLowerCase();
@@ -100,9 +100,14 @@ export function middleware(request: NextRequest) {
   const acceptLanguage = acceptLanguageHeader
     ? resolveLanguageFromAcceptLanguage(acceptLanguageHeader)
     : null;
+  const hasExplicitLanguagePreference =
+    request.cookies.get(LANGUAGE_PREFERENCE_COOKIE_NAME)?.value ===
+    LANGUAGE_PREFERENCE_MARKER_VALUE;
   const resolvedLanguage = resolveRequestLanguage({
     browserLang: acceptLanguage,
-    cookieLang: request.cookies.get(LANGUAGE_COOKIE_NAME)?.value,
+    cookieLang: hasExplicitLanguagePreference
+      ? request.cookies.get(LANGUAGE_COOKIE_NAME)?.value
+      : null,
     country,
   });
 
@@ -136,13 +141,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (shouldRedirect) {
-    const response = NextResponse.redirect(redirectUrl, 308);
-    response.cookies.set(LANGUAGE_COOKIE_NAME, preferredLanguage, {
-      maxAge: ONE_YEAR_SECONDS,
-      path: '/',
-      sameSite: 'lax',
-    });
-    return response;
+    return NextResponse.redirect(redirectUrl, 308);
   }
 
   if (pathLanguage) {
@@ -151,17 +150,11 @@ export function middleware(request: NextRequest) {
     requestHeaders.set(REQUEST_PATH_HEADER_NAME, normalizedPath);
     const rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = normalizedPath;
-    const response = NextResponse.rewrite(rewriteUrl, {
+    return NextResponse.rewrite(rewriteUrl, {
       request: {
         headers: requestHeaders,
       },
     });
-    response.cookies.set(LANGUAGE_COOKIE_NAME, pathLanguage, {
-      maxAge: ONE_YEAR_SECONDS,
-      path: '/',
-      sameSite: 'lax',
-    });
-    return response;
   }
 
   if (isStaticPath || isInternal) {
@@ -173,17 +166,11 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(LANGUAGE_HEADER_NAME, preferredLanguage);
   requestHeaders.set(REQUEST_PATH_HEADER_NAME, normalizedPath);
-  const response = NextResponse.next({
+  return NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
-  response.cookies.set(LANGUAGE_COOKIE_NAME, preferredLanguage, {
-    maxAge: ONE_YEAR_SECONDS,
-    path: '/',
-    sameSite: 'lax',
-  });
-  return response;
 }
 
 export const config = {

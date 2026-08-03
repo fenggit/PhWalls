@@ -223,9 +223,10 @@ npm start
 
 **语言选择逻辑**：
 1. URL 带语言前缀时：使用 URL 指定语言
-2. URL 未指定语言时：优先读取浏览器语言
-3. 浏览器语言不受支持时：依次使用上次保存的语言、地区推断结果
-4. 仍未匹配到语言：默认显示英文
+2. URL 未指定语言且用户主动选择过语言时：优先使用用户选择
+3. 用户未主动选择语言时：优先读取浏览器语言
+4. 浏览器语言不受支持时：使用地区推断结果
+5. 仍未匹配到语言：默认显示英文
 
 **支持的语言代码**：
 - `en` - 英文（English）
@@ -244,7 +245,8 @@ npm start
 **技术实现**：
 - 服务端检测：`src/middleware.ts` 读取请求的 `Accept-Language`
 - 客户端兜底：`src/components/LanguageProvider.tsx` 读取 `navigator.languages`
-- 语言存储：使用 cookie 与浏览器 localStorage，localStorage key 为 `phwalls-language`
+- 用户主动选择的语言使用 `phwalls-language` localStorage 与 `phwalls-lang` cookie 保存
+- 主动选择标记使用 `phwalls-language-selected` localStorage 与 `phwalls-lang-selected` cookie；自动识别结果不会写入用户偏好
 - 翻译文件：`src/lib/i18n.ts` 包含所有语言的翻译文本
 - 无需配置：不需要设置任何环境变量，系统自动工作
 
@@ -623,7 +625,7 @@ POST /api/storage/switch                      # 切换存储类型（仅支持 r
 
 **首次访问显示错误语言**：
 - 检查浏览器语言设置（浏览器设置 → 语言）
-- 无语言前缀时按优先级匹配：浏览器语言 > localStorage/cookie > 地区推断 > 英文
+- 无语言前缀时按优先级匹配：用户主动选择 > 浏览器语言 > 地区推断 > 英文
 - 可以手动切换到期望的语言
 
 **界面文字显示异常**：

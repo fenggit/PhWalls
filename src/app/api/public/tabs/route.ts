@@ -3,6 +3,8 @@ import { getTabData } from '@/lib/data';
 import {
   LANGUAGE_COOKIE_NAME,
   LANGUAGE_HEADER_NAME,
+  LANGUAGE_PREFERENCE_COOKIE_NAME,
+  LANGUAGE_PREFERENCE_MARKER_VALUE,
   resolveLanguageFromAcceptLanguage,
   resolveRequestLanguage,
 } from '@/lib/language';
@@ -13,7 +15,12 @@ export const runtime = 'edge';
 export async function GET(request: NextRequest) {
   try {
     const searchLang = request.nextUrl.searchParams.get('lang');
-    const cookieLang = request.cookies.get(LANGUAGE_COOKIE_NAME)?.value ?? null;
+    const hasExplicitLanguagePreference =
+      request.cookies.get(LANGUAGE_PREFERENCE_COOKIE_NAME)?.value ===
+      LANGUAGE_PREFERENCE_MARKER_VALUE;
+    const cookieLang = hasExplicitLanguagePreference
+      ? request.cookies.get(LANGUAGE_COOKIE_NAME)?.value ?? null
+      : null;
     const headerLang = request.headers.get(LANGUAGE_HEADER_NAME);
     const browserLang = resolveLanguageFromAcceptLanguage(request.headers.get('accept-language'));
     const country = request.headers.get('cf-ipcountry');

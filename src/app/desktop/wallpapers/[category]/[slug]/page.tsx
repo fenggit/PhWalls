@@ -14,6 +14,7 @@ import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
 import { SITE_URL } from '@/lib/seo';
+import { parseWallpaperDate } from '@/lib/wallpaper-data';
 
 export const runtime = 'edge';
 
@@ -44,6 +45,10 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
   });
   const detailPath = buildDesktopWallpaperDetailPath(category, collection.name);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
+  const primaryImagePath = collection.item[0]?.compressPath || collection.item[0]?.originPath;
+  const primaryImageUrl = primaryImagePath
+    ? buildPublicR2Url(primaryImagePath) || `${SITE_URL}/logo.png`
+    : `${SITE_URL}/logo.png`;
 
   return {
     title: seoCopy.title,
@@ -58,12 +63,13 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
       type: 'article',
       url: canonicalUrl,
       locale: getOpenGraphLocaleForLanguage(language),
-      images: [{ url: `${SITE_URL}/logo.png`, alt: seoCopy.title }],
+      images: [{ url: primaryImageUrl, alt: seoCopy.title }],
     },
     twitter: {
       card: 'summary_large_image',
       title: seoCopy.title,
       description: seoCopy.description,
+      images: [primaryImageUrl],
     },
   };
 }
@@ -83,12 +89,14 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
   const detailPath = buildDesktopWallpaperDetailPath(category, collection.name);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const categoryLabel = getDesktopWallpaperCategoryLabel(category);
+  const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
   const seoCopy = buildDesktopDetailSeoCopy(language, {
     collectionName: collection.name,
     categoryLabel,
     count: collection.item.length,
   });
-  const categoryLandingPath = '/desktop';
+  const categoryLandingPath = `/desktop/${category}`;
+  const categoryLandingUrl = withLanguageUrl(`${SITE_URL}${categoryLandingPath}`, language);
 
   const initialImageUrls: Record<string, string> | undefined = hasPublicR2Cdn()
     ? Object.fromEntries(
@@ -121,16 +129,36 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
     description: seoCopy.galleryDescription,
     url: canonicalUrl,
     numberOfItems: collection.item.length,
-    associatedMedia: collection.item.map((item) => ({
-      '@type': 'ImageObject',
-      name: formatWallpaperDisplayName(item.name),
-      contentSize: item.size,
-      encodingFormat: item.type,
-    })),
+    ...(publishedDate ? { datePublished: publishedDate } : {}),
+    associatedMedia: collection.item.map((item, index) => {
+      const imageUrl = initialImageUrls?.[`${collection.name}-${index}`];
+      return {
+        '@type': 'ImageObject',
+        name: formatWallpaperDisplayName(item.name),
+        description: `${formatWallpaperDisplayName(item.name)} - ${seoCopy.galleryName}`,
+        encodingFormat: item.compressPath ? 'image/webp' : item.type,
+        ...(!item.compressPath ? { contentSize: item.size } : {}),
+        ...(imageUrl ? { contentUrl: imageUrl, thumbnailUrl: imageUrl } : {}),
+      };
+    }),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: withLanguageUrl(SITE_URL, language) },
+      { '@type': 'ListItem', position: 2, name: seoCopy.categoryLabel, item: categoryLandingUrl },
+      { '@type': 'ListItem', position: 3, name: formatWallpaperDisplayName(collection.name), item: canonicalUrl },
+    ],
   };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
