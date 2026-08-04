@@ -14,6 +14,13 @@ import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
+import {
+  buildWallpaperDetailSeoCopy,
+  buildWallpaperImageDescription,
+  collectWallpaperVariantLabels,
+  getWallpaperDeviceGroupLabel,
+  type WallpaperDeviceGroup,
+} from '@/lib/wallpaper-seo';
 
 export const runtime = 'edge';
 
@@ -26,39 +33,6 @@ type WallpaperDetailPageProps = {
     lang?: string | string[];
   }>;
 };
-
-const SEO_VARIANT_RULES: Array<{ token: string; label: string }> = [
-  { token: 'pro', label: 'Pro' },
-  { token: 'ultra', label: 'Ultra' },
-  { token: 'plus', label: 'Plus' },
-  { token: 'max', label: 'Max' },
-  { token: 'fe', label: 'FE' },
-  { token: 'fold', label: 'Fold' },
-  { token: 'flip', label: 'Flip' },
-  { token: 'lite', label: 'Lite' },
-  { token: 'se', label: 'SE' },
-];
-
-function collectVariantLabels(collectionName: string, itemNames: string[]): string[] {
-  const source = `${collectionName} ${itemNames.join(' ')}`.toLowerCase();
-  const collectionNameLower = collectionName.toLowerCase();
-
-  return SEO_VARIANT_RULES
-    .filter(({ token }) => source.includes(token) && !collectionNameLower.includes(token))
-    .map(({ label }) => label)
-    .slice(0, 2);
-}
-
-function buildSeoTitle(baseName: string, variantLabels: string[]): string {
-  const cleanBaseName = baseName.replace(/\s+wallpapers$/i, '');
-  const variantText = variantLabels.length > 0 ? ` ${variantLabels.join(' ')}` : '';
-  return `${cleanBaseName}${variantText} Wallpapers in 4K HD (Official Download) | PhWalls`;
-}
-
-function buildSeoDescription(baseName: string, variantLabels: string[]): string {
-  const variantText = variantLabels.length > 0 ? `, including ${variantLabels.join(' and ')} variants,` : '';
-  return `Download official ${baseName} wallpapers${variantText} in 4K/HD, full resolution, no watermark. Preview all stock wallpapers and download free.`;
-}
 
 function normalizeImageEncodingFormat(type: string): string | undefined {
   const normalized = type.trim().toLowerCase();
@@ -75,15 +49,39 @@ function getWallpaperPublicEncodingFormat(item: WallpaperAsset): string | undefi
   return item.compressPath ? 'image/webp' : normalizeImageEncodingFormat(item.type);
 }
 
+function collectImageFormats(items: WallpaperAsset[]): string[] {
+  return Array.from(
+    new Set(
+      items
+        .map((item) => item.type.trim().replace(/^image\//i, '').toUpperCase())
+        .filter(Boolean)
+    )
+  ).slice(0, 4);
+}
+
 // 服务端（爬虫可见）设备类型推断，基于路径和名称
-function detectDeviceGroup(item: { name: string; originPath: string; compressPath: string }): string {
+function detectDeviceGroup(item: {
+  name: string;
+  originPath: string;
+  compressPath: string;
+}): WallpaperDeviceGroup {
   const s = `${item.name} ${item.originPath} ${item.compressPath}`.toLowerCase();
-  if (s.includes('watch')) return 'Watch';
-  if (s.includes('imac') || s.includes('macos/') || (s.includes('mac') && !s.includes('iphone') && !s.includes('ipad'))) return 'Mac';
-  if (s.includes('landscape') && (s.includes('ipad') || s.includes('ipados'))) return 'iPad (Landscape)';
-  if (s.includes('portrait') && (s.includes('ipad') || s.includes('ipados'))) return 'iPad (Portrait)';
-  if (s.includes('ipad') || s.includes('ipados/')) return 'iPad';
-  return 'Phone';
+  if (s.includes('watch')) return 'watch';
+  if (
+    s.includes('imac') ||
+    s.includes('macos/') ||
+    (s.includes('mac') && !s.includes('iphone') && !s.includes('ipad'))
+  ) {
+    return 'mac';
+  }
+  if (s.includes('landscape') && (s.includes('ipad') || s.includes('ipados'))) {
+    return 'ipad-landscape';
+  }
+  if (s.includes('portrait') && (s.includes('ipad') || s.includes('ipados'))) {
+    return 'ipad-portrait';
+  }
+  if (s.includes('ipad') || s.includes('ipados/')) return 'ipad';
+  return 'phone';
 }
 
 export async function generateMetadata({ params }: WallpaperDetailPageProps): Promise<Metadata> {
@@ -100,13 +98,18 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
   }
 
   const detailPath = buildWallpaperDetailPath(category, collection.name);
-  const collectionDisplayName = formatWallpaperDisplayName(collection.name);
-  const variantLabels = collectVariantLabels(
-    collectionDisplayName,
+  const categoryLabel = getCategoryLabelForLanguage(language, category);
+  const variantLabels = collectWallpaperVariantLabels(
+    collection.name,
     collection.item.map((item) => item.name)
   );
-  const title = buildSeoTitle(collectionDisplayName, variantLabels);
-  const description = buildSeoDescription(collectionDisplayName, variantLabels);
+  const { title, description } = buildWallpaperDetailSeoCopy(language, {
+    collectionName: collection.name,
+    categoryLabel,
+    count: collection.item.length,
+    formats: collectImageFormats(collection.item),
+    variantLabels,
+  });
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const primaryImageUrl = collection.item[0]
     ? buildWallpaperPublicUrl(collection.item[0]) || `${SITE_URL}/logo.png`
@@ -159,7 +162,17 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const detailPath = buildWallpaperDetailPath(category, collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
-  const collectionDisplayName = formatWallpaperDisplayName(collection.name);
+  const variantLabels = collectWallpaperVariantLabels(
+    collection.name,
+    collection.item.map((item) => item.name)
+  );
+  const seoCopy = buildWallpaperDetailSeoCopy(language, {
+    collectionName: collection.name,
+    categoryLabel,
+    count: collection.item.length,
+    formats: collectImageFormats(collection.item),
+    variantLabels,
+  });
   const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
   const categoryBrand = getBrandCategoryBySlug(category);
   const categoryLandingUrl = withLanguageUrl(
@@ -168,16 +181,14 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   );
 
   // 按设备分组（服务端，爬虫可见）
-  const deviceGroups: Record<string, string[]> = {};
+  const deviceGroups: Partial<Record<WallpaperDeviceGroup, string[]>> = {};
   for (const item of collection.item) {
     const group = detectDeviceGroup(item);
-    if (!deviceGroups[group]) deviceGroups[group] = [];
-    deviceGroups[group].push(item.name);
+    const groupItems = deviceGroups[group] || [];
+    groupItems.push(item.name);
+    deviceGroups[group] = groupItems;
   }
-  const deviceLabels = Object.keys(deviceGroups);
-  const itemTypes = Array.from(
-    new Set(collection.item.map((item) => item.type.trim().toUpperCase()).filter(Boolean))
-  ).slice(0, 4);
+  const deviceLabels = Object.keys(deviceGroups) as WallpaperDeviceGroup[];
   // 构建服务端 CDN 图片 URL，使 SSR HTML 包含真实 src，搜索引擎/AI 爬虫可直接抓取图片
   const initialImageUrls: Record<string, string> | undefined = hasPublicR2Cdn()
     ? Object.fromEntries(
@@ -196,18 +207,29 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: withLanguageUrl(SITE_URL, language) },
-      { '@type': 'ListItem', position: 2, name: `${categoryLabel} Wallpapers`, item: categoryLandingUrl },
-      { '@type': 'ListItem', position: 3, name: collectionDisplayName, item: canonicalUrl },
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: seoCopy.breadcrumbHome,
+        item: withLanguageUrl(SITE_URL, language),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: seoCopy.breadcrumbCategory,
+        item: categoryLandingUrl,
+      },
+      { '@type': 'ListItem', position: 3, name: seoCopy.seoName, item: canonicalUrl },
     ],
   };
 
   const imageGallerySchema = {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
-    name: `${collectionDisplayName} ${categoryLabel} Wallpapers`,
-    description: `${collection.item.length} official ${categoryLabel} wallpapers from ${collectionDisplayName}. High resolution, watermark-free, free to download.`,
+    name: seoCopy.galleryName,
+    description: seoCopy.galleryDescription,
     url: canonicalUrl,
+    inLanguage: language,
     numberOfItems: collection.item.length,
     ...(publishedDate ? { datePublished: publishedDate } : {}),
     associatedMedia: collection.item.map((item, index) => {
@@ -215,7 +237,12 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
       return {
         '@type': 'ImageObject',
         name: formatWallpaperDisplayName(item.name),
-        description: `${formatWallpaperDisplayName(item.name)} - ${collectionDisplayName} ${categoryLabel} wallpaper`,
+        description: buildWallpaperImageDescription(
+          language,
+          formatWallpaperDisplayName(item.name),
+          seoCopy.seoName,
+          categoryLabel
+        ),
         encodingFormat: getWallpaperPublicEncodingFormat(item),
         ...(!item.compressPath ? { contentSize: item.size } : {}),
         ...(imageUrl ? { contentUrl: imageUrl, thumbnailUrl: imageUrl } : {}),
@@ -227,40 +254,40 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const summarySection = (
     <section className="mt-16 border-t border-gray-100 pt-8 pb-4">
       <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        {collectionDisplayName} {categoryLabel} Wallpapers — Collection Facts
+        {seoCopy.summaryTitle}
       </h2>
       <p className="text-gray-600 mb-6 text-sm leading-relaxed">
-        This page catalogs the official {collectionDisplayName} stock wallpaper set for
-        {' '}{deviceLabels.join(' and ')}. It includes <strong>{collection.item.length}</strong>
-        {' '}wallpaper files{itemTypes.length > 0 ? ` in ${itemTypes.join(', ')} format` : ''},
-        with web previews and original downloads available without watermarks.
+        {seoCopy.summaryDescription}
       </p>
       <dl className="mb-6 grid gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <dt className="font-semibold text-gray-800">Collection</dt>
-          <dd>{collectionDisplayName}</dd>
+          <dt className="font-semibold text-gray-800">{seoCopy.labels.collection}</dt>
+          <dd>{seoCopy.seoName}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-800">Brand</dt>
+          <dt className="font-semibold text-gray-800">{seoCopy.labels.brand}</dt>
           <dd>{categoryLabel}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-800">Files</dt>
-          <dd>{collection.item.length} wallpapers</dd>
+          <dt className="font-semibold text-gray-800">{seoCopy.labels.files}</dt>
+          <dd>{seoCopy.labels.wallpaperCount}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-800">Updated</dt>
-          <dd>{collection.date || 'Recently updated'}</dd>
+          <dt className="font-semibold text-gray-800">{seoCopy.labels.updated}</dt>
+          <dd>{collection.date || seoCopy.labels.recentlyUpdated}</dd>
         </div>
       </dl>
       <div className="space-y-6">
         {deviceLabels.map((label) => (
           <div key={label}>
             <h3 className="text-sm font-semibold text-gray-700 mb-2">
-              {label} <span className="font-normal text-gray-400">({deviceGroups[label].length})</span>
+              {getWallpaperDeviceGroupLabel(language, label)}{' '}
+              <span className="font-normal text-gray-400">
+                ({deviceGroups[label]?.length || 0})
+              </span>
             </h3>
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-              {deviceGroups[label].map((name) => (
+              {(deviceGroups[label] || []).map((name) => (
                 <li key={name}>{formatWallpaperDisplayName(name)}</li>
               ))}
             </ul>
@@ -280,7 +307,12 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
       />
-      <DeviceWallpaperGrid category={category} deviceData={collection} summarySection={summarySection} initialImageUrls={initialImageUrls} />
+      <DeviceWallpaperGrid
+        category={category}
+        deviceData={collection}
+        summarySection={summarySection}
+        initialImageUrls={initialImageUrls}
+      />
     </>
   );
 }

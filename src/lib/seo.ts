@@ -30,8 +30,12 @@ export function getCategorySeoCopy(
 }
 
 export function getCategoryLabelForLanguage(language: Language, category: WallpaperCategory): string {
-  void language;
-  return getWallpaperCategoryLabel(category);
+  const brand = getBrandCategoryBySlug(category);
+  const localizedTab = getTabData(language).find(
+    (tab) => normalizeCategoryType(tab.type) === brand?.slug
+  );
+
+  return localizedTab?.title.trim() || getWallpaperCategoryLabel(category);
 }
 
 export function buildCollectionDescription(language: Language, input: {
