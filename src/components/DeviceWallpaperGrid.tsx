@@ -35,6 +35,7 @@ interface DeviceData {
 interface DeviceWallpaperGridProps {
   category: WallpaperCategory;
   deviceData: DeviceData;
+  displayName?: string;
   summarySection?: React.ReactNode;
   /** 服务端预构建的 CDN 图片 URL（key 格式: `${deviceData.name}-${index}`）。
    *  提供后可跳过 batch-private-urls API 调用，SSR 即包含 src，搜索引擎可抓取。
@@ -52,6 +53,7 @@ type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop
 export default function DeviceWallpaperGrid({
   category,
   deviceData,
+  displayName,
   summarySection,
   initialImageUrls,
   tabDataOverride,
@@ -62,9 +64,10 @@ export default function DeviceWallpaperGrid({
 }: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const tabData = useMemo(() => tabDataOverride || getTabData(currentLang), [currentLang, tabDataOverride]);
+  const displayDeviceName = displayName || deviceData.name;
   const pageTitle = useMemo(
-    () => buildWallpaperListTitle(deviceData.name, texts.wallpapersTitleSuffix),
-    [deviceData.name, texts.wallpapersTitleSuffix]
+    () => buildWallpaperListTitle(displayDeviceName, texts.wallpapersTitleSuffix),
+    [displayDeviceName, texts.wallpapersTitleSuffix]
   );
 
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(initialImageUrls ?? {});
@@ -196,14 +199,14 @@ export default function DeviceWallpaperGrid({
     const wallpaper = deviceData.item[index];
     trackAnalyticsEvent('w_preview_wallpaper', {
       action: 'open',
-      category_name: deviceData.name,
+      category_name: displayDeviceName,
       wallpaper_name: wallpaper?.name,
       page_path: pathname,
     });
     setPreviewWallpapers(deviceData.item);
     setPreviewIndex(index);
     setIsPreviewOpen(true);
-  }, [deviceData, pathname]);
+  }, [deviceData, displayDeviceName, pathname]);
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
@@ -212,12 +215,12 @@ export default function DeviceWallpaperGrid({
   const closePreview = useCallback(() => {
     trackAnalyticsEvent('w_preview_wallpaper', {
       action: 'close',
-      category_name: deviceData.name,
+      category_name: displayDeviceName,
       wallpaper_name: deviceData.item[previewIndex]?.name,
       page_path: pathname,
     });
     setIsPreviewOpen(false);
-  }, [deviceData, pathname, previewIndex]);
+  }, [deviceData, displayDeviceName, pathname, previewIndex]);
 
   const getWallpaperKind = useCallback((item: DeviceItem): WallpaperKind => {
     const name = item.name.toLowerCase();
@@ -306,8 +309,8 @@ export default function DeviceWallpaperGrid({
   }, [deviceData.item, deviceData.name, imageUrls, pageTitle, pathname, texts.siteName]);
 
   const getWallpaperAlt = useCallback(
-    (item: DeviceItem) => `${formatWallpaperDisplayName(item.name)} - ${formatWallpaperDisplayName(deviceData.name)} ${texts.wallpaperAltSuffix}`,
-    [deviceData.name, texts.wallpaperAltSuffix]
+    (item: DeviceItem) => `${formatWallpaperDisplayName(item.name)} - ${formatWallpaperDisplayName(displayDeviceName)} ${texts.wallpaperAltSuffix}`,
+    [displayDeviceName, texts.wallpaperAltSuffix]
   );
 
   const itemsWithKind = useMemo(
@@ -461,7 +464,7 @@ export default function DeviceWallpaperGrid({
         wallpapers={previewWallpapers}
         currentIndex={previewIndex}
         onIndexChange={setPreviewIndex}
-        categoryName={deviceData.name}
+        categoryName={displayDeviceName}
       />
 
       <button

@@ -310,6 +310,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
       <DeviceWallpaperGrid
         category={category}
         deviceData={collection}
+        displayName={seoCopy.seoName}
         summarySection={summarySection}
         initialImageUrls={initialImageUrls}
       />

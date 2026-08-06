@@ -57,6 +57,10 @@ function safeDecodeURIComponent(value: string): string {
 }
 
 function normalizePublicPath(pathname: string): string {
+  if (pathname === '/&') {
+    return '/';
+  }
+
   if (pathname === '/home/v1' || pathname === '/home/v1/') {
     return '/';
   }
