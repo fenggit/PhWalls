@@ -9,7 +9,9 @@ import nokiaData from '@/data/nokia.json';
 import nothingData from '@/data/nothing.json';
 import oneplusData from '@/data/oneplus.json';
 import oppoData from '@/data/oppo.json';
+import pocoData from '@/data/poco.json';
 import realmeData from '@/data/realme.json';
+import redmiData from '@/data/redmi.json';
 import samsungData from '@/data/samsung.json';
 import sonyData from '@/data/sony.json';
 import transsionInfinixData from '@/data/transsion infinix.json';
@@ -53,7 +55,9 @@ const dataSources: Record<string, WallpaperCollection[]> = {
   nothing: nothingData as WallpaperCollection[],
   oneplus: oneplusData as WallpaperCollection[],
   oppo: oppoData as WallpaperCollection[],
+  poco: pocoData as WallpaperCollection[],
   realme: realmeData as WallpaperCollection[],
+  redmi: redmiData as WallpaperCollection[],
   samsung: samsungData as WallpaperCollection[],
   sony: sonyData as WallpaperCollection[],
   'transsion-infinix': transsionInfinixData as WallpaperCollection[],

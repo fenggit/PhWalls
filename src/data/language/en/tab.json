@@ -45,6 +45,14 @@
     "type": "xiaomi"
   },
   {
+    "title": "Redmi",
+    "type": "redmi"
+  },
+  {
+    "title": "POCO",
+    "type": "poco"
+  },
+  {
     "title": "Huawei",
     "type": "huawei"
   },

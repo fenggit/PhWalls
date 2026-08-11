@@ -5,7 +5,7 @@
 Site: https://phwalls.com
 Sitemap: https://phwalls.com/sitemap.xml
 Languages: en, zh, ja, vi, zh-hant
-Last-Updated: 2026-08-03
+Last-Updated: 2026-08-11
 Canonical: https://phwalls.com/{lang}/... (language subpaths)
 Language-Resolution: explicit user choice first; otherwise browser Accept-Language, then IP country mapping, then English
 
@@ -21,6 +21,8 @@ PhWalls is a wallpaper library focused on built-in wallpapers from major phone b
 
 - Samsung: https://phwalls.com/en/samsung
 - Xiaomi: https://phwalls.com/en/xiaomi
+- Redmi: https://phwalls.com/en/redmi
+- POCO: https://phwalls.com/en/poco
 - Vivo: https://phwalls.com/en/vivo
 - OPPO: https://phwalls.com/en/oppo
 - Realme: https://phwalls.com/en/realme
@@ -47,6 +49,8 @@ PhWalls is a wallpaper library focused on built-in wallpapers from major phone b
 - OPPO Find N6 wallpapers: https://phwalls.com/en/wallpapers/oppo/oppo-find-n6
 - Motorola Edge 70 Fusion wallpapers: https://phwalls.com/en/wallpapers/motorola/moto-edge-70-fusion
 - Nothing Phone 4a wallpapers: https://phwalls.com/en/wallpapers/nothing/nothing-phone-4a
+- Redmi Note 17 wallpapers: https://phwalls.com/en/wallpapers/redmi/redmi-note-17
+- POCO X8 Pro wallpapers: https://phwalls.com/en/wallpapers/poco/poco-x8-pro
 
 ---
 

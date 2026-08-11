@@ -80,11 +80,28 @@ function normalizePublicPath(pathname: string): string {
   return pathname;
 }
 
+function normalizeLegacyWallpaperPath(pathname: string): string {
+  const match = pathname.match(/^\/wallpapers\/xiaomi\/([^/]+)\/?$/i);
+  if (!match) {
+    return pathname;
+  }
+
+  const slug = match[1].toLowerCase();
+  if (slug.startsWith('poco-')) {
+    return `/wallpapers/poco/${match[1]}`;
+  }
+  if (slug.startsWith('redmi-') || slug.startsWith('xiaomi-redmi-')) {
+    return `/wallpapers/redmi/${match[1]}`;
+  }
+
+  return pathname;
+}
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const pathLanguage = getLanguageFromPath(pathname);
   const strippedPath = pathLanguage ? stripLanguagePrefix(pathname).path : pathname;
-  const normalizedPath = normalizePublicPath(strippedPath);
+  const normalizedPath = normalizeLegacyWallpaperPath(normalizePublicPath(strippedPath));
   const trimmed = normalizedPath.replace(/^\/+|\/+$/g, '');
   const isStaticFile = Boolean(normalizedPath.match(/\.[a-z0-9]+$/i));
   const isStaticPath = STATIC_PATHS.has(trimmed);

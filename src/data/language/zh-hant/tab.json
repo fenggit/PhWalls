@@ -45,6 +45,14 @@
     "type": "xiaomi"
   },
   {
+    "title": "Redmi 紅米",
+    "type": "redmi"
+  },
+  {
+    "title": "POCO",
+    "type": "poco"
+  },
+  {
     "title": "華為",
     "type": "huawei"
   },

@@ -12,6 +12,14 @@
         "type": "xiaomi"
     },
     {
+        "title": "Redmi 红米",
+        "type": "redmi"
+    },
+    {
+        "title": "POCO",
+        "type": "poco"
+    },
+    {
         "title": "iPhone",
         "type": "iPhone",
         "link": "https://applewalls.com"
