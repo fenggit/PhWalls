@@ -2056,5 +2056,67 @@
         "compressPath": "redmi/Xiaomi Redmi K50i/compress/xiaomi-redmi-k50i-note-11t-pro-3.webp"
       }
     ]
+  },
+  {
+    "name": "Redmi K100 Pro",
+    "date": "2026/08/11",
+    "item": [
+      {
+        "name": "redmi-k100-pro-black-brown-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.75 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-brown-abstract-alt-a.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-brown-abstract-alt-b",
+        "type": "image/png",
+        "size": "2.61 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-brown-abstract-alt-b.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-brown-abstract-alt-b.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-brown-abstract-alt-c",
+        "type": "image/png",
+        "size": "2.49 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-brown-abstract-alt-c.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-brown-abstract-alt-c.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-brown-abstract",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-brown-abstract.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-brown-abstract.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-green-abstract",
+        "type": "image/png",
+        "size": "2.37 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-green-abstract.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-green-abstract.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-purple-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.39 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-purple-abstract-alt-a.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-purple-abstract-alt-a.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-purple-abstract",
+        "type": "image/png",
+        "size": "2.63 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-purple-abstract.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-purple-abstract.webp"
+      },
+      {
+        "name": "redmi-k100-pro-black-teal-abstract",
+        "type": "image/png",
+        "size": "2.92 MB",
+        "originPath": "redmi/Redmi K100 Pro/origin/redmi-k100-pro-black-teal-abstract.png",
+        "compressPath": "redmi/Redmi K100 Pro/compress/redmi-k100-pro-black-teal-abstract.webp"
+      }
+    ]
   }
 ]

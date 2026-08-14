@@ -10384,5 +10384,60 @@
         "compressPath": "samsung/Samsung Galaxy Z TriFold/compress/samsung-galaxy-z-trifold-gray-black-gradient.webp"
       }
     ]
+  },
+  {
+    "name": "Samsung Galaxy M17e 5G",
+    "date": "2026/03/17",
+    "item": [
+      {
+        "name": "samsung-galaxy-m17e-5g-black-blue-gradient",
+        "type": "image/png",
+        "size": "6.51 MB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-black-blue-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-black-blue-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m17e-5g-brown-purple-gradient",
+        "type": "image/png",
+        "size": "7.13 MB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-brown-purple-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-brown-purple-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m17e-5g-brown-silver-gradient",
+        "type": "image/png",
+        "size": "5.75 MB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-brown-silver-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-brown-silver-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m17e-5g-purple-pink-gradient-alt-a",
+        "type": "image/png",
+        "size": "6.22 MB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-purple-pink-gradient-alt-a.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-purple-pink-gradient-alt-a.webp"
+      },
+      {
+        "name": "samsung-galaxy-m17e-5g-purple-pink-gradient",
+        "type": "image/png",
+        "size": "6.84 MB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-purple-pink-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-purple-pink-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m17e-5g-silver-purple-gradient",
+        "type": "image/png",
+        "size": "664.15 KB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-silver-purple-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-silver-purple-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-m17e-5g-teal-blue-gradient",
+        "type": "image/png",
+        "size": "6.75 MB",
+        "originPath": "samsung/Samsung Galaxy M17e 5G/origin/samsung-galaxy-m17e-5g-teal-blue-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-teal-blue-gradient.webp"
+      }
+    ]
   }
 ]

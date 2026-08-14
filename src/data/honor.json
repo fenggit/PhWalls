@@ -3888,5 +3888,53 @@
         "compressPath": "honor/Honor X50/compress/honor-x50-white-beige-abstract.webp"
       }
     ]
+  },
+  {
+    "name": "Honor Robot Phone",
+    "date": "2026/08/12",
+    "item": [
+      {
+        "name": "honor-robot-phone-black-brown-gradient-alt-a",
+        "type": "image/png",
+        "size": "455.13 KB",
+        "originPath": "honor/Honor Robot Phone/origin/honor-robot-phone-black-brown-gradient-alt-a.png",
+        "compressPath": "honor/Honor Robot Phone/compress/honor-robot-phone-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "honor-robot-phone-black-brown-gradient",
+        "type": "image/png",
+        "size": "3.43 MB",
+        "originPath": "honor/Honor Robot Phone/origin/honor-robot-phone-black-brown-gradient.png",
+        "compressPath": "honor/Honor Robot Phone/compress/honor-robot-phone-black-brown-gradient.webp"
+      },
+      {
+        "name": "honor-robot-phone-black-gradient-alt-a",
+        "type": "image/png",
+        "size": "178.9 KB",
+        "originPath": "honor/Honor Robot Phone/origin/honor-robot-phone-black-gradient-alt-a.png",
+        "compressPath": "honor/Honor Robot Phone/compress/honor-robot-phone-black-gradient-alt-a.webp"
+      },
+      {
+        "name": "honor-robot-phone-black-gradient",
+        "type": "image/png",
+        "size": "2.83 MB",
+        "originPath": "honor/Honor Robot Phone/origin/honor-robot-phone-black-gradient.png",
+        "compressPath": "honor/Honor Robot Phone/compress/honor-robot-phone-black-gradient.webp"
+      },
+      {
+        "name": "honor-robot-phone-black-gray-abstract",
+        "type": "image/png",
+        "size": "3.62 MB",
+        "originPath": "honor/Honor Robot Phone/origin/honor-robot-phone-black-gray-abstract.png",
+        "compressPath": "honor/Honor Robot Phone/compress/honor-robot-phone-black-gray-abstract.webp"
+      },
+      {
+        "name": "honor-robot-phone-black-silver-gradient",
+        "type": "image/png",
+        "size": "4.33 MB",
+        "originPath": "honor/Honor Robot Phone/origin/honor-robot-phone-black-silver-gradient.png",
+        "compressPath": "honor/Honor Robot Phone/compress/honor-robot-phone-black-silver-gradient.webp"
+      }
+    ]
   }
 ]
