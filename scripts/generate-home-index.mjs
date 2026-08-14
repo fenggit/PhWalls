@@ -24,6 +24,7 @@ const brandFiles = {
   honor: 'honor.json',
   huawei: 'huawei.json',
   'huawei-matepad': 'huawei matepad.json',
+  iqoo: 'iqoo.json',
   motorola: 'motorola.json',
   nokia: 'nokia.json',
   nothing: 'nothing.json',

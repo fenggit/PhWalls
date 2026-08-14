@@ -5,7 +5,7 @@
 Site: https://phwalls.com
 Sitemap: https://phwalls.com/sitemap.xml
 Languages: en, zh, ja, vi, zh-hant
-Last-Updated: 2026-08-11
+Last-Updated: 2026-08-14
 Canonical: https://phwalls.com/{lang}/... (language subpaths)
 Language-Resolution: explicit user choice first; otherwise browser Accept-Language, then IP country mapping, then English
 
@@ -24,6 +24,7 @@ PhWalls is a wallpaper library focused on built-in wallpapers from major phone b
 - Redmi: https://phwalls.com/en/redmi
 - POCO: https://phwalls.com/en/poco
 - Vivo: https://phwalls.com/en/vivo
+- iQOO: https://phwalls.com/en/iqoo
 - OPPO: https://phwalls.com/en/oppo
 - Realme: https://phwalls.com/en/realme
 - Huawei: https://phwalls.com/en/huawei

@@ -4,6 +4,7 @@ import harmonyosData from '@/data/harmonyos.json';
 import honorData from '@/data/honor.json';
 import huaweiData from '@/data/huawei.json';
 import huaweiMatepadData from '@/data/huawei matepad.json';
+import iqooData from '@/data/iqoo.json';
 import motorolaData from '@/data/motorola.json';
 import nokiaData from '@/data/nokia.json';
 import nothingData from '@/data/nothing.json';
@@ -50,6 +51,7 @@ const dataSources: Record<string, WallpaperCollection[]> = {
   honor: honorData as WallpaperCollection[],
   huawei: huaweiData as WallpaperCollection[],
   'huawei-matepad': huaweiMatepadData as WallpaperCollection[],
+  iqoo: iqooData as WallpaperCollection[],
   motorola: motorolaData as WallpaperCollection[],
   nokia: nokiaData as WallpaperCollection[],
   nothing: nothingData as WallpaperCollection[],

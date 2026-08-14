@@ -81,6 +81,14 @@ function normalizePublicPath(pathname: string): string {
 }
 
 function normalizeLegacyWallpaperPath(pathname: string): string {
+  const vivoMatch = pathname.match(/^\/wallpapers\/vivo\/([^/]+)\/?$/i);
+  if (vivoMatch) {
+    const slug = vivoMatch[1].toLowerCase();
+    if (slug.startsWith('vivo-iqoo-')) {
+      return `/wallpapers/iqoo/${vivoMatch[1].replace(/^vivo-/i, '')}`;
+    }
+  }
+
   const match = pathname.match(/^\/wallpapers\/xiaomi\/([^/]+)\/?$/i);
   if (!match) {
     return pathname;

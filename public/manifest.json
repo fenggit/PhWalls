@@ -1,7 +1,7 @@
 {
   "name": "PhWalls - Phone Wallpaper",
   "short_name": "PhWalls",
-  "description": "Download official built-in phone wallpapers in HD quality for Samsung, Xiaomi, Redmi, POCO, Vivo, OPPO, Huawei, Google Pixel, and more.",
+  "description": "Download official built-in phone wallpapers in HD quality for Samsung, Xiaomi, Redmi, POCO, Vivo, iQOO, OPPO, Huawei, Google Pixel, and more.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

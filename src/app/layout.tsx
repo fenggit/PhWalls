@@ -34,7 +34,7 @@ export const metadata: Metadata = (() => {
     title: defaultTitle,
     description: defaultDescription,
     keywords:
-      'phone wallpaper, android wallpaper, samsung wallpaper, xiaomi wallpaper, redmi wallpaper, poco wallpaper, oppo wallpaper, vivo wallpaper, huawei wallpaper, HD wallpaper',
+      'phone wallpaper, android wallpaper, samsung wallpaper, xiaomi wallpaper, redmi wallpaper, poco wallpaper, oppo wallpaper, vivo wallpaper, iqoo wallpaper, huawei wallpaper, HD wallpaper',
     authors: [{ name: 'PhWalls Team' }],
     creator: 'PhWalls',
     publisher: 'PhWalls',
