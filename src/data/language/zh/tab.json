@@ -77,6 +77,10 @@
         "type": "nothing"
     },
     {
+        "title": "华硕 ROG Phone",
+        "type": "asus-rog-phone"
+    },
+    {
         "title": "诺基亚",
         "type": "nokia"
     },

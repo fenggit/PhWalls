@@ -77,6 +77,10 @@
     "type": "nothing"
   },
   {
+    "title": "ASUS ROG Phone",
+    "type": "asus-rog-phone"
+  },
+  {
     "title": "Nokia",
     "type": "nokia"
   },

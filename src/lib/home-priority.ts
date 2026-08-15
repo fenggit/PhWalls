@@ -15,6 +15,7 @@ const HOME_CATEGORY_PRIORITY = [
   'realme',
   'google-pixel',
   'nothing',
+  'asus-rog-phone',
   'oneplus',
   'redmi',
   'poco',

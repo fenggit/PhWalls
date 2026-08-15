@@ -1,4 +1,5 @@
 import androidData from '@/data/android.json';
+import asusRogPhoneData from '@/data/asus rog phone.json';
 import googlePixelData from '@/data/google pixel.json';
 import harmonyosData from '@/data/harmonyos.json';
 import honorData from '@/data/honor.json';
@@ -46,6 +47,7 @@ export {
 // 以下全量数据访问供首页聚合、sitemap、公开 API 等确需全部数据的场景使用。
 const dataSources: Record<string, WallpaperCollection[]> = {
   android: androidData as WallpaperCollection[],
+  'asus-rog-phone': asusRogPhoneData as WallpaperCollection[],
   'google-pixel': googlePixelData as WallpaperCollection[],
   harmonyos: harmonyosData as WallpaperCollection[],
   honor: honorData as WallpaperCollection[],

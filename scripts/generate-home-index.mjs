@@ -19,6 +19,7 @@ const dataDir = join(scriptDir, '..', 'src', 'data');
 // 与 src/lib/wallpaper-data.ts 的 brandLoaders 保持一致。
 const brandFiles = {
   android: 'android.json',
+  'asus-rog-phone': 'asus rog phone.json',
   'google-pixel': 'google pixel.json',
   harmonyos: 'harmonyos.json',
   honor: 'honor.json',
