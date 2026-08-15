@@ -8,15 +8,12 @@ import {
   getDesktopTabData,
   isDesktopWallpaperCategory,
 } from '@/lib/desktop-wallpapers'
-import {
-  buildWallpaperDetailPath,
-  getAllWallpaperCollections,
-  parseWallpaperDate,
-} from '@/lib/wallpapers';
+import { getAllHomeCollections } from '@/lib/home-index'
+import { buildWallpaperDetailPath, parseWallpaperDate } from '@/lib/wallpaper-data';
 
 // Sitemap 页面：输出站点静态页面和壁纸详情页索引。
 export default function sitemap(): MetadataRoute.Sitemap {
-  const allCollections = getAllWallpaperCollections()
+  const allCollections = getAllHomeCollections()
   const allDesktopCollections = getAllDesktopWallpaperCollections()
   const latestCollectionDate =
     [...allCollections, ...allDesktopCollections]

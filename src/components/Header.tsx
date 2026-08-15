@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Globe, Info, Share2 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useShare } from '@/components/ShareProvider';
@@ -10,6 +10,7 @@ import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
 import { getShareTexts } from '@/lib/share';
+import { sortHomeTabsByPriority } from '@/lib/home-priority';
 
 export interface HeaderProps {
   tabData: TabInfo[];
@@ -47,11 +48,12 @@ export default function Header({
   categoryPagePrefix,
   activeCategoryTypeOverride,
 }: HeaderProps) {
+  const orderedTabData = useMemo(() => sortHomeTabsByPriority(tabData), [tabData]);
   const [isDeviceMenuOpen, setIsDeviceMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMiniProgramMenuOpen, setIsMiniProgramMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [visibleDesktopTabs, setVisibleDesktopTabs] = useState<TabInfo[]>(tabData);
+  const [visibleDesktopTabs, setVisibleDesktopTabs] = useState<TabInfo[]>(orderedTabData);
   const [overflowDesktopTabs, setOverflowDesktopTabs] = useState<TabInfo[]>([]);
   const miniProgramMenuRef = useRef<HTMLDivElement>(null);
   const mobileMiniProgramPanelRef = useRef<HTMLDivElement>(null);
@@ -128,7 +130,15 @@ export default function Header({
           : 'More';
   const sameTabs = useCallback(
     (left: TabInfo[], right: TabInfo[]) =>
-      left.length === right.length && left.every((item, index) => item.type === right[index]?.type),
+      left.length === right.length &&
+      left.every((item, index) => {
+        const other = right[index];
+        return (
+          item.type === other?.type &&
+          item.title === other.title &&
+          item.link === other.link
+        );
+      }),
     []
   );
 
@@ -240,7 +250,7 @@ export default function Header({
       if (typeof window === 'undefined') return;
 
       if (window.innerWidth < 1024) {
-        setVisibleDesktopTabs((prev) => (sameTabs(prev, tabData) ? prev : tabData));
+        setVisibleDesktopTabs((prev) => (sameTabs(prev, orderedTabData) ? prev : orderedTabData));
         setOverflowDesktopTabs((prev) => (prev.length === 0 ? prev : []));
         return;
       }
@@ -249,14 +259,16 @@ export default function Header({
       if (availableWidth <= 0) return;
 
       const gap = 4; // px, matches `space-x-1`
-      const tabWidths = tabData.map((category) => {
+      const tabWidths = orderedTabData.map((category) => {
         const measured = desktopTabMeasureRefs.current[category.type]?.offsetWidth;
         return measured ?? Math.max(88, category.title.length * 8 + 32);
       });
-      const totalWidth = tabWidths.reduce((sum, width) => sum + width, 0) + Math.max(0, tabData.length - 1) * gap;
+      const totalWidth =
+        tabWidths.reduce((sum, width) => sum + width, 0) +
+        Math.max(0, orderedTabData.length - 1) * gap;
 
       if (totalWidth <= availableWidth) {
-        setVisibleDesktopTabs((prev) => (sameTabs(prev, tabData) ? prev : tabData));
+        setVisibleDesktopTabs((prev) => (sameTabs(prev, orderedTabData) ? prev : orderedTabData));
         setOverflowDesktopTabs((prev) => (prev.length === 0 ? prev : []));
         return;
       }
@@ -266,15 +278,15 @@ export default function Header({
       const nextVisibleTabs: TabInfo[] = [];
       let usedWidth = 0;
 
-      for (let index = 0; index < tabData.length; index += 1) {
+      for (let index = 0; index < orderedTabData.length; index += 1) {
         const tabWidth = tabWidths[index];
         const tabWidthWithGap = tabWidth + (nextVisibleTabs.length > 0 ? gap : 0);
-        const hasRemainingTabs = index < tabData.length - 1;
+        const hasRemainingTabs = index < orderedTabData.length - 1;
         const reservedWidth = hasRemainingTabs ? reserveForMore : 0;
         const canFit = usedWidth + tabWidthWithGap + reservedWidth <= availableWidth;
 
         if (canFit || nextVisibleTabs.length === 0) {
-          nextVisibleTabs.push(tabData[index]);
+          nextVisibleTabs.push(orderedTabData[index]);
           usedWidth += tabWidthWithGap;
           continue;
         }
@@ -286,7 +298,7 @@ export default function Header({
       const visibleTypes = new Set(limitedVisibleTabs.map((item) => item.type));
       const nextOverflowTabs = [
         ...nextVisibleTabs.slice(MAX_VISIBLE_DESKTOP_TABS),
-        ...tabData.slice(nextVisibleTabs.length),
+        ...orderedTabData.slice(nextVisibleTabs.length),
       ].filter((item) => !visibleTypes.has(item.type));
 
       setVisibleDesktopTabs((prev) => (sameTabs(prev, limitedVisibleTabs) ? prev : limitedVisibleTabs));
@@ -302,7 +314,7 @@ export default function Header({
       observer.disconnect();
       window.removeEventListener('resize', recalculateDesktopTabs);
     };
-  }, [desktopMoreLabel, sameTabs, tabData]);
+  }, [desktopMoreLabel, orderedTabData, sameTabs]);
 
   const handleMiniProgramClick = () => {
     if (!SHOW_MINI_PROGRAM) return;
@@ -356,7 +368,7 @@ export default function Header({
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="pointer-events-none invisible fixed -top-24 left-0 hidden lg:flex items-center space-x-1">
-            {tabData.map((category) => (
+            {orderedTabData.map((category) => (
               <button
                 key={`measure-${category.type}`}
                 ref={(element) => {
@@ -643,7 +655,7 @@ export default function Header({
                 >
                   {mobileAllLabel}
                 </Link>
-                {tabData.map((category) => {
+                {orderedTabData.map((category) => {
                   const isExternal = Boolean(category.link?.trim());
                   const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
                   const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);

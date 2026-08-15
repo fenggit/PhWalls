@@ -27,6 +27,7 @@ import {
 import { withLanguagePath } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
 import { trackAnalyticsEvent } from '@/lib/analytics';
+import { sortHomeTabsByPriority } from '@/lib/home-priority';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
 type IdleWindow = Window & {
@@ -49,6 +50,33 @@ type HomeProps = {
   forceDesktopCards?: boolean;
   heroTitle?: string;
   heroDescription?: string;
+};
+
+const getHomeGridColumns = (
+  categoryType: string,
+  viewportWidth: number,
+  forceDesktopCards: boolean
+): number => {
+  if (forceDesktopCards) {
+    if (viewportWidth >= 1536) return 4;
+    if (viewportWidth >= 1024) return 3;
+    if (viewportWidth >= 640) return 2;
+    return 1;
+  }
+
+  if (categoryType === 'iphone' || categoryType === 'ios') {
+    if (viewportWidth >= 1536) return 6;
+    if (viewportWidth >= 1280) return 5;
+    if (viewportWidth >= 1024) return 4;
+    if (viewportWidth >= 640) return 3;
+    return 2;
+  }
+
+  if (viewportWidth >= 1536) return 6;
+  if (viewportWidth >= 1280) return 5;
+  if (viewportWidth >= 1024) return 4;
+  if (viewportWidth >= 640) return 3;
+  return 2;
 };
 
 // 首页组件：聚合展示所有壁纸分类、卡片预览和广告位。
@@ -85,7 +113,10 @@ export default function Home({
   const pathname = usePathname();
   
   // 直接获取导航数据
-  const baseTabData = useMemo(() => getTabData(currentLang), [currentLang]);
+  const baseTabData = useMemo(
+    () => sortHomeTabsByPriority(getTabData(currentLang)),
+    [currentLang]
+  );
   const tabData = useMemo(() => {
     const combined = navigationTabs || [...baseTabData, ...navigationTabsExtra];
     // 按归一化 type 去重：baseTabData 可能已含 desktop，navigationTabsExtra 也会再加一个，
@@ -177,7 +208,11 @@ export default function Home({
       const keyToCardMap: Record<string, string[]> = {};
 
       Object.entries(categoryDataMap).forEach(([categoryType, list]) => {
-        list.forEach((collection) => {
+        const visibleCount = expandedCategories[categoryType]
+          ? list.length
+          : getHomeGridColumns(categoryType, viewportWidth, forceDesktopCards) * 2;
+
+        list.slice(0, visibleCount).forEach((collection) => {
           const cardImageKey = `${categoryType}::${collection.name}`;
           if (initialImageUrls[cardImageKey]) {
             return;
@@ -248,7 +283,14 @@ export default function Home({
         (window as IdleWindow).cancelIdleCallback!(idleCallbackId);
       }
     };
-  }, [categoryDataMap, initialImageUrls, resolveImageUrls]);
+  }, [
+    categoryDataMap,
+    expandedCategories,
+    forceDesktopCards,
+    initialImageUrls,
+    resolveImageUrls,
+    viewportWidth,
+  ]);
 
   // 语言切换处理
   const handleLanguageChange = useCallback((lang: Language) => {
@@ -387,25 +429,7 @@ export default function Home({
   }, []);
 
   const getColumnsForCategory = useCallback((categoryType: string) => {
-    const width = viewportWidth;
-    if (forceDesktopCards) {
-      if (width >= 1536) return 4;
-      if (width >= 1024) return 3;
-      if (width >= 640) return 2;
-      return 1;
-    }
-    if (categoryType === 'iphone' || categoryType === 'ios') {
-      if (width >= 1536) return 6;
-      if (width >= 1280) return 5;
-      if (width >= 1024) return 4;
-      if (width >= 640) return 3;
-      return 2;
-    }
-    if (width >= 1536) return 6;
-    if (width >= 1280) return 5;
-    if (width >= 1024) return 4;
-    if (width >= 640) return 3;
-    return 2;
+    return getHomeGridColumns(categoryType, viewportWidth, forceDesktopCards);
   }, [viewportWidth, forceDesktopCards]);
 
   const getDetailCategory = useCallback((categoryType: string): WallpaperCategory | null => {
