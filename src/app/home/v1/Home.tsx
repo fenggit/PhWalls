@@ -27,7 +27,7 @@ import {
 import { withLanguagePath } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
 import { trackAnalyticsEvent } from '@/lib/analytics';
-import { sortHomeTabsByPriority } from '@/lib/home-priority';
+import { filterHomeTabs, sortHomeTabsByPriority } from '@/lib/home-priority';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
 type IdleWindow = Window & {
@@ -114,7 +114,7 @@ export default function Home({
   
   // 直接获取导航数据
   const baseTabData = useMemo(
-    () => sortHomeTabsByPriority(getTabData(currentLang)),
+    () => filterHomeTabs(sortHomeTabsByPriority(getTabData(currentLang))),
     [currentLang]
   );
   const tabData = useMemo(() => {

@@ -27,6 +27,16 @@ const HOME_CATEGORY_RANK = new Map<string, number>(
   HOME_CATEGORY_PRIORITY.map((type, index) => [type, index])
 );
 
+const HIDDEN_HOME_CATEGORIES = new Set(['harmonyos', 'huawei-matepad']);
+
+export function isHomeCategoryVisible(categoryType: string): boolean {
+  return !HIDDEN_HOME_CATEGORIES.has(normalizeCategoryType(categoryType));
+}
+
+export function filterHomeTabs(tabs: TabInfo[]): TabInfo[] {
+  return tabs.filter((tab) => isHomeCategoryVisible(tab.type));
+}
+
 export function sortHomeTabsByPriority(tabs: TabInfo[]): TabInfo[] {
   return tabs
     .map((tab, index) => ({ tab, index }))

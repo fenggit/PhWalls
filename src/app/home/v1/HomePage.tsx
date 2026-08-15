@@ -4,7 +4,11 @@ import { getHomeCollectionsByCategory, getInitialHomeCollections } from '@/lib/h
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { getTabData } from '@/lib/data';
 import { isLanguage, LANGUAGE_HEADER_NAME } from '@/lib/language';
-import { sortHomeTabsByPriority } from '@/lib/home-priority';
+import {
+  filterHomeTabs,
+  isHomeCategoryVisible,
+  sortHomeTabsByPriority,
+} from '@/lib/home-priority';
 
 type WallpaperEntry = {
   name: string;
@@ -26,7 +30,9 @@ const buildInitialHomeImageUrls = () => {
   };
 
   getInitialHomeCollections().forEach(({ category, collection }) => {
-    addEntry(collection as WallpaperEntry, category);
+    if (isHomeCategoryVisible(category)) {
+      addEntry(collection as WallpaperEntry, category);
+    }
   });
 
   return map;
@@ -39,15 +45,19 @@ export default async function HomePage() {
   const language = isLanguage(rawLanguage) ? rawLanguage : undefined;
   const isMobileRequest = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
   const initialImageUrls = buildInitialHomeImageUrls();
+  const homeTabs = filterHomeTabs(sortHomeTabsByPriority(getTabData(language)));
+  const contentCollectionsByCategory = Object.fromEntries(
+    Object.entries(getHomeCollectionsByCategory()).filter(([category]) =>
+      isHomeCategoryVisible(category)
+    )
+  );
   return (
     <Home
       initialImageUrls={initialImageUrls}
       isMobilePriority={isMobileRequest}
-      contentTabs={sortHomeTabsByPriority(getTabData(language)).filter(
-        (tab) => tab.type.toLowerCase() !== 'desktop'
-      )}
-      contentCollectionsByCategory={getHomeCollectionsByCategory()}
-      navigationTabsExtra={[{ title: 'Desktop', type: 'desktop', icon: '', items: [] }]}
+      contentTabs={homeTabs.filter((tab) => tab.type.toLowerCase() !== 'desktop')}
+      navigationTabs={homeTabs}
+      contentCollectionsByCategory={contentCollectionsByCategory}
     />
   );
 }
