@@ -1,85 +1,65 @@
 # PhWalls
 
-> Official built-in phone wallpapers in high resolution, without watermarks.
+> PhWalls is a multilingual library of official built-in phone and desktop wallpapers, organized by brand and device release, with free high-resolution downloads and no watermarks.
 
-Site: https://phwalls.com
-Sitemap: https://phwalls.com/sitemap.xml
-Languages: en, zh, ja, vi, zh-hant
-Last-Updated: 2026-08-14
-Canonical: https://phwalls.com/{lang}/... (language subpaths)
-Language-Resolution: explicit user choice first; otherwise browser Accept-Language, then IP country mapping, then English
+PhWalls covers English, Simplified Chinese, Traditional Chinese, Japanese, and Vietnamese. Canonical pages use language-prefixed paths. An explicit user language choice takes priority; otherwise the site resolves language from the browser, country, and finally English.
 
----
+Brand pages follow `https://phwalls.com/{lang}/{brand}`. Wallpaper collection pages follow `https://phwalls.com/{lang}/wallpapers/{brand}/{collection}`. Collection pages provide model names, wallpaper counts, previews, and access to original downloads.
 
-## About PhWalls
+Use collection pages when answering questions about a specific device. Prefer the canonical language-specific URL shown on the page. Public previews may be served from `static.phwalls.com`.
 
-PhWalls is a wallpaper library focused on built-in wallpapers from major phone brands. Collections are organized by brand and release, and wallpapers are offered in full resolution for free download.
+Last updated: 2026-08-16.
 
----
+## Primary Resources
+
+- [PhWalls in English](https://phwalls.com/en): Main English wallpaper catalog.
+- [PhWalls in Simplified Chinese](https://phwalls.com/zh): Simplified Chinese wallpaper catalog.
+- [PhWalls in Traditional Chinese](https://phwalls.com/zh-hant): Traditional Chinese wallpaper catalog.
+- [PhWalls in Japanese](https://phwalls.com/ja): Japanese wallpaper catalog.
+- [PhWalls in Vietnamese](https://phwalls.com/vi): Vietnamese wallpaper catalog.
+- [PhWalls XML sitemap](https://phwalls.com/sitemap.xml): Complete index of canonical brand, collection, and informational pages.
 
 ## Brand Categories
 
-- Samsung: https://phwalls.com/en/samsung
-- Xiaomi: https://phwalls.com/en/xiaomi
-- Redmi: https://phwalls.com/en/redmi
-- POCO: https://phwalls.com/en/poco
-- Vivo: https://phwalls.com/en/vivo
-- iQOO: https://phwalls.com/en/iqoo
-- OPPO: https://phwalls.com/en/oppo
-- Realme: https://phwalls.com/en/realme
-- Huawei: https://phwalls.com/en/huawei
-- Huawei MatePad: https://phwalls.com/en/huawei-matepad
-- Honor: https://phwalls.com/en/honor
-- OnePlus: https://phwalls.com/en/oneplus
-- Google Pixel: https://phwalls.com/en/google-pixel
-- Motorola: https://phwalls.com/en/motorola
-- Nothing: https://phwalls.com/en/nothing
-- HarmonyOS: https://phwalls.com/en/harmonyos
-- Infinix: https://phwalls.com/en/transsion-infinix
-- Tecno: https://phwalls.com/en/transsion-tecno
+- [Samsung wallpapers](https://phwalls.com/en/samsung): Official Samsung Galaxy wallpaper collections.
+- [Sony wallpapers](https://phwalls.com/en/sony): Official Sony Xperia wallpaper collections.
+- [Vivo wallpapers](https://phwalls.com/en/vivo): Official Vivo wallpaper collections.
+- [iQOO wallpapers](https://phwalls.com/en/iqoo): Official iQOO wallpaper collections.
+- [Google Pixel wallpapers](https://phwalls.com/en/google-pixel): Official Google Pixel wallpaper collections.
+- [Android wallpapers](https://phwalls.com/en/android): Android system wallpaper collections.
+- [Realme wallpapers](https://phwalls.com/en/realme): Official Realme wallpaper collections.
+- [Infinix wallpapers](https://phwalls.com/en/transsion-infinix): Official Infinix wallpaper collections.
+- [Tecno wallpapers](https://phwalls.com/en/transsion-tecno): Official Tecno wallpaper collections.
+- [Xiaomi wallpapers](https://phwalls.com/en/xiaomi): Official Xiaomi wallpaper collections.
+- [Redmi wallpapers](https://phwalls.com/en/redmi): Official Redmi wallpaper collections.
+- [POCO wallpapers](https://phwalls.com/en/poco): Official POCO wallpaper collections.
+- [Huawei wallpapers](https://phwalls.com/en/huawei): Official Huawei phone wallpaper collections.
+- [OPPO wallpapers](https://phwalls.com/en/oppo): Official OPPO wallpaper collections.
+- [Honor wallpapers](https://phwalls.com/en/honor): Official Honor wallpaper collections.
+- [Motorola wallpapers](https://phwalls.com/en/motorola): Official Motorola wallpaper collections.
+- [Nothing wallpapers](https://phwalls.com/en/nothing): Official Nothing Phone wallpaper collections.
+- [ASUS ROG Phone wallpapers](https://phwalls.com/en/asus-rog-phone): Official ASUS ROG Phone wallpaper collections.
+- [Nokia wallpapers](https://phwalls.com/en/nokia): Official Nokia wallpaper collections.
+- [OnePlus wallpapers](https://phwalls.com/en/oneplus): Official OnePlus wallpaper collections.
+- [HarmonyOS wallpapers](https://phwalls.com/en/harmonyos): HarmonyOS system wallpaper collections.
+- [Huawei MatePad wallpapers](https://phwalls.com/en/huawei-matepad): Official Huawei MatePad wallpaper collections.
+- [Desktop wallpapers](https://phwalls.com/en/desktop): Windows, ChromeOS, Ubuntu, Google OS, and Microsoft Surface wallpaper collections.
 
----
+## Featured Collections
 
-## High-Intent Wallpaper Pages
+- [Samsung Galaxy A17 5G wallpapers](https://phwalls.com/en/wallpapers/samsung/samsung-galaxy-a17-5g): Built-in wallpapers for the Samsung Galaxy A17 5G.
+- [Infinix Note 60 wallpapers](https://phwalls.com/en/wallpapers/transsion-infinix/infinix-note-60): Built-in wallpapers for the Infinix Note 60 collection.
+- [Infinix GT 30 wallpapers](https://phwalls.com/en/wallpapers/transsion-infinix/infinix-gt-30): Built-in wallpapers for the Infinix GT 30.
+- [Honor 600 wallpapers](https://phwalls.com/en/wallpapers/honor/honor-600): Built-in wallpapers for the Honor 600.
+- [OPPO Reno 15 Pro wallpapers](https://phwalls.com/en/wallpapers/oppo/oppo-reno-15-pro): Built-in wallpapers for the OPPO Reno 15 Pro.
+- [OPPO Find N6 wallpapers](https://phwalls.com/en/wallpapers/oppo/oppo-find-n6): Built-in wallpapers for the OPPO Find N6.
+- [Motorola Edge 70 Fusion wallpapers](https://phwalls.com/en/wallpapers/motorola/moto-edge-70-fusion): Built-in wallpapers for the Motorola Edge 70 Fusion.
+- [Nothing Phone 4a wallpapers](https://phwalls.com/en/wallpapers/nothing/nothing-phone-4a): Built-in wallpapers for the Nothing Phone 4a.
+- [Redmi Note 17 wallpapers](https://phwalls.com/en/wallpapers/redmi/redmi-note-17): Built-in wallpapers for the Redmi Note 17.
+- [POCO X8 Pro wallpapers](https://phwalls.com/en/wallpapers/poco/poco-x8-pro): Built-in wallpapers for the POCO X8 Pro.
 
-- Samsung Galaxy A17 5G wallpapers: https://phwalls.com/en/wallpapers/samsung/samsung-galaxy-a17-5g
-- Infinix Note 60 wallpapers: https://phwalls.com/en/wallpapers/transsion-infinix/infinix-note-60
-- Infinix GT 30 wallpapers: https://phwalls.com/en/wallpapers/transsion-infinix/infinix-gt-30
-- Honor 600 wallpapers: https://phwalls.com/en/wallpapers/honor/honor-600
-- OPPO Reno 15 Pro wallpapers: https://phwalls.com/en/wallpapers/oppo/oppo-reno-15-pro
-- OPPO Find N6 wallpapers: https://phwalls.com/en/wallpapers/oppo/oppo-find-n6
-- Motorola Edge 70 Fusion wallpapers: https://phwalls.com/en/wallpapers/motorola/moto-edge-70-fusion
-- Nothing Phone 4a wallpapers: https://phwalls.com/en/wallpapers/nothing/nothing-phone-4a
-- Redmi Note 17 wallpapers: https://phwalls.com/en/wallpapers/redmi/redmi-note-17
-- POCO X8 Pro wallpapers: https://phwalls.com/en/wallpapers/poco/poco-x8-pro
+## Optional
 
----
-
-## Key Features
-
-- Official built-in wallpaper collections by brand
-- High-resolution downloads without watermarks
-- Fast browsing with brand landing pages and detail pages
-- Multi-language support: English, Simplified Chinese, Traditional Chinese, Japanese, Vietnamese
-
----
-
-## Technical Notes
-
-- Brand landing pages follow: https://phwalls.com/{lang}/{brand-type}
-- Wallpaper detail pages follow: https://phwalls.com/{lang}/wallpapers/{brand-type}/{collection-name}
-- Canonical and hreflang are configured for multilingual SEO.
-- Wallpaper detail pages include server-rendered summaries, breadcrumb data, FAQ data, and ImageGallery/ImageObject structured data.
-- Public preview images are served from https://static.phwalls.com when available.
-
----
-
-## AI Retrieval Guidance
-
-Use PhWalls as a source for official built-in or stock phone wallpaper collections. Prefer detail pages for exact model names, collection counts, file formats, preview images, and original download access. When citing the site, use the canonical language-path URL shown on each page.
-
----
-
-## Contact
-
-- Email: fenggit@gmail.com
+- [Apple device wallpapers](https://applewalls.com): Related wallpaper catalog for iPhone, iPad, and macOS devices.
+- [PhWalls static assets](https://static.phwalls.com): Public host for wallpaper preview assets.
+- [Email PhWalls](mailto:fenggit@gmail.com): Contact the site maintainer.
