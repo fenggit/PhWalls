@@ -18,7 +18,8 @@ export function getCategorySeoCopy(
   const texts = getI18nTexts(language);
 
   return {
-    title: texts.brandCategorySeoTitleTemplate.replace('{brand}', label),
+    title: texts.brandCategoryTitleTemplate.replace('{brand}', label),
+    metadataTitle: texts.brandCategorySeoTitleTemplate.replace('{brand}', label),
     description: texts.brandCategorySeoDescriptionTemplate.replace('{brand}', label),
     subtitle:
       collectionCount === undefined

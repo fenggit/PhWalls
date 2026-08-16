@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: BrandLandingPageProps): Promi
   const seoCopy = getCategorySeoCopy(language, brandInfo.slug);
   const canonicalPath = buildBrandPath(brandInfo.type);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${canonicalPath}`, language);
-  const title = `${seoCopy.title} | PhWalls`;
+  const title = `${seoCopy.metadataTitle} | PhWalls`;
   const description = seoCopy.description;
 
   return {

@@ -292,6 +292,7 @@ export interface I18nTexts {
   wallpaperAltSuffix: string;
   newYearLabel: string;
   collectionDescriptionTemplate: string;
+  brandCategoryTitleTemplate: string;
   brandCategorySeoTitleTemplate: string;
   brandCategorySeoDescriptionTemplate: string;
   brandCategorySeoSubtitleTemplate: string;
@@ -646,7 +647,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: '壁纸',
     newYearLabel: '新年',
     collectionDescriptionTemplate: '浏览 {collectionName} 的 {count} 张{categoryLabel}壁纸，高清原图下载，无水印，按设备版本整理。',
-    brandCategorySeoTitleTemplate: '{brand}官方内置手机壁纸高清原图下载',
+    brandCategoryTitleTemplate: '{brand}官方壁纸',
+    brandCategorySeoTitleTemplate: '{brand}官方壁纸下载 - 高清原图',
     brandCategorySeoDescriptionTemplate: '下载{brand}的官方内置手机壁纸，支持 HD 高清原图预览与免费下载，无水印，并持续收录最新系统壁纸。',
     brandCategorySeoSubtitleTemplate: '共收录 {count} 个{brand}官方壁纸合集。',
     desktopCategorySeoTitleTemplate: '{category}桌面壁纸',
@@ -998,7 +1000,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: 'wallpaper',
     newYearLabel: 'New Year',
     collectionDescriptionTemplate: 'Browse {count} wallpapers from {collectionName}. Download {categoryLabel} wallpapers in high resolution.',
-    brandCategorySeoTitleTemplate: '{brand} Stock Wallpapers in 4K HD',
+    brandCategoryTitleTemplate: '{brand} Wallpapers',
+    brandCategorySeoTitleTemplate: '{brand} Stock Wallpapers - 4K HD Download',
     brandCategorySeoDescriptionTemplate: 'Download official {brand} built-in phone wallpapers in HD and full resolution. Free, watermark-free, and regularly updated.',
     brandCategorySeoSubtitleTemplate: '{count} official {brand} wallpaper collections.',
     desktopCategorySeoTitleTemplate: '{category} Desktop Wallpapers',
@@ -1350,7 +1353,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: '壁紙',
     newYearLabel: '新年',
     collectionDescriptionTemplate: '{collectionName} の {categoryLabel} 壁紙を {count} 枚まとめて確認できます。高解像度でダウンロード可能。',
-    brandCategorySeoTitleTemplate: '{brand}公式壁紙を4K・HDで無料ダウンロード',
+    brandCategoryTitleTemplate: '{brand}公式壁紙',
+    brandCategorySeoTitleTemplate: '{brand}公式壁紙 - 4K・HD無料ダウンロード',
     brandCategorySeoDescriptionTemplate: '{brand}の公式スマートフォン内蔵壁紙をHD・高解像度で無料ダウンロード。透かしなしで、最新の公式壁紙コレクションも随時追加しています。',
     brandCategorySeoSubtitleTemplate: '{brand}の公式壁紙コレクションを{count}件収録。',
     desktopCategorySeoTitleTemplate: '{category}デスクトップ壁紙',
@@ -1675,7 +1679,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: 'hình nền',
     newYearLabel: 'Năm Mới',
     collectionDescriptionTemplate: 'Xem {count} hình nền {categoryLabel} trong bộ sưu tập {collectionName}, tải bản gốc độ phân giải cao.',
-    brandCategorySeoTitleTemplate: 'Tải hình nền gốc {brand} 4K HD',
+    brandCategoryTitleTemplate: 'Hình nền {brand}',
+    brandCategorySeoTitleTemplate: 'Hình nền {brand} chính thức - Tải 4K HD',
     brandCategorySeoDescriptionTemplate: 'Tải hình nền điện thoại tích hợp sẵn chính thức của {brand} ở chất lượng HD và độ phân giải đầy đủ. Miễn phí, không watermark và được cập nhật thường xuyên.',
     brandCategorySeoSubtitleTemplate: 'Khám phá {count} bộ hình nền chính thức của {brand}.',
     desktopCategorySeoTitleTemplate: 'Hình nền desktop {category}',
@@ -2027,7 +2032,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: '桌布',
     newYearLabel: '新年',
     collectionDescriptionTemplate: '瀏覽 {collectionName} 的 {count} 張{categoryLabel}桌布，高清原圖下載，無浮水印。',
-    brandCategorySeoTitleTemplate: '{brand}官方內建手機桌布高清原圖下載',
+    brandCategoryTitleTemplate: '{brand}官方桌布',
+    brandCategorySeoTitleTemplate: '{brand}官方桌布下載 - 高清原圖',
     brandCategorySeoDescriptionTemplate: '下載{brand}的官方內建手機桌布，支援 HD 高清原圖預覽與免費下載，無浮水印，並持續收錄最新系統桌布。',
     brandCategorySeoSubtitleTemplate: '共收錄 {count} 個{brand}官方桌布合集。',
     desktopCategorySeoTitleTemplate: '{category}桌面桌布',
