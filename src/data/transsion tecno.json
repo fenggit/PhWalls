@@ -701,6 +701,47 @@
     ]
   },
   {
+    "name": "Tecno Camon Slim",
+    "date": "2026/06/23",
+    "item": [
+      {
+        "name": "tecno-camon-slim-burgundy-red",
+        "type": "image/png",
+        "size": "2.44 MB",
+        "originPath": "transsion tecno/Tecno Camon Slim/origin/tecno-camon-slim-burgundy-red.png",
+        "compressPath": "transsion tecno/Tecno Camon Slim/compress/tecno-camon-slim-burgundy-red.webp"
+      },
+      {
+        "name": "tecno-camon-slim-jungle-green",
+        "type": "image/png",
+        "size": "2.2 MB",
+        "originPath": "transsion tecno/Tecno Camon Slim/origin/tecno-camon-slim-jungle-green.png",
+        "compressPath": "transsion tecno/Tecno Camon Slim/compress/tecno-camon-slim-jungle-green.webp"
+      },
+      {
+        "name": "tecno-camon-slim-new-mondrian",
+        "type": "image/png",
+        "size": "2.39 MB",
+        "originPath": "transsion tecno/Tecno Camon Slim/origin/tecno-camon-slim-new-mondrian.png",
+        "compressPath": "transsion tecno/Tecno Camon Slim/compress/tecno-camon-slim-new-mondrian.webp"
+      },
+      {
+        "name": "tecno-camon-slim-prism-black",
+        "type": "image/png",
+        "size": "2.17 MB",
+        "originPath": "transsion tecno/Tecno Camon Slim/origin/tecno-camon-slim-prism-black.png",
+        "compressPath": "transsion tecno/Tecno Camon Slim/compress/tecno-camon-slim-prism-black.webp"
+      },
+      {
+        "name": "tecno-camon-slim-van-gogh-blue",
+        "type": "image/png",
+        "size": "2.44 MB",
+        "originPath": "transsion tecno/Tecno Camon Slim/origin/tecno-camon-slim-van-gogh-blue.png",
+        "compressPath": "transsion tecno/Tecno Camon Slim/compress/tecno-camon-slim-van-gogh-blue.webp"
+      }
+    ]
+  },
+  {
     "name": "Tecno Phantom 9",
     "date": "2019/07/10",
     "item": [
