@@ -18,7 +18,7 @@ type WallpaperEntry = {
   }>;
 };
 
-const buildInitialHomeImageUrls = () => {
+const buildInitialHomeImageUrls = (collectionLimit: number) => {
   const map: Record<string, string> = {};
   const addEntry = (entry: WallpaperEntry, categorySlug: string) => {
     const firstImage = entry.item?.[0];
@@ -29,7 +29,7 @@ const buildInitialHomeImageUrls = () => {
     }
   };
 
-  getInitialHomeCollections().forEach(({ category, collection }) => {
+  getInitialHomeCollections(collectionLimit).forEach(({ category, collection }) => {
     if (isHomeCategoryVisible(category)) {
       addEntry(collection as WallpaperEntry, category);
     }
@@ -44,7 +44,7 @@ export default async function HomePage() {
   const rawLanguage = headerList.get(LANGUAGE_HEADER_NAME);
   const language = isLanguage(rawLanguage) ? rawLanguage : undefined;
   const isMobileRequest = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
-  const initialImageUrls = buildInitialHomeImageUrls();
+  const initialImageUrls = buildInitialHomeImageUrls(isMobileRequest ? 4 : 12);
   const homeTabs = filterHomeTabs(sortHomeTabsByPriority(getTabData(language)));
   const contentCollectionsByCategory = Object.fromEntries(
     Object.entries(getHomeCollectionsByCategory()).filter(([category]) =>

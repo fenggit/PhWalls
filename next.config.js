@@ -8,39 +8,7 @@ const nextConfig = {
   // SEO 抓取稳定性：让 HTML-only bot 尽量走阻塞 metadata。
   // Edge 渲染路径仍由 app/layout.tsx 的显式 head 标签兜底。
   htmlLimitedBots: /.*/,
-  
-  // 压缩配置
-  webpack: (config, { dev, isServer }) => {
-    // 生产环境优化
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
-            chunks: 'all',
-          },
-          styles: {
-            name: 'styles',
-            test: /\.(css|scss|sass)$/,
-            chunks: 'all',
-            enforce: true,
-            priority: 20,
-          },
-        },
-      };
-    }
-    
-    return config;
-  },
-  
+
   // 头部配置 - 安全性和性能优化
   async headers() {
     return [

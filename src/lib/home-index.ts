@@ -25,10 +25,12 @@ export function getAllHomeCollections(): WallpaperCollectionEntry[] {
 }
 
 // The server only needs image URLs for the two initially rendered desktop rows.
-export function getInitialHomeCollections(): WallpaperCollectionEntry[] {
+export function getInitialHomeCollections(
+  collectionLimit = HOME_INITIAL_COLLECTION_LIMIT
+): WallpaperCollectionEntry[] {
   return BRAND_CATEGORIES.flatMap((brand) =>
     sortByDateDesc(HOME_COLLECTIONS[brand.slug] || [])
-      .slice(0, HOME_INITIAL_COLLECTION_LIMIT)
+      .slice(0, collectionLimit)
       .map((collection) => ({
         category: brand.slug,
         collection,

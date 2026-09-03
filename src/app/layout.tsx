@@ -164,11 +164,12 @@ export default async function RootLayout({
         {/* Google tag (gtag.js) */}
         <Script
           id="google-tag-manager"
-          async
+          strategy="lazyOnload"
           src="https://www.googletagmanager.com/gtag/js?id=G-V98C3T2XRM"
         />
         <Script
           id="google-tag-init"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];

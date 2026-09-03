@@ -60,6 +60,7 @@ export default function Header({
   const desktopTabsViewportRef = useRef<HTMLDivElement>(null);
   const desktopTabMeasureRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const moreTabMeasureRef = useRef<HTMLButtonElement>(null);
+  const shareInProgressRef = useRef(false);
   const pathname = usePathname();
   const { sharePayload, setSharePayload } = useShare();
 
@@ -201,17 +202,30 @@ export default function Header({
     setSharePayload(payload);
 
     if (typeof navigator.share === 'function') {
-      navigator.share({
-        title: payload.title,
-        text: payload.brand || texts.siteName,
-        url: payload.url,
-      }).catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          return;
-        }
+      if (shareInProgressRef.current) {
+        return;
+      }
 
-        console.error('System share failed:', error);
-      });
+      shareInProgressRef.current = true;
+      void navigator
+        .share({
+          title: payload.title,
+          text: payload.brand || texts.siteName,
+          url: payload.url,
+        })
+        .catch((error: unknown) => {
+          if (
+            error instanceof DOMException &&
+            (error.name === 'AbortError' || error.name === 'InvalidStateError')
+          ) {
+            return;
+          }
+
+          console.error('System share failed:', error);
+        })
+        .finally(() => {
+          shareInProgressRef.current = false;
+        });
       return;
     }
 

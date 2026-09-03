@@ -82,6 +82,7 @@ const getHomeGridColumns = (
 // 首页组件：聚合展示所有壁纸分类、卡片预览和广告位。
 export default function Home({
   initialImageUrls = {},
+  isMobilePriority = false,
   contentTabs,
   navigationTabs,
   navigationTabsExtra = [],
@@ -99,7 +100,7 @@ export default function Home({
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(initialImageUrls);
   const [imageLoadingStates, setImageLoadingStates] = useState<Record<string, boolean>>({});
-  const [viewportWidth, setViewportWidth] = useState(1536);
+  const [viewportWidth, setViewportWidth] = useState(isMobilePriority ? 390 : 1536);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   
   // 预览模态框状态
@@ -633,7 +634,7 @@ export default function Home({
                         id={itemId} 
                         className="scroll-mt-24"
                       >
-                        <article className={`group relative bg-white ${cardStyle.cardClass} ${cardStyle.shadowClass} transition-transform duration-200 ease-out hover:-translate-y-1 overflow-hidden will-change-transform`}>
+                        <article className={`group relative bg-white ${cardStyle.cardClass} ${cardStyle.shadowClass} transition-transform duration-200 ease-out hover:-translate-y-1 overflow-hidden`}>
                           {detailHref ? (
                             <Link
                               href={detailHref}
@@ -660,7 +661,7 @@ export default function Home({
                                 <img 
                                   src={imageUrls[cardImageKey]}
                                   alt={`${formatWallpaperDisplayName(item.name)} ${texts.hdWallpaperDownloadAlt} - ${category.type}`}
-                                  className={`w-full h-full object-cover group-hover:scale-102 transition-all duration-500 ease-out will-change-transform ${
+                                  className={`w-full h-full object-cover group-hover:scale-102 transition-all duration-500 ease-out ${
                                     imageLoadingStates[cardImageKey] ? 'opacity-0' : 'opacity-100 image-fade-in'
                                   }`}
                                   loading={isAboveFold ? 'eager' : 'lazy'}
@@ -785,7 +786,7 @@ export default function Home({
                                   e.stopPropagation();
                                   void openPreview(categoryType, item);
                                 }}
-                                className="pointer-events-auto opacity-0 group-hover:opacity-100 bg-white/90 text-gray-900 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0 hover:bg-white will-change-transform"
+                                className="pointer-events-auto opacity-0 group-hover:opacity-100 bg-white/90 text-gray-900 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0 hover:bg-white"
                               >
                                 {texts.preview}
                               </button>
