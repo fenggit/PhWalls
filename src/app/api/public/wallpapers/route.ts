@@ -1,29 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BRAND_CATEGORIES } from '@/lib/brands';
-import { getWallpaperCollections } from '@/lib/wallpapers';
+import { WALLPAPER_LIST_CACHE_CONTROL } from '@/lib/cache-control';
+import {
+  loadWallpaperCollections,
+  type WallpaperCollection,
+} from '@/lib/wallpaper-data';
 
 export const runtime = 'edge';
 
-type WallpaperDeviceItem = {
-  name: string;
-  date: string;
-  item: Array<{
-    name: string;
-    type: string;
-    size: string;
-    originPath: string;
-    compressPath: string;
-    tag: string;
-  }>;
-};
-
-type DataSourceMap = Record<string, WallpaperDeviceItem[]>;
-
-const dataSources: DataSourceMap = {
-  ...Object.fromEntries(
-    BRAND_CATEGORIES.map((brand) => [brand.slug, getWallpaperCollections(brand.slug)])
-  ),
-};
+const availableTypes = BRAND_CATEGORIES.map((brand) => brand.slug);
 
 const normalize = (value: string) => value.replace(/\s+/g, '').toLowerCase();
 
@@ -40,9 +25,9 @@ export async function GET(request: NextRequest) {
       ? Math.max(1, limitRaw)
       : undefined;
 
-    const availableTypes = Object.keys(dataSources);
+    const normalizedType = type?.toLowerCase() || null;
 
-    if (type && !availableTypes.includes(type.toLowerCase())) {
+    if (normalizedType && !availableTypes.includes(normalizedType)) {
       return NextResponse.json(
         {
           error: 'Invalid type parameter',
@@ -52,9 +37,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const sourceEntries: Array<[string, WallpaperDeviceItem[]]> = type
-      ? [[type.toLowerCase(), dataSources[type.toLowerCase()]]]
-      : Object.entries(dataSources);
+    // 首页预览始终携带 type，只加载对应品牌 JSON；无 type 时保留原有全量公开 API 行为。
+    const sourceEntries: Array<[string, WallpaperCollection[]]> = normalizedType
+      ? [[normalizedType, await loadWallpaperCollections(normalizedType)]]
+      : await Promise.all(
+          availableTypes.map(async (sourceType) => [
+            sourceType,
+            await loadWallpaperCollections(sourceType),
+          ] as [string, WallpaperCollection[]])
+        );
 
     const normalizedDevice = device ? normalize(device) : null;
     const results = sourceEntries.flatMap(([sourceType, list]) =>
@@ -69,17 +60,24 @@ export async function GET(request: NextRequest) {
     const total = results.length;
     const sliced = limit ? results.slice(offset, offset + limit) : results.slice(offset);
 
-    return NextResponse.json({
-      data: sliced,
-      meta: {
-        total,
-        offset,
-        limit: limit ?? null,
-        type: type ?? null,
-        device: device ?? null,
-        availableTypes,
+    return NextResponse.json(
+      {
+        data: sliced,
+        meta: {
+          total,
+          offset,
+          limit: limit ?? null,
+          type: type ?? null,
+          device: device ?? null,
+          availableTypes,
+        },
       },
-    });
+      {
+        headers: {
+          'Cache-Control': WALLPAPER_LIST_CACHE_CONTROL,
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching wallpapers:', error);
     return NextResponse.json(

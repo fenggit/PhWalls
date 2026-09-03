@@ -50,7 +50,8 @@ const SEO_VARIANT_RULES: Array<{ token: string; label: string }> = [
 ];
 
 function containsToken(source: string, token: string): boolean {
-  return new RegExp(`(?:^|[^a-z0-9])${token}(?:$|[^a-z0-9])`, 'i').test(source);
+  const normalizedSource = source.replace(/\(\+\)|\+/g, ' plus ');
+  return new RegExp(`(?:^|[^a-z0-9])${token}(?:$|[^a-z0-9])`, 'i').test(normalizedSource);
 }
 
 export function collectWallpaperVariantLabels(
@@ -68,8 +69,31 @@ export function collectWallpaperVariantLabels(
 }
 
 function buildSeoName(collectionName: string, variantLabels: string[]): string {
-  const cleanName = formatWallpaperDisplayName(collectionName).replace(/\s+wallpapers$/i, '');
+  const cleanName = formatWallpaperDisplayName(collectionName)
+    .replace(/\(\+\)|\+/g, ' Plus ')
+    .replace(/\s+wallpapers$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   return variantLabels.length > 0 ? `${cleanName} ${variantLabels.join(' ')}` : cleanName;
+}
+
+const ENGLISH_TITLE_EXPERIMENTS = new Set([
+  'Infinix Note 60',
+  'Samsung Galaxy A17 5G',
+]);
+
+function buildEnglishTitle(
+  input: WallpaperDetailSeoCopyInput,
+  seoName: string,
+  formatText: string
+): string {
+  if (!ENGLISH_TITLE_EXPERIMENTS.has(input.collectionName)) {
+    return `${seoName} Stock Wallpapers in 4K HD | PhWalls`;
+  }
+
+  const formatLabel = formatText || 'HD';
+  const imageLabel = input.count === 1 ? 'Image' : 'Images';
+  return `${seoName} Wallpaper - ${input.count} Original ${formatLabel} ${imageLabel} | PhWalls`;
 }
 
 function buildFormatText(formats: string[]): string {
@@ -168,7 +192,7 @@ export function buildWallpaperDetailSeoCopy(
     default:
       return {
         seoName,
-        title: `${seoName} Stock Wallpapers in 4K HD | PhWalls`,
+        title: buildEnglishTitle(input, seoName, formatText),
         description: `Download ${input.count} official ${seoName} stock wallpapers in 4K/HD. Preview original full-resolution images with no watermark${formatText ? ` in ${formatText}` : ''}.`,
         summaryTitle: `${seoName} Stock Wallpaper Collection`,
         summaryDescription: `Explore ${input.count} official ${seoName} stock wallpapers from ${input.categoryLabel}. Preview high-resolution images and download the watermark-free originals${formatText ? ` in ${formatText}` : ''}.`,
