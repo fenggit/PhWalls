@@ -11,6 +11,7 @@ import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { SITE_URL } from '@/lib/seo';
 import { headers } from 'next/headers';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
 
@@ -64,11 +65,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: canonicalUrl,
       type: 'website',
       locale: getOpenGraphLocaleForLanguage(language),
+      images: DEFAULT_OPEN_GRAPH_IMAGES,
     },
     twitter: {
       card: 'summary_large_image',
       title: `${seoCopy.title} | PhWalls`,
       description: seoCopy.description,
+      images: DEFAULT_X_IMAGES,
     },
   };
 }

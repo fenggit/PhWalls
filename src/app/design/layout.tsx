@@ -3,6 +3,7 @@ import { SITE_URL } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getI18nTexts } from '@/lib/i18n';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 // 默认 metadata（根据用户语言输出）
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,11 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       locale: getOpenGraphLocaleForLanguage(language),
       url: canonicalUrl,
+      images: DEFAULT_OPEN_GRAPH_IMAGES,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: DEFAULT_X_IMAGES,
     },
     alternates: {
       canonical: canonicalUrl,

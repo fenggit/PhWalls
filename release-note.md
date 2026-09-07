@@ -2,6 +2,12 @@
 
 ## 版本历史
 
+### v1.1.4 - 2026-09-07
+- 分享图分类文字展开为 Samsung、Xiaomi、Huawei、OPPO、vivo、Google Pixel、Nothing 手机品牌，并保留 Desktop
+- 社区分享图对齐 AppleWalls 的浅灰底、品牌标题与三列壁纸设计，新增方形社区配图
+- 重设计社区分享图，以四幅真实壁纸满幅拼接和简洁品牌字标替换宣传式排版，并更新图片地址避免沿用旧缓存
+- 新增符合 Open Graph 与 X 大图卡片尺寸的品牌分享图，并为全站页面统一补全社交分享图片元数据，避免社区分享仅显示 Logo
+
 ### v1.1.4 - 2026-09-03
 - 新增 Huawei MateBook Fold 与 Tecno Camon Slim 壁纸合集及发布日期
 - 优化移动端首屏性能，恢复 Next.js 默认按路由拆包，减少未使用脚本及主线程执行开销

@@ -16,6 +16,7 @@ import {
 } from '@/lib/language';
 import { headers } from 'next/headers';
 import { getI18nTexts } from '@/lib/i18n';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -80,18 +81,13 @@ export const metadata: Metadata = (() => {
       alternateLocale: ['en_US', 'zh_CN', 'ja_JP', 'vi_VN', 'zh_HK'],
       url: defaultCanonicalUrl,
       siteName: 'PhWalls',
-      images: [
-        {
-          url: `${SITE_URL}/logo.png`,
-          alt: 'PhWalls - Phone Wallpaper Collection',
-        },
-      ],
+      images: DEFAULT_OPEN_GRAPH_IMAGES,
     },
     twitter: {
       card: 'summary_large_image',
       title: defaultTitle,
       description: defaultDescription,
-      images: [`${SITE_URL}/logo.png`],
+      images: DEFAULT_X_IMAGES,
       creator: '@phwalls',
       site: '@phwalls',
     },

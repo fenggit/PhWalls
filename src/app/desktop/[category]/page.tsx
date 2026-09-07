@@ -12,6 +12,7 @@ import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl
 import { resolveMetadataLanguage } from "@/lib/metadata";
 import { getDesktopCategorySeoCopy } from "@/lib/desktop-seo";
 import { SITE_URL } from "@/lib/seo";
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from "@/lib/social-metadata";
 
 export const runtime = "edge";
 
@@ -35,8 +36,8 @@ export async function generateMetadata({ params }: DesktopCategoryPageProps): Pr
    canonical: canonicalUrl,
    languages: buildLanguageAlternates(`${SITE_URL}/desktop/${category}`),
   },
-  openGraph: { title, description, url: canonicalUrl, type: "website", locale: getOpenGraphLocaleForLanguage(language) },
-  twitter: { card: "summary_large_image", title, description },
+  openGraph: { title, description, url: canonicalUrl, type: "website", locale: getOpenGraphLocaleForLanguage(language), images: DEFAULT_OPEN_GRAPH_IMAGES },
+  twitter: { card: "summary_large_image", title, description, images: DEFAULT_X_IMAGES },
  };
 }
 

@@ -15,6 +15,7 @@ import { resolveMetadataLanguage } from '@/lib/metadata';
 import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
 import { SITE_URL } from '@/lib/seo';
 import { parseWallpaperDate } from '@/lib/wallpaper-data';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
 
@@ -63,13 +64,16 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
       type: 'article',
       url: canonicalUrl,
       locale: getOpenGraphLocaleForLanguage(language),
-      images: [{ url: primaryImageUrl, alt: seoCopy.title }],
+      images: [
+        ...DEFAULT_OPEN_GRAPH_IMAGES,
+        { url: primaryImageUrl, alt: seoCopy.title },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: seoCopy.title,
       description: seoCopy.description,
-      images: [primaryImageUrl],
+      images: DEFAULT_X_IMAGES,
     },
   };
 }

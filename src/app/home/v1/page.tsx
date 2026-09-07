@@ -4,6 +4,7 @@ import { SITE_URL } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getI18nTexts } from '@/lib/i18n';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 // Cloudflare Pages 部署必需，请勿删除
 export const runtime = 'edge';
@@ -28,11 +29,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: canonicalUrl,
       type: 'website',
       locale: getOpenGraphLocaleForLanguage(language),
+      images: DEFAULT_OPEN_GRAPH_IMAGES,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: DEFAULT_X_IMAGES,
     },
   };
 }

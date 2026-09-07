@@ -21,6 +21,7 @@ import {
   getWallpaperDeviceGroupLabel,
   type WallpaperDeviceGroup,
 } from '@/lib/wallpaper-seo';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
 
@@ -129,6 +130,7 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
       url: canonicalUrl,
       locale: getOpenGraphLocaleForLanguage(language),
       images: [
+        ...DEFAULT_OPEN_GRAPH_IMAGES,
         {
           url: primaryImageUrl,
           alt: title,
@@ -139,7 +141,7 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
       card: 'summary_large_image',
       title,
       description,
-      images: [primaryImageUrl],
+      images: DEFAULT_X_IMAGES,
     },
   };
 }

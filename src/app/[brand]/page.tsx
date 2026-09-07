@@ -7,6 +7,7 @@ import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getCategorySeoCopy, SITE_URL } from '@/lib/seo';
 import { loadWallpaperCollections } from '@/lib/wallpaper-data';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
 
@@ -43,11 +44,13 @@ export async function generateMetadata({ params }: BrandLandingPageProps): Promi
       url: canonicalUrl,
       type: 'website',
       locale: getOpenGraphLocaleForLanguage(language),
+      images: DEFAULT_OPEN_GRAPH_IMAGES,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: DEFAULT_X_IMAGES,
     },
   };
 }
