@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: DesktopCategoryPageProps): Pr
  if (!isDesktopWallpaperCategory(category)) return {};
  const language = await resolveMetadataLanguage();
  const label = getDesktopWallpaperCategoryLabel(category);
- const seoCopy = getDesktopCategorySeoCopy(language, label);
+ const seoCopy = getDesktopCategorySeoCopy(language, category, label);
  const canonicalUrl = withLanguageUrl(`${SITE_URL}/desktop/${category}`, language);
- const title = `${seoCopy.title} | PhWalls`;
+ const title = `${seoCopy.metadataTitle} | PhWalls`;
  const description = seoCopy.description;
  return {
   title,
@@ -55,7 +55,7 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
   wallpapers: c.item || [],
  }));
  const language = await resolveMetadataLanguage();
- const seoCopy = getDesktopCategorySeoCopy(language, label, cards.length);
+ const seoCopy = getDesktopCategorySeoCopy(language, category, label, cards.length);
  return (
   <SeoLandingPage
    breadcrumbLabel={seoCopy.title}

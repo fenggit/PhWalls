@@ -1,0 +1,146 @@
+{
+  "brands": {
+    "samsung": {
+      "title": "三星 Galaxy内置壁纸",
+      "metadataTitle": "三星 Galaxy内置壁纸 - 原图免费下载",
+      "description": "免费下载三星 Galaxy S、A、Z Fold 与 Z Flip 系列内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "sony": {
+      "title": "索尼 Xperia内置壁纸",
+      "metadataTitle": "索尼 Xperia内置壁纸 - 原图免费下载",
+      "description": "免费下载索尼 Xperia 1、5、10 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "vivo": {
+      "title": "vivo内置壁纸",
+      "metadataTitle": "vivo内置壁纸 - 原图免费下载",
+      "description": "免费下载 vivo X、S、Y 系列及 X Fold 折叠屏手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "iqoo": {
+      "title": "iQOO内置壁纸",
+      "metadataTitle": "iQOO内置壁纸 - 原图免费下载",
+      "description": "免费下载 iQOO 数字旗舰、Neo 与 Z 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "google-pixel": {
+      "title": "Google Pixel内置壁纸",
+      "metadataTitle": "Google Pixel内置壁纸 - 原图免费下载",
+      "description": "免费下载 Google Pixel、Pixel Pro、a 系列与 Fold 折叠屏内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "android": {
+      "title": "Android 安卓内置壁纸",
+      "metadataTitle": "Android 安卓内置壁纸 - 原图免费下载",
+      "description": "免费下载 Android 4.4 至 Android 16 系统内置壁纸，查找经典与新版安卓默认壁纸。按系统版本浏览，预览图片并下载无水印原图。"
+    },
+    "realme": {
+      "title": "realme 真我内置壁纸",
+      "metadataTitle": "realme 真我内置壁纸 - 原图免费下载",
+      "description": "免费下载 realme 真我 GT、数字系列与 Narzo 手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "transsion-infinix": {
+      "title": "Infinix内置壁纸",
+      "metadataTitle": "Infinix内置壁纸 - 原图免费下载",
+      "description": "免费下载传音 Infinix NOTE、GT、HOT 与 ZERO 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "transsion-tecno": {
+      "title": "TECNO内置壁纸",
+      "metadataTitle": "TECNO内置壁纸 - 原图免费下载",
+      "description": "免费下载传音 TECNO CAMON、SPARK 与 PHANTOM 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "xiaomi": {
+      "title": "小米内置壁纸",
+      "metadataTitle": "小米内置壁纸 - 原图免费下载",
+      "description": "免费下载小米数字旗舰、MIX Fold 与 MIX Flip 折叠屏手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "redmi": {
+      "title": "Redmi 红米内置壁纸",
+      "metadataTitle": "Redmi 红米内置壁纸 - 原图免费下载",
+      "description": "免费下载 Redmi 红米 Note、K 与 Turbo 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "poco": {
+      "title": "POCO内置壁纸",
+      "metadataTitle": "POCO内置壁纸 - 原图免费下载",
+      "description": "免费下载 POCO F、X 与 M 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "huawei": {
+      "title": "华为内置壁纸",
+      "metadataTitle": "华为内置壁纸 - 原图免费下载",
+      "description": "免费下载华为 Mate、Pura、nova 系列及折叠屏手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "oppo": {
+      "title": "OPPO内置壁纸",
+      "metadataTitle": "OPPO内置壁纸 - 原图免费下载",
+      "description": "免费下载 OPPO Find X、Find N、Reno 与 A 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "honor": {
+      "title": "荣耀内置壁纸",
+      "metadataTitle": "荣耀内置壁纸 - 原图免费下载",
+      "description": "免费下载荣耀 Magic、Magic V 折叠屏与数字系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "motorola": {
+      "title": "摩托罗拉内置壁纸",
+      "metadataTitle": "摩托罗拉内置壁纸 - 原图免费下载",
+      "description": "免费下载摩托罗拉 Moto Edge、Moto G 与 Razr 折叠屏手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "nothing": {
+      "title": "Nothing Phone内置壁纸",
+      "metadataTitle": "Nothing Phone内置壁纸 - 原图免费下载",
+      "description": "免费下载 Nothing Phone 数字与 a 系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "asus-rog-phone": {
+      "title": "华硕 ROG 游戏手机内置壁纸",
+      "metadataTitle": "华硕 ROG 游戏手机内置壁纸 - 原图免费下载",
+      "description": "免费下载华硕 ROG 游戏手机内置壁纸，收录初代 ROG Phone 至 ROG Phone 9 合集。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "nokia": {
+      "title": "诺基亚内置壁纸",
+      "metadataTitle": "诺基亚内置壁纸 - 原图免费下载",
+      "description": "免费下载诺基亚 Nokia C、G、X 与数字系列手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "oneplus": {
+      "title": "一加 OnePlus内置壁纸",
+      "metadataTitle": "一加 OnePlus内置壁纸 - 原图免费下载",
+      "description": "免费下载一加 OnePlus 数字旗舰、Ace、Nord 与 Open 折叠屏手机内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    },
+    "harmonyos": {
+      "title": "HarmonyOS 鸿蒙内置壁纸",
+      "metadataTitle": "HarmonyOS 鸿蒙内置壁纸 - 原图免费下载",
+      "description": "免费下载 HarmonyOS 2.0 与 4.0 鸿蒙系统内置壁纸，浏览华为系统壁纸合集。按系统版本浏览，预览图片并下载无水印原图。"
+    },
+    "huawei-matepad": {
+      "title": "华为 MatePad内置壁纸",
+      "metadataTitle": "华为 MatePad内置壁纸 - 原图免费下载",
+      "description": "免费下载华为 MatePad Pro 与 MediaPad M6 平板内置壁纸。按机型浏览合集，预览图片并下载无水印原图。"
+    }
+  },
+  "desktop": {
+    "microsoft-windows": {
+      "title": "Windows壁纸",
+      "metadataTitle": "Windows壁纸 - 原图免费下载",
+      "description": "免费下载 Windows XP、7、8、10、11 等历代系统桌面壁纸。预览图片并下载无水印原图，为桌面更换背景。"
+    },
+    "microsoft-surface": {
+      "title": "微软 Surface壁纸",
+      "metadataTitle": "微软 Surface壁纸 - 原图免费下载",
+      "description": "免费下载微软 Surface Pro、Laptop、Book 与 Studio 设备内置壁纸。预览图片并下载无水印原图，为桌面更换背景。"
+    },
+    "ubuntu": {
+      "title": "Ubuntu壁纸",
+      "metadataTitle": "Ubuntu壁纸 - 原图免费下载",
+      "description": "免费下载 Ubuntu 历代系统默认桌面壁纸，浏览发行版与吉祥物主题合集。预览图片并下载无水印原图，为桌面更换背景。"
+    },
+    "google-chromeos": {
+      "title": "ChromeOS壁纸",
+      "metadataTitle": "ChromeOS壁纸 - 原图免费下载",
+      "description": "免费下载 ChromeOS 系统壁纸，浏览内置背景与艺术家主题图片合集。预览图片并下载无水印原图，为桌面更换背景。"
+    },
+    "google-os": {
+      "title": "Google OS壁纸",
+      "metadataTitle": "Google OS壁纸 - 原图免费下载",
+      "description": "免费下载 Google Fuchsia OS 与 Aluminium OS 壁纸，浏览对应系统的背景图片合集。预览图片并下载无水印原图，为桌面更换背景。"
+    }
+  },
+  "desktopHome": {
+    "title": "电脑桌面壁纸",
+    "metadataTitle": "电脑桌面壁纸 - Windows、Ubuntu 原图下载",
+    "description": "免费下载 Windows、Ubuntu、ChromeOS 与微软 Surface 桌面壁纸，按系统和设备浏览合集，预览图片并下载无水印原图。"
+  }
+}

@@ -53,14 +53,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const canonicalUrl = withLanguageUrl(`${SITE_URL}/desktop`, language);
 
   return {
-    title: `${seoCopy.title} | PhWalls`,
+    title: `${seoCopy.metadataTitle} | PhWalls`,
     description: seoCopy.description,
     alternates: {
       canonical: canonicalUrl,
       languages: buildLanguageAlternates(`${SITE_URL}/desktop`),
     },
     openGraph: {
-      title: `${seoCopy.title} | PhWalls`,
+      title: `${seoCopy.metadataTitle} | PhWalls`,
       description: seoCopy.description,
       url: canonicalUrl,
       type: 'website',
@@ -69,7 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${seoCopy.title} | PhWalls`,
+      title: `${seoCopy.metadataTitle} | PhWalls`,
       description: seoCopy.description,
       images: DEFAULT_X_IMAGES,
     },

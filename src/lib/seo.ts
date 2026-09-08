@@ -2,6 +2,7 @@ import { getI18nTexts, type Language } from '@/lib/i18n';
 import { getTabData } from '@/lib/data';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { getBrandCategoryBySlug, normalizeCategoryType } from '@/lib/brands';
+import { getLocalizedCategorySeoCopy } from '@/lib/category-seo-copy';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com';
 
@@ -16,11 +17,12 @@ export function getCategorySeoCopy(
   );
   const label = localizedTab?.title.trim() || brand?.title || categoryKey;
   const texts = getI18nTexts(language);
+  const copy = getLocalizedCategorySeoCopy(language, 'brands', brand?.slug || normalizeCategoryType(categoryKey));
 
   return {
-    title: texts.brandCategoryTitleTemplate.replace('{brand}', label),
-    metadataTitle: texts.brandCategorySeoTitleTemplate.replace('{brand}', label),
-    description: texts.brandCategorySeoDescriptionTemplate.replace('{brand}', label),
+    title: copy?.title || texts.brandCategoryTitleTemplate.replace('{brand}', label),
+    metadataTitle: copy?.metadataTitle || texts.brandCategorySeoTitleTemplate.replace('{brand}', label),
+    description: copy?.description || texts.brandCategorySeoDescriptionTemplate.replace('{brand}', label),
     subtitle:
       collectionCount === undefined
         ? ''

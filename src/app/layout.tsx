@@ -26,7 +26,7 @@ const inter = Inter({
 });
 
 const defaultTexts = getI18nTexts(DEFAULT_LANGUAGE);
-const defaultTitle = `${defaultTexts.heroTitle} | ${defaultTexts.siteName}`;
+const defaultTitle = `${defaultTexts.heroSeoTitle} | ${defaultTexts.siteName}`;
 const defaultDescription = defaultTexts.heroDescription;
 const defaultCanonicalUrl = withLanguageUrl(SITE_URL, DEFAULT_LANGUAGE);
 
@@ -129,7 +129,7 @@ export default async function RootLayout({
   const requestPath = headersList.get(REQUEST_PATH_HEADER_NAME) || '/';
   const shouldRenderHomeSeoFallback = requestPath === '/';
   const homeTexts = getI18nTexts(currentLanguage);
-  const homeTitle = `${homeTexts.heroTitle} | ${homeTexts.siteName}`;
+  const homeTitle = `${homeTexts.heroSeoTitle} | ${homeTexts.siteName}`;
   const homeDescription = homeTexts.heroDescription;
   const homeCanonicalUrl = withLanguageUrl(SITE_URL, currentLanguage);
 
@@ -196,7 +196,7 @@ export default async function RootLayout({
               name: 'PhWalls',
               url: SITE_URL,
               logo: `${SITE_URL}/brand/option-03/logo.png`,
-              description: 'Download built-in HD phone wallpapers. High-quality, watermark-free collections.',
+              description: homeDescription,
               contactPoint: {
                 '@type': 'ContactPoint',
                 email: 'fenggit@gmail.com',
@@ -219,7 +219,7 @@ export default async function RootLayout({
               '@type': 'WebSite',
               name: 'PhWalls',
               url: SITE_URL,
-              description: 'Download built-in HD wallpapers for popular phone brands',
+              description: homeDescription,
               inLanguage: ['en', 'zh-CN', 'ja', 'vi', 'zh-Hant'],
             })
           }}

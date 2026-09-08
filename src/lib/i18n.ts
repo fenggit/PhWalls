@@ -6,6 +6,7 @@ export interface I18nTexts {
   // 通用文本
   siteName: string;
   heroTitle: string;
+  heroSeoTitle: string;
   heroDescription: string;
   loading: string;
   
@@ -296,6 +297,7 @@ export interface I18nTexts {
   brandCategorySeoTitleTemplate: string;
   brandCategorySeoDescriptionTemplate: string;
   brandCategorySeoSubtitleTemplate: string;
+  desktopCategoryTitleTemplate: string;
   desktopCategorySeoTitleTemplate: string;
   desktopCategorySeoDescriptionTemplate: string;
   desktopCategorySeoSubtitleTemplate: string;
@@ -366,8 +368,9 @@ export interface I18nTexts {
 export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
     siteName: 'PhWalls',
-    heroTitle: '手机壁纸',
-    heroDescription: '下载官方内置手机与桌面壁纸，涵盖 iPhone、Samsung、小米、vivo、OPPO、华为、Google Pixel，以及 Windows、Ubuntu、ChromeOS、Surface，高清无水印免费下载。',
+    heroTitle: '手机与电脑内置壁纸',
+    heroSeoTitle: '手机与电脑内置壁纸 - 原图免费下载',
+    heroDescription: '免费下载三星、华为、小米、OPPO、Google Pixel 等品牌手机内置壁纸，以及 Windows、Ubuntu 等电脑桌面壁纸。按品牌和机型浏览合集，预览图片并下载无水印原图。',
     loading: '加载中...',
     exploreButton: '开始探索',
     learnMore: '了解更多',
@@ -379,7 +382,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     breadcrumbNavigationLabel: '面包屑导航',
     updatedLabel: '更新',
     autoCloseSuffix: '秒后自动关闭',
-    footerDescription: '历代 iPhone、iPad 及 Mac 系统原厂壁纸库。提供 4K/5K/6K 超清内置背景下载，涵盖 iOS、iPadOS 与 macOS 全系列资源，让您的设备重现原生视觉美学。',
+    footerDescription: '收录三星、华为、小米、OPPO、Google Pixel 等品牌手机内置壁纸，以及 Windows 等电脑桌面壁纸。按品牌、设备或系统查找，免费下载无水印原图。',
     copyright: '',
     trademarkDisclaimer: 'Phone、iPhone、iPad、Mac、iOS、macOS 为 Phone Inc. 的商标。本网站为独立项目，与 Phone Inc. 无关联或认可。',
     noWallpapers: '暂无壁纸',
@@ -647,13 +650,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: '壁纸',
     newYearLabel: '新年',
     collectionDescriptionTemplate: '浏览 {collectionName} 的 {count} 张{categoryLabel}壁纸，高清原图下载，无水印，按设备版本整理。',
-    brandCategoryTitleTemplate: '{brand}官方壁纸',
-    brandCategorySeoTitleTemplate: '{brand}官方壁纸下载 - 高清原图',
-    brandCategorySeoDescriptionTemplate: '下载{brand}的官方内置手机壁纸，支持 HD 高清原图预览与免费下载，无水印，并持续收录最新系统壁纸。',
-    brandCategorySeoSubtitleTemplate: '共收录 {count} 个{brand}官方壁纸合集。',
-    desktopCategorySeoTitleTemplate: '{category}桌面壁纸',
-    desktopCategorySeoDescriptionTemplate: '下载{category}的官方内置电脑桌面壁纸，支持 HD 高清原图预览与免费下载，无水印，并持续收录最新系统壁纸。',
-    desktopCategorySeoSubtitleTemplate: '共收录 {count} 个{category}官方桌面壁纸合集。',
+    brandCategoryTitleTemplate: '{brand}内置壁纸',
+    brandCategorySeoTitleTemplate: '{brand}内置壁纸 - 原图免费下载',
+    brandCategorySeoDescriptionTemplate: '浏览{brand}内置壁纸合集，预览图片并免费下载无水印原图。',
+    brandCategorySeoSubtitleTemplate: '共收录 {count} 个{brand}壁纸合集。',
+    desktopCategorySeoTitleTemplate: '{category}壁纸 - 原图免费下载',
+    desktopCategoryTitleTemplate: '{category}壁纸',
+    desktopCategorySeoDescriptionTemplate: '浏览{category}壁纸合集，预览背景图片并免费下载无水印原图。',
+    desktopCategorySeoSubtitleTemplate: '共收录 {count} 个{category}壁纸合集。',
     
     // Phone 支持链接
     appleOfficialSupport: 'Phone 官方支持',
@@ -719,8 +723,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   en: {
     siteName: 'PhWalls',
-    heroTitle: 'Phone Wallpaper',
-    heroDescription: 'Download official built-in phone and desktop wallpapers for iPhone, Samsung, Xiaomi, Vivo, OPPO, Huawei, Google Pixel, Windows, Ubuntu, ChromeOS, and Surface. HD, watermark-free, and free.',
+    heroTitle: 'Stock Wallpapers for Phones & Desktops',
+    heroSeoTitle: 'Stock Phone & Desktop Wallpapers - Free Download',
+    heroDescription: 'Download stock wallpapers from Samsung, Google Pixel, Xiaomi, Huawei and more. Browse phone and desktop collections and get original images for free.',
     loading: 'Loading...',
     exploreButton: 'Start Exploring',
     learnMore: 'Learn More',
@@ -732,7 +737,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     breadcrumbNavigationLabel: 'Breadcrumb',
     updatedLabel: 'Updated',
     autoCloseSuffix: 's until auto close',
-    footerDescription: 'Original 4K/5K/6K Wallpapers for iPhone, iPad, and Mac. Download built-in backgrounds from all iOS, iPadOS, and macOS versions to bring a pure native aesthetic to your screen.',
+    footerDescription: 'Stock wallpapers from Samsung, Google Pixel, Xiaomi, Huawei and more, plus Windows and other desktop collections. Browse by brand, device or system and download original images for free.',
     copyright: '© 2025 PhWalls. All rights reserved.',
     trademarkDisclaimer: 'Phone, iPhone, iPad, Mac, iOS, and macOS are trademarks of Phone Inc. This site is not affiliated with or endorsed by Phone.',
     noWallpapers: 'No Wallpapers',
@@ -1000,13 +1005,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: 'wallpaper',
     newYearLabel: 'New Year',
     collectionDescriptionTemplate: 'Browse {count} wallpapers from {collectionName}. Download {categoryLabel} wallpapers in high resolution.',
-    brandCategoryTitleTemplate: '{brand} Wallpapers',
-    brandCategorySeoTitleTemplate: '{brand} Stock Wallpapers - 4K HD Download',
-    brandCategorySeoDescriptionTemplate: 'Download official {brand} built-in phone wallpapers in HD and full resolution. Free, watermark-free, and regularly updated.',
-    brandCategorySeoSubtitleTemplate: '{count} official {brand} wallpaper collections.',
-    desktopCategorySeoTitleTemplate: '{category} Desktop Wallpapers',
-    desktopCategorySeoDescriptionTemplate: 'Download official {category} built-in desktop wallpapers in HD and full resolution. Free, watermark-free, and regularly updated.',
-    desktopCategorySeoSubtitleTemplate: '{count} official {category} desktop wallpaper collections.',
+    brandCategoryTitleTemplate: '{brand} Stock Wallpapers',
+    brandCategorySeoTitleTemplate: '{brand} Stock Wallpapers - Free Download',
+    brandCategorySeoDescriptionTemplate: 'Browse {brand} stock wallpaper collections, preview images and download the originals for free.',
+    brandCategorySeoSubtitleTemplate: '{count} {brand} wallpaper collections.',
+    desktopCategorySeoTitleTemplate: '{category} Wallpapers - Free Download',
+    desktopCategoryTitleTemplate: '{category} Wallpapers',
+    desktopCategorySeoDescriptionTemplate: 'Browse {category} wallpaper collections, preview backgrounds and download original images for free.',
+    desktopCategorySeoSubtitleTemplate: '{count} {category} wallpaper collections.',
     
     // Phone 支持链接
     appleOfficialSupport: 'Phone Support',
@@ -1072,8 +1078,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   ja: {
     siteName: 'PhWalls',
-    heroTitle: 'スマートフォン壁紙',
-    heroDescription: 'iPhone、Samsung、Xiaomi、Vivo、OPPO、Huawei、Google Pixel、Windows、Ubuntu、ChromeOS、Surface の公式内蔵壁紙を収録。HD高画質・透かしなしで無料ダウンロードできます。',
+    heroTitle: 'スマホ・PCの標準壁紙',
+    heroSeoTitle: 'スマホ・PCの標準壁紙を無料ダウンロード',
+    heroDescription: 'Galaxy・Xperia・Google Pixel・Xiaomi などのスマホ標準壁紙や、Windows・Ubuntu のデスクトップ壁紙を収録。機種や OS ごとに探して、元の解像度の画像を無料でダウンロードできます。',
     loading: '読み込み中...',
     exploreButton: '探索を開始',
     learnMore: '詳細を見る',
@@ -1085,7 +1092,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     breadcrumbNavigationLabel: 'パンくずナビゲーション',
     updatedLabel: '更新',
     autoCloseSuffix: '秒後に自動で閉じます',
-    footerDescription: '歴代 iPhone・iPad・Mac の純正システム壁紙ライブラリ。4K/5K/6K の高解像度内蔵背景をダウンロードでき、iOS・iPadOS・macOS 全バージョンを網羅。デバイスに純正のビジュアル美学を再現します。',
+    footerDescription: 'Galaxy・Xperia・Google Pixel などのスマホ標準壁紙から、Windows などの PC 壁紙まで。メーカー・機種・OS ごとに探して、元の解像度で無料ダウンロードできます。',
     copyright: '© 2025 PhWalls. 全著作権所有。',
     trademarkDisclaimer: 'Phone、iPhone、iPad、Mac、iOS、macOS は Phone Inc. の商標です。本サイトは Phone Inc. と提携または承認されていません。',
     noWallpapers: '壁紙なし',
@@ -1353,13 +1360,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: '壁紙',
     newYearLabel: '新年',
     collectionDescriptionTemplate: '{collectionName} の {categoryLabel} 壁紙を {count} 枚まとめて確認できます。高解像度でダウンロード可能。',
-    brandCategoryTitleTemplate: '{brand}公式壁紙',
-    brandCategorySeoTitleTemplate: '{brand}公式壁紙 - 4K・HD無料ダウンロード',
-    brandCategorySeoDescriptionTemplate: '{brand}の公式スマートフォン内蔵壁紙をHD・高解像度で無料ダウンロード。透かしなしで、最新の公式壁紙コレクションも随時追加しています。',
-    brandCategorySeoSubtitleTemplate: '{brand}の公式壁紙コレクションを{count}件収録。',
-    desktopCategorySeoTitleTemplate: '{category}デスクトップ壁紙',
-    desktopCategorySeoDescriptionTemplate: '{category}の公式内蔵デスクトップ壁紙をHD・高解像度で無料ダウンロード。透かしなしで、最新の公式壁紙コレクションも随時追加しています。',
-    desktopCategorySeoSubtitleTemplate: '{category}の公式デスクトップ壁紙コレクションを{count}件収録。',
+    brandCategoryTitleTemplate: '{brand} 標準壁紙',
+    brandCategorySeoTitleTemplate: '{brand} 標準壁紙を無料ダウンロード',
+    brandCategorySeoDescriptionTemplate: '{brand} の標準壁紙を収録。画像をプレビューして、元の解像度で無料ダウンロードできます。',
+    brandCategorySeoSubtitleTemplate: '{brand} の壁紙コレクションを {count} 件収録。',
+    desktopCategorySeoTitleTemplate: '{category} 壁紙を無料ダウンロード',
+    desktopCategoryTitleTemplate: '{category} 壁紙',
+    desktopCategorySeoDescriptionTemplate: '{category} の壁紙コレクションを収録。画像をプレビューして、元の解像度で無料ダウンロードできます。',
+    desktopCategorySeoSubtitleTemplate: '{category} の壁紙コレクションを {count} 件収録。',
     
     // Phone 支持链接
     appleOfficialSupport: 'Phone 公式サポート',
@@ -1425,8 +1433,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   vi: {
     siteName: 'PhWalls',
-    heroTitle: 'Hình nền điện thoại',
-    heroDescription: 'Tải hình nền chính thức cho điện thoại và desktop: iPhone, Samsung, Xiaomi, Vivo, OPPO, Huawei, Google Pixel, Windows, Ubuntu, ChromeOS và Surface. HD, miễn phí, không watermark.',
+    heroTitle: 'Hình nền gốc cho điện thoại và máy tính',
+    heroSeoTitle: 'Hình nền gốc điện thoại và máy tính - Tải miễn phí',
+    heroDescription: 'Tải hình nền gốc Samsung, Xiaomi, OPPO, vivo, Google Pixel và hình nền máy tính Windows, Ubuntu miễn phí. Chọn theo mẫu máy, xem trước và tải ảnh ở độ phân giải gốc.',
     loading: 'Đang tải...',
     exploreButton: 'Bắt đầu khám phá',
     learnMore: 'Tìm hiểu thêm',
@@ -1438,7 +1447,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     breadcrumbNavigationLabel: 'Điều hướng breadcrumb',
     updatedLabel: 'Cập nhật',
     autoCloseSuffix: 'giây nữa sẽ tự động đóng',
-    footerDescription: 'Thư viện hình nền hệ điều hành gốc cho iPhone, iPad và Mac qua mọi thế hệ. Tải xuống hình nền tích hợp 4K/5K/6K siêu nét, bao phủ đầy đủ iOS, iPadOS và macOS, giúp thiết bị tái hiện chuẩn thẩm mỹ nguyên bản của Phone.',
+    footerDescription: 'Bộ sưu tập hình nền gốc Samsung, Xiaomi, OPPO, vivo, Google Pixel và hình nền máy tính Windows. Tìm theo hãng, thiết bị hoặc hệ điều hành, tải miễn phí ở độ phân giải gốc.',
     copyright: '© 2025 PhWalls. Bảo lưu mọi quyền.',
     trademarkDisclaimer: 'Phone, iPhone, iPad, Mac, iOS và macOS là các nhãn hiệu của Phone Inc. Trang web này độc lập và không liên kết hay được Phone chứng thực.',
     noWallpapers: 'Không có hình nền',
@@ -1679,13 +1688,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: 'hình nền',
     newYearLabel: 'Năm Mới',
     collectionDescriptionTemplate: 'Xem {count} hình nền {categoryLabel} trong bộ sưu tập {collectionName}, tải bản gốc độ phân giải cao.',
-    brandCategoryTitleTemplate: 'Hình nền {brand}',
-    brandCategorySeoTitleTemplate: 'Hình nền {brand} chính thức - Tải 4K HD',
-    brandCategorySeoDescriptionTemplate: 'Tải hình nền điện thoại tích hợp sẵn chính thức của {brand} ở chất lượng HD và độ phân giải đầy đủ. Miễn phí, không watermark và được cập nhật thường xuyên.',
-    brandCategorySeoSubtitleTemplate: 'Khám phá {count} bộ hình nền chính thức của {brand}.',
-    desktopCategorySeoTitleTemplate: 'Hình nền desktop {category}',
-    desktopCategorySeoDescriptionTemplate: 'Tải hình nền desktop tích hợp sẵn chính thức của {category} ở chất lượng HD và độ phân giải đầy đủ. Miễn phí, không watermark và được cập nhật thường xuyên.',
-    desktopCategorySeoSubtitleTemplate: 'Khám phá {count} bộ hình nền desktop chính thức của {category}.',
+    brandCategoryTitleTemplate: 'Hình nền gốc {brand}',
+    brandCategorySeoTitleTemplate: 'Hình nền gốc {brand} - Tải miễn phí',
+    brandCategorySeoDescriptionTemplate: 'Khám phá bộ sưu tập hình nền gốc {brand}. Xem trước và tải ảnh miễn phí ở độ phân giải gốc.',
+    brandCategorySeoSubtitleTemplate: '{count} bộ hình nền {brand}.',
+    desktopCategorySeoTitleTemplate: 'Hình nền {category} - Tải miễn phí',
+    desktopCategoryTitleTemplate: 'Hình nền {category}',
+    desktopCategorySeoDescriptionTemplate: 'Khám phá bộ sưu tập hình nền {category}. Xem trước và tải ảnh miễn phí ở độ phân giải gốc.',
+    desktopCategorySeoSubtitleTemplate: '{count} bộ hình nền {category}.',
     
     // Phone 支持链接
     appleOfficialSupport: 'Hỗ trợ chính thức của Phone',
@@ -1751,8 +1761,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   'zh-hant': {
     siteName: 'PhWalls',
-    heroTitle: '手機桌布',
-    heroDescription: '下載官方內建手機與桌面桌布，涵蓋 iPhone、Samsung、Xiaomi、vivo、OPPO、Huawei、Google Pixel，以及 Windows、Ubuntu、ChromeOS、Surface，高清無浮水印免費下載。',
+    heroTitle: '手機與電腦內建桌布',
+    heroSeoTitle: '手機與電腦內建桌布 - 原圖免費下載',
+    heroDescription: '免費下載三星、小米、OPPO、Google Pixel、華為等品牌手機內建桌布，以及 Windows、Ubuntu 電腦桌布。依品牌與機型瀏覽，預覽圖片並下載無浮水印原圖。',
     loading: '載入中...',
     exploreButton: '開始探索',
     learnMore: '了解更多',
@@ -1764,7 +1775,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     breadcrumbNavigationLabel: '麵包屑導航',
     updatedLabel: '更新',
     autoCloseSuffix: '秒後自動關閉',
-    footerDescription: '歷代 iPhone、iPad 與 Mac 系統原廠桌布資料庫。提供 4K/5K/6K 超高畫質內建背景下載，涵蓋 iOS、iPadOS 與 macOS 全系列版本資源，讓您的裝置重現原生視覺美學。',
+    footerDescription: '收錄三星、小米、OPPO、Google Pixel、華為等品牌手機內建桌布，以及 Windows 等電腦桌布。依品牌、裝置或系統尋找，免費下載無浮水印原圖。',
     copyright: '© 2025 PhWalls. 保留所有權利。',
     trademarkDisclaimer: 'Phone、iPhone、iPad、Mac、iOS、macOS 為 Phone Inc. 的商標。本網站為獨立專案，與 Phone Inc. 無關聯或認可。',
     noWallpapers: '暫無壁紙',
@@ -2032,13 +2043,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpaperAltSuffix: '桌布',
     newYearLabel: '新年',
     collectionDescriptionTemplate: '瀏覽 {collectionName} 的 {count} 張{categoryLabel}桌布，高清原圖下載，無浮水印。',
-    brandCategoryTitleTemplate: '{brand}官方桌布',
-    brandCategorySeoTitleTemplate: '{brand}官方桌布下載 - 高清原圖',
-    brandCategorySeoDescriptionTemplate: '下載{brand}的官方內建手機桌布，支援 HD 高清原圖預覽與免費下載，無浮水印，並持續收錄最新系統桌布。',
-    brandCategorySeoSubtitleTemplate: '共收錄 {count} 個{brand}官方桌布合集。',
-    desktopCategorySeoTitleTemplate: '{category}桌面桌布',
-    desktopCategorySeoDescriptionTemplate: '下載{category}的官方內建電腦桌面桌布，支援 HD 高清原圖預覽與免費下載，無浮水印，並持續收錄最新系統桌布。',
-    desktopCategorySeoSubtitleTemplate: '共收錄 {count} 個{category}官方桌面桌布合集。',
+    brandCategoryTitleTemplate: '{brand} 內建桌布',
+    brandCategorySeoTitleTemplate: '{brand} 內建桌布 - 原圖免費下載',
+    brandCategorySeoDescriptionTemplate: '瀏覽{brand}內建桌布合集，預覽圖片並免費下載無浮水印原圖。',
+    brandCategorySeoSubtitleTemplate: '共收錄 {count} 個{brand}桌布合集。',
+    desktopCategorySeoTitleTemplate: '{category} 桌布 - 原圖免費下載',
+    desktopCategoryTitleTemplate: '{category} 桌布',
+    desktopCategorySeoDescriptionTemplate: '瀏覽{category}桌布合集，預覽背景圖片並免費下載無浮水印原圖。',
+    desktopCategorySeoSubtitleTemplate: '共收錄 {count} 個{category}桌布合集。',
     
     // Phone 支持链接
     appleOfficialSupport: 'Phone 官方支援',

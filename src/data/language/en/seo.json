@@ -1,0 +1,146 @@
+{
+  "brands": {
+    "samsung": {
+      "title": "Samsung Galaxy Stock Wallpapers",
+      "metadataTitle": "Samsung Galaxy Stock Wallpapers - Free Download",
+      "description": "Download Samsung Galaxy stock wallpapers from the S, A, Z Fold and Z Flip series. Browse by model and get original images for free."
+    },
+    "sony": {
+      "title": "Sony Xperia Stock Wallpapers",
+      "metadataTitle": "Sony Xperia Stock Wallpapers - Free Download",
+      "description": "Download Sony Xperia stock wallpapers from the Xperia 1, 5 and 10 series. Browse by model and get original images for free."
+    },
+    "vivo": {
+      "title": "vivo Stock Wallpapers",
+      "metadataTitle": "vivo Stock Wallpapers - Free Download",
+      "description": "Download vivo stock wallpapers from X, V, S and Y series phones, including X Fold models. Browse by model and get original images for free."
+    },
+    "iqoo": {
+      "title": "iQOO Stock Wallpapers",
+      "metadataTitle": "iQOO Stock Wallpapers - Free Download",
+      "description": "Download iQOO stock wallpapers from flagship, Neo and Z series phones. Browse by model and get original images for free."
+    },
+    "google-pixel": {
+      "title": "Google Pixel Stock Wallpapers",
+      "metadataTitle": "Google Pixel Stock Wallpapers - Free Download",
+      "description": "Download Google Pixel stock wallpapers for Pixel, Pro, A-series and Fold models. Browse by model and get original images for free."
+    },
+    "android": {
+      "title": "Android Stock Wallpapers",
+      "metadataTitle": "Android Stock Wallpapers - Free Download",
+      "description": "Download Android stock wallpapers from Android 4.4 through Android 16. Browse by version and get original images for free."
+    },
+    "realme": {
+      "title": "realme Stock Wallpapers",
+      "metadataTitle": "realme Stock Wallpapers - Free Download",
+      "description": "Download realme stock wallpapers from GT, number series and Narzo phones. Browse by model and get original images for free."
+    },
+    "transsion-infinix": {
+      "title": "Infinix Stock Wallpapers",
+      "metadataTitle": "Infinix Stock Wallpapers - Free Download",
+      "description": "Download Infinix stock wallpapers from NOTE, GT, HOT and ZERO series phones. Browse by model and get original images for free."
+    },
+    "transsion-tecno": {
+      "title": "TECNO Stock Wallpapers",
+      "metadataTitle": "TECNO Stock Wallpapers - Free Download",
+      "description": "Download TECNO stock wallpapers from CAMON, SPARK and PHANTOM series phones. Browse by model and get original images for free."
+    },
+    "xiaomi": {
+      "title": "Xiaomi Stock Wallpapers",
+      "metadataTitle": "Xiaomi Stock Wallpapers - Free Download",
+      "description": "Download Xiaomi stock wallpapers from flagship phones, MIX Fold and MIX Flip. Browse by model and get original images for free."
+    },
+    "redmi": {
+      "title": "Redmi Stock Wallpapers",
+      "metadataTitle": "Redmi Stock Wallpapers - Free Download",
+      "description": "Download Redmi stock wallpapers from Redmi Note, K and Turbo series phones. Browse by model and get original images for free."
+    },
+    "poco": {
+      "title": "POCO Stock Wallpapers",
+      "metadataTitle": "POCO Stock Wallpapers - Free Download",
+      "description": "Download POCO stock wallpapers from POCO F, X and M series phones. Browse by model and get original images for free."
+    },
+    "huawei": {
+      "title": "Huawei Stock Wallpapers",
+      "metadataTitle": "Huawei Stock Wallpapers - Free Download",
+      "description": "Download Huawei stock wallpapers from Mate, Pura, nova and foldable phones. Browse by model and get original images for free."
+    },
+    "oppo": {
+      "title": "OPPO Stock Wallpapers",
+      "metadataTitle": "OPPO Stock Wallpapers - Free Download",
+      "description": "Download OPPO stock wallpapers from Find X, Find N, Reno and A series phones. Browse by model and get original images for free."
+    },
+    "honor": {
+      "title": "HONOR Stock Wallpapers",
+      "metadataTitle": "HONOR Stock Wallpapers - Free Download",
+      "description": "Download HONOR stock wallpapers from Magic, Magic V and number series phones. Browse by model and get original images for free."
+    },
+    "motorola": {
+      "title": "Motorola Stock Wallpapers",
+      "metadataTitle": "Motorola Stock Wallpapers - Free Download",
+      "description": "Download Motorola stock wallpapers from Moto Edge, Moto G and Razr phones. Browse by model and get original images for free."
+    },
+    "nothing": {
+      "title": "Nothing Phone Stock Wallpapers",
+      "metadataTitle": "Nothing Phone Stock Wallpapers - Free Download",
+      "description": "Download Nothing Phone stock wallpapers, including Phone and Phone A-series collections. Browse by model and get original images for free."
+    },
+    "asus-rog-phone": {
+      "title": "ASUS ROG Phone Stock Wallpapers",
+      "metadataTitle": "ASUS ROG Phone Stock Wallpapers - Free Download",
+      "description": "Download ASUS ROG Phone stock wallpapers from the original ROG Phone to ROG Phone 9. Browse by model and get original images for free."
+    },
+    "nokia": {
+      "title": "Nokia Stock Wallpapers",
+      "metadataTitle": "Nokia Stock Wallpapers - Free Download",
+      "description": "Download Nokia stock wallpapers from C, G, X and numbered phone models. Browse by model and get original images for free."
+    },
+    "oneplus": {
+      "title": "OnePlus Stock Wallpapers",
+      "metadataTitle": "OnePlus Stock Wallpapers - Free Download",
+      "description": "Download OnePlus stock wallpapers from flagship phones, Nord, Ace and Open. Browse by model and get original images for free."
+    },
+    "harmonyos": {
+      "title": "HarmonyOS Stock Wallpapers",
+      "metadataTitle": "HarmonyOS Stock Wallpapers - Free Download",
+      "description": "Download HarmonyOS 2.0 and 4.0 stock wallpapers from Huawei system collections. Browse by version and get original images for free."
+    },
+    "huawei-matepad": {
+      "title": "Huawei MatePad Stock Wallpapers",
+      "metadataTitle": "Huawei MatePad Stock Wallpapers - Free Download",
+      "description": "Download stock wallpapers from Huawei MatePad Pro and MediaPad M6 tablets. Browse by model and get original images for free."
+    }
+  },
+  "desktop": {
+    "microsoft-windows": {
+      "title": "Windows Wallpapers",
+      "metadataTitle": "Windows Wallpapers - Free Download",
+      "description": "Download Windows wallpapers from Windows XP, 7, 8, 10 and 11 collections. Browse collections and get original images for free."
+    },
+    "microsoft-surface": {
+      "title": "Microsoft Surface Wallpapers",
+      "metadataTitle": "Microsoft Surface Wallpapers - Free Download",
+      "description": "Download Microsoft Surface wallpapers from Surface Pro, Laptop, Book and Studio collections. Browse collections and get original images for free."
+    },
+    "ubuntu": {
+      "title": "Ubuntu Wallpapers",
+      "metadataTitle": "Ubuntu Wallpapers - Free Download",
+      "description": "Download Ubuntu wallpapers from classic and recent releases, including mascot collections. Browse collections and get original images for free."
+    },
+    "google-chromeos": {
+      "title": "ChromeOS Wallpapers",
+      "metadataTitle": "ChromeOS Wallpapers - Free Download",
+      "description": "Download ChromeOS wallpapers, including built-in backgrounds and artist collections. Browse collections and get original images for free."
+    },
+    "google-os": {
+      "title": "Google OS Wallpapers",
+      "metadataTitle": "Google OS Wallpapers - Free Download",
+      "description": "Download Google OS wallpapers from Fuchsia OS and Aluminium OS collections. Browse collections and get original images for free."
+    }
+  },
+  "desktopHome": {
+    "title": "Desktop Wallpapers",
+    "metadataTitle": "Desktop Wallpapers - Windows, Ubuntu & More",
+    "description": "Download desktop wallpapers from Windows, Ubuntu, ChromeOS and Microsoft Surface. Browse system and device collections and get original images for free."
+  }
+}

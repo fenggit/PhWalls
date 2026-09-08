@@ -1,0 +1,146 @@
+{
+  "brands": {
+    "samsung": {
+      "title": "Hình nền gốc Samsung Galaxy",
+      "metadataTitle": "Hình nền gốc Samsung Galaxy - Tải miễn phí",
+      "description": "Tải hình nền gốc Samsung Galaxy dòng S, A, Z Fold và Z Flip. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "sony": {
+      "title": "Hình nền gốc Sony Xperia",
+      "metadataTitle": "Hình nền gốc Sony Xperia - Tải miễn phí",
+      "description": "Tải hình nền gốc Sony Xperia dòng 1, 5 và 10. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "vivo": {
+      "title": "Hình nền gốc vivo",
+      "metadataTitle": "Hình nền gốc vivo - Tải miễn phí",
+      "description": "Tải hình nền gốc vivo dòng X, V, Y và điện thoại gập X Fold. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "iqoo": {
+      "title": "Hình nền gốc iQOO",
+      "metadataTitle": "Hình nền gốc iQOO - Tải miễn phí",
+      "description": "Tải hình nền gốc iQOO, gồm các mẫu cao cấp cùng dòng Neo và Z. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "google-pixel": {
+      "title": "Hình nền gốc Google Pixel",
+      "metadataTitle": "Hình nền gốc Google Pixel - Tải miễn phí",
+      "description": "Tải hình nền gốc Google Pixel, Pixel Pro, dòng a và Pixel Fold. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "android": {
+      "title": "Hình nền gốc Android",
+      "metadataTitle": "Hình nền gốc Android - Tải miễn phí",
+      "description": "Tải hình nền mặc định từ Android 4.4 đến Android 16. Duyệt theo phiên bản, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "realme": {
+      "title": "Hình nền gốc realme",
+      "metadataTitle": "Hình nền gốc realme - Tải miễn phí",
+      "description": "Tải hình nền gốc realme dòng GT, Narzo và các dòng số. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "transsion-infinix": {
+      "title": "Hình nền gốc Infinix",
+      "metadataTitle": "Hình nền gốc Infinix - Tải miễn phí",
+      "description": "Tải hình nền gốc Infinix dòng NOTE, GT, HOT và ZERO. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "transsion-tecno": {
+      "title": "Hình nền gốc TECNO",
+      "metadataTitle": "Hình nền gốc TECNO - Tải miễn phí",
+      "description": "Tải hình nền gốc TECNO dòng CAMON, SPARK và PHANTOM. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "xiaomi": {
+      "title": "Hình nền gốc Xiaomi",
+      "metadataTitle": "Hình nền gốc Xiaomi - Tải miễn phí",
+      "description": "Tải hình nền gốc Xiaomi, gồm các dòng cao cấp và điện thoại gập MIX Fold, MIX Flip. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "redmi": {
+      "title": "Hình nền gốc Redmi",
+      "metadataTitle": "Hình nền gốc Redmi - Tải miễn phí",
+      "description": "Tải hình nền gốc Redmi Note, Redmi K và Redmi Turbo. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "poco": {
+      "title": "Hình nền gốc POCO",
+      "metadataTitle": "Hình nền gốc POCO - Tải miễn phí",
+      "description": "Tải hình nền gốc POCO dòng F, X và M. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "huawei": {
+      "title": "Hình nền gốc Huawei",
+      "metadataTitle": "Hình nền gốc Huawei - Tải miễn phí",
+      "description": "Tải hình nền gốc Huawei dòng Mate, Pura, nova và các mẫu điện thoại gập. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "oppo": {
+      "title": "Hình nền gốc OPPO",
+      "metadataTitle": "Hình nền gốc OPPO - Tải miễn phí",
+      "description": "Tải hình nền gốc OPPO dòng Find X, Find N, Reno và A. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "honor": {
+      "title": "Hình nền gốc HONOR",
+      "metadataTitle": "Hình nền gốc HONOR - Tải miễn phí",
+      "description": "Tải hình nền gốc HONOR Magic, Magic V và HONOR 600. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "motorola": {
+      "title": "Hình nền gốc Motorola",
+      "metadataTitle": "Hình nền gốc Motorola - Tải miễn phí",
+      "description": "Tải hình nền gốc Motorola dòng Moto Edge, Moto G và Razr. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "nothing": {
+      "title": "Hình nền gốc Nothing Phone",
+      "metadataTitle": "Hình nền gốc Nothing Phone - Tải miễn phí",
+      "description": "Tải hình nền gốc Nothing Phone, gồm các dòng Phone và Phone a. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "asus-rog-phone": {
+      "title": "Hình nền gốc ASUS ROG Phone",
+      "metadataTitle": "Hình nền gốc ASUS ROG Phone - Tải miễn phí",
+      "description": "Tải hình nền gốc ASUS ROG Phone từ thế hệ đầu đến ROG Phone 9. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "nokia": {
+      "title": "Hình nền gốc Nokia",
+      "metadataTitle": "Hình nền gốc Nokia - Tải miễn phí",
+      "description": "Tải hình nền gốc Nokia dòng C, G, X và các dòng số. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "oneplus": {
+      "title": "Hình nền gốc OnePlus",
+      "metadataTitle": "Hình nền gốc OnePlus - Tải miễn phí",
+      "description": "Tải hình nền gốc OnePlus, gồm các dòng cao cấp, Nord, Ace và Open. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "harmonyos": {
+      "title": "Hình nền gốc HarmonyOS",
+      "metadataTitle": "Hình nền gốc HarmonyOS - Tải miễn phí",
+      "description": "Tải hình nền mặc định HarmonyOS 2.0 và 4.0 của Huawei. Duyệt theo phiên bản, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "huawei-matepad": {
+      "title": "Hình nền gốc Huawei MatePad",
+      "metadataTitle": "Hình nền gốc Huawei MatePad - Tải miễn phí",
+      "description": "Tải hình nền gốc cho máy tính bảng Huawei MatePad Pro và MediaPad M6. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+    }
+  },
+  "desktop": {
+    "microsoft-windows": {
+      "title": "Hình nền Windows",
+      "metadataTitle": "Hình nền Windows - Tải miễn phí",
+      "description": "Tải hình nền máy tính Windows XP, 7, 8, 10 và 11. Xem trước bộ sưu tập và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "microsoft-surface": {
+      "title": "Hình nền Microsoft Surface",
+      "metadataTitle": "Hình nền Microsoft Surface - Tải miễn phí",
+      "description": "Tải hình nền gốc Microsoft Surface Pro, Laptop, Book và Studio. Xem trước bộ sưu tập và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "ubuntu": {
+      "title": "Hình nền Ubuntu",
+      "metadataTitle": "Hình nền Ubuntu - Tải miễn phí",
+      "description": "Tải hình nền Ubuntu qua các phiên bản, gồm hình nền mặc định và bộ sưu tập linh vật. Xem trước bộ sưu tập và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "google-chromeos": {
+      "title": "Hình nền ChromeOS",
+      "metadataTitle": "Hình nền ChromeOS - Tải miễn phí",
+      "description": "Tải hình nền ChromeOS, gồm ảnh nền mặc định và các bộ sưu tập của nghệ sĩ. Xem trước bộ sưu tập và tải ảnh miễn phí ở độ phân giải gốc."
+    },
+    "google-os": {
+      "title": "Hình nền Google OS",
+      "metadataTitle": "Hình nền Google OS - Tải miễn phí",
+      "description": "Tải hình nền Google Fuchsia OS và Aluminium OS từ các bộ sưu tập theo hệ điều hành. Xem trước bộ sưu tập và tải ảnh miễn phí ở độ phân giải gốc."
+    }
+  },
+  "desktopHome": {
+    "title": "Hình nền máy tính",
+    "metadataTitle": "Hình nền máy tính Windows, Ubuntu - Tải miễn phí",
+    "description": "Tải hình nền máy tính Windows, Ubuntu, ChromeOS và Microsoft Surface miễn phí. Xem trước bộ sưu tập theo hệ điều hành và thiết bị, tải ảnh ở độ phân giải gốc."
+  }
+}

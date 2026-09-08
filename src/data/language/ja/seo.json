@@ -1,0 +1,146 @@
+{
+  "brands": {
+    "samsung": {
+      "title": "Galaxy 標準壁紙",
+      "metadataTitle": "Galaxy 標準壁紙を無料ダウンロード",
+      "description": "サムスン Galaxy S・A・Z Fold・Z Flip シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "sony": {
+      "title": "Xperia 標準壁紙",
+      "metadataTitle": "Xperia 標準壁紙を無料ダウンロード",
+      "description": "ソニー Xperia 1・5・10 シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "vivo": {
+      "title": "vivo 標準壁紙",
+      "metadataTitle": "vivo 標準壁紙を無料ダウンロード",
+      "description": "vivo X・V・S・Y シリーズや X Fold の標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "iqoo": {
+      "title": "iQOO 標準壁紙",
+      "metadataTitle": "iQOO 標準壁紙を無料ダウンロード",
+      "description": "iQOO のナンバリングモデル、Neo・Z シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "google-pixel": {
+      "title": "Google Pixel 標準壁紙",
+      "metadataTitle": "Google Pixel 標準壁紙を無料ダウンロード",
+      "description": "Google Pixel・Pixel Pro・a シリーズ・Fold の標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "android": {
+      "title": "Android 標準壁紙",
+      "metadataTitle": "Android 標準壁紙を無料ダウンロード",
+      "description": "Android 4.4 から Android 16 まで、歴代 Android の標準壁紙を収録。バージョン別に探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "realme": {
+      "title": "realme 標準壁紙",
+      "metadataTitle": "realme 標準壁紙を無料ダウンロード",
+      "description": "realme GT・Narzo シリーズやナンバリングモデルの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "transsion-infinix": {
+      "title": "Infinix 標準壁紙",
+      "metadataTitle": "Infinix 標準壁紙を無料ダウンロード",
+      "description": "Infinix NOTE・GT・HOT・ZERO シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "transsion-tecno": {
+      "title": "TECNO 標準壁紙",
+      "metadataTitle": "TECNO 標準壁紙を無料ダウンロード",
+      "description": "TECNO CAMON・SPARK・PHANTOM シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "xiaomi": {
+      "title": "Xiaomi 標準壁紙",
+      "metadataTitle": "Xiaomi 標準壁紙を無料ダウンロード",
+      "description": "Xiaomi のフラッグシップモデル、MIX Fold・MIX Flip の標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "redmi": {
+      "title": "Redmi 標準壁紙",
+      "metadataTitle": "Redmi 標準壁紙を無料ダウンロード",
+      "description": "Redmi Note・K・Turbo シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "poco": {
+      "title": "POCO 標準壁紙",
+      "metadataTitle": "POCO 標準壁紙を無料ダウンロード",
+      "description": "POCO F・X・M シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "huawei": {
+      "title": "HUAWEI 標準壁紙",
+      "metadataTitle": "HUAWEI 標準壁紙を無料ダウンロード",
+      "description": "ファーウェイの Mate・Pura・nova シリーズや折りたたみスマホの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "oppo": {
+      "title": "OPPO 標準壁紙",
+      "metadataTitle": "OPPO 標準壁紙を無料ダウンロード",
+      "description": "OPPO Find X・Find N・Reno・A シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "honor": {
+      "title": "HONOR 標準壁紙",
+      "metadataTitle": "HONOR 標準壁紙を無料ダウンロード",
+      "description": "HONOR Magic・Magic V シリーズやナンバリングモデルの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "motorola": {
+      "title": "Motorola 標準壁紙",
+      "metadataTitle": "Motorola 標準壁紙を無料ダウンロード",
+      "description": "モトローラ Moto Edge・Moto G・Razr シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "nothing": {
+      "title": "Nothing Phone 標準壁紙",
+      "metadataTitle": "Nothing Phone 標準壁紙を無料ダウンロード",
+      "description": "Nothing Phone のナンバリングモデルと a シリーズの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "asus-rog-phone": {
+      "title": "ASUS ROG Phone 標準壁紙",
+      "metadataTitle": "ASUS ROG Phone 標準壁紙を無料ダウンロード",
+      "description": "初代 ASUS ROG Phone から ROG Phone 9 まで、ゲーミングスマホの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "nokia": {
+      "title": "Nokia 標準壁紙",
+      "metadataTitle": "Nokia 標準壁紙を無料ダウンロード",
+      "description": "Nokia C・G・X シリーズやナンバリングモデルの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "oneplus": {
+      "title": "OnePlus 標準壁紙",
+      "metadataTitle": "OnePlus 標準壁紙を無料ダウンロード",
+      "description": "OnePlus のフラッグシップモデル、Nord・Ace・Open の標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "harmonyos": {
+      "title": "HarmonyOS 標準壁紙",
+      "metadataTitle": "HarmonyOS 標準壁紙を無料ダウンロード",
+      "description": "HarmonyOS 2.0・4.0 に搭載されたファーウェイの標準壁紙を収録。バージョン別に探して、元の解像度の画像を無料でダウンロードできます。"
+    },
+    "huawei-matepad": {
+      "title": "HUAWEI MatePad 標準壁紙",
+      "metadataTitle": "HUAWEI MatePad 標準壁紙を無料ダウンロード",
+      "description": "HUAWEI MatePad Pro・MediaPad M6 タブレットの標準壁紙を収録。機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+    }
+  },
+  "desktop": {
+    "microsoft-windows": {
+      "title": "Windows 壁紙",
+      "metadataTitle": "Windows 壁紙を無料ダウンロード",
+      "description": "Windows XP・7・8・10・11 など、歴代 Windows のデスクトップ壁紙を収録。画像をプレビューして、元の解像度で無料ダウンロードできます。"
+    },
+    "microsoft-surface": {
+      "title": "Microsoft Surface 壁紙",
+      "metadataTitle": "Microsoft Surface 壁紙を無料ダウンロード",
+      "description": "Microsoft Surface Pro・Laptop・Book・Studio の標準壁紙を収録。画像をプレビューして、元の解像度で無料ダウンロードできます。"
+    },
+    "ubuntu": {
+      "title": "Ubuntu 壁紙",
+      "metadataTitle": "Ubuntu 壁紙を無料ダウンロード",
+      "description": "Ubuntu の歴代リリースのデスクトップ壁紙やマスコット画像を収録。画像をプレビューして、元の解像度で無料ダウンロードできます。"
+    },
+    "google-chromeos": {
+      "title": "ChromeOS 壁紙",
+      "metadataTitle": "ChromeOS 壁紙を無料ダウンロード",
+      "description": "ChromeOS の標準壁紙やアーティストによる背景画像を収録。画像をプレビューして、元の解像度で無料ダウンロードできます。"
+    },
+    "google-os": {
+      "title": "Google OS 壁紙",
+      "metadataTitle": "Google OS 壁紙を無料ダウンロード",
+      "description": "Google Fuchsia OS・Aluminium OS の壁紙コレクションを収録。画像をプレビューして、元の解像度で無料ダウンロードできます。"
+    }
+  },
+  "desktopHome": {
+    "title": "PC・デスクトップ壁紙",
+    "metadataTitle": "PC・デスクトップ壁紙を無料ダウンロード",
+    "description": "Windows・Ubuntu・ChromeOS・Microsoft Surface の壁紙を収録。OS や機種ごとに探して、元の解像度の画像を無料でダウンロードできます。"
+  }
+}

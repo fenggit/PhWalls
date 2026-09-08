@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const language = await resolveMetadataLanguage();
   const texts = getI18nTexts(language);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}/home/v1`, language);
-  const title = `${texts.heroTitle} | ${texts.siteName}`;
+  const title = `${texts.heroSeoTitle} | ${texts.siteName}`;
   const description = texts.heroDescription;
 
   return {

@@ -1,11 +1,9 @@
 import { LanguageCode, type Language } from '@/types';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { getI18nTexts } from '@/lib/i18n';
+import { getLocalizedCategorySeoCopy } from '@/lib/category-seo-copy';
 
-type DesktopHomeSeoCopy = {
-  title: string;
-  description: string;
-};
+export { getLocalizedDesktopHomeSeoCopy as getDesktopHomeSeoCopy } from '@/lib/category-seo-copy';
 
 type DesktopDetailSeoCopyInput = {
   collectionName: string;
@@ -23,48 +21,19 @@ type DesktopDetailSeoCopy = {
   categoryLabel: string;
 };
 
-const desktopHomeSeoByLanguage: Record<Language, DesktopHomeSeoCopy> = {
-  [LanguageCode.EN]: {
-    title: 'Desktop Wallpapers',
-    description:
-      'Download official desktop wallpapers from Windows, Ubuntu, ChromeOS, Microsoft Surface, and other built-in PC wallpaper collections.',
-  },
-  [LanguageCode.ZH]: {
-    title: '电脑桌面壁纸',
-    description:
-      '下载 Windows、Ubuntu、ChromeOS、Microsoft Surface 等系统与 PC 设备内置官方桌面壁纸，支持高清原图预览与免费下载。',
-  },
-  [LanguageCode.ZH_HANT]: {
-    title: '電腦桌面桌布',
-    description:
-      '下載 Windows、Ubuntu、ChromeOS、Microsoft Surface 等系統與 PC 裝置內建官方桌面桌布，支援高清原圖預覽與免費下載。',
-  },
-  [LanguageCode.JA]: {
-    title: 'デスクトップ壁紙',
-    description:
-      'Windows、Ubuntu、ChromeOS、Microsoft Surface など、PC に内蔵された公式デスクトップ壁紙を高解像度でプレビュー、無料ダウンロードできます。',
-  },
-  [LanguageCode.VI]: {
-    title: 'Hình nền desktop',
-    description:
-      'Tải hình nền desktop chính thức từ Windows, Ubuntu, ChromeOS, Microsoft Surface và các bộ hình nền PC tích hợp sẵn, hỗ trợ xem trước và tải miễn phí.',
-  },
-};
-
-export function getDesktopHomeSeoCopy(language: Language): DesktopHomeSeoCopy {
-  return desktopHomeSeoByLanguage[language] || desktopHomeSeoByLanguage[LanguageCode.EN];
-}
-
 export function getDesktopCategorySeoCopy(
   language: Language,
+  categoryKey: string,
   categoryLabel: string,
   collectionCount?: number
 ) {
   const texts = getI18nTexts(language);
+  const copy = getLocalizedCategorySeoCopy(language, 'desktop', categoryKey);
 
   return {
-    title: texts.desktopCategorySeoTitleTemplate.replace('{category}', categoryLabel),
-    description: texts.desktopCategorySeoDescriptionTemplate.replace('{category}', categoryLabel),
+    title: copy?.title || texts.desktopCategoryTitleTemplate.replace('{category}', categoryLabel),
+    metadataTitle: copy?.metadataTitle || texts.desktopCategorySeoTitleTemplate.replace('{category}', categoryLabel),
+    description: copy?.description || texts.desktopCategorySeoDescriptionTemplate.replace('{category}', categoryLabel),
     subtitle:
       collectionCount === undefined
         ? ''

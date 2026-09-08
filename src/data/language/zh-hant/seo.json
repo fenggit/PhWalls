@@ -1,0 +1,146 @@
+{
+  "brands": {
+    "samsung": {
+      "title": "三星 Galaxy 內建桌布",
+      "metadataTitle": "三星 Galaxy 內建桌布 - 原圖免費下載",
+      "description": "收錄三星 Galaxy S、A、Z Fold 與 Z Flip 系列的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "sony": {
+      "title": "Sony Xperia 內建桌布",
+      "metadataTitle": "Sony Xperia 內建桌布 - 原圖免費下載",
+      "description": "收錄 Sony Xperia 1、5、10 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "vivo": {
+      "title": "vivo 內建桌布",
+      "metadataTitle": "vivo 內建桌布 - 原圖免費下載",
+      "description": "收錄 vivo X、V、Y 系列與 X Fold 摺疊手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "iqoo": {
+      "title": "iQOO 內建桌布",
+      "metadataTitle": "iQOO 內建桌布 - 原圖免費下載",
+      "description": "收錄 iQOO 數字旗艦、Neo 與 Z 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "google-pixel": {
+      "title": "Google Pixel 內建桌布",
+      "metadataTitle": "Google Pixel 內建桌布 - 原圖免費下載",
+      "description": "收錄 Google Pixel、Pixel Pro、a 系列與 Fold 摺疊手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "android": {
+      "title": "Android 內建桌布",
+      "metadataTitle": "Android 內建桌布 - 原圖免費下載",
+      "description": "收錄 Android 4.4 至 Android 16 的系統內建桌布，重溫歷代 Android 經典背景。依系統版本瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "realme": {
+      "title": "realme 內建桌布",
+      "metadataTitle": "realme 內建桌布 - 原圖免費下載",
+      "description": "收錄 realme GT、數字系列與 Narzo 手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "transsion-infinix": {
+      "title": "Infinix 內建桌布",
+      "metadataTitle": "Infinix 內建桌布 - 原圖免費下載",
+      "description": "收錄 Infinix NOTE、GT、HOT 與 ZERO 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "transsion-tecno": {
+      "title": "TECNO 內建桌布",
+      "metadataTitle": "TECNO 內建桌布 - 原圖免費下載",
+      "description": "收錄 TECNO CAMON、SPARK 與 PHANTOM 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "xiaomi": {
+      "title": "小米 Xiaomi 內建桌布",
+      "metadataTitle": "小米 Xiaomi 內建桌布 - 原圖免費下載",
+      "description": "收錄小米 Xiaomi 數字旗艦、MIX Fold 與 MIX Flip 摺疊手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "redmi": {
+      "title": "Redmi 紅米 內建桌布",
+      "metadataTitle": "Redmi 紅米 內建桌布 - 原圖免費下載",
+      "description": "收錄 Redmi 紅米 Note、K 與 Turbo 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "poco": {
+      "title": "POCO 內建桌布",
+      "metadataTitle": "POCO 內建桌布 - 原圖免費下載",
+      "description": "收錄 POCO F、X 與 M 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "huawei": {
+      "title": "華為 Huawei 內建桌布",
+      "metadataTitle": "華為 Huawei 內建桌布 - 原圖免費下載",
+      "description": "收錄華為 Huawei Mate、Pura、nova 系列與摺疊手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "oppo": {
+      "title": "OPPO 內建桌布",
+      "metadataTitle": "OPPO 內建桌布 - 原圖免費下載",
+      "description": "收錄 OPPO Find X、Find N、Reno 與 A 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "honor": {
+      "title": "HONOR 榮耀 內建桌布",
+      "metadataTitle": "HONOR 榮耀 內建桌布 - 原圖免費下載",
+      "description": "收錄 HONOR 榮耀 Magic、Magic V 摺疊手機與數字系列的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "motorola": {
+      "title": "Motorola 內建桌布",
+      "metadataTitle": "Motorola 內建桌布 - 原圖免費下載",
+      "description": "收錄 Motorola Moto Edge、Moto G 與 Razr 摺疊手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "nothing": {
+      "title": "Nothing Phone 內建桌布",
+      "metadataTitle": "Nothing Phone 內建桌布 - 原圖免費下載",
+      "description": "收錄 Nothing Phone 數字與 a 系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "asus-rog-phone": {
+      "title": "ASUS ROG Phone 內建桌布",
+      "metadataTitle": "ASUS ROG Phone 內建桌布 - 原圖免費下載",
+      "description": "收錄華碩 ASUS ROG Phone 初代至 ROG Phone 9 電競手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "nokia": {
+      "title": "Nokia 諾基亞 內建桌布",
+      "metadataTitle": "Nokia 諾基亞 內建桌布 - 原圖免費下載",
+      "description": "收錄 Nokia 諾基亞 C、G、X 與數字系列手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "oneplus": {
+      "title": "OnePlus 內建桌布",
+      "metadataTitle": "OnePlus 內建桌布 - 原圖免費下載",
+      "description": "收錄 OnePlus 數字旗艦、Nord、Ace 與 Open 摺疊手機的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "harmonyos": {
+      "title": "HarmonyOS 鴻蒙 內建桌布",
+      "metadataTitle": "HarmonyOS 鴻蒙 內建桌布 - 原圖免費下載",
+      "description": "收錄 HarmonyOS 2.0 與 4.0 鴻蒙系統內建桌布，瀏覽華為系統背景圖片。依系統版本瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    },
+    "huawei-matepad": {
+      "title": "華為 MatePad 內建桌布",
+      "metadataTitle": "華為 MatePad 內建桌布 - 原圖免費下載",
+      "description": "收錄華為 MatePad Pro 與 MediaPad M6 平板的內建桌布。依機型瀏覽，預覽圖片並免費下載無浮水印原圖。"
+    }
+  },
+  "desktop": {
+    "microsoft-windows": {
+      "title": "Windows 桌布",
+      "metadataTitle": "Windows 桌布 - 原圖免費下載",
+      "description": "收錄 Windows XP、7、8、10、11 等歷代系統的電腦桌布。預覽圖片並免費下載無浮水印原圖，為桌面換上新背景。"
+    },
+    "microsoft-surface": {
+      "title": "Microsoft Surface 桌布",
+      "metadataTitle": "Microsoft Surface 桌布 - 原圖免費下載",
+      "description": "收錄 Microsoft Surface Pro、Laptop、Book 與 Studio 裝置的內建桌布。預覽圖片並免費下載無浮水印原圖，為桌面換上新背景。"
+    },
+    "ubuntu": {
+      "title": "Ubuntu 桌布",
+      "metadataTitle": "Ubuntu 桌布 - 原圖免費下載",
+      "description": "收錄 Ubuntu 歷代系統預設桌布，依發行版本探索吉祥物與桌面背景。預覽圖片並免費下載無浮水印原圖，為桌面換上新背景。"
+    },
+    "google-chromeos": {
+      "title": "ChromeOS 桌布",
+      "metadataTitle": "ChromeOS 桌布 - 原圖免費下載",
+      "description": "收錄 ChromeOS 系統桌布，探索內建背景與藝術家主題圖片。預覽圖片並免費下載無浮水印原圖，為桌面換上新背景。"
+    },
+    "google-os": {
+      "title": "Google OS 桌布",
+      "metadataTitle": "Google OS 桌布 - 原圖免費下載",
+      "description": "收錄 Google Fuchsia OS 與 Aluminium OS 桌布，探索不同系統的背景圖片。預覽圖片並免費下載無浮水印原圖，為桌面換上新背景。"
+    }
+  },
+  "desktopHome": {
+    "title": "電腦桌布",
+    "metadataTitle": "電腦桌布免費下載 - Windows、Ubuntu 原圖",
+    "description": "免費下載 Windows、Ubuntu、ChromeOS 與 Microsoft Surface 電腦桌布，依系統與裝置瀏覽合集，預覽圖片並下載無浮水印原圖。"
+  }
+}
