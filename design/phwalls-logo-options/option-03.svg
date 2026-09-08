@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>PhWalls - Picture Monogram</title>
+  <defs><clipPath id="window"><path d="M208 146h73a62 62 0 0 1 0 124h-73z"/></clipPath></defs>
+  <path fill="#FFFFFF" d="M0 0h512v512H0z"/>
+  <path d="M118 420V124a50 50 0 0 1 50-50h118c85 0 138 52 138 133 0 82-56 136-141 136h-75v77Z" fill="#397CF5"/>
+  <g clip-path="url(#window)">
+    <path fill="#EDF6FF" d="M208 146h136v124H208z"/>
+    <circle cx="295" cy="176" r="17" fill="#F5BC4C"/>
+    <path d="m200 257 44-59 83 84H200Z" fill="#35B891"/>
+    <path d="m247 280 62-69 52 65Z" fill="#1854CD"/>
+  </g>
+</svg>

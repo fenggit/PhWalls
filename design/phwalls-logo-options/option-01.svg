@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>PhWalls - Wallpaper Stack</title>
+  <defs>
+    <clipPath id="screen"><rect x="146" y="94" width="220" height="308" rx="34"/></clipPath>
+  </defs>
+  <path fill="#FFFFFF" d="M0 0h512v512H0z"/>
+  <rect x="80" y="138" width="208" height="272" rx="32" fill="#35B891" transform="rotate(-14 184 274)"/>
+  <rect x="224" y="138" width="208" height="272" rx="32" fill="#F57768" transform="rotate(14 328 274)"/>
+  <rect x="134" y="82" width="244" height="332" rx="46" fill="#FFFFFF"/>
+  <g clip-path="url(#screen)">
+    <path fill="#397CF5" d="M146 94h220v308H146z"/>
+    <circle cx="300" cy="163" r="25" fill="#FFE49B"/>
+    <path d="M146 283 208 205Q216 195 224 205L366 369V402H146Z" fill="#B6DCFF"/>
+    <path d="m146 360 130-132q8-8 16 0l74 77v97H146Z" fill="#1854CD"/>
+  </g>
+</svg>

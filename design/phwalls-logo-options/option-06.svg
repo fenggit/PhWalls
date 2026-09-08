@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>PhWalls - Peel Wallpaper</title>
+  <defs><clipPath id="paper"><path d="M118 76h276a42 42 0 0 1 42 42v182L300 436H118a42 42 0 0 1-42-42V118a42 42 0 0 1 42-42Z"/></clipPath></defs>
+  <path fill="#FFFFFF" d="M0 0h512v512H0z"/>
+  <g clip-path="url(#paper)">
+    <path fill="#397CF5" d="M76 76h360v360H76z"/>
+    <circle cx="326" cy="169" r="37" fill="#FFE49B"/>
+    <path d="m53 366 121-153q10-13 20 0l195 237H53Z" fill="#C5E8FF"/>
+    <path d="m136 450 146-185q12-15 24 0l154 164v21Z" fill="#35B891"/>
+    <path d="M54 403q109-75 230-8l57 55H54Z" fill="#1854CD"/>
+  </g>
+  <path d="M300 436V342a42 42 0 0 1 42-42h94Z" fill="#FFCA65"/>
+  <path d="M300 436V342a42 42 0 0 1 42-42h-19a42 42 0 0 0-42 42v94Z" fill="#122D64" opacity=".12"/>
+</svg>

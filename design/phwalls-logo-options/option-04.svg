@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>PhWalls - Wallpaper Ribbon</title>
+  <path fill="#FFFFFF" d="M0 0h512v512H0z"/>
+  <path d="M72 134a32 32 0 0 1 31-24h28l54 238-51 40Z" fill="#35B891"/>
+  <path d="m134 388 62-254a32 32 0 0 1 31-24h28L193 364a32 32 0 0 1-31 24Z" fill="#397CF5"/>
+  <path d="M227 110h28l63 254-55 24-67-254a32 32 0 0 1 31-24Z" fill="#1854CD"/>
+  <path d="m263 388 69-254a33 33 0 0 1 32-24h76l-90 253a38 38 0 0 1-36 25Z" fill="#397CF5"/>
+  <path d="m385 110-22 65h54l23-65Z" fill="#F5BC4C"/>
+</svg>

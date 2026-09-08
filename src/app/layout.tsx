@@ -52,22 +52,22 @@ export const metadata: Metadata = (() => {
     },
     icons: {
       icon: [
-        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/favicon.ico', sizes: 'any', type: 'image/x-icon' },
+        { url: '/brand/option-03/icon-16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/brand/option-03/icon-32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/brand/option-03/favicon.ico', sizes: '16x16 32x32 48x48', type: 'image/x-icon' },
       ],
-      shortcut: '/favicon.ico',
-      apple: '/logo.png',
+      shortcut: '/brand/option-03/favicon.ico',
+      apple: '/brand/option-03/apple-touch-icon.png',
       other: [
         {
           rel: 'icon',
-          url: '/android-chrome-192x192.png',
+          url: '/brand/option-03/icon-192.png',
           sizes: '192x192',
           type: 'image/png',
         },
         {
           rel: 'icon',
-          url: '/android-chrome-512x512.png',
+          url: '/brand/option-03/icon-512.png',
           sizes: '512x512',
           type: 'image/png',
         },
@@ -195,7 +195,7 @@ export default async function RootLayout({
               '@type': 'Organization',
               name: 'PhWalls',
               url: SITE_URL,
-              logo: `${SITE_URL}/logo.png`,
+              logo: `${SITE_URL}/brand/option-03/logo.png`,
               description: 'Download built-in HD phone wallpapers. High-quality, watermark-free collections.',
               contactPoint: {
                 '@type': 'ContactPoint',

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>PhWalls - Open Landscape</title>
+  <defs><clipPath id="landscape"><rect x="88" y="88" width="336" height="336" rx="76"/></clipPath></defs>
+  <path fill="#FFFFFF" d="M0 0h512v512H0z"/>
+  <g clip-path="url(#landscape)">
+    <path fill="#397CF5" d="M88 88h336v336H88z"/>
+    <circle cx="324" cy="184" r="36" fill="#FFE49B"/>
+    <path d="M60 332 190 205Q201 194 212 205L442 435H60Z" fill="#C5E8FF"/>
+    <path d="m171 442 158-179q11-13 23 0l100 106v73Z" fill="#35B891"/>
+    <path d="M60 383q114-70 226 7t166-10v62H60Z" fill="#1854CD"/>
+  </g>
+</svg>

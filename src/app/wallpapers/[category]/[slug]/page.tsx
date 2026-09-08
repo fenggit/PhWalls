@@ -113,8 +113,8 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
   });
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const primaryImageUrl = collection.item[0]
-    ? buildWallpaperPublicUrl(collection.item[0]) || `${SITE_URL}/logo.png`
-    : `${SITE_URL}/logo.png`;
+    ? buildWallpaperPublicUrl(collection.item[0]) || `${SITE_URL}/brand/option-03/logo.png`
+    : `${SITE_URL}/brand/option-03/logo.png`;
 
   return {
     title,

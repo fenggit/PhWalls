@@ -18,7 +18,7 @@ export default function Footer() {
 					<div className="flex items-center gap-3 text-gray-900">
 						<div className="relative h-9 w-9 overflow-hidden rounded-lg border border-gray-200 bg-white">
 							<Image
-								src="/logo.png"
+								src="/brand/option-03/logo.png"
 								alt={`${texts.siteName} logo`}
 								fill
 								sizes="36px"

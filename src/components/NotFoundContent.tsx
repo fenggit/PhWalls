@@ -31,7 +31,7 @@ export default function NotFoundContent() {
             <div className="px-6 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
               <div className="inline-flex items-center gap-3 rounded-full border border-blue-100 bg-blue-50/80 px-4 py-2 text-sm font-semibold text-blue-700">
                 <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm">
-                  <img src="/logo.png" alt={texts.siteName} className="h-full w-full object-cover" />
+                  <img src="/brand/option-03/logo.png" alt={texts.siteName} className="h-full w-full object-cover" />
                 </span>
                 {texts.siteName}
               </div>

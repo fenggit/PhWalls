@@ -410,7 +410,7 @@ export default function Header({
             >
               <span className="relative h-5 w-5 md:h-7 md:w-7 overflow-hidden rounded-md bg-white">
                 <img
-                  src="/logo.png"
+                  src="/brand/option-03/logo.png"
                   alt={`${texts.siteName} logo`}
                   className="h-full w-full object-cover"
                   loading="eager"

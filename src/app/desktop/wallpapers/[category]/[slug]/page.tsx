@@ -48,8 +48,8 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const primaryImagePath = collection.item[0]?.compressPath || collection.item[0]?.originPath;
   const primaryImageUrl = primaryImagePath
-    ? buildPublicR2Url(primaryImagePath) || `${SITE_URL}/logo.png`
-    : `${SITE_URL}/logo.png`;
+    ? buildPublicR2Url(primaryImagePath) || `${SITE_URL}/brand/option-03/logo.png`
+    : `${SITE_URL}/brand/option-03/logo.png`;
 
   return {
     title: seoCopy.title,
