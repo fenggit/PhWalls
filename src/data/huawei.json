@@ -4255,6 +4255,117 @@
     ]
   },
   {
+    "name": "Huawei Pura X View",
+    "date": "2026/09/09",
+    "item": [
+      {
+        "name": "huawei-pura-x-view-black-blue-gradient-alt-a",
+        "type": "image/png",
+        "size": "3.15 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-blue-gradient-alt-a.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-blue-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-blue-gradient",
+        "type": "image/png",
+        "size": "3.6 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-blue-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-blue-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-brown-gradient-alt-a",
+        "type": "image/png",
+        "size": "2.59 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-brown-gradient-alt-a.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-brown-gradient-alt-b",
+        "type": "image/png",
+        "size": "3.71 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-brown-gradient-alt-b.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-brown-gradient-alt-b.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-brown-gradient-alt-c",
+        "type": "image/png",
+        "size": "3.82 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-brown-gradient-alt-c.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-brown-gradient-alt-c.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-brown-gradient-alt-d",
+        "type": "image/png",
+        "size": "861.03 KB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-brown-gradient-alt-d.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-brown-gradient-alt-d.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-brown-gradient",
+        "type": "image/png",
+        "size": "2.5 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-brown-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-brown-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-gradient",
+        "type": "image/png",
+        "size": "788.63 KB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-gray-gradient-alt-a",
+        "type": "image/png",
+        "size": "3.01 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-gray-gradient-alt-a.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-gray-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-black-gray-gradient",
+        "type": "image/png",
+        "size": "1.09 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-black-gray-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-black-gray-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-gray-brown-gradient",
+        "type": "image/png",
+        "size": "817.33 KB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-gray-brown-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-gray-brown-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-silver-gray-gradient-alt-a",
+        "type": "image/png",
+        "size": "3.1 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-silver-gray-gradient-alt-a.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-silver-gray-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-silver-gray-gradient",
+        "type": "image/png",
+        "size": "3.18 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-silver-gray-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-silver-gray-gradient.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-silver-white-gradient-alt-a",
+        "type": "image/png",
+        "size": "2.56 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-silver-white-gradient-alt-a.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-silver-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-pura-x-view-silver-white-gradient",
+        "type": "image/png",
+        "size": "2.92 MB",
+        "originPath": "huawei/Huawei Pura X View/origin/huawei-pura-x-view-silver-white-gradient.png",
+        "compressPath": "huawei/Huawei Pura X View/compress/huawei-pura-x-view-silver-white-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Huawei Y5p",
     "date": "2020/05/05",
     "item": [

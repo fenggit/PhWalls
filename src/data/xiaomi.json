@@ -809,6 +809,40 @@
     ]
   },
   {
+    "name": "Xiaomi 18 Fold",
+    "date": "2026/09/07",
+    "item": [
+      {
+        "name": "xiaomi-18-fold-black-blue-photo-fold",
+        "type": "image/jpeg",
+        "size": "2.74 MB",
+        "originPath": "xiaomi/Xiaomi 18 Fold/origin/xiaomi-18-fold-black-blue-photo-fold.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Fold/compress/xiaomi-18-fold-black-blue-photo-fold.webp"
+      },
+      {
+        "name": "xiaomi-18-fold-black-brown-abstract-alt-a-fold",
+        "type": "image/jpeg",
+        "size": "573.41 KB",
+        "originPath": "xiaomi/Xiaomi 18 Fold/origin/xiaomi-18-fold-black-brown-abstract-alt-a-fold.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Fold/compress/xiaomi-18-fold-black-brown-abstract-alt-a-fold.webp"
+      },
+      {
+        "name": "xiaomi-18-fold-black-brown-abstract-fold",
+        "type": "image/jpeg",
+        "size": "1.22 MB",
+        "originPath": "xiaomi/Xiaomi 18 Fold/origin/xiaomi-18-fold-black-brown-abstract-fold.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Fold/compress/xiaomi-18-fold-black-brown-abstract-fold.webp"
+      },
+      {
+        "name": "xiaomi-18-fold-black-brown-photo-fold",
+        "type": "image/jpeg",
+        "size": "2.68 MB",
+        "originPath": "xiaomi/Xiaomi 18 Fold/origin/xiaomi-18-fold-black-brown-photo-fold.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Fold/compress/xiaomi-18-fold-black-brown-photo-fold.webp"
+      }
+    ]
+  },
+  {
     "name": "Xiaomi CC9",
     "date": "2019/07",
     "item": [
