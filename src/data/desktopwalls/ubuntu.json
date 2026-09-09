@@ -1,5 +1,39 @@
 [
   {
+    "name": "Ubuntu 26.10",
+    "date": "2026/10/15",
+    "item": [
+      {
+        "name": "ubuntu-26-10-beige-silver-gradient",
+        "type": "image/jpeg",
+        "size": "2.48 MB",
+        "originPath": "desktopwalls/Ubuntu/Ubuntu 26.10/origin/ubuntu-26-10-beige-silver-gradient.jpeg",
+        "compressPath": "desktopwalls/Ubuntu/Ubuntu 26.10/compress/ubuntu-26-10-beige-silver-gradient.webp"
+      },
+      {
+        "name": "ubuntu-26-10-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "3 MB",
+        "originPath": "desktopwalls/Ubuntu/Ubuntu 26.10/origin/ubuntu-26-10-black-brown-gradient.jpeg",
+        "compressPath": "desktopwalls/Ubuntu/Ubuntu 26.10/compress/ubuntu-26-10-black-brown-gradient.webp"
+      },
+      {
+        "name": "ubuntu-26-10-black-gradient",
+        "type": "image/jpeg",
+        "size": "2.29 MB",
+        "originPath": "desktopwalls/Ubuntu/Ubuntu 26.10/origin/ubuntu-26-10-black-gradient.jpeg",
+        "compressPath": "desktopwalls/Ubuntu/Ubuntu 26.10/compress/ubuntu-26-10-black-gradient.webp"
+      },
+      {
+        "name": "ubuntu-26-10-brown-gradient",
+        "type": "image/jpeg",
+        "size": "2.44 MB",
+        "originPath": "desktopwalls/Ubuntu/Ubuntu 26.10/origin/ubuntu-26-10-brown-gradient.jpeg",
+        "compressPath": "desktopwalls/Ubuntu/Ubuntu 26.10/compress/ubuntu-26-10-brown-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Ubuntu 26.04 LTS Resolute Raccoon Mobile Phone",
     "date": "2026/04/23",
     "item": [

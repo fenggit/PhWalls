@@ -1436,6 +1436,40 @@
     ]
   },
   {
+    "name": "Huawei Mate XT 2",
+    "date": "2026/09/07",
+    "item": [
+      {
+        "name": "huawei-mate-xt-2-black-brown-abstract",
+        "type": "image/png",
+        "size": "5.37 MB",
+        "originPath": "huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-black-brown-abstract.png",
+        "compressPath": "huawei/Huawei Mate XT 2/compress/huawei-mate-xt-2-black-brown-abstract.webp"
+      },
+      {
+        "name": "huawei-mate-xt-2-black-brown-pattern",
+        "type": "image/png",
+        "size": "7.01 MB",
+        "originPath": "huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-black-brown-pattern.png",
+        "compressPath": "huawei/Huawei Mate XT 2/compress/huawei-mate-xt-2-black-brown-pattern.webp"
+      },
+      {
+        "name": "huawei-mate-xt-2-black-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "5.34 MB",
+        "originPath": "huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-black-gray-abstract-alt-a.png",
+        "compressPath": "huawei/Huawei Mate XT 2/compress/huawei-mate-xt-2-black-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "huawei-mate-xt-2-black-gray-abstract",
+        "type": "image/png",
+        "size": "5.84 MB",
+        "originPath": "huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-black-gray-abstract.png",
+        "compressPath": "huawei/Huawei Mate XT 2/compress/huawei-mate-xt-2-black-gray-abstract.webp"
+      }
+    ]
+  },
+  {
     "name": "Huawei Mate XT Ultimate",
     "date": "2024/09/20",
     "item": [
