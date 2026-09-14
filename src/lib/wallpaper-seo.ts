@@ -1,5 +1,6 @@
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { LanguageCode, type Language } from '@/types';
+import type { WallpaperCollection } from '@/lib/wallpaper-data';
 
 export type WallpaperDeviceGroup =
   | 'phone'
@@ -98,6 +99,22 @@ function buildEnglishTitle(
 
 function buildFormatText(formats: string[]): string {
   return formats.length > 0 ? formats.join(' / ') : '';
+}
+
+export function buildWallpaperCollectionSeoCopy(
+  language: Language,
+  collection: WallpaperCollection,
+  categoryLabel: string
+): WallpaperDetailSeoCopy {
+  return buildWallpaperDetailSeoCopy(language, {
+    collectionName: collection.name,
+    categoryLabel,
+    count: collection.item.length,
+    formats: Array.from(new Set(
+      collection.item.map((item) => item.type.trim().replace(/^image\//i, '').toUpperCase()).filter(Boolean)
+    )).slice(0, 4),
+    variantLabels: collectWallpaperVariantLabels(collection.name, collection.item.map((item) => item.name)),
+  });
 }
 
 export function buildWallpaperDetailSeoCopy(

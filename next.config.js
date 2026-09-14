@@ -5,8 +5,8 @@ const nextConfig = {
   // 启用压缩
   compress: true,
 
-  // SEO 抓取稳定性：让 HTML-only bot 尽量走阻塞 metadata。
-  // Edge 渲染路径仍由 app/layout.tsx 的显式 head 标签兜底。
+  // Node 渲染使用阻塞 metadata；Next.js 15.5 Edge 入口仍固定开启流式 metadata。
+  // 各页面 description 由 app/layout.tsx 复用页面文案并显式写入 head 兜底。
   htmlLimitedBots: /.*/,
 
   // 头部配置 - 安全性和性能优化

@@ -776,6 +776,27 @@ npm start
 
 - [环境变量示例](./.env.local.example) - 环境变量配置模板
 
+### IndexNow 与多语言站点地图
+
+`/sitemap.xml` 为五种语言分别输出独立 URL，并保留 hreflang 替代链接。站点内容随构建更新，不需要每天伪造 `lastmod`。
+
+`public/indexnow-key.txt` 是 IndexNow 所需的公开站点所有权验证文件，不是 R2 凭据。请保持内容稳定；首次提交前，必须先将此文件与 sitemap 修复部署到生产域名。
+
+```bash
+# 只检查线上 sitemap 和待提交数量，不发送 IndexNow 请求
+npm run indexnow -- --dry-run
+
+# 部署生效后，提交线上 sitemap 的全部语言 URL
+npm run indexnow
+
+# 定向补交（URL 必须已出现在生产 sitemap 的 loc 条目中）
+npm run indexnow -- https://phwalls.com/zh/wallpapers/huawei/huawei-matebook-fold
+```
+
+脚本默认使用 `https://phwalls.com`，可通过命令环境变量 `NEXT_PUBLIC_SITE_URL` 指定站点。提交前会核验线上验证文件，按每批最多 10,000 个 URL 提交；失败返回非零退出码。HTTP 200 表示已接收，202 表示已接收但仍待验证，均不保证收录或让 Bing 后台告警立即消失。
+
+`npm run deploy` 成功后会通过 `postdeploy` 执行提交。若网站部署成功但提交失败，在生产文件生效或限流解除后单独重跑 `npm run indexnow`，无需重复部署。通过 Cloudflare Git 集成或直接运行 Wrangler 发布时，不会触发 npm 的 `postdeploy`，需在**生产部署完成后**执行该命令；不要放进 `build` / `pages:build` 或预览构建阶段。
+
 ## 许可证
 
 © 2025 PhWalls. 保留所有权利。

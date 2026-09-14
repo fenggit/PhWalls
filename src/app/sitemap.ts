@@ -128,5 +128,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   })
 
-  return [...routes, ...detailRoutes, ...desktopDetailRoutes]
+  // hreflang 替代链接不能代替各语言页面自身的 <url><loc> 条目。
+  return [...routes, ...detailRoutes, ...desktopDetailRoutes].flatMap((route) =>
+    SUPPORTED_LANGUAGES.map((language) => ({
+      ...route,
+      url: withLanguageUrl(route.url, language),
+    }))
+  )
 }

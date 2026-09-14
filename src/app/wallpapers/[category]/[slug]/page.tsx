@@ -15,9 +15,8 @@ import { formatWallpaperDisplayName } from '@/lib/data';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
 import {
-  buildWallpaperDetailSeoCopy,
+  buildWallpaperCollectionSeoCopy,
   buildWallpaperImageDescription,
-  collectWallpaperVariantLabels,
   getWallpaperDeviceGroupLabel,
   type WallpaperDeviceGroup,
 } from '@/lib/wallpaper-seo';
@@ -48,16 +47,6 @@ function buildWallpaperPublicUrl(item: WallpaperAsset): string | null {
 
 function getWallpaperPublicEncodingFormat(item: WallpaperAsset): string | undefined {
   return item.compressPath ? 'image/webp' : normalizeImageEncodingFormat(item.type);
-}
-
-function collectImageFormats(items: WallpaperAsset[]): string[] {
-  return Array.from(
-    new Set(
-      items
-        .map((item) => item.type.trim().replace(/^image\//i, '').toUpperCase())
-        .filter(Boolean)
-    )
-  ).slice(0, 4);
 }
 
 // 服务端（爬虫可见）设备类型推断，基于路径和名称
@@ -100,17 +89,7 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
 
   const detailPath = buildWallpaperDetailPath(category, collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
-  const variantLabels = collectWallpaperVariantLabels(
-    collection.name,
-    collection.item.map((item) => item.name)
-  );
-  const { title, description } = buildWallpaperDetailSeoCopy(language, {
-    collectionName: collection.name,
-    categoryLabel,
-    count: collection.item.length,
-    formats: collectImageFormats(collection.item),
-    variantLabels,
-  });
+  const { title, description } = buildWallpaperCollectionSeoCopy(language, collection, categoryLabel);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const primaryImageUrl = collection.item[0]
     ? buildWallpaperPublicUrl(collection.item[0]) || `${SITE_URL}/brand/option-03/logo.png`
@@ -164,17 +143,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   const detailPath = buildWallpaperDetailPath(category, collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
-  const variantLabels = collectWallpaperVariantLabels(
-    collection.name,
-    collection.item.map((item) => item.name)
-  );
-  const seoCopy = buildWallpaperDetailSeoCopy(language, {
-    collectionName: collection.name,
-    categoryLabel,
-    count: collection.item.length,
-    formats: collectImageFormats(collection.item),
-    variantLabels,
-  });
+  const seoCopy = buildWallpaperCollectionSeoCopy(language, collection, categoryLabel);
   const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
   const categoryBrand = getBrandCategoryBySlug(category);
   const categoryLandingUrl = withLanguageUrl(

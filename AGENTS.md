@@ -82,8 +82,9 @@ src/
 /api/public/wallpaper-image       # 公开壁纸图片
 /api/public/wallpaper-download    # 公开壁纸下载
 /api/public/tabs                  # 分类标签
-/api/indexnow                     # IndexNow SEO 推送
 ```
+
+IndexNow 使用运维脚本 `npm run indexnow` 提交线上 sitemap，验证文件为 `public/indexnow-key.txt`；没有公开提交 API。`npm run deploy` 成功后会通过 `postdeploy` 调用提交脚本。
 
 ## 代码约定
 

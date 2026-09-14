@@ -11,7 +11,9 @@
     "lint": "next lint",
     "pages:build": "node scripts/generate-home-index.mjs && npx @cloudflare/next-on-pages",
     "preview": "npm run pages:build && wrangler pages dev .vercel/output/static",
-    "deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static --project-name phwalls"
+    "deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static --project-name phwalls",
+    "postdeploy": "npm run indexnow",
+    "indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250913.0",
