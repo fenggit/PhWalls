@@ -10439,5 +10439,32 @@
         "compressPath": "samsung/Samsung Galaxy M17e 5G/compress/samsung-galaxy-m17e-5g-teal-blue-gradient.webp"
       }
     ]
+  },
+  {
+    "name": "Samsung Galaxy S26 FE",
+    "date": "2026/08/27",
+    "item": [
+      {
+        "name": "samsung-galaxy-s26-fe-cyan-silver-gradient",
+        "type": "image/png",
+        "size": "7.38 MB",
+        "originPath": "samsung/Samsung Galaxy S26 FE/origin/samsung-galaxy-s26-fe-cyan-silver-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy S26 FE/compress/samsung-galaxy-s26-fe-cyan-silver-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-s26-fe-mint-silver-gradient",
+        "type": "image/png",
+        "size": "7.88 MB",
+        "originPath": "samsung/Samsung Galaxy S26 FE/origin/samsung-galaxy-s26-fe-mint-silver-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy S26 FE/compress/samsung-galaxy-s26-fe-mint-silver-gradient.webp"
+      },
+      {
+        "name": "samsung-galaxy-s26-fe-silver-beige-gradient",
+        "type": "image/png",
+        "size": "7.58 MB",
+        "originPath": "samsung/Samsung Galaxy S26 FE/origin/samsung-galaxy-s26-fe-silver-beige-gradient.png",
+        "compressPath": "samsung/Samsung Galaxy S26 FE/compress/samsung-galaxy-s26-fe-silver-beige-gradient.webp"
+      }
+    ]
   }
 ]
