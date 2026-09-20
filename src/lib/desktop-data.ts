@@ -15,6 +15,8 @@ const desktopBrandLoaders: Record<string, () => Promise<WallpaperCollection[]>> 
     import('@/data/desktopwalls/microsoft-surface.json').then((m) => m.default as WallpaperCollection[]),
   'microsoft-windows': () =>
     import('@/data/desktopwalls/microsoft-windows.json').then((m) => m.default as WallpaperCollection[]),
+  'omarchy-linux': () =>
+    import('@/data/desktopwalls/omarchy-linux.json').then((m) => m.default as WallpaperCollection[]),
   ubuntu: () => import('@/data/desktopwalls/ubuntu.json').then((m) => m.default as WallpaperCollection[]),
 };
 

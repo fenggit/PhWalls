@@ -2,6 +2,7 @@ import googleOsData from '@/data/desktopwalls/google-os.json';
 import googleChromeosData from '@/data/desktopwalls/google-chromeos.json';
 import microsoftSurfaceData from '@/data/desktopwalls/microsoft-surface.json';
 import microsoftWindowsData from '@/data/desktopwalls/microsoft-windows.json';
+import omarchyLinuxData from '@/data/desktopwalls/omarchy-linux.json';
 import ubuntuData from '@/data/desktopwalls/ubuntu.json';
 import {
   slugifyWallpaperName,
@@ -26,6 +27,7 @@ const desktopDataSources: Record<string, WallpaperCollection[]> = {
   'google-chromeos': googleChromeosData as WallpaperCollection[],
   'microsoft-surface': microsoftSurfaceData as WallpaperCollection[],
   'microsoft-windows': microsoftWindowsData as WallpaperCollection[],
+  'omarchy-linux': omarchyLinuxData as WallpaperCollection[],
   ubuntu: ubuntuData as WallpaperCollection[],
 };
 

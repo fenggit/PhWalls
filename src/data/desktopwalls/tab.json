@@ -12,6 +12,10 @@
     "type": "ubuntu"
   },
   {
+    "title": "Omarchy Linux",
+    "type": "omarchy-linux"
+  },
+  {
     "title": "macOS",
     "type": "macOS",
     "link": "https://www.applewalls.com/zh/macos-wallpapers"

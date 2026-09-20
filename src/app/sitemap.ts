@@ -30,6 +30,7 @@ const DESKTOP_ROUTE_UPDATED_AT: Record<string, Date> = {
   'google-chromeos': new Date('2026-06-09T00:00:00Z'),
   'google-os': new Date('2026-06-15T00:00:00Z'),
   'microsoft-surface': new Date('2026-06-18T00:00:00Z'),
+  'omarchy-linux': new Date('2026-09-20T00:00:00Z'),
 }
 
 function latestDate(...dates: Array<Date | null | undefined>): Date | undefined {
