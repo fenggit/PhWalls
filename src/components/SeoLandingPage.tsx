@@ -7,7 +7,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageProvider';
 import ShareRegistration from '@/components/ShareRegistration';
-import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
+import {
+  buildWallpaperListTitle,
+  localizeWallpaperCollectionName,
+} from '@/lib/data';
 import { Language, LanguageCode } from '@/types';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildWallpaperDetailPath, slugifyWallpaperName, type WallpaperCategory } from '@/lib/wallpaper-data';
@@ -174,7 +177,8 @@ export default function SeoLandingPage({
               const detailHref = detailPathPrefix
                 ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.name)}`,currentLang)
                 : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.name), currentLang);
-              const cardTitle = buildWallpaperListTitle(card.name, texts.wallpapersTitleSuffix);
+              const cardDisplayName = localizeWallpaperCollectionName(currentLang, card.name);
+              const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix);
               return (
                 <article key={card.name} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
                   <Link href={detailHref} className="block w-full text-left" aria-label={cardTitle}>
@@ -183,7 +187,7 @@ export default function SeoLandingPage({
                         {card.imageKey ? (
                           <img
                             src={buildCardImageUrl(card.imageKey)}
-                            alt={`${formatWallpaperDisplayName(card.name)} preview`}
+                            alt={`${cardDisplayName} preview`}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                             loading={index < 4 ? 'eager' : 'lazy'}
                             fetchPriority={index < 2 ? 'high' : 'low'}

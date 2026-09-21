@@ -1,4 +1,4 @@
-import { formatWallpaperDisplayName } from '@/lib/data';
+import { formatWallpaperDisplayName, localizeWallpaperCollectionName } from '@/lib/data';
 import { LanguageCode, type Language } from '@/types';
 import type { WallpaperCollection } from '@/lib/wallpaper-data';
 
@@ -69,8 +69,14 @@ export function collectWallpaperVariantLabels(
     .slice(0, 2);
 }
 
-function buildSeoName(collectionName: string, variantLabels: string[]): string {
-  const cleanName = formatWallpaperDisplayName(collectionName)
+function buildSeoName(
+  language: Language,
+  collectionName: string,
+  variantLabels: string[]
+): string {
+  const cleanName = formatWallpaperDisplayName(
+    localizeWallpaperCollectionName(language, collectionName)
+  )
     .replace(/\(\+\)|\+/g, ' Plus ')
     .replace(/\s+wallpapers$/i, '')
     .replace(/\s+/g, ' ')
@@ -121,7 +127,7 @@ export function buildWallpaperDetailSeoCopy(
   language: Language,
   input: WallpaperDetailSeoCopyInput
 ): WallpaperDetailSeoCopy {
-  const seoName = buildSeoName(input.collectionName, input.variantLabels);
+  const seoName = buildSeoName(language, input.collectionName, input.variantLabels);
   const formatText = buildFormatText(input.formats);
 
   switch (language) {

@@ -1,0 +1,2714 @@
+[
+  {
+    "name": "Smartisan Nut R2",
+    "date": "2020/10/20",
+    "item": [
+      {
+        "name": "smartisan-nut-r2-green-teal-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "1.22 MB",
+        "originPath": "Smartisan/Smartisan Nut R2/origin/smartisan-nut-r2-green-teal-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan Nut R2/compress/smartisan-nut-r2-green-teal-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-nut-r2-green-teal-photo",
+        "type": "image/jpeg",
+        "size": "1.19 MB",
+        "originPath": "Smartisan/Smartisan Nut R2/origin/smartisan-nut-r2-green-teal-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut R2/compress/smartisan-nut-r2-green-teal-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan Nut Pro 3",
+    "date": "2019/10/31",
+    "item": [
+      {
+        "name": "smartisan-nut-pro-3-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "2.7 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-black-brown-pattern",
+        "type": "image/jpeg",
+        "size": "3.01 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-black-brown-pattern.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-black-brown-pattern.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-black-cyan-gradient",
+        "type": "image/jpeg",
+        "size": "2.16 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-black-cyan-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-black-cyan-gradient.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-black-gray-photo",
+        "type": "image/jpeg",
+        "size": "2.56 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-black-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-black-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-black-purple-photo",
+        "type": "image/jpeg",
+        "size": "3.37 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-black-purple-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-black-purple-photo.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-blue-silver-photo",
+        "type": "image/jpeg",
+        "size": "706.19 KB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-blue-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-blue-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-gray-teal-gradient",
+        "type": "image/jpeg",
+        "size": "1.67 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-gray-teal-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-gray-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-mint-silver-abstract",
+        "type": "image/jpeg",
+        "size": "3.44 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-mint-silver-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-mint-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-mint-silver-gradient",
+        "type": "image/jpeg",
+        "size": "426.43 KB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-mint-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-mint-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-red-silver-gradient",
+        "type": "image/jpeg",
+        "size": "3.64 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-red-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-red-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-rose-brown-gradient",
+        "type": "image/jpeg",
+        "size": "288.08 KB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-rose-brown-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-rose-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-nut-pro-3-white-beige-gradient",
+        "type": "image/jpeg",
+        "size": "1.34 MB",
+        "originPath": "Smartisan/Smartisan Nut Pro 3/origin/smartisan-nut-pro-3-white-beige-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut Pro 3/compress/smartisan-nut-pro-3-white-beige-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan TNT Phone",
+    "date": "2018/08/20",
+    "item": [
+      {
+        "name": "smartisan-tnt-phone-beige-brown-photo",
+        "type": "image/png",
+        "size": "4.43 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-beige-brown-photo.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-beige-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-beige-photo",
+        "type": "image/jpeg",
+        "size": "1.51 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-beige-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-beige-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-brown-gradient",
+        "type": "image/png",
+        "size": "750.17 KB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-brown-gradient.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-cyan-photo",
+        "type": "image/png",
+        "size": "4.27 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-cyan-photo.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-cyan-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-green-photo",
+        "type": "image/png",
+        "size": "5.04 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-green-photo.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-green-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-mint-abstract",
+        "type": "image/jpeg",
+        "size": "2.92 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-mint-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-mint-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-orange-abstract",
+        "type": "image/jpeg",
+        "size": "1.12 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-orange-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-orange-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-silver-gradient",
+        "type": "image/jpeg",
+        "size": "772.17 KB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-black-teal-gradient",
+        "type": "image/png",
+        "size": "1.53 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-black-teal-gradient.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-black-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-brown-black-photo",
+        "type": "image/jpeg",
+        "size": "2.92 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-brown-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-brown-black-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-brown-silver-photo",
+        "type": "image/png",
+        "size": "3.98 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-brown-silver-photo.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-brown-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-cyan-black-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "2.74 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-cyan-black-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-cyan-black-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-cyan-black-photo",
+        "type": "image/jpeg",
+        "size": "2.79 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-cyan-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-cyan-black-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-gray-silver-abstract",
+        "type": "image/jpeg",
+        "size": "815.52 KB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-gray-silver-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-gray-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-mint-black-abstract",
+        "type": "image/jpeg",
+        "size": "2.88 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-mint-black-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-mint-black-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-red-mint-gradient",
+        "type": "image/jpeg",
+        "size": "847.64 KB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-red-mint-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-red-mint-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-silver-orange-gradient",
+        "type": "image/jpeg",
+        "size": "1.07 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-silver-orange-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-silver-orange-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-teal-gradient",
+        "type": "image/jpeg",
+        "size": "1.4 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-teal-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-teal-silver-photo",
+        "type": "image/jpeg",
+        "size": "2.6 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-teal-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-teal-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-phone-white-mint-abstract",
+        "type": "image/png",
+        "size": "3.13 MB",
+        "originPath": "Smartisan/Smartisan TNT Phone/origin/smartisan-tnt-phone-white-mint-abstract.png",
+        "compressPath": "Smartisan/Smartisan TNT Phone/compress/smartisan-tnt-phone-white-mint-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan Nut R1",
+    "date": "2018/05/15",
+    "item": [
+      {
+        "name": "smartisan-nut-r1-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "638.44 KB",
+        "originPath": "Smartisan/Smartisan Nut R1/origin/smartisan-nut-r1-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan Nut R1/compress/smartisan-nut-r1-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-nut-r1-black-brown-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "285.67 KB",
+        "originPath": "Smartisan/Smartisan Nut R1/origin/smartisan-nut-r1-black-brown-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan Nut R1/compress/smartisan-nut-r1-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-nut-r1-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "262.81 KB",
+        "originPath": "Smartisan/Smartisan Nut R1/origin/smartisan-nut-r1-black-brown-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan Nut R1/compress/smartisan-nut-r1-black-brown-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan TNT Desktop",
+    "date": "2018/05/15",
+    "item": [
+      {
+        "name": "smartisan-tnt-desktop-black-beige-abstract",
+        "type": "image/jpeg",
+        "size": "1.09 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.3 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "2.24 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-brown-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-brown-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "1.7 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-brown-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-brown-photo-alt-b",
+        "type": "image/jpeg",
+        "size": "1.48 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-brown-photo-alt-b.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-brown-photo",
+        "type": "image/jpeg",
+        "size": "1.53 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-gold-photo",
+        "type": "image/jpeg",
+        "size": "1.87 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-gold-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-gold-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-gradient",
+        "type": "image/jpeg",
+        "size": "159.85 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-green-photo",
+        "type": "image/jpeg",
+        "size": "1.78 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-green-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-green-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-mint-abstract",
+        "type": "image/jpeg",
+        "size": "1.77 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-mint-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-mint-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-orange-abstract",
+        "type": "image/jpeg",
+        "size": "468.49 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-orange-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-orange-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-orange-photo",
+        "type": "image/jpeg",
+        "size": "813.01 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-orange-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-orange-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-teal-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "631.08 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-teal-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-teal-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-black-teal-gradient",
+        "type": "image/jpeg",
+        "size": "254.9 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-black-teal-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-black-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-brown-silver-photo",
+        "type": "image/jpeg",
+        "size": "1.47 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-brown-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-brown-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-cyan-black-photo",
+        "type": "image/jpeg",
+        "size": "1.5 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-cyan-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-cyan-black-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-cyan-mint-abstract",
+        "type": "image/jpeg",
+        "size": "577.69 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-cyan-mint-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-cyan-mint-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-gold-silver-photo",
+        "type": "image/jpeg",
+        "size": "1.36 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-gold-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-gold-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-green-brown-photo",
+        "type": "image/jpeg",
+        "size": "1.49 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-green-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-green-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-green-gray-gradient",
+        "type": "image/jpeg",
+        "size": "312.52 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-green-gray-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-green-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-mint-gold-photo",
+        "type": "image/jpeg",
+        "size": "1.12 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-mint-gold-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-mint-gold-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-mint-red-abstract",
+        "type": "image/jpeg",
+        "size": "454.82 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-mint-red-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-mint-red-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-mint-white-abstract",
+        "type": "image/jpeg",
+        "size": "214.29 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-mint-white-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-mint-white-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-red-silver-gradient",
+        "type": "image/jpeg",
+        "size": "480.2 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-red-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-red-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-silver-black-gradient",
+        "type": "image/jpeg",
+        "size": "293.63 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-silver-black-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-silver-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-silver-black-photo",
+        "type": "image/jpeg",
+        "size": "559.64 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-silver-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-silver-black-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-silver-gradient",
+        "type": "image/jpeg",
+        "size": "217 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-silver-gray-photo",
+        "type": "image/jpeg",
+        "size": "1000.2 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-silver-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-silver-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-silver-mint-abstract",
+        "type": "image/jpeg",
+        "size": "797.36 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-silver-mint-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-silver-mint-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-silver-white-abstract",
+        "type": "image/jpeg",
+        "size": "219.1 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-silver-white-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-silver-white-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-teal-black-abstract",
+        "type": "image/jpeg",
+        "size": "1.27 MB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-teal-black-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-teal-black-abstract.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-teal-gradient",
+        "type": "image/jpeg",
+        "size": "907.18 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-teal-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-tnt-desktop-white-brown-abstract",
+        "type": "image/jpeg",
+        "size": "293.16 KB",
+        "originPath": "Smartisan/Smartisan TNT Desktop/origin/smartisan-tnt-desktop-white-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan TNT Desktop/compress/smartisan-tnt-desktop-white-brown-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan Nut 3",
+    "date": "2018/04/09",
+    "item": [
+      {
+        "name": "smartisan-nut-3-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.99 MB",
+        "originPath": "Smartisan/Smartisan Nut 3/origin/smartisan-nut-3-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan Nut 3/compress/smartisan-nut-3-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-nut-3-black-brown-photo",
+        "type": "image/jpeg",
+        "size": "974.41 KB",
+        "originPath": "Smartisan/Smartisan Nut 3/origin/smartisan-nut-3-black-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut 3/compress/smartisan-nut-3-black-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-nut-3-black-gray-photo",
+        "type": "image/jpeg",
+        "size": "1.76 MB",
+        "originPath": "Smartisan/Smartisan Nut 3/origin/smartisan-nut-3-black-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut 3/compress/smartisan-nut-3-black-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-nut-3-silver-green-photo",
+        "type": "image/jpeg",
+        "size": "2.22 MB",
+        "originPath": "Smartisan/Smartisan Nut 3/origin/smartisan-nut-3-silver-green-photo.jpg",
+        "compressPath": "Smartisan/Smartisan Nut 3/compress/smartisan-nut-3-silver-green-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan Rare",
+    "date": "2017/05/26",
+    "item": [
+      {
+        "name": "smartisan-rare-historical-wigs-blue",
+        "type": "image/png",
+        "size": "210.86 KB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-historical-wigs-blue.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-historical-wigs-blue.webp"
+      },
+      {
+        "name": "smartisan-rare-historical-wigs-grid-dark",
+        "type": "image/png",
+        "size": "4.86 MB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-historical-wigs-grid-dark.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-historical-wigs-grid-dark.webp"
+      },
+      {
+        "name": "smartisan-rare-less-but-better-dark",
+        "type": "image/png",
+        "size": "4.85 MB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-less-but-better-dark.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-less-but-better-dark.webp"
+      },
+      {
+        "name": "smartisan-rare-less-but-better-light",
+        "type": "image/png",
+        "size": "91.93 KB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-less-but-better-light.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-less-but-better-light.webp"
+      },
+      {
+        "name": "smartisan-rare-red-briefs-clothesline-blue",
+        "type": "image/png",
+        "size": "28.08 KB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-red-briefs-clothesline-blue.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-red-briefs-clothesline-blue.webp"
+      },
+      {
+        "name": "smartisan-rare-red-briefs-frame-dark",
+        "type": "image/png",
+        "size": "4.81 MB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-red-briefs-frame-dark.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-red-briefs-frame-dark.webp"
+      },
+      {
+        "name": "smartisan-rare-red-car-road-frame-dark",
+        "type": "image/png",
+        "size": "4.82 MB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-red-car-road-frame-dark.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-red-car-road-frame-dark.webp"
+      },
+      {
+        "name": "smartisan-rare-red-car-road-light",
+        "type": "image/png",
+        "size": "65.6 KB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-red-car-road-light.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-red-car-road-light.webp"
+      },
+      {
+        "name": "smartisan-rare-symbol-grid-dark",
+        "type": "image/png",
+        "size": "4.88 MB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-symbol-grid-dark.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-symbol-grid-dark.webp"
+      },
+      {
+        "name": "smartisan-rare-zipper-frame-dark",
+        "type": "image/png",
+        "size": "4.82 MB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-zipper-frame-dark.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-zipper-frame-dark.webp"
+      },
+      {
+        "name": "smartisan-rare-zipper-orange",
+        "type": "image/png",
+        "size": "117.18 KB",
+        "originPath": "Smartisan/Smartisan Rare/origin/smartisan-rare-zipper-orange.png",
+        "compressPath": "Smartisan/Smartisan Rare/compress/smartisan-rare-zipper-orange.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan Footprint",
+    "date": "2017/01/01",
+    "item": [
+      {
+        "name": "smartisan-footprint-agatha-christie",
+        "type": "image/png",
+        "size": "1.32 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-agatha-christie.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-agatha-christie.webp"
+      },
+      {
+        "name": "smartisan-footprint-andersen",
+        "type": "image/png",
+        "size": "99.62 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-andersen.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-andersen.webp"
+      },
+      {
+        "name": "smartisan-footprint-berlin-wall",
+        "type": "image/png",
+        "size": "330.13 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-berlin-wall.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-berlin-wall.webp"
+      },
+      {
+        "name": "smartisan-footprint-bob-dylan",
+        "type": "image/png",
+        "size": "3.44 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-bob-dylan.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-bob-dylan.webp"
+      },
+      {
+        "name": "smartisan-footprint-bulb-light",
+        "type": "image/png",
+        "size": "224.84 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-bulb-light.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-bulb-light.webp"
+      },
+      {
+        "name": "smartisan-footprint-camera",
+        "type": "image/png",
+        "size": "2.97 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-camera.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-camera.webp"
+      },
+      {
+        "name": "smartisan-footprint-charge",
+        "type": "image/png",
+        "size": "384.62 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-charge.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-charge.webp"
+      },
+      {
+        "name": "smartisan-footprint-christmas-truce",
+        "type": "image/png",
+        "size": "833.48 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-christmas-truce.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-christmas-truce.webp"
+      },
+      {
+        "name": "smartisan-footprint-darwin",
+        "type": "image/png",
+        "size": "4.35 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-darwin.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-darwin.webp"
+      },
+      {
+        "name": "smartisan-footprint-dog-in-space",
+        "type": "image/png",
+        "size": "369.23 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-dog-in-space.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-dog-in-space.webp"
+      },
+      {
+        "name": "smartisan-footprint-don-quixote",
+        "type": "image/png",
+        "size": "544.92 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-don-quixote.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-don-quixote.webp"
+      },
+      {
+        "name": "smartisan-footprint-doppler",
+        "type": "image/png",
+        "size": "346.53 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-doppler.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-doppler.webp"
+      },
+      {
+        "name": "smartisan-footprint-emoticon",
+        "type": "image/png",
+        "size": "84.5 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-emoticon.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-emoticon.webp"
+      },
+      {
+        "name": "smartisan-footprint-encyclopedia",
+        "type": "image/png",
+        "size": "1.39 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-encyclopedia.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-encyclopedia.webp"
+      },
+      {
+        "name": "smartisan-footprint-escher",
+        "type": "image/png",
+        "size": "500.05 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-escher.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-escher.webp"
+      },
+      {
+        "name": "smartisan-footprint-ether",
+        "type": "image/png",
+        "size": "1.76 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-ether.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-ether.webp"
+      },
+      {
+        "name": "smartisan-footprint-friends",
+        "type": "image/png",
+        "size": "51.91 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-friends.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-friends.webp"
+      },
+      {
+        "name": "smartisan-footprint-google-1",
+        "type": "image/png",
+        "size": "44.43 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-google-1.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-google-1.webp"
+      },
+      {
+        "name": "smartisan-footprint-google-2",
+        "type": "image/png",
+        "size": "362.14 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-google-2.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-google-2.webp"
+      },
+      {
+        "name": "smartisan-footprint-instant-noodle",
+        "type": "image/png",
+        "size": "929.71 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-instant-noodle.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-instant-noodle.webp"
+      },
+      {
+        "name": "smartisan-footprint-ipod",
+        "type": "image/png",
+        "size": "20.24 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-ipod.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-ipod.webp"
+      },
+      {
+        "name": "smartisan-footprint-jack-kerouac",
+        "type": "image/png",
+        "size": "2.65 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-jack-kerouac.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-jack-kerouac.webp"
+      },
+      {
+        "name": "smartisan-footprint-kepler-1",
+        "type": "image/png",
+        "size": "287.34 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-kepler-1.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-kepler-1.webp"
+      },
+      {
+        "name": "smartisan-footprint-kepler-2",
+        "type": "image/png",
+        "size": "310.14 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-kepler-2.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-kepler-2.webp"
+      },
+      {
+        "name": "smartisan-footprint-kfc",
+        "type": "image/png",
+        "size": "114.3 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-kfc.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-kfc.webp"
+      },
+      {
+        "name": "smartisan-footprint-lilienthal",
+        "type": "image/png",
+        "size": "786.26 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-lilienthal.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-lilienthal.webp"
+      },
+      {
+        "name": "smartisan-footprint-little-prince",
+        "type": "image/png",
+        "size": "1.68 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-little-prince.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-little-prince.webp"
+      },
+      {
+        "name": "smartisan-footprint-mario",
+        "type": "image/png",
+        "size": "259.87 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-mario.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-mario.webp"
+      },
+      {
+        "name": "smartisan-footprint-mcdonald-1",
+        "type": "image/png",
+        "size": "73.08 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-mcdonald-1.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-mcdonald-1.webp"
+      },
+      {
+        "name": "smartisan-footprint-mcdonald-2",
+        "type": "image/png",
+        "size": "229.76 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-mcdonald-2.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-mcdonald-2.webp"
+      },
+      {
+        "name": "smartisan-footprint-michael-jackson",
+        "type": "image/png",
+        "size": "92.79 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-michael-jackson.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-michael-jackson.webp"
+      },
+      {
+        "name": "smartisan-footprint-microwave",
+        "type": "image/png",
+        "size": "110.72 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-microwave.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-microwave.webp"
+      },
+      {
+        "name": "smartisan-footprint-moma",
+        "type": "image/png",
+        "size": "27.53 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-moma.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-moma.webp"
+      },
+      {
+        "name": "smartisan-footprint-moon-back",
+        "type": "image/png",
+        "size": "3.12 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-moon-back.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-moon-back.webp"
+      },
+      {
+        "name": "smartisan-footprint-moon",
+        "type": "image/png",
+        "size": "179.6 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-moon.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-moon.webp"
+      },
+      {
+        "name": "smartisan-footprint-motocycle",
+        "type": "image/png",
+        "size": "208.11 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-motocycle.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-motocycle.webp"
+      },
+      {
+        "name": "smartisan-footprint-mouse",
+        "type": "image/png",
+        "size": "54.2 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-mouse.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-mouse.webp"
+      },
+      {
+        "name": "smartisan-footprint-nature",
+        "type": "image/png",
+        "size": "209.84 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-nature.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-nature.webp"
+      },
+      {
+        "name": "smartisan-footprint-opera-house",
+        "type": "image/png",
+        "size": "736.56 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-opera-house.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-opera-house.webp"
+      },
+      {
+        "name": "smartisan-footprint-origin-of-species",
+        "type": "image/png",
+        "size": "1.69 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-origin-of-species.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-origin-of-species.webp"
+      },
+      {
+        "name": "smartisan-footprint-penicillin",
+        "type": "image/png",
+        "size": "2.13 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-penicillin.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-penicillin.webp"
+      },
+      {
+        "name": "smartisan-footprint-phonograph",
+        "type": "image/png",
+        "size": "137.33 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-phonograph.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-phonograph.webp"
+      },
+      {
+        "name": "smartisan-footprint-polaroid",
+        "type": "image/png",
+        "size": "95.35 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-polaroid.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-polaroid.webp"
+      },
+      {
+        "name": "smartisan-footprint-prime-meridian",
+        "type": "image/png",
+        "size": "2.74 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-prime-meridian.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-prime-meridian.webp"
+      },
+      {
+        "name": "smartisan-footprint-psyco",
+        "type": "image/png",
+        "size": "4.29 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-psyco.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-psyco.webp"
+      },
+      {
+        "name": "smartisan-footprint-quaternion",
+        "type": "image/png",
+        "size": "293.42 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-quaternion.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-quaternion.webp"
+      },
+      {
+        "name": "smartisan-footprint-schrodinger",
+        "type": "image/png",
+        "size": "524.45 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-schrodinger.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-schrodinger.webp"
+      },
+      {
+        "name": "smartisan-footprint-simpson",
+        "type": "image/png",
+        "size": "173.16 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-simpson.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-simpson.webp"
+      },
+      {
+        "name": "smartisan-footprint-sliced-bread",
+        "type": "image/png",
+        "size": "1.11 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-sliced-bread.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-sliced-bread.webp"
+      },
+      {
+        "name": "smartisan-footprint-south-pole",
+        "type": "image/png",
+        "size": "907.18 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-south-pole.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-south-pole.webp"
+      },
+      {
+        "name": "smartisan-footprint-tetris",
+        "type": "image/png",
+        "size": "588.5 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-tetris.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-tetris.webp"
+      },
+      {
+        "name": "smartisan-footprint-woody-allen",
+        "type": "image/png",
+        "size": "1.53 MB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-woody-allen.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-woody-allen.webp"
+      },
+      {
+        "name": "smartisan-footprint-x-ray",
+        "type": "image/png",
+        "size": "642.74 KB",
+        "originPath": "Smartisan/Smartisan Footprint/origin/smartisan-footprint-x-ray.png",
+        "compressPath": "Smartisan/Smartisan Footprint/compress/smartisan-footprint-x-ray.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan T2",
+    "date": "2015/12/29",
+    "item": [
+      {
+        "name": "smartisan-t2-beige-cyan-photo",
+        "type": "image/jpeg",
+        "size": "804.4 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-beige-cyan-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-beige-cyan-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-beige-rose-abstract",
+        "type": "image/jpeg",
+        "size": "457.21 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-beige-rose-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-beige-rose-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-beige-white-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "534.77 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-beige-white-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-beige-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-beige-white-gradient",
+        "type": "image/jpeg",
+        "size": "331.61 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-beige-white-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-beige-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.32 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-black-brown-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "132.41 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-brown-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "696.21 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-brown-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-black-brown-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "3.04 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-brown-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-black-brown-photo",
+        "type": "image/jpeg",
+        "size": "1.23 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-black-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "2.34 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-cyan-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-cyan-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-black-gray-abstract",
+        "type": "image/jpeg",
+        "size": "475.61 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-gray-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-gray-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-black-gray-gradient",
+        "type": "image/jpeg",
+        "size": "610.78 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-gray-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-black-gray-pattern",
+        "type": "image/jpeg",
+        "size": "1019.32 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-gray-pattern.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-gray-pattern.webp"
+      },
+      {
+        "name": "smartisan-t2-black-silver-photo",
+        "type": "image/jpeg",
+        "size": "1.51 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-black-teal-abstract",
+        "type": "image/jpeg",
+        "size": "2 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-teal-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-teal-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-black-white-photo",
+        "type": "image/jpeg",
+        "size": "1.76 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-black-white-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-black-white-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-brown-beige-pattern",
+        "type": "image/jpeg",
+        "size": "952.72 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-brown-beige-pattern.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-brown-beige-pattern.webp"
+      },
+      {
+        "name": "smartisan-t2-brown-gray-abstract",
+        "type": "image/jpeg",
+        "size": "1.13 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-brown-gray-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-brown-gray-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-brown-orange-abstract",
+        "type": "image/jpeg",
+        "size": "817.42 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-brown-orange-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-brown-orange-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-brown-silver-abstract",
+        "type": "image/jpeg",
+        "size": "1.08 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-brown-silver-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-brown-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-beige-photo",
+        "type": "image/jpeg",
+        "size": "1015.19 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-beige-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-beige-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-blue-abstract",
+        "type": "image/jpeg",
+        "size": "900.21 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-blue-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-blue-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-blue-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.79 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-blue-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-blue-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-blue-gradient",
+        "type": "image/jpeg",
+        "size": "804.17 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-blue-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-blue-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-mint-gradient",
+        "type": "image/png",
+        "size": "621.88 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-mint-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-mint-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-teal-abstract",
+        "type": "image/jpeg",
+        "size": "1.32 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-teal-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-teal-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-cyan-white-abstract",
+        "type": "image/jpeg",
+        "size": "429.35 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-cyan-white-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-cyan-white-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-gold-gradient",
+        "type": "image/png",
+        "size": "2.36 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-gold-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-gold-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-gray-black-photo",
+        "type": "image/jpeg",
+        "size": "1.14 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-gray-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-gray-black-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-gray-green-abstract",
+        "type": "image/jpeg",
+        "size": "987.36 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-gray-green-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-gray-green-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-gray-white-gradient",
+        "type": "image/jpeg",
+        "size": "921.01 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-gray-white-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-gray-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-orange-beige-abstract",
+        "type": "image/jpeg",
+        "size": "866.42 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-orange-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-orange-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-orange-black-photo",
+        "type": "image/jpeg",
+        "size": "2.94 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-orange-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-orange-black-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-orange-brown-photo",
+        "type": "image/jpeg",
+        "size": "3.27 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-orange-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-orange-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-purple-blue-gradient",
+        "type": "image/png",
+        "size": "1.4 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-purple-blue-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-purple-blue-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-purple-gradient",
+        "type": "image/png",
+        "size": "881.14 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-purple-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-purple-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-red-black-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "1.48 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-red-black-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-red-black-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-red-black-photo",
+        "type": "image/jpeg",
+        "size": "1.02 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-red-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-red-black-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-red-gradient",
+        "type": "image/png",
+        "size": "1.37 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-red-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-red-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-rose-beige-abstract",
+        "type": "image/jpeg",
+        "size": "564.58 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-rose-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-rose-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-silver-beige-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "489.34 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-silver-beige-abstract-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-silver-beige-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-silver-beige-abstract",
+        "type": "image/jpeg",
+        "size": "507.02 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-silver-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-silver-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-silver-gray-gradient",
+        "type": "image/png",
+        "size": "2.03 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-silver-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-silver-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-teal-silver-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "458.65 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-teal-silver-abstract-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-teal-silver-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t2-teal-silver-abstract",
+        "type": "image/jpeg",
+        "size": "489.09 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-teal-silver-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-teal-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-t2-white-silver-gradient",
+        "type": "image/png",
+        "size": "650.07 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-white-silver-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-white-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-white-silver-photo",
+        "type": "image/jpeg",
+        "size": "917.27 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-white-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-white-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-t2-yellow-gold-gradient",
+        "type": "image/png",
+        "size": "1.1 MB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-yellow-gold-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-yellow-gold-gradient.webp"
+      },
+      {
+        "name": "smartisan-t2-yellow-gradient",
+        "type": "image/png",
+        "size": "29.47 KB",
+        "originPath": "Smartisan/Smartisan T2/origin/smartisan-t2-yellow-gradient.png",
+        "compressPath": "Smartisan/Smartisan T2/compress/smartisan-t2-yellow-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan T1",
+    "date": "2014/05/20",
+    "item": [
+      {
+        "name": "smartisan-t1-beige-cyan-photo",
+        "type": "image/jpeg",
+        "size": "804.4 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-beige-cyan-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-beige-cyan-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-beige-rose-abstract",
+        "type": "image/jpeg",
+        "size": "457.21 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-beige-rose-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-beige-rose-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-beige-silver-gradient",
+        "type": "image/jpeg",
+        "size": "725.92 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-beige-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-beige-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-beige-white-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "534.77 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-beige-white-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-beige-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t1-beige-white-gradient",
+        "type": "image/jpeg",
+        "size": "331.61 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-beige-white-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-beige-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.32 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-black-brown-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "696.21 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-brown-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t1-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "132.41 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-brown-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-black-brown-photo",
+        "type": "image/jpeg",
+        "size": "1.23 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-black-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "2.34 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-cyan-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-cyan-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-black-gradient",
+        "type": "image/jpeg",
+        "size": "525.13 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-black-gray-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "513.84 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-gray-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-gray-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t1-black-gray-gradient",
+        "type": "image/jpeg",
+        "size": "610.78 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-gray-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-black-gray-pattern",
+        "type": "image/jpeg",
+        "size": "1019.32 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-gray-pattern.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-gray-pattern.webp"
+      },
+      {
+        "name": "smartisan-t1-black-silver-photo",
+        "type": "image/jpeg",
+        "size": "1.51 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-black-teal-gradient",
+        "type": "image/png",
+        "size": "2.69 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-teal-gradient.png",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-black-white-photo",
+        "type": "image/jpeg",
+        "size": "1.76 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-black-white-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-black-white-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-blue-gray-gradient",
+        "type": "image/png",
+        "size": "2.25 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-blue-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-blue-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-brown-gray-photo",
+        "type": "image/jpeg",
+        "size": "2.16 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-brown-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-brown-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-brown-red-gradient",
+        "type": "image/jpeg",
+        "size": "588.98 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-brown-red-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-brown-red-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-brown-white-abstract",
+        "type": "image/jpeg",
+        "size": "714.73 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-brown-white-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-brown-white-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-cyan-beige-photo",
+        "type": "image/jpeg",
+        "size": "1015.19 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-cyan-beige-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-cyan-beige-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-cyan-blue-abstract",
+        "type": "image/jpeg",
+        "size": "900.21 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-cyan-blue-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-cyan-blue-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-cyan-blue-gradient",
+        "type": "image/jpeg",
+        "size": "804.17 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-cyan-blue-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-cyan-blue-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-gold-abstract",
+        "type": "image/png",
+        "size": "3.56 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-gold-abstract.png",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-gold-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-gray-black-photo",
+        "type": "image/jpeg",
+        "size": "1.14 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-gray-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-gray-black-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-gray-gradient",
+        "type": "image/png",
+        "size": "2.59 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-gray-green-abstract",
+        "type": "image/jpeg",
+        "size": "987.36 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-gray-green-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-gray-green-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-gray-silver-photo",
+        "type": "image/jpeg",
+        "size": "2.04 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-gray-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-gray-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-green-gray-gradient",
+        "type": "image/png",
+        "size": "3.53 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-green-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-green-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-t1-orange-beige-abstract",
+        "type": "image/jpeg",
+        "size": "866.42 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-orange-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-orange-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-orange-black-photo",
+        "type": "image/jpeg",
+        "size": "2.94 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-orange-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-orange-black-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-orange-brown-photo",
+        "type": "image/jpeg",
+        "size": "3.27 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-orange-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-orange-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-red-black-photo",
+        "type": "image/jpeg",
+        "size": "1.48 MB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-red-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-red-black-photo.webp"
+      },
+      {
+        "name": "smartisan-t1-rose-beige-abstract",
+        "type": "image/jpeg",
+        "size": "564.58 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-rose-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-rose-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-silver-beige-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "507.02 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-silver-beige-abstract-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-silver-beige-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-t1-silver-beige-abstract",
+        "type": "image/jpeg",
+        "size": "489.34 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-silver-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-silver-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-t1-white-silver-photo",
+        "type": "image/jpeg",
+        "size": "917.27 KB",
+        "originPath": "Smartisan/Smartisan T1/origin/smartisan-t1-white-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan T1/compress/smartisan-t1-white-silver-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Smartisan OS",
+    "date": "2013/03/27",
+    "item": [
+      {
+        "name": "smartisan-os-beige-cyan-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "794.84 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-cyan-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-cyan-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-beige-cyan-photo",
+        "type": "image/jpeg",
+        "size": "804.4 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-cyan-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-cyan-photo.webp"
+      },
+      {
+        "name": "smartisan-os-beige-red-gradient",
+        "type": "image/png",
+        "size": "100.06 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-red-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-red-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-beige-rose-abstract",
+        "type": "image/jpeg",
+        "size": "420.31 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-rose-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-rose-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-beige-silver-gradient-alt-a",
+        "type": "image/png",
+        "size": "3.12 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-silver-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-silver-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-beige-silver-gradient",
+        "type": "image/jpeg",
+        "size": "725.92 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-beige-white-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "314.75 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-white-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-beige-white-gradient-alt-b",
+        "type": "image/jpeg",
+        "size": "521.18 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-white-gradient-alt-b.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-white-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-beige-white-gradient-alt-c",
+        "type": "image/jpeg",
+        "size": "801.29 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-white-gradient-alt-c.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-white-gradient-alt-c.webp"
+      },
+      {
+        "name": "smartisan-os-beige-white-gradient",
+        "type": "image/jpeg",
+        "size": "292.83 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-beige-white-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-beige-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-beige-gradient",
+        "type": "image/png",
+        "size": "2.45 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-beige-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-beige-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.04 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-gradient-alt-a",
+        "type": "image/png",
+        "size": "3.13 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-gradient-alt-b",
+        "type": "image/jpeg",
+        "size": "557.51 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-gradient-alt-b.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-gradient-alt-c",
+        "type": "image/jpeg",
+        "size": "175.61 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-gradient-alt-c.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-gradient-alt-c.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-gradient-alt-d",
+        "type": "image/png",
+        "size": "386.33 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-gradient-alt-d.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-gradient-alt-d.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-gradient",
+        "type": "image/jpeg",
+        "size": "586.5 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "2.93 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "4.07 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-c",
+        "type": "image/png",
+        "size": "3.99 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-c.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-c.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-d",
+        "type": "image/png",
+        "size": "4.92 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-d.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-d.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-e",
+        "type": "image/jpeg",
+        "size": "1.28 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-e.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-e.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-f",
+        "type": "image/jpeg",
+        "size": "3.23 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-f.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-f.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-g",
+        "type": "image/jpeg",
+        "size": "3.04 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-g.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-g.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo-alt-h",
+        "type": "image/png",
+        "size": "6.04 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo-alt-h.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo-alt-h.webp"
+      },
+      {
+        "name": "smartisan-os-black-brown-photo",
+        "type": "image/jpeg",
+        "size": "1.19 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-os-black-cyan-abstract-alt-a",
+        "type": "image/png",
+        "size": "3.91 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-cyan-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-cyan-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "2.34 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-cyan-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-cyan-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-black-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.53 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-gradient-alt-b",
+        "type": "image/png",
+        "size": "2.85 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gradient-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-black-gradient",
+        "type": "image/jpeg",
+        "size": "350.1 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "2.95 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-abstract-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-abstract-alt-b",
+        "type": "image/jpeg",
+        "size": "1.34 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-abstract-alt-b.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-abstract-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-abstract",
+        "type": "image/jpeg",
+        "size": "475.61 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "250 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-gradient-alt-b",
+        "type": "image/png",
+        "size": "611.17 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-gradient-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-gradient",
+        "type": "image/jpeg",
+        "size": "540.41 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-pattern",
+        "type": "image/jpeg",
+        "size": "1019.32 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-pattern.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-pattern.webp"
+      },
+      {
+        "name": "smartisan-os-black-gray-photo",
+        "type": "image/png",
+        "size": "4.26 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-gray-photo.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-os-black-red-abstract-alt-a",
+        "type": "image/png",
+        "size": "3.5 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-red-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-red-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-red-abstract",
+        "type": "image/png",
+        "size": "2.86 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-red-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-red-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-black-silver-gradient",
+        "type": "image/png",
+        "size": "3.19 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-silver-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-silver-photo-alt-a",
+        "type": "image/jpeg",
+        "size": "1.51 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-silver-photo-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-silver-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-black-silver-photo",
+        "type": "image/jpeg",
+        "size": "1.44 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-os-black-teal-abstract",
+        "type": "image/jpeg",
+        "size": "2 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-teal-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-teal-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-black-teal-gradient",
+        "type": "image/png",
+        "size": "2.69 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-teal-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-black-teal-photo",
+        "type": "image/png",
+        "size": "5.59 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-black-teal-photo.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-black-teal-photo.webp"
+      },
+      {
+        "name": "smartisan-os-blue-black-gradient",
+        "type": "image/jpeg",
+        "size": "1.48 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-blue-black-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-blue-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-blue-cyan-photo",
+        "type": "image/jpeg",
+        "size": "1.04 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-blue-cyan-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-blue-cyan-photo.webp"
+      },
+      {
+        "name": "smartisan-os-blue-gray-gradient",
+        "type": "image/png",
+        "size": "2.25 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-blue-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-blue-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-brown-beige-pattern",
+        "type": "image/jpeg",
+        "size": "952.72 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-beige-pattern.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-beige-pattern.webp"
+      },
+      {
+        "name": "smartisan-os-brown-black-gradient",
+        "type": "image/png",
+        "size": "1.51 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-black-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gold-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.6 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gold-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gold-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gold-gradient-alt-b",
+        "type": "image/png",
+        "size": "2.18 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gold-gradient-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gold-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gold-gradient",
+        "type": "image/png",
+        "size": "2.63 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gold-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gold-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.87 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gradient-alt-b",
+        "type": "image/png",
+        "size": "2.11 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gradient-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gradient-alt-c",
+        "type": "image/png",
+        "size": "1.33 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gradient-alt-c.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gradient-alt-c.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gradient",
+        "type": "image/png",
+        "size": "188.45 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gray-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "1.13 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gray-abstract-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gray-abstract-alt-b",
+        "type": "image/jpeg",
+        "size": "766.82 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gray-abstract-alt-b.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gray-abstract-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gray-abstract-alt-c",
+        "type": "image/jpeg",
+        "size": "1.01 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gray-abstract-alt-c.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gray-abstract-alt-c.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gray-abstract",
+        "type": "image/jpeg",
+        "size": "2.86 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gray-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gray-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-brown-gray-photo",
+        "type": "image/jpeg",
+        "size": "2.19 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-os-brown-orange-abstract",
+        "type": "image/jpeg",
+        "size": "817.42 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-orange-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-orange-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-brown-red-gradient",
+        "type": "image/jpeg",
+        "size": "588.98 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-red-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-red-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-brown-rose-photo",
+        "type": "image/jpeg",
+        "size": "2.17 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-rose-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-rose-photo.webp"
+      },
+      {
+        "name": "smartisan-os-brown-silver-photo",
+        "type": "image/jpeg",
+        "size": "1.67 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-brown-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-brown-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-blue-abstract-alt-a",
+        "type": "image/png",
+        "size": "1.93 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-blue-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-blue-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-blue-abstract",
+        "type": "image/jpeg",
+        "size": "946.78 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-blue-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-blue-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-blue-gradient",
+        "type": "image/jpeg",
+        "size": "863.7 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-blue-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-blue-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-mint-abstract",
+        "type": "image/png",
+        "size": "3.19 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-mint-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-mint-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-teal-abstract",
+        "type": "image/jpeg",
+        "size": "1.32 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-teal-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-teal-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-white-abstract",
+        "type": "image/jpeg",
+        "size": "429.35 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-white-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-white-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-cyan-yellow-gradient",
+        "type": "image/png",
+        "size": "2.41 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-cyan-yellow-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-cyan-yellow-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gold-abstract",
+        "type": "image/png",
+        "size": "3.56 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gold-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gold-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-gold-beige-gradient",
+        "type": "image/png",
+        "size": "1.82 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gold-beige-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gold-beige-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gold-yellow-gradient",
+        "type": "image/png",
+        "size": "963.78 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gold-yellow-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gold-yellow-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gray-black-abstract",
+        "type": "image/jpeg",
+        "size": "2.78 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-black-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-black-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-gray-black-gradient",
+        "type": "image/png",
+        "size": "2.22 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-black-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gray-black-photo",
+        "type": "image/jpeg",
+        "size": "1.11 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-black-photo.webp"
+      },
+      {
+        "name": "smartisan-os-gray-brown-abstract",
+        "type": "image/png",
+        "size": "838.59 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-brown-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-gray-gradient",
+        "type": "image/png",
+        "size": "1.33 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gray-green-abstract",
+        "type": "image/png",
+        "size": "2.42 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-green-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-green-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-gray-silver-abstract",
+        "type": "image/png",
+        "size": "2.32 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-silver-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-gray-silver-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.61 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-silver-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-silver-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-gray-silver-gradient",
+        "type": "image/jpeg",
+        "size": "495.96 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-silver-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gray-teal-gradient",
+        "type": "image/png",
+        "size": "1.89 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-teal-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-gray-white-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "921.01 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-white-gradient-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-gray-white-gradient-alt-b",
+        "type": "image/png",
+        "size": "2.54 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-white-gradient-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-white-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-gray-white-gradient",
+        "type": "image/jpeg",
+        "size": "854.82 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-gray-white-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-gray-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-green-brown-abstract",
+        "type": "image/jpeg",
+        "size": "1.65 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-green-brown-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-green-brown-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-green-gradient",
+        "type": "image/png",
+        "size": "1.43 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-green-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-green-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-green-gray-gradient",
+        "type": "image/png",
+        "size": "3.53 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-green-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-green-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-mint-gold-abstract",
+        "type": "image/jpeg",
+        "size": "978.55 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-mint-gold-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-mint-gold-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-mint-gradient",
+        "type": "image/png",
+        "size": "1.96 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-mint-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-mint-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-mint-gray-gradient",
+        "type": "image/png",
+        "size": "927.71 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-mint-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-mint-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-mint-silver-gradient",
+        "type": "image/png",
+        "size": "1.63 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-mint-silver-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-mint-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-mint-teal-gradient",
+        "type": "image/png",
+        "size": "801.79 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-mint-teal-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-mint-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-orange-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "5.77 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-orange-brown-photo-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-orange-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-orange-brown-photo",
+        "type": "image/jpeg",
+        "size": "3.51 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-orange-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-orange-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-os-orange-gradient",
+        "type": "image/png",
+        "size": "2.05 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-orange-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-orange-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-orange-yellow-abstract",
+        "type": "image/jpeg",
+        "size": "887.2 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-orange-yellow-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-orange-yellow-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-pink-rose-gradient",
+        "type": "image/png",
+        "size": "237.66 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-pink-rose-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-pink-rose-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-purple-blue-gradient",
+        "type": "image/png",
+        "size": "1.19 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-purple-blue-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-purple-blue-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-purple-gradient",
+        "type": "image/png",
+        "size": "1.39 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-purple-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-purple-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-red-beige-abstract",
+        "type": "image/png",
+        "size": "1.49 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-red-beige-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-red-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-red-black-gradient",
+        "type": "image/png",
+        "size": "184.83 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-red-black-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-red-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-red-black-photo",
+        "type": "image/jpeg",
+        "size": "1.64 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-red-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-red-black-photo.webp"
+      },
+      {
+        "name": "smartisan-os-red-brown-gradient",
+        "type": "image/png",
+        "size": "1.67 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-red-brown-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-red-brown-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-red-brown-photo",
+        "type": "image/png",
+        "size": "3.03 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-red-brown-photo.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-red-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-os-red-gradient",
+        "type": "image/png",
+        "size": "1.1 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-red-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-red-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-rose-beige-gradient",
+        "type": "image/png",
+        "size": "1.21 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-rose-beige-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-rose-beige-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-rose-gray-gradient",
+        "type": "image/png",
+        "size": "1.11 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-rose-gray-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-rose-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-rose-silver-abstract",
+        "type": "image/jpeg",
+        "size": "537.94 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-rose-silver-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-rose-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-silver-abstract",
+        "type": "image/png",
+        "size": "744 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-silver-beige-abstract-alt-a",
+        "type": "image/png",
+        "size": "1.57 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-beige-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-beige-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-silver-beige-abstract",
+        "type": "image/jpeg",
+        "size": "461.85 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-beige-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-beige-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-silver-beige-gradient",
+        "type": "image/png",
+        "size": "1.01 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-beige-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-beige-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-silver-black-abstract",
+        "type": "image/jpeg",
+        "size": "1.08 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-black-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-black-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-silver-black-photo",
+        "type": "image/jpeg",
+        "size": "2 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-black-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-black-photo.webp"
+      },
+      {
+        "name": "smartisan-os-silver-gray-gradient-alt-a",
+        "type": "image/png",
+        "size": "2.03 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-gray-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-gray-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-silver-gray-gradient",
+        "type": "image/jpeg",
+        "size": "2.26 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-gray-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-gray-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-silver-gray-pattern",
+        "type": "image/png",
+        "size": "372.83 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-gray-pattern.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-gray-pattern.webp"
+      },
+      {
+        "name": "smartisan-os-silver-gray-photo",
+        "type": "image/jpeg",
+        "size": "1.86 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-os-silver-mint-photo",
+        "type": "image/png",
+        "size": "4.77 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-mint-photo.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-mint-photo.webp"
+      },
+      {
+        "name": "smartisan-os-silver-rose-abstract-alt-a",
+        "type": "image/png",
+        "size": "775.61 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-rose-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-rose-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-silver-rose-abstract",
+        "type": "image/png",
+        "size": "285.39 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-rose-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-rose-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-silver-white-gradient",
+        "type": "image/jpeg",
+        "size": "825.25 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-silver-white-gradient.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-silver-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-teal-black-abstract-alt-a",
+        "type": "image/png",
+        "size": "3.94 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-black-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-black-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-teal-black-abstract",
+        "type": "image/jpeg",
+        "size": "2.03 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-black-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-black-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-teal-black-gradient",
+        "type": "image/png",
+        "size": "464.13 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-black-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-black-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-teal-gradient",
+        "type": "image/png",
+        "size": "1.81 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-teal-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "3.25 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-gray-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-teal-gray-abstract",
+        "type": "image/png",
+        "size": "3.25 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-gray-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-gray-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-teal-green-photo",
+        "type": "image/jpeg",
+        "size": "4.12 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-green-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-green-photo.webp"
+      },
+      {
+        "name": "smartisan-os-teal-mint-gradient-alt-a",
+        "type": "image/png",
+        "size": "846.19 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-mint-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-mint-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-teal-mint-gradient",
+        "type": "image/png",
+        "size": "1.02 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-mint-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-mint-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-teal-silver-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "458.65 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-silver-abstract-alt-a.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-silver-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-teal-silver-abstract",
+        "type": "image/jpeg",
+        "size": "489.09 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-teal-silver-abstract.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-teal-silver-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-white-brown-photo",
+        "type": "image/jpeg",
+        "size": "1.95 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-brown-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-brown-photo.webp"
+      },
+      {
+        "name": "smartisan-os-white-gradient-alt-a",
+        "type": "image/png",
+        "size": "41.39 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-white-gradient-alt-b",
+        "type": "image/png",
+        "size": "323.21 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-gradient-alt-b.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-gradient-alt-b.webp"
+      },
+      {
+        "name": "smartisan-os-white-gradient",
+        "type": "image/png",
+        "size": "629.41 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-white-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "517.67 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-gray-abstract-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-white-gray-abstract",
+        "type": "image/png",
+        "size": "1.76 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-gray-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-gray-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-white-gray-photo",
+        "type": "image/jpeg",
+        "size": "2.13 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-gray-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-gray-photo.webp"
+      },
+      {
+        "name": "smartisan-os-white-green-abstract",
+        "type": "image/png",
+        "size": "505.44 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-green-abstract.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-green-abstract.webp"
+      },
+      {
+        "name": "smartisan-os-white-silver-gradient-alt-a",
+        "type": "image/png",
+        "size": "905.01 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-silver-gradient-alt-a.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-silver-gradient-alt-a.webp"
+      },
+      {
+        "name": "smartisan-os-white-silver-gradient",
+        "type": "image/png",
+        "size": "156.22 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-silver-gradient.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-silver-gradient.webp"
+      },
+      {
+        "name": "smartisan-os-white-silver-pattern",
+        "type": "image/png",
+        "size": "360.31 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-silver-pattern.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-silver-pattern.webp"
+      },
+      {
+        "name": "smartisan-os-white-silver-photo",
+        "type": "image/jpeg",
+        "size": "893.2 KB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-white-silver-photo.jpg",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-white-silver-photo.webp"
+      },
+      {
+        "name": "smartisan-os-yellow-beige-photo",
+        "type": "image/png",
+        "size": "4.97 MB",
+        "originPath": "Smartisan/Smartisan OS/origin/smartisan-os-yellow-beige-photo.png",
+        "compressPath": "Smartisan/Smartisan OS/compress/smartisan-os-yellow-beige-photo.webp"
+      }
+    ]
+  }
+]

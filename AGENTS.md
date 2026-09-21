@@ -100,7 +100,8 @@ IndexNow 使用运维脚本 `npm run indexnow` 提交线上 sitemap，验证文�
 
 1. 在 `src/data/` 下新增对应品牌的 JSON 数据文件。
 2. 在 `src/data/language/<lang>/tab.json` 中登记分类，确保 `BRAND_CATEGORIES` 能识别。
-3. 页面路由 `[brand]` 与 `generateStaticParams` 会自动生成静态页面与 SEO 元数据。
+3. 在 `public/brand-icons/` 下新增以品牌 slug 命名的 SVG Logo（如 `smartisan.svg`），并在 `src/components/Header.tsx` 的 `BRAND_ICON_PATHS` 中登记映射；Logo 必须来源可靠、使用紧凑 `viewBox`，并在 Header 的桌面端与移动端图标位验证清晰度。
+4. 页面路由 `[brand]` 与 `generateStaticParams` 会自动生成静态页面与 SEO 元数据。
 
 ## 安全与注意事项
 

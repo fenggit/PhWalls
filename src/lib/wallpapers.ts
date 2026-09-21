@@ -15,6 +15,7 @@ import pocoData from '@/data/poco.json';
 import realmeData from '@/data/realme.json';
 import redmiData from '@/data/redmi.json';
 import samsungData from '@/data/samsung.json';
+import smartisanData from '@/data/smartisan.json';
 import sonyData from '@/data/sony.json';
 import transsionInfinixData from '@/data/transsion infinix.json';
 import transsionTecnoData from '@/data/transsion tecno.json';
@@ -63,6 +64,7 @@ const dataSources: Record<string, WallpaperCollection[]> = {
   realme: realmeData as WallpaperCollection[],
   redmi: redmiData as WallpaperCollection[],
   samsung: samsungData as WallpaperCollection[],
+  smartisan: smartisanData as WallpaperCollection[],
   sony: sonyData as WallpaperCollection[],
   'transsion-infinix': transsionInfinixData as WallpaperCollection[],
   'transsion-tecno': transsionTecnoData as WallpaperCollection[],

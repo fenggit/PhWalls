@@ -91,6 +91,7 @@ export default async function DesktopPage() {
       isMobilePriority={isMobileRequest}
       contentCollectionsByCategory={buildDesktopCollectionsByCategory()}
       detailPathPrefix="/desktop/wallpapers"
+      categoryPathPrefix="/desktop"
       forceDesktopCards
       heroTitle={seoCopy.title}
       heroDescription={seoCopy.description}

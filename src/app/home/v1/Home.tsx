@@ -13,9 +13,14 @@ const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPre
   ssr: false,
 });
 import { Language, TabInfo } from '@/types';
-import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData, sortByDateDesc } from '@/lib/data';
+import {
+  buildWallpaperListTitle,
+  getTabData,
+  localizeWallpaperCollectionName,
+  sortByDateDesc,
+} from '@/lib/data';
 import { useLanguage } from '@/components/LanguageProvider';
-import { normalizeCategoryType } from '@/lib/brands';
+import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import {
   buildWallpaperDetailPath,
@@ -44,6 +49,7 @@ type HomeProps = {
   contentCollectionsByCategory?: Record<string, WallpaperCollection[]>;
   isContentCategory?: (category: string) => boolean;
   detailPathPrefix?: string;
+  categoryPathPrefix?: string;
   activeCategoryTypeOverride?: string;
   forceDesktopCards?: boolean;
   heroTitle?: string;
@@ -87,6 +93,7 @@ export default function Home({
   contentCollectionsByCategory,
   isContentCategory = isWallpaperCategory,
   detailPathPrefix,
+  categoryPathPrefix,
   forceDesktopCards = false,
   activeCategoryTypeOverride,
   heroTitle,
@@ -97,7 +104,6 @@ export default function Home({
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(initialImageUrls);
   const [imageLoadingStates, setImageLoadingStates] = useState<Record<string, boolean>>({});
   const [viewportWidth, setViewportWidth] = useState(isMobilePriority ? 390 : 1536);
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   
   // 预览模态框状态
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -205,9 +211,7 @@ export default function Home({
       const keyToCardMap: Record<string, string[]> = {};
 
       Object.entries(categoryDataMap).forEach(([categoryType, list]) => {
-        const visibleCount = expandedCategories[categoryType]
-          ? list.length
-          : getHomeGridColumns(categoryType, viewportWidth, forceDesktopCards) * 2;
+        const visibleCount = getHomeGridColumns(categoryType, viewportWidth, forceDesktopCards) * 2;
 
         list.slice(0, visibleCount).forEach((collection) => {
           const cardImageKey = `${categoryType}::${collection.name}`;
@@ -282,7 +286,6 @@ export default function Home({
     };
   }, [
     categoryDataMap,
-    expandedCategories,
     forceDesktopCards,
     initialImageUrls,
     resolveImageUrls,
@@ -465,7 +468,6 @@ export default function Home({
         {/* 产品展示区域 */}
         {visibleCategories.map((category, index) => {
           const categoryType = normalizeCategoryType(category.type);
-          const categoryKey = categoryType;
           const categoryAnchorId = getCategoryAnchorId(category.type);
           
           const h2Title = buildWallpaperListTitle(category.title, texts.wallpapersTitleSuffix);
@@ -556,11 +558,16 @@ export default function Home({
           const totalItems = Array.isArray(displayData) ? displayData.length : 0;
           const previewRowsCount = 2;
           const previewItemsCount = getColumnsForCategory(categoryType) * previewRowsCount;
-          const isExpanded = Boolean(expandedCategories[categoryKey]);
           const shouldShowViewAll = totalItems > previewItemsCount;
-          const listData = isExpanded || !shouldShowViewAll
-            ? displayData
-            : displayData.slice(0, previewItemsCount);
+          const listData = shouldShowViewAll
+            ? displayData.slice(0, previewItemsCount)
+            : displayData;
+          const categoryHref = withLanguagePath(
+            categoryPathPrefix
+              ? `${categoryPathPrefix}/${categoryType}`
+              : buildBrandPath(category.type),
+            currentLang
+          );
 
           const viewAllText = texts.viewAllWallpapers;
 
@@ -616,7 +623,8 @@ export default function Home({
                           currentLang
                         )
                       : null;
-                    const itemTitle = buildWallpaperListTitle(item.name, texts.wallpapersTitleSuffix);
+                    const itemDisplayName = localizeWallpaperCollectionName(currentLang, item.name);
+                    const itemTitle = buildWallpaperListTitle(itemDisplayName, texts.wallpapersTitleSuffix);
                     // 首屏首个分类的前几张作为 LCP 候选，固定 eager + high，避免依赖不可靠的 UA 嗅探
                     const isAboveFold = index === 0 && listIndex < 4;
                     const isLcpCandidate = index === 0 && listIndex < 2;
@@ -653,7 +661,7 @@ export default function Home({
                                 
                                 <img 
                                   src={imageUrls[cardImageKey]}
-                                  alt={`${formatWallpaperDisplayName(item.name)} ${texts.hdWallpaperDownloadAlt} - ${category.type}`}
+                                  alt={`${itemDisplayName} ${texts.hdWallpaperDownloadAlt} - ${category.type}`}
                                   className={`w-full h-full object-cover group-hover:scale-102 transition-all duration-500 ease-out ${
                                     imageLoadingStates[cardImageKey] ? 'opacity-0' : 'opacity-100 image-fade-in'
                                   }`}
@@ -794,20 +802,14 @@ export default function Home({
                     })}
                   </div>
 
-                  {shouldShowViewAll && !isExpanded && (
+                  {shouldShowViewAll && (
                     <div className="mt-6 flex justify-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setExpandedCategories(prev => ({
-                            ...prev,
-                            [categoryKey]: true,
-                          }));
-                        }}
+                      <Link
+                        href={categoryHref}
                         className="inline-flex items-center rounded-full border border-blue-200 bg-white px-5 py-2 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-50"
                       >
                         {viewAllText}
-                      </button>
+                      </Link>
                     </div>
                   )}
 

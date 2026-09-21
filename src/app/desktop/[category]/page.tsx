@@ -65,8 +65,8 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
    seoTitle={seoCopy.title}
    seoDescription={seoCopy.description}
    seoSubtitle={seoCopy.subtitle}
-   cardAspect="aspect-video"
-   gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+   cardAspect="aspect-[16/10]"
+   gridClass="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
    cards={cards}
   />
  );

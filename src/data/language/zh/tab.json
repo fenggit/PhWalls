@@ -95,5 +95,9 @@
     {
         "title": "华为 MatePad",
         "type": "huawei-matepad"
+    },
+    {
+        "title": "锤子",
+        "type": "smartisan"
     }
 ]

@@ -47,6 +47,7 @@ const brandLoaders: Record<string, () => Promise<WallpaperCollection[]>> = {
   realme: () => import('@/data/realme.json').then((m) => m.default as WallpaperCollection[]),
   redmi: () => import('@/data/redmi.json').then((m) => m.default as WallpaperCollection[]),
   samsung: () => import('@/data/samsung.json').then((m) => m.default as WallpaperCollection[]),
+  smartisan: () => import('@/data/smartisan.json').then((m) => m.default as WallpaperCollection[]),
   sony: () => import('@/data/sony.json').then((m) => m.default as WallpaperCollection[]),
   'transsion-infinix': () => import('@/data/transsion infinix.json').then((m) => m.default as WallpaperCollection[]),
   'transsion-tecno': () => import('@/data/transsion tecno.json').then((m) => m.default as WallpaperCollection[]),

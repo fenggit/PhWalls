@@ -1,4 +1,4 @@
-import type { Language, TabInfo } from '@/types';
+import { LanguageCode, type Language, type TabInfo } from '@/types';
 import { DEFAULT_LANGUAGE } from '@/lib/language';
 import tabDataEn from '@/data/language/en/tab.json';
 import tabDataZh from '@/data/language/zh/tab.json';
@@ -30,6 +30,25 @@ export const formatWallpaperDisplayName = (value: string): string => {
   }
 
   return raw.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+};
+
+const ZH_COLLECTION_NAME_OVERRIDES: Record<string, string> = {
+  'Smartisan Nut R2': '坚果 R2',
+  'Smartisan Nut Pro 3': '坚果 Pro 3',
+  'Smartisan Footprint': '锤子足迹',
+};
+
+export const localizeWallpaperCollectionName = (
+  language: Language,
+  value: string
+): string => {
+  const displayName = formatWallpaperDisplayName(value);
+  if (language !== LanguageCode.ZH) {
+    return displayName;
+  }
+
+  return ZH_COLLECTION_NAME_OVERRIDES[displayName]
+    || displayName.replace(/^Smartisan\b/i, '锤子');
 };
 
 export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string): string => {

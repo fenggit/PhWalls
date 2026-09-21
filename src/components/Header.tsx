@@ -91,6 +91,7 @@ const BRAND_ICON_PATHS: Record<string, string> = {
   harmonyos: '/brand-icons/harmonyos.svg',
   'huawei-matepad': '/brand-icons/huawei.svg',
   samsung: '/brand-icons/samsung.svg',
+  smartisan: '/brand-icons/smartisan.svg',
   xiaomi: '/brand-icons/xiaomi.svg',
   huawei: '/brand-icons/huawei.svg',
   oppo: '/brand-icons/oppo.svg',
@@ -130,7 +131,7 @@ function BrandIcon({ type, desktop = false }: { type: string; desktop?: boolean 
     <span className={`flex shrink-0 items-center justify-center ${desktop ? 'h-7 w-9' : 'h-8 w-12'}`}>
       {iconPath ? (
         <img
-          src={`${iconPath}?v=20260920-3`}
+          src={`${iconPath}?v=20260921-1`}
           alt=""
           className={`object-contain ${desktop ? (isWordmark ? 'max-h-4 w-8' : 'h-5 w-5') : (isWordmark ? 'max-h-5 w-10' : 'h-5 w-5')}`}
           aria-hidden="true"
@@ -351,7 +352,10 @@ export default function Header({
   useEffect(() => {
     if (!isLanguageMenuOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
-      if (!languageMenuRef.current?.contains(event.target as Node)) {
+      if (
+        window.matchMedia('(min-width: 768px)').matches &&
+        !languageMenuRef.current?.contains(event.target as Node)
+      ) {
         setIsLanguageMenuOpen(false);
       }
     };
@@ -756,7 +760,7 @@ export default function Header({
             </div>
 
             <div className="ml-auto flex shrink-0 items-center gap-1 lg:border-l lg:border-gray-200/70 lg:pl-5">
-              <div className="hidden lg:block">
+              <div>
                 <button
                   type="button"
                   onClick={handleShareClick}

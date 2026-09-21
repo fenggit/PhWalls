@@ -95,5 +95,9 @@
   {
     "title": "ファーウェイ MatePad",
     "type": "huawei-matepad"
+  },
+  {
+    "title": "ハンマー",
+    "type": "smartisan"
   }
 ]

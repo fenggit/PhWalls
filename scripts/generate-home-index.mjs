@@ -35,6 +35,7 @@ const brandFiles = {
   realme: 'realme.json',
   redmi: 'redmi.json',
   samsung: 'samsung.json',
+  smartisan: 'smartisan.json',
   sony: 'sony.json',
   'transsion-infinix': 'transsion infinix.json',
   'transsion-tecno': 'transsion tecno.json',
