@@ -1,32 +1,52 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Globe, Info, Share2 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ArrowUpRight,
+  ChevronDown,
+  ExternalLink,
+  Globe,
+  Info,
+  Menu,
+  Monitor,
+  Share2,
+  Smartphone,
+  X,
+} from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useShare } from '@/components/ShareProvider';
-import { Language, LanguageCode, TabInfo } from '@/types';
+import { getTabData } from '@/lib/data';
+import { getDesktopTabData } from '@/lib/desktop-data';
+import { filterHomeTabs } from '@/lib/home-priority';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
 import { getShareTexts } from '@/lib/share';
-import { sortHomeTabsByPriority } from '@/lib/home-priority';
+import { Language, LanguageCode, TabInfo } from '@/types';
 
 export interface HeaderProps {
-  tabData: TabInfo[];
   currentLang: Language;
   onLanguageChange: (lang: Language) => void;
-  categoryPathPrefix?: string;
-  categoryPagePrefix?: string;
   activeCategoryTypeOverride?: string;
 }
 
-const languageConfig: Record<Language, { flag: string; name: string; key: keyof I18nTexts; priority: number }> = {
-  [LanguageCode.EN]: { flag: '🇺🇸', name: 'english', key: 'english', priority: 1 },
-  [LanguageCode.ZH]: { flag: '🇨🇳', name: 'chineseSimplified', key: 'chineseSimplified', priority: 2 },
-  [LanguageCode.JA]: { flag: '🇯🇵', name: 'japanese', key: 'japanese', priority: 3 },
-  [LanguageCode.VI]: { flag: '🇻🇳', name: 'vietnamese', key: 'vietnamese', priority: 4 },
-  [LanguageCode.ZH_HANT]: { flag: '🇭🇰', name: 'chineseTraditional', key: 'chineseTraditional', priority: 5 },
+type PrimaryMenu = 'phone' | 'desktop';
+
+type PrimaryNavigationItem = {
+  id: 'phone' | 'apple' | 'desktop';
+  label: string;
+  href: string;
+  external?: boolean;
+  menu?: PrimaryMenu;
+};
+
+const languageConfig: Record<Language, { name: string; key: keyof I18nTexts }> = {
+  [LanguageCode.EN]: { name: 'english', key: 'english' },
+  [LanguageCode.ZH]: { name: 'chineseSimplified', key: 'chineseSimplified' },
+  [LanguageCode.JA]: { name: 'japanese', key: 'japanese' },
+  [LanguageCode.VI]: { name: 'vietnamese', key: 'vietnamese' },
+  [LanguageCode.ZH_HANT]: { name: 'chineseTraditional', key: 'chineseTraditional' },
 };
 
 const languageOrder: Language[] = [
@@ -38,56 +58,180 @@ const languageOrder: Language[] = [
 ];
 
 const SHOW_MINI_PROGRAM = false;
-const MAX_VISIBLE_DESKTOP_TABS = 8;
+const PHONE_NAVIGATION_ORDER = [
+  'samsung',
+  'xiaomi',
+  'huawei',
+  'oppo',
+  'vivo',
+  'google-pixel',
+  'honor',
+  'oneplus',
+  'motorola',
+  'sony',
+  'nothing',
+  'realme',
+  'redmi',
+  'poco',
+  'iqoo',
+  'asus-rog-phone',
+  'transsion-infinix',
+  'transsion-tecno',
+  'nokia',
+  'android',
+] as const;
+const POPULAR_PHONE_TYPES: ReadonlySet<string> = new Set(PHONE_NAVIGATION_ORDER.slice(0, 8));
+
+const BRAND_ICON_PATHS: Record<string, string> = {
+  apple: '/brand-icons/apple.svg',
+  iphone: '/brand-icons/apple.svg',
+  macos: '/brand-icons/apple.svg',
+  poco: '/brand-icons/poco.svg',
+  'transsion-tecno': '/brand-icons/transsion-tecno.svg',
+  harmonyos: '/brand-icons/harmonyos.svg',
+  'huawei-matepad': '/brand-icons/huawei.svg',
+  samsung: '/brand-icons/samsung.svg',
+  xiaomi: '/brand-icons/xiaomi.svg',
+  huawei: '/brand-icons/huawei.svg',
+  oppo: '/brand-icons/oppo.svg',
+  vivo: '/brand-icons/vivo.svg',
+  'google-pixel': '/brand-icons/google-pixel.svg',
+  honor: '/brand-icons/honor.svg',
+  oneplus: '/brand-icons/oneplus.svg',
+  motorola: '/brand-icons/motorola.svg',
+  sony: '/brand-icons/sony.svg',
+  nothing: '/brand-icons/nothing.svg',
+  realme: '/brand-icons/realme.svg',
+  redmi: '/brand-icons/xiaomi.svg',
+  iqoo: '/brand-icons/iqoo.svg',
+  'asus-rog-phone': '/brand-icons/asus-rog-phone.svg',
+  'transsion-infinix': '/brand-icons/transsion-infinix.svg',
+  nokia: '/brand-icons/nokia.svg',
+  android: '/brand-icons/android.svg',
+  'microsoft-windows': '/brand-icons/microsoft.svg',
+  'microsoft-surface': '/brand-icons/microsoft.svg',
+  ubuntu: '/brand-icons/ubuntu.svg',
+  'omarchy-linux': '/brand-icons/omarchy-linux.svg',
+  'google-chromeos': '/brand-icons/google-chromeos.svg',
+  'google-os': '/brand-icons/google-os.svg',
+};
+
+const WORDMARK_TYPES = new Set([
+  'samsung', 'sony', 'oppo', 'vivo', 'honor', 'nokia', 'iqoo',
+  'transsion-infinix', 'transsion-tecno', 'poco', 'nothing', 'realme',
+]);
+
+function BrandIcon({ type, desktop = false }: { type: string; desktop?: boolean }) {
+  const normalizedType = normalizeCategoryType(type);
+  const iconPath = BRAND_ICON_PATHS[normalizedType];
+  const isWordmark = WORDMARK_TYPES.has(normalizedType);
+
+  return (
+    <span className={`flex shrink-0 items-center justify-center ${desktop ? 'h-7 w-9' : 'h-8 w-12'}`}>
+      {iconPath ? (
+        <img
+          src={`${iconPath}?v=20260920-3`}
+          alt=""
+          className={`object-contain ${desktop ? (isWordmark ? 'max-h-4 w-8' : 'h-5 w-5') : (isWordmark ? 'max-h-5 w-10' : 'h-5 w-5')}`}
+          aria-hidden="true"
+        />
+      ) : (
+        <Smartphone className="h-4 w-4 text-gray-400" aria-hidden="true" />
+      )}
+    </span>
+  );
+}
 
 export default function Header({
-  tabData,
   currentLang,
   onLanguageChange,
-  categoryPathPrefix,
-  categoryPagePrefix,
   activeCategoryTypeOverride,
 }: HeaderProps) {
-  const orderedTabData = useMemo(() => sortHomeTabsByPriority(tabData), [tabData]);
   const [isDeviceMenuOpen, setIsDeviceMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMiniProgramMenuOpen, setIsMiniProgramMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [visibleDesktopTabs, setVisibleDesktopTabs] = useState<TabInfo[]>(orderedTabData);
-  const [overflowDesktopTabs, setOverflowDesktopTabs] = useState<TabInfo[]>([]);
+  const [openPrimaryMenu, setOpenPrimaryMenu] = useState<PrimaryMenu | null>(null);
+  const [mobileNavigationSection, setMobileNavigationSection] = useState<PrimaryMenu>('phone');
   const miniProgramMenuRef = useRef<HTMLDivElement>(null);
   const mobileMiniProgramPanelRef = useRef<HTMLDivElement>(null);
-  const desktopTabsViewportRef = useRef<HTMLDivElement>(null);
-  const desktopTabMeasureRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const moreTabMeasureRef = useRef<HTMLButtonElement>(null);
+  const primaryNavigationRef = useRef<HTMLDivElement>(null);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
+  const languageButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileDrawerRef = useRef<HTMLDivElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const primaryTriggerRefs = useRef<Record<PrimaryMenu, HTMLButtonElement | null>>({
+    phone: null,
+    desktop: null,
+  });
+  const primaryMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const focusPrimaryPanelRef = useRef(false);
   const shareInProgressRef = useRef(false);
+
+  const clearPrimaryMenuTimer = useCallback(() => {
+    if (primaryMenuTimerRef.current) clearTimeout(primaryMenuTimerRef.current);
+    primaryMenuTimerRef.current = null;
+  }, []);
+
+  const openMenu = useCallback((menu: PrimaryMenu, focusPanel = false) => {
+    clearPrimaryMenuTimer();
+    focusPrimaryPanelRef.current = focusPanel;
+    setIsLanguageMenuOpen(false);
+    setIsMiniProgramMenuOpen(false);
+    setOpenPrimaryMenu(menu);
+    if (focusPanel) {
+      window.requestAnimationFrame(() => {
+        primaryNavigationRef.current
+          ?.querySelector<HTMLElement>(`[data-primary-menu-panel="${menu}"] a[href]`)
+          ?.focus();
+      });
+    }
+  }, [clearPrimaryMenuTimer]);
+
+  useEffect(() => clearPrimaryMenuTimer, [clearPrimaryMenuTimer]);
   const pathname = usePathname();
   const { sharePayload, setSharePayload } = useShare();
+  const texts = getI18nTexts(currentLang);
+  const shareTexts = getShareTexts(currentLang);
 
-  const getLandingPathByCategoryType = useCallback(
-    (categoryType: string): string | null => {
-      const normalizedType = normalizeCategoryType(categoryType);
-
-      if (normalizedType === 'design') return '/design';
-      if (normalizedType === 'desktop') return '/desktop';
-      if (categoryPagePrefix) return `${categoryPagePrefix}/${normalizedType}`;
-      if (categoryPathPrefix) return `${categoryPathPrefix}#${normalizedType}`;
-      return buildBrandPath(categoryType);
-    },
-    [categoryPathPrefix, categoryPagePrefix]
+  const phoneTabs = useMemo(() => {
+    const navigationRank = new Map<string, number>(
+      PHONE_NAVIGATION_ORDER.map((type, index) => [type, index])
+    );
+    return filterHomeTabs(getTabData(currentLang))
+      .filter((tab) => !tab.link?.trim() && normalizeCategoryType(tab.type) !== 'desktop')
+      .sort((left, right) => {
+        const leftRank = navigationRank.get(normalizeCategoryType(left.type)) ?? Number.MAX_SAFE_INTEGER;
+        const rightRank = navigationRank.get(normalizeCategoryType(right.type)) ?? Number.MAX_SAFE_INTEGER;
+        return leftRank - rightRank;
+      });
+  }, [currentLang]);
+  const popularPhoneTabs = useMemo(
+    () => phoneTabs.filter((tab) => POPULAR_PHONE_TYPES.has(normalizeCategoryType(tab.type))),
+    [phoneTabs]
+  );
+  const morePhoneTabs = useMemo(
+    () => phoneTabs.filter((tab) => !POPULAR_PHONE_TYPES.has(normalizeCategoryType(tab.type))),
+    [phoneTabs]
+  );
+  const appleTab = useMemo(
+    () => getTabData(currentLang).find((tab) => normalizeCategoryType(tab.type) === 'iphone' && tab.link?.trim()),
+    [currentLang]
+  );
+  const desktopTabs = useMemo(
+    () => getDesktopTabData().filter((tab) => !tab.link?.trim()),
+    []
   );
 
   const getActiveTypeFromPath = useCallback((currentPath: string): string => {
     const normalizedPath = stripLanguagePrefix(currentPath).path;
     if (normalizedPath === '/') return 'all';
-    if (normalizedPath === '/design') return 'design';
     if (normalizedPath === '/desktop') return 'desktop';
-    const desktopCatMatch = normalizedPath.match(/^\/desktop\/([^/]+)$/);
-    if (desktopCatMatch?.[1]) {
+    const desktopCategoryMatch = normalizedPath.match(/^\/desktop\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
+    if (desktopCategoryMatch?.[1]) {
       try {
-        return normalizeCategoryType(decodeURIComponent(desktopCatMatch[1]));
+        return normalizeCategoryType(decodeURIComponent(desktopCategoryMatch[1]));
       } catch {
-        return normalizeCategoryType(desktopCatMatch[1]);
+        return normalizeCategoryType(desktopCategoryMatch[1]);
       }
     }
     const topLevelMatch = normalizedPath.match(/^\/([^/]+)$/);
@@ -109,88 +253,201 @@ export default function Header({
     [activeCategoryTypeOverride, getActiveTypeFromPath]
   );
 
-  const [activeMobileType, setActiveMobileType] = useState(() => resolveActiveType(pathname));
+  const [activeCategoryType, setActiveCategoryType] = useState(() => resolveActiveType(pathname));
+  const pathWithoutLanguage = stripLanguagePrefix(pathname).path;
+  const activeSection: PrimaryMenu = pathWithoutLanguage.startsWith('/desktop') ? 'desktop' : 'phone';
+  const appleHref = appleTab?.link?.trim() || 'https://applewalls.com';
+  const mobilePopularPhoneTabs = useMemo<TabInfo[]>(
+    () => [
+      {
+        title: texts.appleNavShortLabel,
+        type: 'apple',
+        link: appleHref,
+        icon: '',
+        items: [],
+      },
+      ...popularPhoneTabs,
+    ],
+    [appleHref, popularPhoneTabs, texts.appleNavShortLabel]
+  );
 
-  const texts = getI18nTexts(currentLang);
-  const shareTexts = getShareTexts(currentLang);
-  const mobileAllLabel =
-    currentLang === LanguageCode.ZH || currentLang === LanguageCode.ZH_HANT
-      ? '全部'
-      : currentLang === LanguageCode.JA
-        ? 'すべて'
-        : currentLang === LanguageCode.VI
-          ? 'Tất cả'
-          : 'All';
-  const desktopMoreLabel =
-    currentLang === LanguageCode.ZH || currentLang === LanguageCode.ZH_HANT
-      ? '更多'
-      : currentLang === LanguageCode.JA
-        ? 'その他'
-        : currentLang === LanguageCode.VI
-          ? 'Thêm'
-          : 'More';
-  const sameTabs = useCallback(
-    (left: TabInfo[], right: TabInfo[]) =>
-      left.length === right.length &&
-      left.every((item, index) => {
-        const other = right[index];
-        return (
-          item.type === other?.type &&
-          item.title === other.title &&
-          item.link === other.link
-        );
-      }),
-    []
+  const primaryNavigation = useMemo<PrimaryNavigationItem[]>(
+    () => [
+      {
+        id: 'phone',
+        label: texts.phoneWallpapersNavLabel,
+        href: withLanguagePath('/', currentLang),
+        menu: 'phone',
+      },
+      {
+        id: 'apple',
+        label: texts.appleWallpapersNavLabel,
+        href: appleHref,
+        external: true,
+      },
+      {
+        id: 'desktop',
+        label: texts.desktopWallpapersNavLabel,
+        href: withLanguagePath('/desktop', currentLang),
+        menu: 'desktop',
+      },
+    ],
+    [
+      appleHref,
+      currentLang,
+      texts.appleWallpapersNavLabel,
+      texts.desktopWallpapersNavLabel,
+      texts.phoneWallpapersNavLabel,
+    ]
   );
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const nextIsScrolled = scrollTop > 50;
-      setIsScrolled((prev) => (prev === nextIsScrolled ? prev : nextIsScrolled));
+    clearPrimaryMenuTimer();
+    setIsLanguageMenuOpen(false);
+    setActiveCategoryType(resolveActiveType(pathname));
+    setOpenPrimaryMenu(null);
+    setIsDeviceMenuOpen(false);
+  }, [pathname, resolveActiveType, clearPrimaryMenuTimer]);
+
+  useEffect(() => {
+    if (!openPrimaryMenu) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!primaryNavigationRef.current?.contains(event.target as Node)) {
+        setOpenPrimaryMenu(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openPrimaryMenu]);
+
+  useEffect(() => {
+    if (!openPrimaryMenu) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      if (!focusPrimaryPanelRef.current) return;
+      focusPrimaryPanelRef.current = false;
+      const panel = primaryNavigationRef.current?.querySelector<HTMLElement>(
+        `[data-primary-menu-panel="${openPrimaryMenu}"]`
+      );
+      panel?.querySelector<HTMLElement>('a[href], button:not([disabled])')?.focus();
+    });
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      clearPrimaryMenuTimer();
+      const trigger = primaryTriggerRefs.current[openPrimaryMenu];
+      setOpenPrimaryMenu(null);
+      window.requestAnimationFrame(() => trigger?.focus());
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [openPrimaryMenu, clearPrimaryMenuTimer]);
 
   useEffect(() => {
-    setActiveMobileType(resolveActiveType(pathname));
-  }, [pathname, resolveActiveType]);
-
-  const getCategoryHref = useCallback(
-    (categoryType: string): string | null => {
-      const targetPath = getLandingPathByCategoryType(categoryType);
-      if (!targetPath) return null;
-      return withLanguagePath(targetPath, currentLang);
-    },
-    [currentLang, getLandingPathByCategoryType]
-  );
-
-  const handleCategorySelect = useCallback(
-    (categoryType: string) => {
-      const normalizedType = normalizeCategoryType(categoryType);
-      setActiveMobileType((prev) => (prev === normalizedType ? prev : normalizedType));
-
-      setIsDeviceMenuOpen(false);
+    if (!isLanguageMenuOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!languageMenuRef.current?.contains(event.target as Node)) {
+        setIsLanguageMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
       setIsLanguageMenuOpen(false);
-      setIsMiniProgramMenuOpen(false);
-    },
-    []
-  );
+      window.requestAnimationFrame(() => languageButtonRef.current?.focus());
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isLanguageMenuOpen]);
 
-  const handleLanguageChange = (lang: Language) => {
-    onLanguageChange(lang);
-  };
+  useEffect(() => {
+    if (!isDeviceMenuOpen) return;
 
-  const handleShareClick = useCallback(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const drawer = mobileDrawerRef.current;
+    const focusableSelector =
+      'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const frame = window.requestAnimationFrame(() => {
+      drawer?.querySelector<HTMLElement>(focusableSelector)?.focus();
+    });
+
+    const handleDrawerKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsDeviceMenuOpen(false);
+        window.requestAnimationFrame(() => mobileMenuButtonRef.current?.focus());
+        return;
+      }
+
+      if (event.key !== 'Tab' || !drawer) return;
+      const focusableElements = Array.from(
+        drawer.querySelectorAll<HTMLElement>(focusableSelector)
+      ).filter((element) => !element.hasAttribute('hidden'));
+      if (focusableElements.length === 0) return;
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleDrawerKeyDown);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleDrawerKeyDown);
+    };
+  }, [isDeviceMenuOpen]);
+
+  const closeMenus = useCallback(() => {
+    clearPrimaryMenuTimer();
     setIsDeviceMenuOpen(false);
     setIsLanguageMenuOpen(false);
     setIsMiniProgramMenuOpen(false);
+    setOpenPrimaryMenu(null);
+  }, [clearPrimaryMenuTimer]);
 
-    if (typeof window === 'undefined') {
+  const closeMobileMenu = useCallback(() => {
+    setIsDeviceMenuOpen(false);
+    window.requestAnimationFrame(() => mobileMenuButtonRef.current?.focus());
+  }, []);
+
+  const handleMobileMenuToggle = () => {
+    if (isDeviceMenuOpen) {
+      closeMobileMenu();
       return;
     }
+
+    setMobileNavigationSection(activeSection);
+    setIsLanguageMenuOpen(false);
+    setIsMiniProgramMenuOpen(false);
+    setOpenPrimaryMenu(null);
+    setIsDeviceMenuOpen(true);
+  };
+
+  const handleLanguageChange = (lang: Language) => {
+    onLanguageChange(lang);
+    setIsLanguageMenuOpen(false);
+  };
+
+  const handleShareClick = useCallback(() => {
+    closeMenus();
+    if (typeof window === 'undefined') return;
 
     const payload = sharePayload ?? {
       title: document.title.replace(/\s+\|\s+PhWalls$/, '').trim() || texts.siteName,
@@ -198,21 +455,13 @@ export default function Header({
       brand: texts.siteName,
       images: [],
     };
-
     setSharePayload(payload);
 
     if (typeof navigator.share === 'function') {
-      if (shareInProgressRef.current) {
-        return;
-      }
-
+      if (shareInProgressRef.current) return;
       shareInProgressRef.current = true;
       void navigator
-        .share({
-          title: payload.title,
-          text: payload.brand || texts.siteName,
-          url: payload.url,
-        })
+        .share({ title: payload.title, text: payload.brand || texts.siteName, url: payload.url })
         .catch((error: unknown) => {
           if (
             error instanceof DOMException &&
@@ -220,7 +469,6 @@ export default function Header({
           ) {
             return;
           }
-
           console.error('System share failed:', error);
         })
         .finally(() => {
@@ -235,180 +483,115 @@ export default function Header({
       });
       return;
     }
-
     window.prompt(shareTexts.share, payload.url);
-  }, [setSharePayload, sharePayload, shareTexts.share, texts.siteName]);
-
-  const getDesktopTabButtonClass = (isActive: boolean) => {
-    return [
-      'px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
-      'whitespace-nowrap',
-      isActive
-        ? 'text-blue-700 bg-blue-50/90'
-        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/80',
-    ].join(' ');
-  };
-
-  const getDesktopUtilityButtonClass = (isActive = false) =>
-    `inline-flex h-10 w-10 items-center justify-center rounded-lg text-sm transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 active:bg-gradient-to-r active:from-blue-50 active:to-purple-50 ${
-      isActive
-        ? 'text-gray-900 bg-gradient-to-r from-blue-50 to-purple-50'
-        : 'text-gray-600 hover:text-gray-900'
-    }`;
-
-  useEffect(() => {
-    const viewport = desktopTabsViewportRef.current;
-    if (!viewport) return;
-
-    const recalculateDesktopTabs = () => {
-      if (typeof window === 'undefined') return;
-
-      if (window.innerWidth < 1024) {
-        setVisibleDesktopTabs((prev) => (sameTabs(prev, orderedTabData) ? prev : orderedTabData));
-        setOverflowDesktopTabs((prev) => (prev.length === 0 ? prev : []));
-        return;
-      }
-
-      const availableWidth = viewport.clientWidth;
-      if (availableWidth <= 0) return;
-
-      const gap = 4; // px, matches `space-x-1`
-      const tabWidths = orderedTabData.map((category) => {
-        const measured = desktopTabMeasureRefs.current[category.type]?.offsetWidth;
-        return measured ?? Math.max(88, category.title.length * 8 + 32);
-      });
-      const totalWidth =
-        tabWidths.reduce((sum, width) => sum + width, 0) +
-        Math.max(0, orderedTabData.length - 1) * gap;
-
-      if (totalWidth <= availableWidth) {
-        setVisibleDesktopTabs((prev) => (sameTabs(prev, orderedTabData) ? prev : orderedTabData));
-        setOverflowDesktopTabs((prev) => (prev.length === 0 ? prev : []));
-        return;
-      }
-
-      const moreWidth = moreTabMeasureRef.current?.offsetWidth ?? 76;
-      const reserveForMore = moreWidth + gap;
-      const nextVisibleTabs: TabInfo[] = [];
-      let usedWidth = 0;
-
-      for (let index = 0; index < orderedTabData.length; index += 1) {
-        const tabWidth = tabWidths[index];
-        const tabWidthWithGap = tabWidth + (nextVisibleTabs.length > 0 ? gap : 0);
-        const hasRemainingTabs = index < orderedTabData.length - 1;
-        const reservedWidth = hasRemainingTabs ? reserveForMore : 0;
-        const canFit = usedWidth + tabWidthWithGap + reservedWidth <= availableWidth;
-
-        if (canFit || nextVisibleTabs.length === 0) {
-          nextVisibleTabs.push(orderedTabData[index]);
-          usedWidth += tabWidthWithGap;
-          continue;
-        }
-
-        break;
-      }
-
-      const limitedVisibleTabs = nextVisibleTabs.slice(0, MAX_VISIBLE_DESKTOP_TABS);
-      const visibleTypes = new Set(limitedVisibleTabs.map((item) => item.type));
-      const nextOverflowTabs = [
-        ...nextVisibleTabs.slice(MAX_VISIBLE_DESKTOP_TABS),
-        ...orderedTabData.slice(nextVisibleTabs.length),
-      ].filter((item) => !visibleTypes.has(item.type));
-
-      setVisibleDesktopTabs((prev) => (sameTabs(prev, limitedVisibleTabs) ? prev : limitedVisibleTabs));
-      setOverflowDesktopTabs((prev) => (sameTabs(prev, nextOverflowTabs) ? prev : nextOverflowTabs));
-    };
-
-    recalculateDesktopTabs();
-    const observer = new ResizeObserver(recalculateDesktopTabs);
-    observer.observe(viewport);
-    window.addEventListener('resize', recalculateDesktopTabs, { passive: true });
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', recalculateDesktopTabs);
-    };
-  }, [desktopMoreLabel, orderedTabData, sameTabs]);
+  }, [closeMenus, setSharePayload, sharePayload, shareTexts.share, texts.siteName]);
 
   const handleMiniProgramClick = () => {
     if (!SHOW_MINI_PROGRAM) return;
     setIsMiniProgramMenuOpen((prev) => !prev);
     setIsLanguageMenuOpen(false);
     setIsDeviceMenuOpen(false);
-  };
-
-  const closeMobileMenus = () => {
-    setIsDeviceMenuOpen(false);
-    setIsLanguageMenuOpen(false);
-    setIsMiniProgramMenuOpen(false);
+    setOpenPrimaryMenu(null);
   };
 
   useEffect(() => {
     if (!isMiniProgramMenuOpen) return;
-
-    const handleClickOutside = (event: globalThis.MouseEvent) => {
-      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-        return;
-      }
-
+    const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      const isDesktopInside = miniProgramMenuRef.current?.contains(target);
-      const isMobileInside = mobileMiniProgramPanelRef.current?.contains(target);
-
-      if (!isDesktopInside && !isMobileInside) {
+      if (
+        !miniProgramMenuRef.current?.contains(target) &&
+        !mobileMiniProgramPanelRef.current?.contains(target)
+      ) {
         setIsMiniProgramMenuOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMiniProgramMenuOpen]);
 
   useEffect(() => {
-    if (!SHOW_MINI_PROGRAM) return;
-    if (typeof window === 'undefined') return;
-    const normalizedPath = stripLanguagePrefix(window.location.pathname).path;
-    if (normalizedPath !== '/') return;
-
-    setIsMiniProgramMenuOpen(true);
+    if (!SHOW_MINI_PROGRAM || typeof window === 'undefined') return;
+    if (stripLanguagePrefix(window.location.pathname).path === '/') {
+      setIsMiniProgramMenuOpen(true);
+    }
   }, []);
+
+  const utilityButtonClass = (isActive = false) =>
+    `inline-flex h-9 w-9 items-center justify-center rounded-md text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:translate-y-px ${
+      isActive
+        ? 'bg-gray-100 text-blue-700'
+        : 'text-gray-700 hover:bg-gray-200 hover:text-gray-950'
+    }`;
+
+  const primaryItemClass = (isActive: boolean) =>
+    `inline-flex h-10 items-center whitespace-nowrap rounded-full px-4 text-[15px] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+      isActive ? 'bg-gray-100 text-gray-950' : 'text-gray-700 hover:bg-gray-200 hover:text-gray-950'
+    }`;
+
+  const submenuItemClass = (isActive: boolean) =>
+    `group flex min-h-9 min-w-0 items-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-[13px] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:translate-y-px ${
+      isActive
+        ? 'bg-blue-50/80 font-semibold text-blue-700'
+        : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-950'
+    }`;
+
+  const renderCategoryLink = (tab: TabInfo, section: PrimaryMenu, mobile = false) => {
+    const normalizedType = normalizeCategoryType(tab.type);
+    const isActive = normalizedType === activeCategoryType;
+    const isExternal = Boolean(tab.link?.trim());
+    const href = isExternal
+      ? tab.link!.trim()
+      : withLanguagePath(
+          section === 'desktop' ? `/desktop/${normalizedType}` : buildBrandPath(tab.type),
+          currentLang
+        );
+    const className = mobile
+      ? `${submenuItemClass(isActive)} border border-transparent ${isActive ? 'border-blue-100' : ''}`
+      : `group flex min-h-11 min-w-0 items-center gap-2.5 rounded-lg border border-transparent px-2.5 py-2 text-[14px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+          isActive ? 'border-blue-200 bg-blue-50 font-semibold text-blue-900' : 'text-gray-900 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-900 focus-visible:bg-blue-50'
+        }`;
+
+    return isExternal ? (
+      <a
+        key={`${section}-${tab.type}`}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        onClick={closeMenus}
+      >
+        <BrandIcon type={tab.type} desktop={!mobile} />
+        <span className="min-w-0 flex-1 truncate">{tab.title}</span>
+        <ExternalLink className="h-3.5 w-3.5 shrink-0 text-gray-400" aria-hidden="true" />
+      </a>
+    ) : (
+      <Link
+        key={`${section}-${tab.type}`}
+        href={href}
+        className={className}
+        onClick={closeMenus}
+        aria-current={isActive ? 'page' : undefined}
+        prefetch
+      >
+        <BrandIcon type={tab.type} desktop={!mobile} />
+        <span className={mobile ? 'min-w-0 truncate' : 'min-w-0 flex-1 whitespace-normal leading-5'}>{tab.title}</span>
+      </Link>
+    );
+  };
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50' 
-          : 'bg-white/80 backdrop-blur-md border-b border-gray-200/50'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="pointer-events-none invisible fixed -top-24 left-0 hidden lg:flex items-center space-x-1">
-            {orderedTabData.map((category) => (
-              <button
-                key={`measure-${category.type}`}
-                ref={(element) => {
-                  desktopTabMeasureRefs.current[category.type] = element;
-                }}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap"
-                type="button"
-              >
-                {category.title}
-              </button>
-            ))}
-            <button
-              ref={moreTabMeasureRef}
-              className="px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap"
-              type="button"
-            >
-              {desktopMoreLabel}
-            </button>
-          </div>
-          <div className="flex items-center h-12 md:h-16 relative">
-          <div className="flex-shrink-0">
+      <nav
+        aria-label={texts.mainNavigationLabel}
+        className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="relative flex h-12 items-center md:h-16">
             <Link
               href={withLanguagePath('/', currentLang)}
-              className="inline-flex items-center gap-1.5 md:gap-2 text-lg md:text-2xl font-bold text-gray-900 tracking-tight hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+              className="inline-flex shrink-0 items-center gap-2 text-lg font-semibold text-gray-950 transition-colors duration-200 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 md:text-[22px]"
             >
-              <span className="relative h-5 w-5 md:h-7 md:w-7 overflow-hidden rounded-md bg-white">
+              <span className="relative h-6 w-6 overflow-hidden rounded-md bg-white md:h-7 md:w-7">
                 <img
                   src="/brand/option-03/logo.png"
                   alt={`${texts.siteName} logo`}
@@ -418,375 +601,429 @@ export default function Header({
               </span>
               {texts.siteName}
             </Link>
-          </div>
 
-          <div ref={desktopTabsViewportRef} className="hidden lg:flex flex-1 justify-center min-w-0 px-4">
-            <div className="flex items-center space-x-1 min-w-0">
-              {visibleDesktopTabs.map((category) => {
-                const isExternal = Boolean(category.link?.trim());
-                const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
-                const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);
-                return href ? (
-                  isExternal ? (
+            <div
+              ref={primaryNavigationRef}
+              className="relative hidden h-full flex-1 items-center justify-center gap-1 px-6 lg:flex"
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  clearPrimaryMenuTimer();
+                  setOpenPrimaryMenu(null);
+                }
+              }}
+            >
+              {primaryNavigation.map((item) => {
+                const isActive = item.menu === activeSection;
+
+                if (item.external) {
+                  return (
                     <a
-                      key={category.type}
-                      href={href}
-                      className={getDesktopTabButtonClass(false)}
-                      title={category.title}
+                      key={item.id}
+                      href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={closeMenus}
+                      onPointerEnter={() => {
+                        clearPrimaryMenuTimer();
+                        setOpenPrimaryMenu(null);
+                      }}
+                      className={primaryItemClass(false)}
                     >
-                      {category.title}
+                      <span>{item.label}</span>
+                      <ExternalLink className="ml-1 h-3 w-3 text-gray-400" aria-hidden="true" />
                     </a>
-                  ) : (
-                  <Link
-                    key={category.type}
-                    href={href}
-                    className={getDesktopTabButtonClass(isActive)}
-                    title={category.title}
-                    prefetch
+                  );
+                }
+
+                const menuTabs = item.menu === 'desktop' ? desktopTabs : phoneTabs;
+                const isOpen = openPrimaryMenu === item.menu;
+                return (
+                  <div
+                    key={item.id}
+                    className="flex h-full items-center"
+                    onPointerEnter={(event) => {
+                      if (event.pointerType !== 'mouse' || !item.menu) return;
+                      clearPrimaryMenuTimer();
+                      const menu = item.menu;
+                      primaryMenuTimerRef.current = setTimeout(() => openMenu(menu), 140);
+                    }}
+                    onPointerLeave={(event) => {
+                      if (event.pointerType !== 'mouse') return;
+                      clearPrimaryMenuTimer();
+                      primaryMenuTimerRef.current = setTimeout(() => {
+                        // Keep a keyboard user's focused panel available.
+                        if (!primaryNavigationRef.current?.contains(document.activeElement) ||
+                            document.activeElement?.tagName === 'BUTTON') {
+                          setOpenPrimaryMenu(null);
+                        }
+                      }, 240);
+                    }}
                   >
-                    {category.title}
-                  </Link>
-                  )
-                ) : (
-                  <button
-                    key={category.type}
-                    onClick={() => handleCategorySelect(category.type)}
-                    className={getDesktopTabButtonClass(isActive)}
-                    title={category.title}
-                  >
-                    {category.title}
-                  </button>
+                    <button
+                      ref={(element) => {
+                        if (item.menu) primaryTriggerRefs.current[item.menu] = element;
+                      }}
+                      type="button"
+                      onClick={() => {
+                        clearPrimaryMenuTimer();
+                        if (isOpen) setOpenPrimaryMenu(null);
+                        else if (item.menu) openMenu(item.menu);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'ArrowDown' && item.menu) {
+                          event.preventDefault();
+                          openMenu(item.menu, true);
+                        }
+                      }}
+                      className={`${primaryItemClass(isActive || isOpen)} gap-2`}
+                      id={`primary-trigger-${item.menu}`}
+                      aria-label={item.label}
+                      aria-expanded={isOpen}
+                      aria-controls={`primary-menu-${item.menu}`}
+                      aria-haspopup="true"
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    {isOpen && (
+                      <div
+                        id={`primary-menu-${item.menu}`}
+                        data-primary-menu-panel={item.menu}
+                        aria-labelledby={`primary-trigger-${item.menu}`}
+                        onKeyDown={(event) => {
+                          if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+                          const links = Array.from(event.currentTarget.querySelectorAll<HTMLAnchorElement>('a[href]'));
+                          const index = links.indexOf(document.activeElement as HTMLAnchorElement);
+                          if (index < 0 || links.length === 0) return;
+                          event.preventDefault();
+                          const next = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1
+                            : (index + (event.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length;
+                          links[next].focus();
+                        }}
+                        className={`absolute left-1/2 top-full max-w-[calc(100vw-3rem)] -translate-x-1/2 pt-2 ${
+                          item.menu === 'phone' ? 'w-[44rem]' : 'w-[32rem]'
+                        }`}
+                      >
+                        <div className="nav-menu-enter max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_16px_48px_-12px_rgba(15,23,42,0.18)]">
+                          <div className="mb-4 flex items-center justify-between px-2">
+                            <span className="text-base font-semibold tracking-tight text-gray-950">{item.label}</span>
+                            {item.menu === 'phone'
+                              ? <Smartphone className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                              : <Monitor className="h-5 w-5 text-gray-500" aria-hidden="true" />}
+                          </div>
+                          {item.menu === 'phone' ? (
+                            <div>
+                              <section aria-labelledby="desktop-popular-brands">
+                                <h3 id="desktop-popular-brands" className="mb-2 px-2 text-[13px] font-semibold text-gray-600">
+                                  {texts.popularBrandsNavLabel}
+                                </h3>
+                                <div className="grid grid-cols-3 gap-x-3 gap-y-1">
+                                  {popularPhoneTabs.map((tab) => renderCategoryLink(tab, 'phone'))}
+                                </div>
+                              </section>
+                              <section className="mt-4 border-t border-gray-100 pt-4" aria-labelledby="desktop-more-brands">
+                                <h3 id="desktop-more-brands" className="mb-2 px-2 text-[13px] font-semibold text-gray-600">
+                                  {texts.moreBrandsNavLabel}
+                                </h3>
+                                <div className="grid grid-cols-3 gap-x-3 gap-y-1">
+                                  {morePhoneTabs.map((tab) => renderCategoryLink(tab, 'phone'))}
+                                </div>
+                              </section>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-2">
+                              {menuTabs.map((tab) => renderCategoryLink(tab, 'desktop'))}
+                            </div>
+                          )}
+                          <Link
+                            href={item.href}
+                            onClick={closeMenus}
+                            className="mt-5 flex items-center justify-between rounded-lg border-t border-gray-100 px-2 pt-4 text-xs font-medium text-gray-500 transition-colors hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                          >
+                            {item.label}
+                            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
-              {overflowDesktopTabs.length > 0 && (
-                <div className="relative group">
-                  <button
-                    type="button"
-                    className={getDesktopTabButtonClass(
-                      overflowDesktopTabs.some((category) => normalizeCategoryType(category.type) === activeMobileType)
-                    )}
-                  >
-                    {desktopMoreLabel}
-                  </button>
-                  <div className="absolute right-0 mt-2 min-w-[180px] rounded-xl border border-gray-100 bg-white/95 p-2 shadow-xl backdrop-blur-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-[90]">
-                    {overflowDesktopTabs.map((category) => {
-                      const isExternal = Boolean(category.link?.trim());
-                      const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
-                      const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);
-                      const itemClass = [
-                        'block w-full rounded-md px-3 py-2 text-left text-sm transition-colors',
-                        isActive
-                          ? 'bg-blue-50 text-blue-700 font-medium'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600',
-                      ].join(' ');
+            </div>
 
-                      return href ? (
-                        isExternal ? (
-                          <a
-                            key={category.type}
-                            href={href}
-                            className={itemClass}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {category.title}
-                          </a>
-                        ) : (
-                          <Link key={category.type} href={href} className={itemClass} prefetch>
-                            {category.title}
-                          </Link>
-                        )
-                      ) : (
-                        <button
-                          key={category.type}
-                          type="button"
-                          onClick={() => handleCategorySelect(category.type)}
-                          className={itemClass}
-                        >
-                          {category.title}
-                        </button>
-                      );
-                    })}
-                  </div>
+            <div className="ml-auto flex shrink-0 items-center gap-1 lg:border-l lg:border-gray-200/70 lg:pl-5">
+              <div className="hidden lg:block">
+                <button
+                  type="button"
+                  onClick={handleShareClick}
+                  className={utilityButtonClass()}
+                  aria-label={shareTexts.share}
+                  title={shareTexts.share}
+                >
+                  <Share2 className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+
+              {SHOW_MINI_PROGRAM && (
+                <div
+                  className="relative hidden md:block"
+                  ref={miniProgramMenuRef}
+                  onMouseEnter={() => setIsMiniProgramMenuOpen(true)}
+                  onMouseLeave={() => setIsMiniProgramMenuOpen(false)}
+                >
+                  <button
+                    onClick={handleMiniProgramClick}
+                    aria-expanded={isMiniProgramMenuOpen}
+                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-700"
+                  >
+                    {texts.miniProgram}
+                  </button>
+                  {isMiniProgramMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-gray-200 bg-white p-3 shadow-xl">
+                      <button
+                        type="button"
+                        onClick={() => setIsMiniProgramMenuOpen(false)}
+                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center text-gray-500 hover:text-gray-900"
+                        aria-label="Close mini program panel"
+                      >
+                        <X className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                      <p className="mb-3 px-6 text-center text-sm text-gray-600">{texts.scanWechatQR}</p>
+                      <div className="aspect-square w-full overflow-hidden rounded-md bg-gray-50">
+                        <img
+                          src="/mini_program.jpg"
+                          alt={texts.miniProgram}
+                          className="h-full w-full object-contain p-2"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          </div>
 
-          <div className="flex items-center space-x-0 flex-shrink-0 ml-auto lg:ml-0">
-            <div className="hidden md:block">
-              <button
-                type="button"
-                onClick={handleShareClick}
-                className={getDesktopUtilityButtonClass()}
-                aria-label={shareTexts.share}
-                title={shareTexts.share}
-              >
-                <Share2 className="h-4 w-4" />
-              </button>
-            </div>
-
-            {SHOW_MINI_PROGRAM && (
-              <div
-                className="hidden md:block relative"
-                ref={miniProgramMenuRef}
-                onMouseEnter={() => setIsMiniProgramMenuOpen(true)}
-                onMouseLeave={() => setIsMiniProgramMenuOpen(false)}
-              >
-                <button
-                  onClick={handleMiniProgramClick}
-                  aria-expanded={isMiniProgramMenuOpen}
-                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 px-3 py-2 rounded-md hover:bg-blue-50"
+              <div className="hidden lg:block">
+                <Link
+                  href={withLanguagePath('/about', currentLang)}
+                  className={utilityButtonClass()}
+                  aria-label={texts.about}
+                  title={texts.about}
                 >
-                  {texts.miniProgram}
-                </button>
-
-                {isMiniProgramMenuOpen && (
-                  <div className="absolute -right-[70px] mt-2 w-[200px] min-w-[200px] max-w-none bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 z-[80] p-3">
-                    <button
-                      onClick={() => setIsMiniProgramMenuOpen(false)}
-                      className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-base font-semibold text-gray-500 hover:text-gray-700"
-                      aria-label="Close mini program panel"
-                    >
-                      ×
-                    </button>
-                    <p className="text-sm text-gray-600 text-center mb-3 whitespace-nowrap px-6">{texts.scanWechatQR}</p>
-                    <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-50">
-                      <img
-                        src="/mini_program.jpg"
-                        alt={texts.miniProgram}
-                        className="w-full h-full object-contain p-2"
-                        loading="lazy"
-                      />
-                    </div>
-                  </div>
-                )}
+                  <Info className="h-4 w-4" aria-hidden="true" />
+                </Link>
               </div>
-            )}
-            
-            <div className="hidden md:block">
-              <Link
-                href={withLanguagePath('/about', currentLang)}
-                className={getDesktopUtilityButtonClass()}
-                aria-label={texts.about}
-                title={texts.about}
+
+              <div ref={languageMenuRef} className="relative shrink-0"
+                onBlur={(event) => {
+                  if (window.matchMedia('(min-width: 768px)').matches &&
+                      !event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setIsLanguageMenuOpen(false);
+                  }
+                }}
               >
-                <Info className="h-4 w-4" />
-              </Link>
-            </div>
-            
-            <div className="relative group flex-shrink-0">
-              <div className="relative">
                 <button
+                  ref={languageButtonRef}
                   onClick={() => {
+                    clearPrimaryMenuTimer();
                     setIsLanguageMenuOpen((prev) => !prev);
                     setIsDeviceMenuOpen(false);
                     setIsMiniProgramMenuOpen(false);
+                    setOpenPrimaryMenu(null);
                   }}
-                  className={getDesktopUtilityButtonClass(isLanguageMenuOpen)}
+                  className={utilityButtonClass(isLanguageMenuOpen)}
                   aria-label="Change language"
+                  aria-expanded={isLanguageMenuOpen}
                 >
-                  <Globe className="w-4 h-4" />
+                  <Globe className="h-4 w-4" aria-hidden="true" />
                 </button>
-                
-                <div className="hidden md:block absolute left-1/2 -translate-x-1/2 mt-2 min-w-[140px] w-auto bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform scale-95 group-hover:scale-100 z-50 overflow-hidden whitespace-nowrap">
-                  <div className="py-2">
+
+                <div
+                  className={`nav-menu-enter absolute right-0 z-50 mt-2 hidden min-w-[10rem] overflow-hidden rounded-lg border border-gray-200/90 bg-white shadow-[0_16px_40px_rgba(30,64,175,0.1)] transition-all duration-150 md:block ${
+                    isLanguageMenuOpen
+                      ? 'visible opacity-100'
+                      : 'invisible opacity-0'
+                  }`}
+                >
+                  <div className="py-1.5">
                     {languageOrder.map((lang) => {
                       const config = languageConfig[lang];
                       return (
                         <button
                           key={lang}
                           onClick={() => handleLanguageChange(lang)}
-                          className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-200 flex items-center space-x-3 whitespace-nowrap ${
-                            currentLang === lang 
-                              ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 font-medium' 
-                              : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 hover:text-gray-900'
+                          className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors ${
+                            currentLang === lang
+                              ? 'bg-blue-50 font-medium text-blue-700'
+                              : 'text-gray-700 hover:bg-gray-50 hover:text-gray-950'
                           }`}
                         >
-                          <span className="whitespace-nowrap">{texts[config.name as keyof typeof texts]}</span>
-                          {currentLang === lang && (
-                            <svg className="w-4 h-4 ml-auto text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
+                          <span>{texts[config.name as keyof typeof texts]}</span>
                         </button>
                       );
                     })}
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="md:hidden flex items-center justify-center">
               <button
+                ref={mobileMenuButtonRef}
                 type="button"
-                onClick={handleShareClick}
-                className={getDesktopUtilityButtonClass()}
-                aria-label={shareTexts.share}
-              >
-                <Share2 className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="md:hidden flex items-center justify-center">
-              <button
-                onClick={() => {
-                  setIsDeviceMenuOpen((prev) => !prev);
-                  setIsLanguageMenuOpen(false);
-                  setIsMiniProgramMenuOpen(false);
-                }}
-                className={getDesktopUtilityButtonClass(isDeviceMenuOpen)}
+                onClick={handleMobileMenuToggle}
+                className={`${utilityButtonClass(isDeviceMenuOpen)} lg:hidden`}
                 aria-label="Toggle menu"
+                aria-expanded={isDeviceMenuOpen}
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {isDeviceMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
+                {isDeviceMenuOpen ? (
+                  <X className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Menu className="h-4 w-4" aria-hidden="true" />
+                )}
               </button>
             </div>
           </div>
         </div>
 
-          <div className="lg:hidden pb-1.5 border-t border-gray-100/80">
-            <div className="pt-1.5 overflow-x-auto scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none]">
-              <div className="inline-flex items-center gap-1.5 min-w-full" role="tablist" aria-label="Device categories">
-                <Link
-                  key="all"
-                  href={withLanguagePath('/', currentLang)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
-                    activeMobileType === 'all'
-                      ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
-                      : 'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                  role="tab"
-                  aria-selected={activeMobileType === 'all'}
-                  prefetch
-                >
-                  {mobileAllLabel}
-                </Link>
-                {orderedTabData.map((category) => {
-                  const isExternal = Boolean(category.link?.trim());
-                  const isActive = !isExternal && normalizeCategoryType(category.type) === activeMobileType;
-                  const href = isExternal ? category.link!.trim() : getCategoryHref(category.type);
-
-                  return href ? (
-                    isExternal ? (
-                      <a
-                        key={category.type}
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
-                          'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
-                        }`}
-                        role="tab"
-                        aria-selected={false}
-                      >
-                        {category.title}
-                      </a>
-                    ) : (
-                      <Link
-                        key={category.type}
-                        href={href}
-                        onClick={() => handleCategorySelect(category.type)}
-                        className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
-                          isActive
-                            ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
-                            : 'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
-                        }`}
-                        role="tab"
-                        aria-selected={isActive}
-                        prefetch
-                      >
-                        {category.title}
-                      </Link>
-                    )
-                  ) : (
-                    <button
-                      key={category.type}
-                      onClick={() => handleCategorySelect(category.type)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
-                        isActive
-                          ? 'text-blue-700 bg-blue-50 border-blue-200 shadow-sm'
-                          : 'text-gray-600 bg-white border-transparent hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                      role="tab"
-                      aria-selected={isActive}
-                    >
-                      {category.title}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-        </div>
       </nav>
 
-      {SHOW_MINI_PROGRAM && isMiniProgramMenuOpen && (
-        <div
-          ref={mobileMiniProgramPanelRef}
-          className="md:hidden fixed top-16 right-4 w-52 max-w-none bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 z-[75] p-3"
-        >
+      {isDeviceMenuOpen && (
+        <div className="fixed inset-0 z-[70] lg:hidden">
           <button
-            onClick={() => setIsMiniProgramMenuOpen(false)}
-            className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-base font-semibold text-gray-500 hover:text-gray-700"
-            aria-label="Close mini program panel"
+            type="button"
+            onClick={closeMobileMenu}
+            className="absolute inset-0 bg-gray-950/25 backdrop-blur-[2px]"
+            aria-label="Close menu"
+          />
+          <div
+            ref={mobileDrawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-navigation-title"
+            className="mobile-drawer-enter absolute inset-y-0 right-0 flex h-[100dvh] w-[min(92vw,24rem)] max-w-none flex-col border-l border-gray-200/90 bg-white shadow-[-18px_0_50px_rgba(30,64,175,0.14)]"
           >
-            ×
-          </button>
-          <p className="text-sm text-gray-600 text-center mb-3 px-6">{texts.scanWechatQR}</p>
-          <div className="w-full aspect-square rounded-md overflow-hidden bg-gray-50">
-            <img
-              src="/mini_program.jpg"
-              alt={texts.miniProgram}
-              className="w-full h-full object-contain p-2"
-              loading="lazy"
-            />
+            <div className="flex h-14 shrink-0 items-center justify-between border-b border-gray-100 px-4">
+              <h2 id="mobile-navigation-title" className="text-base font-semibold text-gray-950">
+                {texts.mainNavigationLabel}
+              </h2>
+              <button
+                type="button"
+                onClick={closeMobileMenu}
+                className={utilityButtonClass()}
+                aria-label="Close menu"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="shrink-0 px-4 pt-4">
+              <div className="grid grid-cols-2 rounded-lg bg-gray-100 p-1" role="tablist" aria-label={texts.mainNavigationLabel}>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileNavigationSection === 'phone'}
+                  aria-controls="mobile-phone-panel"
+                  onClick={() => setMobileNavigationSection('phone')}
+                  className={`flex min-h-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                    mobileNavigationSection === 'phone'
+                      ? 'bg-white text-gray-950 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  <Smartphone className="h-4 w-4" aria-hidden="true" />
+                  {texts.phoneNavShortLabel}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileNavigationSection === 'desktop'}
+                  aria-controls="mobile-desktop-panel"
+                  onClick={() => setMobileNavigationSection('desktop')}
+                  className={`flex min-h-10 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                    mobileNavigationSection === 'desktop'
+                      ? 'bg-white text-gray-950 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  <Monitor className="h-4 w-4" aria-hidden="true" />
+                  {texts.desktopNavShortLabel}
+                </button>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-4">
+              {mobileNavigationSection === 'phone' ? (
+                <section id="mobile-phone-panel" role="tabpanel" aria-label={texts.phoneNavShortLabel}>
+                  <h3 className="mb-1 px-2 text-xs font-semibold text-gray-500">
+                    {texts.popularBrandsNavLabel}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-1">
+                    {mobilePopularPhoneTabs.map((tab) => renderCategoryLink(tab, 'phone', true))}
+                  </div>
+                  <h3 className="mb-1 mt-3 border-t border-gray-100 px-2 pt-3 text-xs font-semibold text-gray-500">
+                    {texts.moreBrandsNavLabel}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-1">
+                    {morePhoneTabs.map((tab) => renderCategoryLink(tab, 'phone', true))}
+                  </div>
+                </section>
+              ) : (
+                <section id="mobile-desktop-panel" role="tabpanel" aria-label={texts.desktopNavShortLabel}>
+                  <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+                    {desktopTabs.map((tab) => renderCategoryLink(tab, 'desktop', true))}
+                  </div>
+                </section>
+              )}
+            </div>
+
+            <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-gray-100 p-4">
+              <button
+                type="button"
+                data-mobile-drawer-action="share"
+                onClick={handleShareClick}
+                className="flex min-h-11 items-center justify-center gap-2 rounded-md text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              >
+                <Share2 className="h-4 w-4" aria-hidden="true" />
+                {shareTexts.share}
+              </button>
+              <Link
+                href={withLanguagePath('/about', currentLang)}
+                onClick={closeMenus}
+                className="flex min-h-11 items-center justify-center gap-2 rounded-md text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              >
+                <Info className="h-4 w-4" aria-hidden="true" />
+                {texts.about}
+              </Link>
+            </div>
           </div>
         </div>
       )}
 
       {isLanguageMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[70]">
+        <div className="fixed inset-0 z-[80] md:hidden">
           <button
             type="button"
-            onClick={closeMobileMenus}
+            onClick={closeMenus}
             className="absolute inset-0"
             aria-label="Close language menu"
           />
-          <div
-            className="absolute top-14 right-4 min-w-[140px] w-auto bg-white/95 backdrop-blur-md rounded-xl shadow-md border border-gray-100 z-[71] overflow-hidden whitespace-nowrap"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="py-2">
+          <div className="absolute right-4 top-14 min-w-[9rem] overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
+            <div className="py-1.5">
               {languageOrder.map((lang) => {
                 const config = languageConfig[lang];
                 return (
                   <button
                     key={lang}
-                    onClick={() => {
-                      handleLanguageChange(lang);
-                      setIsLanguageMenuOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-200 flex items-center space-x-3 whitespace-nowrap ${
+                    onClick={() => handleLanguageChange(lang)}
+                    className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors ${
                       currentLang === lang
-                        ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 font-medium'
-                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 hover:text-gray-900'
+                        ? 'bg-blue-50 font-medium text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-950'
                     }`}
                   >
-                    <span className="whitespace-nowrap">{texts[config.name as keyof typeof texts]}</span>
-                    {currentLang === lang && (
-                      <svg className="w-4 h-4 ml-auto text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    )}
+                    <span>{texts[config.name as keyof typeof texts]}</span>
                   </button>
                 );
               })}
@@ -795,53 +1032,29 @@ export default function Header({
         </div>
       )}
 
-      {isDeviceMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[70]">
+      {SHOW_MINI_PROGRAM && isMiniProgramMenuOpen && (
+        <div
+          ref={mobileMiniProgramPanelRef}
+          className="fixed right-4 top-16 z-[75] w-52 rounded-lg border border-gray-200 bg-white p-3 shadow-xl md:hidden"
+        >
           <button
-            type="button"
-            onClick={closeMobileMenus}
-            className="absolute inset-0"
-            aria-label="Close device menu"
-          />
-          <div
-            className="absolute top-14 right-2 w-36 bg-white rounded-xl shadow-md border border-gray-200/60 p-2"
-            onClick={(event) => event.stopPropagation()}
+            onClick={() => setIsMiniProgramMenuOpen(false)}
+            className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center text-gray-500 hover:text-gray-900"
+            aria-label="Close mini program panel"
           >
-            <div className="space-y-1">
-              {SHOW_MINI_PROGRAM && (
-                <button
-                  onClick={() => {
-                    if (typeof window !== 'undefined') {
-                      window.dispatchEvent(new CustomEvent('phwalls:open-mini-program'));
-                    }
-                    setIsDeviceMenuOpen(false);
-                  }}
-                  className="flex items-center space-x-2 w-full text-left text-gray-700 hover:text-blue-600 transition-colors duration-200 min-h-[40px] px-2 rounded-md hover:bg-gray-50"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                  <span className="font-medium">{texts.miniProgram}</span>
-                </button>
-              )}
-
-              <Link
-                href={withLanguagePath('/about', currentLang)}
-                onClick={() => {
-                  setIsDeviceMenuOpen(false);
-                }}
-                className="flex items-center space-x-2 w-full text-left text-gray-700 hover:text-blue-600 transition-colors duration-200 min-h-[40px] px-2 rounded-md hover:bg-gray-50"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="font-medium">{texts.about}</span>
-              </Link>
-            </div>
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <p className="mb-3 px-6 text-center text-sm text-gray-600">{texts.scanWechatQR}</p>
+          <div className="aspect-square w-full overflow-hidden rounded-md bg-gray-50">
+            <img
+              src="/mini_program.jpg"
+              alt={texts.miniProgram}
+              className="h-full w-full object-contain p-2"
+              loading="lazy"
+            />
           </div>
         </div>
       )}
-
     </>
   );
 }

@@ -5,11 +5,11 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
 import { useLanguage } from '@/components/LanguageProvider';
-import { Language, TabInfo } from '@/types';
+import { Language } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
-import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
+import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
@@ -41,10 +41,8 @@ interface DeviceWallpaperGridProps {
    *  提供后可跳过 batch-private-urls API 调用，SSR 即包含 src，搜索引擎可抓取。
    */
   initialImageUrls?: Record<string, string>;
-  tabDataOverride?: TabInfo[];
   categoryLabelOverride?: string;
   categoryLandingPathOverride?: string;
-  categoryPathPrefixOverride?: string;
   activeCategoryTypeOverride?: string;
 }
 
@@ -56,14 +54,11 @@ export default function DeviceWallpaperGrid({
   displayName,
   summarySection,
   initialImageUrls,
-  tabDataOverride,
   categoryLabelOverride,
   categoryLandingPathOverride,
-  categoryPathPrefixOverride,
   activeCategoryTypeOverride,
 }: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
-  const tabData = useMemo(() => tabDataOverride || getTabData(currentLang), [currentLang, tabDataOverride]);
   const displayDeviceName = displayName || deviceData.name;
   const pageTitle = useMemo(
     () => buildWallpaperListTitle(displayDeviceName, texts.wallpapersTitleSuffix),
@@ -336,14 +331,12 @@ export default function DeviceWallpaperGrid({
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <ShareRegistration payload={sharePayload} />
       <Header
-        tabData={tabData}
         currentLang={currentLang}
         onLanguageChange={handleLanguageChange}
-        categoryPathPrefix={categoryPathPrefixOverride}
         activeCategoryTypeOverride={activeCategoryTypeOverride}
       />
 
-      <main className={`mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      <main className={`mx-auto max-w-7xl px-4 pb-12 pt-20 sm:px-6 md:pt-24 lg:px-8 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
         <nav aria-label={breadcrumbAriaLabel} className="mb-6 text-sm text-gray-500">
           <Link href={withLanguagePath('/', currentLang)} className="hover:text-blue-600">
             {texts.home}

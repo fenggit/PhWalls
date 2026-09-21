@@ -7,8 +7,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageProvider';
 import ShareRegistration from '@/components/ShareRegistration';
-import { buildWallpaperListTitle, formatWallpaperDisplayName, getTabData } from '@/lib/data';
-import { Language, LanguageCode, TabInfo } from '@/types';
+import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
+import { Language, LanguageCode } from '@/types';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildWallpaperDetailPath, slugifyWallpaperName, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { SITE_URL } from '@/lib/seo';
@@ -43,8 +43,6 @@ type SeoLandingPageProps = {
   cardAspect: string;
   gridClass: string;
   cards: LandingCard[];
-  navigationTabs?: TabInfo[];
-  categoryPagePrefix?: string;
   activeCategoryTypeOverride?: string;
 };
 
@@ -80,12 +78,9 @@ export default function SeoLandingPage({
   cardAspect,
   gridClass,
   cards,
-  navigationTabs,
-  categoryPagePrefix,
   activeCategoryTypeOverride,
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
-  const tabData = useMemo(() => navigationTabs ?? getTabData(currentLang), [navigationTabs, currentLang]);
   const pathname = usePathname();
 
   const handleLanguageChange = (lang: Language) => {
@@ -154,14 +149,12 @@ export default function SeoLandingPage({
         }}
       />
       <Header
-        tabData={tabData}
         currentLang={currentLang}
         onLanguageChange={handleLanguageChange}
-        categoryPagePrefix={categoryPagePrefix}
         activeCategoryTypeOverride={activeCategoryTypeOverride}
       />
 
-      <main className="mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 pb-12 pt-20 sm:px-6 md:pt-24 lg:px-8">
         <nav aria-label={breadcrumbAriaLabel} className="mb-6 text-sm text-gray-500">
           <Link href={withLanguagePath('/', currentLang)} className="hover:text-blue-600">{texts.home}</Link>
           <span className="px-2">›</span>

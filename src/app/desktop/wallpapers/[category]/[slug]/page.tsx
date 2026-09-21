@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
 import {
   buildDesktopWallpaperDetailPath,
-  getDesktopTabData,
   getDesktopWallpaperCategoryLabel,
   isDesktopWallpaperCategory,
   loadDesktopWallpaperCollection,
@@ -172,10 +171,8 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
         deviceData={collection}
         summarySection={summarySection}
         initialImageUrls={initialImageUrls}
-        tabDataOverride={getDesktopTabData()}
         categoryLabelOverride={getDesktopCategoryLabel(language)}
         categoryLandingPathOverride={categoryLandingPath}
-        categoryPathPrefixOverride="/desktop"
       />
     </>
   );

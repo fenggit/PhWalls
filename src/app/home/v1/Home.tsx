@@ -44,8 +44,6 @@ type HomeProps = {
   contentCollectionsByCategory?: Record<string, WallpaperCollection[]>;
   isContentCategory?: (category: string) => boolean;
   detailPathPrefix?: string;
-  categoryPathPrefix?: string;
-  categoryPagePrefix?: string;
   activeCategoryTypeOverride?: string;
   forceDesktopCards?: boolean;
   heroTitle?: string;
@@ -89,9 +87,7 @@ export default function Home({
   contentCollectionsByCategory,
   isContentCategory = isWallpaperCategory,
   detailPathPrefix,
-  categoryPathPrefix,
   forceDesktopCards = false,
-  categoryPagePrefix,
   activeCategoryTypeOverride,
   heroTitle,
   heroDescription,
@@ -446,16 +442,13 @@ export default function Home({
       <ShareRegistration payload={sharePayload} />
       {/* 导航栏 */}
       <Header 
-        tabData={tabData}
         currentLang={currentLang} 
         onLanguageChange={handleLanguageChange}
-        categoryPathPrefix={categoryPathPrefix}
-        categoryPagePrefix={categoryPagePrefix}
         activeCategoryTypeOverride={activeCategoryTypeOverride}
       />
 
       {/* 主要内容区域 */}
-      <main className="pt-24 md:pt-20">
+      <main className="pt-16 md:pt-20">
 
         {/* 英雄区域 */}
         <section className="sr-only text-center md:not-sr-only md:block md:py-8 md:px-6 lg:px-8">

@@ -5,7 +5,6 @@ import {
  isDesktopWallpaperCategory,
  loadDesktopWallpaperCollections,
  getDesktopWallpaperCategoryLabel,
- getDesktopTabData,
 } from "@/lib/desktop-data";
 import { sortByDateDesc } from "@/lib/data";
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from "@/lib/language";
@@ -69,8 +68,6 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
    cardAspect="aspect-video"
    gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
    cards={cards}
-   navigationTabs={getDesktopTabData()}
-   categoryPagePrefix="/desktop"
   />
  );
 }

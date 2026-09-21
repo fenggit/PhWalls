@@ -274,6 +274,14 @@ export interface I18nTexts {
   createYourWallpaper: string;
   downloadYourDesign: string;
   mainNavigationLabel: string;
+  phoneWallpapersNavLabel: string;
+  appleWallpapersNavLabel: string;
+  desktopWallpapersNavLabel: string;
+  popularBrandsNavLabel: string;
+  moreBrandsNavLabel: string;
+  phoneNavShortLabel: string;
+  desktopNavShortLabel: string;
+  appleNavShortLabel: string;
   wallpaperPreviewLabel: string;
   wallpaperCustomizationControlsLabel: string;
   
@@ -631,6 +639,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     createYourWallpaper: '创建你的专属壁纸',
     downloadYourDesign: '下载你的设计',
     mainNavigationLabel: '主导航',
+    phoneWallpapersNavLabel: '手机壁纸',
+    appleWallpapersNavLabel: 'Apple 壁纸',
+    desktopWallpapersNavLabel: '桌面壁纸',
+    popularBrandsNavLabel: '热门品牌',
+    moreBrandsNavLabel: '更多品牌',
+    phoneNavShortLabel: '手机',
+    desktopNavShortLabel: '桌面',
+    appleNavShortLabel: 'Apple',
     wallpaperPreviewLabel: '壁纸预览',
     wallpaperCustomizationControlsLabel: '壁纸自定义控制',
     
@@ -986,6 +1002,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     createYourWallpaper: 'Create Your Custom Wallpaper',
     downloadYourDesign: 'Download Your Design',
     mainNavigationLabel: 'Main navigation',
+    phoneWallpapersNavLabel: 'Phone wallpapers',
+    appleWallpapersNavLabel: 'Apple wallpapers',
+    desktopWallpapersNavLabel: 'Desktop wallpapers',
+    popularBrandsNavLabel: 'Popular brands',
+    moreBrandsNavLabel: 'More brands',
+    phoneNavShortLabel: 'Phone',
+    desktopNavShortLabel: 'Desktop',
+    appleNavShortLabel: 'Apple',
     wallpaperPreviewLabel: 'Wallpaper preview',
     wallpaperCustomizationControlsLabel: 'Wallpaper customization controls',
     
@@ -1341,6 +1365,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     createYourWallpaper: 'カスタム壁紙を作成',
     downloadYourDesign: 'デザインをダウンロード',
     mainNavigationLabel: 'メインナビゲーション',
+    phoneWallpapersNavLabel: 'スマホ壁紙',
+    appleWallpapersNavLabel: 'Apple 壁紙',
+    desktopWallpapersNavLabel: 'デスクトップ壁紙',
+    popularBrandsNavLabel: '人気ブランド',
+    moreBrandsNavLabel: 'その他のブランド',
+    phoneNavShortLabel: 'スマホ',
+    desktopNavShortLabel: 'デスクトップ',
+    appleNavShortLabel: 'Apple',
     wallpaperPreviewLabel: '壁紙プレビュー',
     wallpaperCustomizationControlsLabel: '壁紙カスタマイズ操作',
     
@@ -1669,6 +1701,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     createYourWallpaper: 'Tạo hình nền tùy chỉnh của bạn',
     downloadYourDesign: 'Tải xuống thiết kế của bạn',
     mainNavigationLabel: 'Điều hướng chính',
+    phoneWallpapersNavLabel: 'Điện thoại',
+    appleWallpapersNavLabel: 'Apple',
+    desktopWallpapersNavLabel: 'Máy tính',
+    popularBrandsNavLabel: 'Thương hiệu phổ biến',
+    moreBrandsNavLabel: 'Thương hiệu khác',
+    phoneNavShortLabel: 'Điện thoại',
+    desktopNavShortLabel: 'Máy tính',
+    appleNavShortLabel: 'Apple',
     wallpaperPreviewLabel: 'Xem trước hình nền',
     wallpaperCustomizationControlsLabel: 'Bảng điều khiển tùy chỉnh hình nền',
     
@@ -2024,6 +2064,14 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     createYourWallpaper: '建立你的專屬壁紙',
     downloadYourDesign: '下載你的設計',
     mainNavigationLabel: '主導航',
+    phoneWallpapersNavLabel: '手機壁紙',
+    appleWallpapersNavLabel: 'Apple 壁紙',
+    desktopWallpapersNavLabel: '桌面壁紙',
+    popularBrandsNavLabel: '熱門品牌',
+    moreBrandsNavLabel: '更多品牌',
+    phoneNavShortLabel: '手機',
+    desktopNavShortLabel: '桌面',
+    appleNavShortLabel: 'Apple',
     wallpaperPreviewLabel: '桌布預覽',
     wallpaperCustomizationControlsLabel: '桌布自訂控制',
     
