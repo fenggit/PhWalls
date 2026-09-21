@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { MouseEvent as ReactMouseEvent } from 'react';
 import {
   ArrowUpRight,
   ChevronDown,
@@ -449,6 +450,19 @@ export default function Header({
     setIsLanguageMenuOpen(false);
   };
 
+  const handleLanguageLinkClick = (
+    event: ReactMouseEvent<HTMLAnchorElement>,
+    lang: Language
+  ) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      setIsLanguageMenuOpen(false);
+      return;
+    }
+
+    event.preventDefault();
+    handleLanguageChange(lang);
+  };
+
   const handleShareClick = useCallback(() => {
     closeMenus();
     if (typeof window === 'undefined') return;
@@ -856,9 +870,12 @@ export default function Header({
                     {languageOrder.map((lang) => {
                       const config = languageConfig[lang];
                       return (
-                        <button
+                        <Link
                           key={lang}
-                          onClick={() => handleLanguageChange(lang)}
+                          href={withLanguagePath(pathname, lang)}
+                          hrefLang={lang}
+                          aria-current={currentLang === lang ? 'page' : undefined}
+                          onClick={(event) => handleLanguageLinkClick(event, lang)}
                           className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors ${
                             currentLang === lang
                               ? 'bg-blue-50 font-medium text-blue-700'
@@ -866,7 +883,7 @@ export default function Header({
                           }`}
                         >
                           <span>{texts[config.name as keyof typeof texts]}</span>
-                        </button>
+                        </Link>
                       );
                     })}
                   </div>
@@ -1018,9 +1035,12 @@ export default function Header({
               {languageOrder.map((lang) => {
                 const config = languageConfig[lang];
                 return (
-                  <button
+                  <Link
                     key={lang}
-                    onClick={() => handleLanguageChange(lang)}
+                    href={withLanguagePath(pathname, lang)}
+                    hrefLang={lang}
+                    aria-current={currentLang === lang ? 'page' : undefined}
+                    onClick={(event) => handleLanguageLinkClick(event, lang)}
                     className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors ${
                       currentLang === lang
                         ? 'bg-blue-50 font-medium text-blue-700'
@@ -1028,7 +1048,7 @@ export default function Header({
                     }`}
                   >
                     <span>{texts[config.name as keyof typeof texts]}</span>
-                  </button>
+                  </Link>
                 );
               })}
             </div>

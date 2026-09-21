@@ -2781,6 +2781,96 @@
     ]
   },
   {
+    "name": "Huawei Nova 16",
+    "date": "2026/06/01",
+    "item": [
+      {
+        "name": "huawei-nova-16-black-blue-gradient",
+        "type": "image/jpeg",
+        "size": "1.85 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-black-blue-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-black-blue-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-black-gradient",
+        "type": "image/jpeg",
+        "size": "1.01 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-black-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-black-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-black-gray-gradient",
+        "type": "image/jpeg",
+        "size": "1.2 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-black-gray-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-black-gray-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-blue-black-gradient",
+        "type": "image/jpeg",
+        "size": "1.71 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-blue-black-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-blue-black-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-cyan-mint-gradient-alt-a",
+        "type": "image/jpeg",
+        "size": "1.31 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-cyan-mint-gradient-alt-a.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-cyan-mint-gradient-alt-a.webp"
+      },
+      {
+        "name": "huawei-nova-16-cyan-mint-gradient",
+        "type": "image/jpeg",
+        "size": "1.7 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-cyan-mint-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-cyan-mint-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-gray-teal-gradient",
+        "type": "image/jpeg",
+        "size": "1.04 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-gray-teal-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-gray-teal-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-green-black-gradient",
+        "type": "image/jpeg",
+        "size": "1.69 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-green-black-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-green-black-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-mint-cyan-gradient",
+        "type": "image/jpeg",
+        "size": "1.34 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-mint-cyan-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-mint-cyan-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-mint-silver-gradient",
+        "type": "image/jpeg",
+        "size": "1.09 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-mint-silver-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-mint-silver-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-silver-beige-gradient",
+        "type": "image/jpeg",
+        "size": "1.21 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-silver-beige-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-silver-beige-gradient.webp"
+      },
+      {
+        "name": "huawei-nova-16-silver-white-gradient",
+        "type": "image/jpeg",
+        "size": "2.08 MB",
+        "originPath": "huawei/Huawei Nova 16/origin/huawei-nova-16-silver-white-gradient.jpg",
+        "compressPath": "huawei/Huawei Nova 16/compress/huawei-nova-16-silver-white-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Huawei Nova 4e",
     "date": "2019/03",
     "item": [
