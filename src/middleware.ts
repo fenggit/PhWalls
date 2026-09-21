@@ -122,9 +122,6 @@ export function middleware(request: NextRequest) {
   const shouldCanonicalizeProtocol =
     canonicalHost !== null && request.nextUrl.protocol !== SITE_ORIGIN.protocol;
 
-  const country =
-    request.headers.get('cf-ipcountry') ||
-    request.headers.get('x-country');
   const acceptLanguageHeader = request.headers.get('accept-language');
   const acceptLanguage = acceptLanguageHeader
     ? resolveLanguageFromAcceptLanguage(acceptLanguageHeader)
@@ -137,13 +134,13 @@ export function middleware(request: NextRequest) {
     cookieLang: hasExplicitLanguagePreference
       ? request.cookies.get(LANGUAGE_COOKIE_NAME)?.value
       : null,
-    country,
   });
 
   const preferredLanguage = pathLanguage || resolvedLanguage || DEFAULT_LANGUAGE;
 
   const redirectUrl = request.nextUrl.clone();
   let shouldRedirect = false;
+  let isAutomaticLanguageRedirect = false;
 
   if (canonicalHost && redirectUrl.hostname !== canonicalHost) {
     redirectUrl.hostname = canonicalHost;
@@ -166,11 +163,19 @@ export function middleware(request: NextRequest) {
     if (redirectUrl.pathname !== expectedPath) {
       redirectUrl.pathname = expectedPath;
       shouldRedirect = true;
+      isAutomaticLanguageRedirect = true;
     }
   }
 
   if (shouldRedirect) {
-    return NextResponse.redirect(redirectUrl, 308);
+    const response = NextResponse.redirect(
+      redirectUrl,
+      isAutomaticLanguageRedirect ? 307 : 308
+    );
+    if (isAutomaticLanguageRedirect) {
+      response.headers.set('Cache-Control', 'private, no-store');
+    }
+    return response;
   }
 
   if (pathLanguage) {

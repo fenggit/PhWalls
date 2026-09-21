@@ -47,28 +47,6 @@ export function normalizeLanguage(value: string | null | undefined): Language | 
   return isLanguage(value) ? value : null;
 }
 
-export function resolveLanguageFromCountry(countryCode: string | null | undefined): Language | null {
-  if (!countryCode) return null;
-  const normalized = countryCode.trim().toUpperCase();
-  if (!normalized || normalized === 'XX' || normalized === 'T1') return null;
-
-  switch (normalized) {
-    case 'CN':
-    case 'SG':
-      return LanguageCode.ZH;
-    case 'TW':
-    case 'HK':
-    case 'MO':
-      return LanguageCode.ZH_HANT;
-    case 'JP':
-      return LanguageCode.JA;
-    case 'VN':
-      return LanguageCode.VI;
-    default:
-      return null;
-  }
-}
-
 export function resolveLanguageFromAcceptLanguage(value: string | null | undefined): Language | null {
   if (!value) {
     return null;
@@ -154,14 +132,12 @@ export function resolveRequestLanguage(input: {
   cookieLang?: string | null;
   headerLang?: string | null;
   browserLang?: string | null;
-  country?: string | null;
 }): Language {
   return (
     normalizeLanguage(input.searchLang) ||
     normalizeLanguage(input.headerLang) ||
     normalizeLanguage(input.cookieLang) ||
     normalizeLanguage(input.browserLang) ||
-    resolveLanguageFromCountry(input.country) ||
     DEFAULT_LANGUAGE
   );
 }

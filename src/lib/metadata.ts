@@ -11,9 +11,6 @@ import {
 export async function resolveMetadataLanguage(): Promise<Language> {
   const headerList = await headers();
   const cookieStore = await cookies();
-  const country =
-    headerList.get('cf-ipcountry') ||
-    headerList.get('x-country');
   const hasExplicitLanguagePreference =
     cookieStore.get(LANGUAGE_PREFERENCE_COOKIE_NAME)?.value ===
     LANGUAGE_PREFERENCE_MARKER_VALUE;
@@ -23,6 +20,5 @@ export async function resolveMetadataLanguage(): Promise<Language> {
       ? cookieStore.get(LANGUAGE_COOKIE_NAME)?.value
       : null,
     headerLang: headerList.get(LANGUAGE_HEADER_NAME),
-    country,
   });
 }

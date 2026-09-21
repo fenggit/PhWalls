@@ -23,13 +23,11 @@ export async function GET(request: NextRequest) {
       : null;
     const headerLang = request.headers.get(LANGUAGE_HEADER_NAME);
     const browserLang = resolveLanguageFromAcceptLanguage(request.headers.get('accept-language'));
-    const country = request.headers.get('cf-ipcountry');
     const language = resolveRequestLanguage({
       searchLang,
       headerLang,
       browserLang,
       cookieLang,
-      country,
     });
 
     const data = getTabData(language) as unknown;

@@ -226,92 +226,77 @@
     ]
   },
   {
-    "name": "Xiaomi 13 (Pro)",
-    "date": "2023/01",
+    "name": "Xiaomi 13",
+    "date": "2022/12/11",
     "item": [
       {
-        "name": "xiaomi-13-pro-black-gray-gradient",
+        "name": "xiaomi-13-black-gray-gradient",
         "type": "image/png",
         "size": "1.91 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-black-gray-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-black-gray-gradient.webp"
+        "originPath": "xiaomi/Xiaomi 13/origin/xiaomi-13-black-gray-gradient.png",
+        "compressPath": "xiaomi/Xiaomi 13/compress/xiaomi-13-black-gray-gradient.webp"
       },
       {
-        "name": "xiaomi-13-pro-blue-black-gradient",
-        "type": "image/png",
-        "size": "483.42 KB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-blue-black-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-blue-black-gradient.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-blue-cyan-abstract",
-        "type": "image/png",
-        "size": "2.79 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-blue-cyan-abstract.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-blue-cyan-abstract.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-blue-cyan-gradient-01",
+        "name": "xiaomi-13-blue-cyan-gradient",
         "type": "image/png",
         "size": "2.77 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-blue-cyan-gradient-01.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-blue-cyan-gradient-01.webp"
+        "originPath": "xiaomi/Xiaomi 13/origin/xiaomi-13-blue-cyan-gradient.png",
+        "compressPath": "xiaomi/Xiaomi 13/compress/xiaomi-13-blue-cyan-gradient.webp"
       },
       {
-        "name": "xiaomi-13-pro-blue-cyan-gradient",
-        "type": "image/png",
-        "size": "464.51 KB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-blue-cyan-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-blue-cyan-gradient.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-gray-silver-gradient",
-        "type": "image/png",
-        "size": "378.41 KB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-gray-silver-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-gray-silver-gradient.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-green-black-abstract",
-        "type": "image/png",
-        "size": "1.65 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-green-black-abstract.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-green-black-abstract.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-green-mint-gradient",
+        "name": "xiaomi-13-green-mint-gradient",
         "type": "image/png",
         "size": "2.74 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-green-mint-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-green-mint-gradient.webp"
+        "originPath": "xiaomi/Xiaomi 13/origin/xiaomi-13-green-mint-gradient.png",
+        "compressPath": "xiaomi/Xiaomi 13/compress/xiaomi-13-green-mint-gradient.webp"
       },
       {
-        "name": "xiaomi-13-pro-purple-rose-gradient",
-        "type": "image/png",
-        "size": "440.81 KB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-purple-rose-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-purple-rose-gradient.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-red-brown-gradient",
+        "name": "xiaomi-13-red-brown-gradient",
         "type": "image/png",
         "size": "2.76 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-red-brown-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-red-brown-gradient.webp"
+        "originPath": "xiaomi/Xiaomi 13/origin/xiaomi-13-red-brown-gradient.png",
+        "compressPath": "xiaomi/Xiaomi 13/compress/xiaomi-13-red-brown-gradient.webp"
       },
       {
-        "name": "xiaomi-13-pro-teal-black-gradient",
-        "type": "image/png",
-        "size": "458.22 KB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-teal-black-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-teal-black-gradient.webp"
-      },
-      {
-        "name": "xiaomi-13-pro-yellow-orange-gradient",
+        "name": "xiaomi-13-yellow-orange-gradient",
         "type": "image/png",
         "size": "2.85 MB",
-        "originPath": "xiaomi/Xiaomi 13 (Pro)/origin/xiaomi-13-pro-yellow-orange-gradient.png",
-        "compressPath": "xiaomi/Xiaomi 13 (Pro)/compress/xiaomi-13-pro-yellow-orange-gradient.webp"
+        "originPath": "xiaomi/Xiaomi 13/origin/xiaomi-13-yellow-orange-gradient.png",
+        "compressPath": "xiaomi/Xiaomi 13/compress/xiaomi-13-yellow-orange-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Xiaomi 13 Pro",
+    "date": "2022/12/11",
+    "item": [
+      {
+        "name": "xiaomi-13-pro-blue-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "2.13 MB",
+        "originPath": "xiaomi/Xiaomi 13 Pro/origin/xiaomi-13-pro-blue-cyan-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 13 Pro/compress/xiaomi-13-pro-blue-cyan-abstract.webp"
+      },
+      {
+        "name": "xiaomi-13-pro-brown-black-gradient",
+        "type": "image/jpeg",
+        "size": "1.34 MB",
+        "originPath": "xiaomi/Xiaomi 13 Pro/origin/xiaomi-13-pro-brown-black-gradient.jpg",
+        "compressPath": "xiaomi/Xiaomi 13 Pro/compress/xiaomi-13-pro-brown-black-gradient.webp"
+      },
+      {
+        "name": "xiaomi-13-pro-gold-orange-abstract",
+        "type": "image/jpeg",
+        "size": "1.41 MB",
+        "originPath": "xiaomi/Xiaomi 13 Pro/origin/xiaomi-13-pro-gold-orange-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 13 Pro/compress/xiaomi-13-pro-gold-orange-abstract.webp"
+      },
+      {
+        "name": "xiaomi-13-pro-teal-black-abstract",
+        "type": "image/jpeg",
+        "size": "1.89 MB",
+        "originPath": "xiaomi/Xiaomi 13 Pro/origin/xiaomi-13-pro-teal-black-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 13 Pro/compress/xiaomi-13-pro-teal-black-abstract.webp"
       }
     ]
   },
