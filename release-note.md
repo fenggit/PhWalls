@@ -2,6 +2,9 @@
 
 ## 版本历史
 
+### v1.1.5 - 2026-09-24
+- 新增 OPPO Find X10、Samsung Galaxy Z Fold 8、Galaxy Z Fold 8 Ultra 与 Xiaomi 18 Pro 壁纸合集
+
 ### v1.1.5 - 2026-09-21
 - 新增 Huawei Nova 16 壁纸
 - 首页与桌面首页的“查看全部壁纸”改为跳转对应品牌或桌面分类页

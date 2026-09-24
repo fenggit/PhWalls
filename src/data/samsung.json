@@ -10366,6 +10366,130 @@
     ]
   },
   {
+    "name": "Samsung Galaxy Z Fold 8",
+    "date": "2026/07/22",
+    "item": [
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-pink-gradient-fold",
+        "type": "image/png",
+        "size": "3.57 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-pink-gradient-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-pink-gradient-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-silver-gradient-alt-a-fold",
+        "type": "image/png",
+        "size": "3.41 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-a-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-a-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-silver-gradient-alt-b-fold",
+        "type": "image/png",
+        "size": "4.17 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-b-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-b-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-silver-gradient-phone",
+        "type": "image/png",
+        "size": "340.59 KB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-silver-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-silver-gradient-phone.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-gray-silver-gradient-fold",
+        "type": "image/png",
+        "size": "5.48 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-gray-silver-gradient-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-gray-silver-gradient-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-pink-silver-gradient-phone",
+        "type": "image/png",
+        "size": "1.48 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-pink-silver-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-pink-silver-gradient-phone.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-silver-beige-gradient-phone",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-silver-beige-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-silver-beige-gradient-phone.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-silver-gray-gradient-phone",
+        "type": "image/png",
+        "size": "1.5 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-silver-gray-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-silver-gray-gradient-phone.webp"
+      }
+    ]
+  },
+  {
+    "name": "Samsung Galaxy Z Fold 8 Ultra",
+    "date": "2026/07/22",
+    "item": [
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-pink-gradient-fold",
+        "type": "image/png",
+        "size": "3.57 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-pink-gradient-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-pink-gradient-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-silver-gradient-alt-a-fold",
+        "type": "image/png",
+        "size": "3.41 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-a-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-a-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-silver-gradient-alt-b-fold",
+        "type": "image/png",
+        "size": "4.17 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-b-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-silver-gradient-alt-b-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-beige-silver-gradient-phone",
+        "type": "image/png",
+        "size": "340.59 KB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-beige-silver-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-beige-silver-gradient-phone.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-gray-silver-gradient-fold",
+        "type": "image/png",
+        "size": "5.48 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-gray-silver-gradient-fold.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-gray-silver-gradient-fold.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-pink-silver-gradient-phone",
+        "type": "image/png",
+        "size": "1.48 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-pink-silver-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-pink-silver-gradient-phone.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-silver-beige-gradient-phone",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-silver-beige-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-silver-beige-gradient-phone.webp"
+      },
+      {
+        "name": "samsung-galaxy-z-fold-8-silver-gray-gradient-phone",
+        "type": "image/png",
+        "size": "1.5 MB",
+        "originPath": "samsung/Samsung Galaxy Z Fold 8/origin/samsung-galaxy-z-fold-8-silver-gray-gradient-phone.png",
+        "compressPath": "samsung/Samsung Galaxy Z Fold 8/compress/samsung-galaxy-z-fold-8-silver-gray-gradient-phone.webp"
+      }
+    ]
+  },
+  {
     "name": "Samsung Galaxy Z TriFold",
     "date": "2025/07",
     "item": [

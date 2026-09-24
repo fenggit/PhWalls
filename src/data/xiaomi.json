@@ -828,6 +828,96 @@
     ]
   },
   {
+    "name": "Xiaomi 18 Pro",
+    "date": "2026/09/23",
+    "item": [
+      {
+        "name": "xiaomi-18-pro-black-blue-abstract",
+        "type": "image/jpeg",
+        "size": "1.89 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-blue-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-blue-abstract.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-brown-abstract-alt-a-light",
+        "type": "image/jpeg",
+        "size": "2.42 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-brown-abstract-alt-a-light.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-brown-abstract-alt-a-light.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-brown-abstract-light",
+        "type": "image/jpeg",
+        "size": "2.24 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-brown-abstract-light.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-brown-abstract-light.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-brown-abstract",
+        "type": "image/jpeg",
+        "size": "2.29 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-brown-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-brown-abstract.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-gray-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "2.27 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-gray-abstract-alt-a.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-gray-abstract",
+        "type": "image/jpeg",
+        "size": "2.5 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-gray-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-gray-abstract.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-green-abstract-alt-a",
+        "type": "image/jpeg",
+        "size": "1.9 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-green-abstract-alt-a.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-green-abstract-alt-a.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-green-abstract-light",
+        "type": "image/jpeg",
+        "size": "1.9 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-green-abstract-light.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-green-abstract-light.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-green-abstract",
+        "type": "image/jpeg",
+        "size": "1.9 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-green-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-green-abstract.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-black-purple-abstract-light",
+        "type": "image/jpeg",
+        "size": "2.25 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-black-purple-abstract-light.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-black-purple-abstract-light.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-blue-black-abstract-light",
+        "type": "image/jpeg",
+        "size": "1.99 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-blue-black-abstract-light.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-blue-black-abstract-light.webp"
+      },
+      {
+        "name": "xiaomi-18-pro-blue-black-abstract",
+        "type": "image/jpeg",
+        "size": "2.04 MB",
+        "originPath": "xiaomi/Xiaomi 18 Pro/origin/xiaomi-18-pro-blue-black-abstract.jpg",
+        "compressPath": "xiaomi/Xiaomi 18 Pro/compress/xiaomi-18-pro-blue-black-abstract.webp"
+      }
+    ]
+  },
+  {
     "name": "Xiaomi CC9",
     "date": "2019/07",
     "item": [

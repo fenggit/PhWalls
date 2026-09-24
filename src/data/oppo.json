@@ -1846,6 +1846,40 @@
     ]
   },
   {
+    "name": "Oppo Find X10",
+    "date": "2026/09/22",
+    "item": [
+      {
+        "name": "oppo-find-x10-brown-gray-gradient",
+        "type": "image/png",
+        "size": "2.21 MB",
+        "originPath": "oppo/OPPO Find X10/origin/oppo-find-x10-brown-gray-gradient.png",
+        "compressPath": "oppo/OPPO Find X10/compress/oppo-find-x10-brown-gray-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x10-gray-silver-gradient",
+        "type": "image/png",
+        "size": "1.61 MB",
+        "originPath": "oppo/OPPO Find X10/origin/oppo-find-x10-gray-silver-gradient.png",
+        "compressPath": "oppo/OPPO Find X10/compress/oppo-find-x10-gray-silver-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x10-rose-beige-gradient",
+        "type": "image/png",
+        "size": "1.52 MB",
+        "originPath": "oppo/OPPO Find X10/origin/oppo-find-x10-rose-beige-gradient.png",
+        "compressPath": "oppo/OPPO Find X10/compress/oppo-find-x10-rose-beige-gradient.webp"
+      },
+      {
+        "name": "oppo-find-x10-silver-gray-gradient",
+        "type": "image/png",
+        "size": "1.61 MB",
+        "originPath": "oppo/OPPO Find X10/origin/oppo-find-x10-silver-gray-gradient.png",
+        "compressPath": "oppo/OPPO Find X10/compress/oppo-find-x10-silver-gray-gradient.webp"
+      }
+    ]
+  },
+  {
     "name": "Oppo K1",
     "date": "2019/01",
     "item": [
