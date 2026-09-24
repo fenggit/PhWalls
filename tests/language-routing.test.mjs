@@ -65,6 +65,21 @@ test('中间件优先使用用户选择的语言 Cookie', () => {
   assert.equal(response.headers.get('location'), 'https://phwalls.com/vi');
 });
 
+test('重新打开旧的英文链接时恢复用户选择的语言', () => {
+  const request = new NextRequest('https://phwalls.com/en/wallpapers', {
+    headers: {
+      'accept-language': 'en-US,en;q=0.9',
+      cookie: 'phwalls-lang=zh; phwalls-lang-selected=1',
+    },
+  });
+
+  const response = middleware(request);
+
+  assert.equal(response.status, 307);
+  assert.equal(response.headers.get('location'), 'https://phwalls.com/zh/wallpapers');
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+});
+
 test('IP 国家信息不参与语言解析', () => {
   assert.equal(resolveRequestLanguage({ country: 'JP' }), 'en');
 });

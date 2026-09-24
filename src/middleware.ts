@@ -9,6 +9,7 @@ import {
   LANGUAGE_PREFERENCE_COOKIE_NAME,
   LANGUAGE_PREFERENCE_MARKER_VALUE,
   REQUEST_PATH_HEADER_NAME,
+  normalizeLanguage,
   resolveLanguageFromAcceptLanguage,
   resolveRequestLanguage,
   stripLanguagePrefix,
@@ -129,14 +130,15 @@ export function middleware(request: NextRequest) {
   const hasExplicitLanguagePreference =
     request.cookies.get(LANGUAGE_PREFERENCE_COOKIE_NAME)?.value ===
     LANGUAGE_PREFERENCE_MARKER_VALUE;
+  const cookieLanguage = hasExplicitLanguagePreference
+    ? normalizeLanguage(request.cookies.get(LANGUAGE_COOKIE_NAME)?.value)
+    : null;
   const resolvedLanguage = resolveRequestLanguage({
     browserLang: acceptLanguage,
-    cookieLang: hasExplicitLanguagePreference
-      ? request.cookies.get(LANGUAGE_COOKIE_NAME)?.value
-      : null,
+    cookieLang: cookieLanguage,
   });
 
-  const preferredLanguage = pathLanguage || resolvedLanguage || DEFAULT_LANGUAGE;
+  const preferredLanguage = cookieLanguage || pathLanguage || resolvedLanguage || DEFAULT_LANGUAGE;
 
   const redirectUrl = request.nextUrl.clone();
   let shouldRedirect = false;
@@ -153,10 +155,14 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathLanguage) {
-    const expectedPath = withLanguagePath(normalizedPath, pathLanguage);
+    const expectedPath = withLanguagePath(
+      normalizedPath,
+      isInternal || isStaticPath ? pathLanguage : preferredLanguage
+    );
     if (redirectUrl.pathname !== expectedPath) {
       redirectUrl.pathname = expectedPath;
       shouldRedirect = true;
+      isAutomaticLanguageRedirect = preferredLanguage !== pathLanguage && !isInternal && !isStaticPath;
     }
   } else if (!isInternal && !isStaticPath) {
     const expectedPath = withLanguagePath(normalizedPath, preferredLanguage);

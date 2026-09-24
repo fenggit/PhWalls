@@ -3,6 +3,7 @@
 ## 版本历史
 
 ### v1.1.5 - 2026-09-24
+- 修复重新打开旧英文链接时未恢复已选择语言的问题
 - 新增 OPPO Find X10、Samsung Galaxy Z Fold 8、Galaxy Z Fold 8 Ultra 与 Xiaomi 18 Pro 壁纸合集
 
 ### v1.1.5 - 2026-09-21
