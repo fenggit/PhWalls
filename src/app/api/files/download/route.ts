@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
 import { DOWNLOAD_CACHE_CONTROL } from '@/lib/cache-control';
-import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
+import { sanitizeWallpaperDownloadKey } from '@/lib/wallpaper-key';
+import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 
@@ -15,8 +16,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 });
     }
 
-    const key = sanitizeWallpaperKey(rawKey);
-    if (!key) {
+    const key = sanitizeWallpaperDownloadKey(rawKey);
+    if (!key || !await isPublishedWallpaperKey(key, true)) {
       return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
     }
 

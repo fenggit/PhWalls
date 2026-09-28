@@ -6,6 +6,7 @@ import { getHomeCollectionsByCategory } from '@/lib/home-index';
 import { isHomeCategoryVisible } from '@/lib/home-priority';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
+import { isWallpaperDbEnabled, loadDbIndex } from '@/lib/wallpaper-db';
 import {
   buildWallpaperDetailPath,
   type WallpaperCollectionEntry,
@@ -22,8 +23,8 @@ const FEATURED_DESKTOP_CATEGORIES = [
   'ubuntu',
 ] as const;
 
-export default function HomePage() {
-  const collectionsByCategory = getHomeCollectionsByCategory();
+export default async function HomePage() {
+  const collectionsByCategory = await getHomeCollectionsByCategory();
   const now = new Date();
   const phoneCategories = BRAND_CATEGORIES
     .map((brand) => brand.slug)
@@ -50,8 +51,11 @@ export default function HomePage() {
       .map(toPhoneCard),
   }));
 
+  const desktopCollectionsByCategory = isWallpaperDbEnabled()
+    ? await loadDbIndex([...FEATURED_DESKTOP_CATEGORIES])
+    : desktopHomeIndex;
   const desktop = FEATURED_DESKTOP_CATEGORIES.flatMap((category) =>
-    desktopHomeIndex[category].map((collection) => ({
+    (desktopCollectionsByCategory[category] || []).map((collection) => ({
       category,
       name: collection.name,
       href: buildDesktopWallpaperDetailPath(category, collection.name),

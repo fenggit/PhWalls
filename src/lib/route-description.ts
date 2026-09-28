@@ -3,13 +3,14 @@ import { getI18nTexts } from '@/lib/i18n';
 import { getBrandCategoryBySlug } from '@/lib/brands';
 import { getAboutBrandCopy, getBrandTitlesFromTabs } from '@/lib/brand-copy';
 import { getCategoryLabelForLanguage, getCategorySeoCopy } from '@/lib/seo';
-import { isWallpaperCategory, loadWallpaperCollection } from '@/lib/wallpaper-data';
+import { isWallpaperCategory } from '@/lib/wallpaper-data';
+import { loadWallpaperCollection } from '@/lib/wallpaper-data-server';
 import { buildWallpaperCollectionSeoCopy } from '@/lib/wallpaper-seo';
 import {
   getDesktopWallpaperCategoryLabel,
   isDesktopWallpaperCategory,
-  loadDesktopWallpaperCollection,
 } from '@/lib/desktop-data';
+import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
 import {
   buildDesktopDetailSeoCopy,
   getDesktopCategorySeoCopy,

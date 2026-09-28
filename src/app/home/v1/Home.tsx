@@ -613,13 +613,13 @@ export default function Home({
                     const detailHref = detailCategory
                       ? withLanguagePath(
                           detailPathPrefix
-                            ? `${detailPathPrefix}/${detailCategory}/${item.name
+                            ? `${detailPathPrefix}/${detailCategory}/${(item.slug || item.name)
                                 .toLowerCase()
                                 .trim()
                                 .replace(/&/g, ' and ')
                                 .replace(/[^a-z0-9]+/g, '-')
                                 .replace(/^-+|-+$/g, '')}`
-                            : buildWallpaperDetailPath(detailCategory, item.name),
+                            : buildWallpaperDetailPath(detailCategory, item.slug || item.name),
                           currentLang
                         )
                       : null;

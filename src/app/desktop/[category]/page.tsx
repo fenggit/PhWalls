@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import SeoLandingPage from "@/components/SeoLandingPage";
 import {
  isDesktopWallpaperCategory,
- loadDesktopWallpaperCollections,
  getDesktopWallpaperCategoryLabel,
 } from "@/lib/desktop-data";
+import { loadDesktopWallpaperCollections } from '@/lib/desktop-data-server';
 import { sortByDateDesc } from "@/lib/data";
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from "@/lib/language";
 import { resolveMetadataLanguage } from "@/lib/metadata";
@@ -48,6 +48,7 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
  const collections = sortByDateDesc(await loadDesktopWallpaperCollections(category));
  const cards = collections.map((c) => ({
   name: c.name,
+  slug: c.slug,
   date: c.date,
   count: c.item?.length || 0,
   imageKey: c.item?.[0]?.compressPath || c.item?.[0]?.originPath || null,

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BRAND_CATEGORIES } from '@/lib/brands';
 import { WALLPAPER_LIST_CACHE_CONTROL } from '@/lib/cache-control';
-import {
-  loadWallpaperCollections,
-  type WallpaperCollection,
-} from '@/lib/wallpaper-data';
+import { isWallpaperDbEnabled } from '@/lib/wallpaper-db';
+import type { WallpaperCollection } from '@/lib/wallpaper-data';
+import { loadWallpaperCollections } from '@/lib/wallpaper-data-server';
 
 export const runtime = 'edge';
 
@@ -74,7 +73,7 @@ export async function GET(request: NextRequest) {
       },
       {
         headers: {
-          'Cache-Control': WALLPAPER_LIST_CACHE_CONTROL,
+          'Cache-Control': isWallpaperDbEnabled() ? 'public, max-age=30, s-maxage=60' : WALLPAPER_LIST_CACHE_CONTROL,
         },
       }
     );

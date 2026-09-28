@@ -13,6 +13,7 @@ export type WallpaperAsset = {
 
 export type WallpaperCollection = {
   name: string;
+  slug?: string;
   date: string;
   item: WallpaperAsset[];
   // 首页轻量索引专用：集合内壁纸总数。
@@ -89,7 +90,7 @@ export async function loadWallpaperCollection(
   slug: string
 ): Promise<WallpaperCollection | null> {
   const collections = await loadWallpaperCollections(category);
-  return collections.find((collection) => slugifyWallpaperName(collection.name) === slug) || null;
+  return collections.find((collection) => (collection.slug || slugifyWallpaperName(collection.name)) === slug) || null;
 }
 
 export function parseWallpaperDate(value: string): Date | null {

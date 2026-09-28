@@ -4,10 +4,10 @@ import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
 import {
   buildWallpaperDetailPath,
   isWallpaperCategory,
-  loadWallpaperCollection,
   parseWallpaperDate,
   type WallpaperAsset,
 } from '@/lib/wallpaper-data';
+import { loadWallpaperCollection } from '@/lib/wallpaper-data-server';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { SITE_URL, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
@@ -87,7 +87,7 @@ export async function generateMetadata({ params }: WallpaperDetailPageProps): Pr
     return {};
   }
 
-  const detailPath = buildWallpaperDetailPath(category, collection.name);
+  const detailPath = buildWallpaperDetailPath(category, collection.slug || collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const { title, description } = buildWallpaperCollectionSeoCopy(language, collection, categoryLabel);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
@@ -140,7 +140,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
   }
 
   const language = await resolveMetadataLanguage();
-  const detailPath = buildWallpaperDetailPath(category, collection.name);
+  const detailPath = buildWallpaperDetailPath(category, collection.slug || collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const seoCopy = buildWallpaperCollectionSeoCopy(language, collection, categoryLabel);

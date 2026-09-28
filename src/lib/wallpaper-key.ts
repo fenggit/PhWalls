@@ -65,3 +65,13 @@ export function sanitizeWallpaperKey(rawKey: string | null | undefined): string 
 export function isAllowedWallpaperKey(rawKey: string | null | undefined): boolean {
   return sanitizeWallpaperKey(rawKey) !== null;
 }
+
+export function sanitizeWallpaperDownloadKey(rawKey: string | null | undefined): string | null {
+  const imageKey = sanitizeWallpaperKey(rawKey);
+  if (imageKey) return imageKey;
+  if (!rawKey || !/\.(mp4|webm)$/i.test(rawKey)) return null;
+  const disguised = rawKey.replace(/\.(mp4|webm)$/i, '.png');
+  const valid = sanitizeWallpaperKey(disguised);
+  const extension = rawKey.match(/\.(mp4|webm)$/i)?.[1].toLowerCase();
+  return valid && valid.includes('/origin/') && extension ? valid.replace(/\.png$/i, `.${extension}`) : null;
+}

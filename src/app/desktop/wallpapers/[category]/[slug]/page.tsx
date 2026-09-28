@@ -5,8 +5,8 @@ import {
   buildDesktopWallpaperDetailPath,
   getDesktopWallpaperCategoryLabel,
   isDesktopWallpaperCategory,
-  loadDesktopWallpaperCollection,
 } from '@/lib/desktop-data';
+import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildDesktopDetailSeoCopy, getDesktopCategoryLabel } from '@/lib/desktop-seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
     categoryLabel,
     count: collection.item.length,
   });
-  const detailPath = buildDesktopWallpaperDetailPath(category, collection.name);
+  const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const primaryImagePath = collection.item[0]?.compressPath || collection.item[0]?.originPath;
   const primaryImageUrl = primaryImagePath
@@ -89,7 +89,7 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
   }
 
   const language = await resolveMetadataLanguage();
-  const detailPath = buildDesktopWallpaperDetailPath(category, collection.name);
+  const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const categoryLabel = getDesktopWallpaperCategoryLabel(category);
   const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);

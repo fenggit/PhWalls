@@ -13,7 +13,9 @@
     "preview": "npm run pages:build && wrangler pages dev .vercel/output/static",
     "deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static --project-name phwalls",
     "postdeploy": "npm run indexnow",
-    "indexnow": "node scripts/submit-indexnow.mjs"
+    "indexnow": "node scripts/submit-indexnow.mjs",
+    "db:import:dry-run": "node scripts/import-wallpapers-d1.mjs",
+    "admin:hash-password": "node scripts/hash-admin-password.mjs"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250913.0",

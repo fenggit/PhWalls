@@ -28,6 +28,7 @@ type LandingWallpaperItem = {
 
 type LandingCard = {
   name: string;
+  slug?: string;
   date: string;
   count: number;
   imageKey: string | null;
@@ -175,8 +176,8 @@ export default function SeoLandingPage({
             {cards.map((card, index) => {
               const gradient = gradientPalette[index % gradientPalette.length];
               const detailHref = detailPathPrefix
-                ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.name)}`,currentLang)
-                : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.name), currentLang);
+                ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`,currentLang)
+                : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
               const cardDisplayName = localizeWallpaperCollectionName(currentLang, card.name);
               const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix);
               return (

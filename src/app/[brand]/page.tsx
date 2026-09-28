@@ -6,7 +6,7 @@ import { sortByDateDesc } from '@/lib/data';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getCategorySeoCopy, SITE_URL } from '@/lib/seo';
-import { loadWallpaperCollections } from '@/lib/wallpaper-data';
+import { loadWallpaperCollections } from '@/lib/wallpaper-data-server';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
@@ -64,6 +64,7 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
 
   const cards = sortByDateDesc(await loadWallpaperCollections(brandInfo.slug)).map((collection) => ({
     name: collection.name,
+    slug: collection.slug,
     date: collection.date,
     count: collection.item?.length || 0,
     imageKey: collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || null,

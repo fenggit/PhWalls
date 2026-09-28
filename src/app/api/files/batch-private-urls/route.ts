@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
 import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
+import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 const SIGNING_CONCURRENCY = 8;
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const normalizedKeys = Array.from(
+    const candidates = Array.from(
       new Set(
         keys
           .filter((key: unknown): key is string => typeof key === 'string')
@@ -37,6 +38,8 @@ export async function POST(request: NextRequest) {
           .filter((key): key is string => Boolean(key))
       )
     );
+    const visibility = await Promise.all(candidates.slice(0, 100).map((key) => isPublishedWallpaperKey(key)));
+    const normalizedKeys = candidates.slice(0, 100).filter((_, index) => visibility[index]);
 
     if (normalizedKeys.length === 0) {
       return NextResponse.json(
