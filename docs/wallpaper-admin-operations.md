@@ -2,7 +2,7 @@
 
 ## 本地验证
 
-以下命令只操作本机 D1，不影响线上数据库。本地开发服务器默认使用本机 D1；正式后台部署到 `a.phwalls.com` 后通过 Pages 的 `DB` 绑定访问线上 D1。
+以下命令只操作本机 D1，不影响线上数据库。本地开发服务器默认使用本机 D1；正式后台在独立 Pages 项目 `phwalls-admin` 的 `a.phwalls.com` 域名运行，并通过 `DB` 绑定访问线上 D1。
 
 1. `npx wrangler d1 migrations apply phwalls --local` 建表。
 2. `npm run db:import:dry-run` 查看 JSON 条目数量和冲突映射。
@@ -16,6 +16,10 @@
 
 Cloudflare Pages 项目绑定 D1 数据库 `phwalls`，绑定名必须是 `DB`。在 Pages 配置后台专用域名 `a.phwalls.com`。管理路由只接受该域名；本地开发允许 `localhost`。
 
+后台代码推送到 Git 后不会自动更新独立项目。确认生产发布后执行 `npm run admin:deploy`；公开站点仍使用原有 `npm run deploy`，不要混用两个项目。后台项目的生产分支为 `release/2.0.0`。
+
+当前公开站点 `phwalls.com` 仍运行旧版 JSON 数据源。后台保存到线上 D1 的发布改动，需要待公开站点升级并切换 `WALLPAPER_DATA_SOURCE=d1` 后才会显示在前台。
+
 配置 `ADMIN_USERNAME`、`ADMIN_PASSWORD_HASH`、`ADMIN_SESSION_SECRET` 作为 Pages Secret。密码哈希可在本机生成：
 
 ```bash
@@ -24,7 +28,7 @@ ADMIN_PASSWORD="$ADMIN_PASSWORD" npm run admin:hash-password
 unset ADMIN_PASSWORD
 ```
 
-脚本会输出两种写法：Cloudflare Pages Secret 使用原始值；本地 `.env.local` 使用带 `\$` 转义的整行配置。Next.js 会展开未转义的 `$`，直接粘贴原始值会导致登录失败。生成工具要求管理员原密码至少 12 位；登录时输入原密码，不输入哈希。不要提交密码或 Secret。`ADMIN_SESSION_SECRET` 使用不少于 32 字符的随机值。未勾选“记住登录状态”时会话有效期为 12 小时，勾选后为 30 天；只保存签名的 HttpOnly Cookie，不在浏览器保存明文密码。轮换密钥时旧值可暂放 `ADMIN_SESSION_SECRET_PREVIOUS`，等待最长 30 天会话过期后移除。对 `/api/admin/login` 在 Cloudflare WAF 配置登录失败限速。
+脚本会输出两种写法：Cloudflare Pages Secret 使用原始值；本地 `.env.local` 使用带 `\$` 转义的整行配置。Next.js 会展开未转义的 `$`，直接粘贴原始值会导致登录失败。生成工具要求管理员原密码至少 8 位；登录时输入原密码，不输入哈希。不要提交密码或 Secret。`ADMIN_SESSION_SECRET` 使用不少于 32 字符的随机值。未勾选“记住登录状态”时会话有效期为 12 小时，勾选后为 30 天；只保存签名的 HttpOnly Cookie，不在浏览器保存明文密码。轮换密钥时旧值可暂放 `ADMIN_SESSION_SECRET_PREVIOUS`，等待最长 30 天会话过期后移除。对 `/api/admin/login` 在 Cloudflare WAF 配置登录失败限速。
 
 R2 存储桶需要允许 `https://a.phwalls.com` 和本地 `http://localhost:3100` 的 `PUT` 与 `Content-Type` 请求头。后台上传使用 15 分钟单对象签名 URL；原图与预览都上传并通过 R2 HEAD 核验后才写入草稿。图片上限 50 MiB，视频上限 200 MiB；视频原件支持 MP4/WebM，预览仍为图片。后台不会生成压缩图或视频封面。
 
