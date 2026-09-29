@@ -109,7 +109,12 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   return (await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>())!;
 }
 
-export async function listAdminWallpapers(filters: URLSearchParams): Promise<Array<WallpaperRow & { device_name: string; brand_name: string }>> {
+export async function listAdminWallpapers(filters: URLSearchParams): Promise<{
+  rows: Array<WallpaperRow & { device_name: string; brand_name: string }>;
+  total: number;
+  page: number;
+  pageSize: number;
+}> {
   const clauses: string[] = [];
   const values: string[] = [];
   for (const [param, column] of [['brand', 'd.brand_name'], ['device', 'w.device_id'], ['category', 'w.category'],
@@ -117,10 +122,25 @@ export async function listAdminWallpapers(filters: URLSearchParams): Promise<Arr
     const value = filters.get(param);
     if (value) { clauses.push(param === 'brand' ? `${column} LIKE ?` : `${column} = ?`); values.push(param === 'brand' ? `${value}%` : value); }
   }
+  const search = filters.get('search')?.trim();
+  if (search) {
+    clauses.push('(w.name LIKE ? OR d.device_name LIKE ?)');
+    values.push(`%${search}%`, `%${search}%`);
+  }
+  const requestedPage = Number(filters.get('page'));
+  const pageSize = 50;
+  const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+  const db = getWallpaperDb();
+  const count = await db.prepare(`SELECT COUNT(*) AS total FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id ${where}`)
+    .bind(...values).first<{ total: number }>();
+  const total = count?.total || 0;
+  const lastPage = Math.max(0, Math.ceil(total / pageSize) - 1);
+  const page = Number.isSafeInteger(requestedPage) && requestedPage >= 0 ? Math.min(requestedPage, lastPage) : 0;
   const sql = `SELECT w.*, d.device_name, d.brand_name FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id
-    ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''}
-    ORDER BY w.is_primary DESC, w.create_date DESC, w.name LIMIT 250`;
-  return (await getWallpaperDb().prepare(sql).bind(...values).all<WallpaperRow & { device_name: string; brand_name: string }>()).results;
+    ${where} ORDER BY w.create_date DESC, w.name, w.id LIMIT ? OFFSET ?`;
+  const { results } = await db.prepare(sql).bind(...values, pageSize, page * pageSize)
+    .all<WallpaperRow & { device_name: string; brand_name: string }>();
+  return { rows: results, total, page, pageSize };
 }
 
 export async function createAdminWallpaper(input: Record<string, unknown>): Promise<WallpaperRow> {

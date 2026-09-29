@@ -7,7 +7,8 @@ export const runtime = 'edge';
 export async function GET(request: NextRequest) {
   const denied = await requireAdmin(request);
   if (denied) return denied;
-  return NextResponse.json({ data: await listAdminWallpapers(request.nextUrl.searchParams) },
+  const { rows, total, page, pageSize } = await listAdminWallpapers(request.nextUrl.searchParams);
+  return NextResponse.json({ data: rows, total, page, pageSize },
     { headers: { 'Cache-Control': 'no-store' } });
 }
 
