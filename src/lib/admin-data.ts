@@ -1,6 +1,7 @@
 import { getWallpaperDb, type DeviceCategory, type DeviceRow, type RecordStatus, type WallpaperRow } from '@/lib/wallpaper-db';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { findAdminBrand } from '@/lib/admin-brands';
+import { isUniqueConstraintError, normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { headR2Object } from '@/lib/r2-upload';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
@@ -58,7 +59,8 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   const brand = slugifyWallpaperName(assertText(input.brand_name, '品牌', 80));
   const brandInfo = await findAdminBrand(brand);
   if (!brandInfo) throw new Error('请选择现有品牌');
-  const name = assertText(input.device_name, '设备名称');
+  const name = normalizeAdminDisplay(assertText(input.device_name, '设备名称'));
+  const nameKey = normalizeAdminName(name);
   const slug = slugifyWallpaperName(name);
   if (!brand || !slug) throw new Error('品牌或设备名称无法生成 URL');
   const selectedCategory = category(input.device_category);
@@ -66,15 +68,27 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   const releaseDate = input.release_date ? assertText(input.release_date, '发布日期', 20) : '';
   const now = Date.now();
   const id = crypto.randomUUID();
-  const existing = await getWallpaperDb().prepare('SELECT is_popular_brand FROM w_devices WHERE brand_name = ? LIMIT 1').bind(brand).first<{ is_popular_brand: number }>();
-  await getWallpaperDb().prepare(
-    `INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,brand_logo,device_splash_url,
-      is_popular_brand,release_date,status,create_date,updated_date) VALUES (?,?,?,?,?,?,?,?,?,'draft',?,?)`
-  ).bind(id, brand, name, slug, selectedCategory,
-    typeof input.brand_logo === 'string' ? input.brand_logo || null : null,
-    typeof input.device_splash_url === 'string' ? input.device_splash_url || null : null,
-    existing?.is_popular_brand ?? 0, releaseDate, now, now).run();
-  return (await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>())!;
+  const db = getWallpaperDb();
+  const { results: existing } = await db.prepare(
+    'SELECT device_name, device_slug, is_popular_brand FROM w_devices WHERE brand_name = ?'
+  ).bind(brand).all<Pick<DeviceRow, 'device_name' | 'device_slug' | 'is_popular_brand'>>();
+  if (existing.some((device) => normalizeAdminName(device.device_name) === nameKey)) {
+    throw new Error('该品牌下设备或系统名称已存在');
+  }
+  if (existing.some((device) => device.device_slug === slug)) throw new Error('该品牌下设备或系统 URL 标识已存在');
+  try {
+    await db.prepare(
+      `INSERT INTO w_devices (id,brand_name,device_name,name_key,device_slug,device_category,brand_logo,device_splash_url,
+        is_popular_brand,release_date,status,create_date,updated_date) VALUES (?,?,?,?,?,?,?,?,?,?,'draft',?,?)`
+    ).bind(id, brand, name, nameKey, slug, selectedCategory,
+      typeof input.brand_logo === 'string' ? input.brand_logo || null : null,
+      typeof input.device_splash_url === 'string' ? input.device_splash_url || null : null,
+      existing[0]?.is_popular_brand ?? 0, releaseDate, now, now).run();
+  } catch (error) {
+    if (isUniqueConstraintError(error)) throw new Error('该品牌下设备或系统已存在');
+    throw error;
+  }
+  return (await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>())!;
 }
 
 export async function updateAdminDevice(input: Record<string, unknown>): Promise<DeviceRow> {
@@ -82,7 +96,16 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   const db = getWallpaperDb();
   const previous = await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>();
   if (!previous) throw new Error('设备不存在');
-  const name = input.device_name === undefined ? previous.device_name : assertText(input.device_name, '设备名称');
+  const name = input.device_name === undefined ? previous.device_name : normalizeAdminDisplay(assertText(input.device_name, '设备名称'));
+  const nameKey = normalizeAdminName(name);
+  const previousNameKey = normalizeAdminName(previous.device_name);
+  if (nameKey !== previousNameKey) {
+    const { results } = await db.prepare('SELECT id, device_name FROM w_devices WHERE brand_name = ? AND id != ?')
+      .bind(previous.brand_name, id).all<Pick<DeviceRow, 'id' | 'device_name'>>();
+    if (results.some((device) => normalizeAdminName(device.device_name) === nameKey)) {
+      throw new Error('该品牌下设备或系统名称已存在');
+    }
+  }
   const selectedCategory = input.device_category === undefined ? previous.device_category : category(input.device_category);
   if (selectedCategory !== previous.device_category) {
     const brandInfo = await findAdminBrand(previous.brand_name);
@@ -101,14 +124,19 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
     if (!check?.count) throw new Error('发布前至少需要一张已发布的主展示壁纸');
   }
   const now = Date.now();
-  await db.prepare(
-    `UPDATE w_devices SET device_name = ?, device_category = ?, brand_logo = ?, device_splash_url = ?,
-      release_date = ?, status = ?, updated_date = ? WHERE id = ?`
-  ).bind(name, selectedCategory,
-    input.brand_logo === undefined ? previous.brand_logo : input.brand_logo || null,
-    input.device_splash_url === undefined ? previous.device_splash_url : input.device_splash_url || null,
-    input.release_date === undefined ? previous.release_date : String(input.release_date || ''),
-    nextStatus, now, id).run();
+  try {
+    await db.prepare(
+      `UPDATE w_devices SET device_name = ?, name_key = ?, device_category = ?, brand_logo = ?, device_splash_url = ?,
+        release_date = ?, status = ?, updated_date = ? WHERE id = ?`
+    ).bind(name, nameKey === previousNameKey ? previous.name_key : nameKey, selectedCategory,
+      input.brand_logo === undefined ? previous.brand_logo : input.brand_logo || null,
+      input.device_splash_url === undefined ? previous.device_splash_url : input.device_splash_url || null,
+      input.release_date === undefined ? previous.release_date : String(input.release_date || ''),
+      nextStatus, now, id).run();
+  } catch (error) {
+    if (isUniqueConstraintError(error)) throw new Error('该品牌下设备或系统已存在');
+    throw error;
+  }
   if (input.is_popular_brand !== undefined) {
     await db.prepare('UPDATE w_devices SET is_popular_brand = ?, updated_date = ? WHERE brand_name = ?')
       .bind(input.is_popular_brand, now, previous.brand_name).run();

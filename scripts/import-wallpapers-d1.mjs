@@ -13,6 +13,7 @@ const quote = (value) => value === null || value === undefined
 const stableId = (kind, key) => createHash('sha256').update(`${kind}:${key}`).digest('hex').slice(0, 32);
 const slugify = (value) => value.toLowerCase().trim().replaceAll('&', ' and ')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+const normalizeName = (value) => String(value).normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
 const parseSize = (value) => {
   const match = String(value || '').match(/^([\d.]+)\s*(B|KB|MB|GB)$/i);
   return match ? Math.round(Number(match[1]) * (1024 ** { b: 0, kb: 1, mb: 2, gb: 3 }[match[2].toLowerCase()])) : 0;
@@ -43,13 +44,13 @@ for (const { file, desktop } of files) {
   const collections = JSON.parse(await readFile(file, 'utf8'));
   for (const [collectionIndex, collection] of collections.entries()) {
     let deviceName = collection.name;
-    if (seenDeviceNames.has(`${brand}/${deviceName}`)) {
+    if (seenDeviceNames.has(`${brand}/${normalizeName(deviceName)}`)) {
       let suffix = 2;
-      while (seenDeviceNames.has(`${brand}/${deviceName} (${suffix})`)) suffix++;
+      while (seenDeviceNames.has(`${brand}/${normalizeName(`${collection.name} (${suffix})`)}`)) suffix++;
       deviceName = `${deviceName} (${suffix})`;
       warnings.push(`设备名称冲突：${brand}/${collection.name} -> ${deviceName}`);
     }
-    seenDeviceNames.add(`${brand}/${deviceName}`);
+    seenDeviceNames.add(`${brand}/${normalizeName(deviceName)}`);
     let slug = slugify(collection.name);
     if (!slug) throw new Error(`设备名称无法生成 slug：${file} #${collectionIndex}`);
     let deviceKey = `${brand}/${slug}`;
@@ -66,8 +67,8 @@ for (const { file, desktop } of files) {
     const category = inferCategory(brand, collection.name, desktop);
     const time = Date.UTC(2020, 0, 1) + collectionIndex * 100000;
     const logo = desktop ? null : `/brand-icons/${brand}.svg`;
-    sql.push(`INSERT INTO w_devices (id,brand_logo,brand_name,device_name,device_slug,device_category,release_date,status,create_date,updated_date) VALUES (${[
-      id, logo, brand, deviceName, slug, category, collection.date || '', 'published', time, time
+    sql.push(`INSERT INTO w_devices (id,brand_logo,brand_name,device_name,name_key,device_slug,device_category,release_date,status,create_date,updated_date) VALUES (${[
+      id, logo, brand, deviceName, normalizeName(deviceName), slug, category, collection.date || '', 'published', time, time
     ].map(quote).join(',')}) ON CONFLICT DO NOTHING;`);
     deviceCount++;
     for (const [index, item] of (collection.item || []).entries()) {
@@ -94,7 +95,8 @@ for (const { file, desktop } of files) {
         parseSize(item.size), origin, preview, ext, inferTheme(item.name), dynamic ? 'dynamic' : 'static',
         category, index === 0 ? 1 : 0, JSON.stringify(tags), origin && preview ? 'published' : 'draft',
         wallpaperTime, wallpaperTime];
-      sql.push(`INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date) VALUES (${values.map(quote).join(',')}) ON CONFLICT DO NOTHING;`);
+      sql.push(`INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date)
+        SELECT ${values.map(quote).join(',')} WHERE EXISTS (SELECT 1 FROM w_devices WHERE id = ${quote(id)}) ON CONFLICT DO NOTHING;`);
       wallpaperCount++;
     }
   }

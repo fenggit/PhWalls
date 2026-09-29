@@ -17,6 +17,7 @@ export type DeviceRow = {
   brand_logo: string | null;
   brand_name: string;
   device_name: string;
+  name_key: string | null;
   device_slug: string;
   device_category: DeviceCategory;
   is_popular_brand: number;

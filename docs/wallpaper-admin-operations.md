@@ -16,7 +16,16 @@
 
 Cloudflare Pages 项目绑定 D1 数据库 `phwalls`，绑定名必须是 `DB`。在 Pages 配置后台专用域名 `a.phwalls.com`。管理路由只接受该域名；本地开发允许 `localhost`。
 
-发布品牌管理功能前，先对本地和线上 D1 分别执行 `npx wrangler d1 migrations apply phwalls --local` 与 `npx wrangler d1 migrations apply phwalls --remote`，创建 `w_brands` 表。后台新增品牌只写入 D1 品牌目录；现有公开站点仍使用静态品牌与 JSON 数据，需另行切换公开站点后才会展示新品牌。
+发布品牌管理功能前，先运行设备名称冲突查询；若 `w_brands` 表已存在，再运行品牌名称冲突查询。确认没有冲突行后，对本地和线上 D1 分别执行 `npx wrangler d1 migrations apply phwalls --local` 与 `npx wrangler d1 migrations apply phwalls --remote`，创建品牌表、唯一索引和归一化键：
+
+```bash
+npx wrangler d1 execute phwalls --remote --command "SELECT brand_name, LOWER(TRIM(device_name)) AS name_key, COUNT(*) AS copies FROM w_devices GROUP BY brand_name, LOWER(TRIM(device_name)) HAVING COUNT(*) > 1"
+npx wrangler d1 execute phwalls --remote --command "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'w_brands'"
+# 仅当上一条查询返回 w_brands 时执行：
+npx wrangler d1 execute phwalls --remote --command "SELECT LOWER(TRIM(title)) AS title_key, COUNT(*) AS copies FROM w_brands GROUP BY LOWER(TRIM(title)) HAVING COUNT(*) > 1"
+```
+
+新建品牌、设备、设备改名与 JSON 导入都会写入 Unicode 与空白归一化键，数据库以该键阻止并发重复。`0005` 只对 ASCII 且内部没有连续空格的旧名称使用 `LOWER(TRIM())` 回填；遇到无法保证与应用归一化一致的名称会中止迁移。此时先按应用规则处理对应旧行，再重新执行迁移。后台新增品牌只写入 D1 品牌目录；现有公开站点仍使用静态品牌与 JSON 数据，需另行切换公开站点后才会展示新品牌。
 
 后台代码推送到 Git 后不会自动更新独立项目。确认生产发布后执行 `npm run admin:deploy`；公开站点仍使用原有 `npm run deploy`，不要混用两个项目。后台项目的生产分支为 `release/2.0.0`。
 
