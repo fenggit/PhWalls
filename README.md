@@ -342,9 +342,10 @@ https://phwalls.com/{设备名称}
 #### 功能特性
 
 - 管理员账号与签名会话登录
+- 在后台新增品牌，并将新品牌用于设备与壁纸管理
 - 按品牌、设备、分类和状态筛选管理 D1 壁纸数据
 - 新建设备、编辑设备与壁纸，并管理草稿、发布和下架状态
-- 原图与预览图配对上传到 R2，上传后作为草稿入库
+- 原图与预览图配对上传到 R2；只选品牌时可由文件夹名称自动建立设备或系统草稿
 
 #### 访问方式
 
@@ -538,6 +539,7 @@ GET  /api/admin/session     # 查询登录状态
 ### 后台管理 API
 
 ```
+GET/POST /api/admin/brands                     # 品牌列表与新增品牌
 GET/POST/PATCH /api/admin/devices              # 设备列表、新建与编辑
 GET/POST/PATCH /api/admin/wallpapers           # 壁纸列表、新建与编辑
 POST /api/admin/upload                        # 上传授权与入库

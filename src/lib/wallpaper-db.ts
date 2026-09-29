@@ -4,6 +4,14 @@ import type { WallpaperAsset, WallpaperCollection } from '@/lib/wallpaper-data';
 export type RecordStatus = 'draft' | 'published' | 'unpublished';
 export type DeviceCategory = 'phone' | 'phone_fold' | 'pad' | 'desktop' | 'os';
 
+export type BrandRow = {
+  slug: string;
+  title: string;
+  kind: 'mobile' | 'desktop';
+  create_date: number;
+  updated_date: number;
+};
+
 export type DeviceRow = {
   id: string;
   brand_logo: string | null;

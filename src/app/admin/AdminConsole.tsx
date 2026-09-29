@@ -1,17 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, UploadCloud, X } from 'lucide-react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, UploadCloud, X } from 'lucide-react';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import type { DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
-import { BRAND_CATEGORIES } from '@/lib/brands';
-import { getDesktopTabData, isDesktopWallpaperCategory } from '@/lib/desktop-data';
+import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
+type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
 type UploadRow = { id: string; name: string; origin?: File; preview?: File; theme: string; tags: string;
-  category: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string };
+  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string };
 type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; published_primary: number };
-type Tab = 'devices' | 'wallpapers' | 'upload';
+type Tab = 'brands' | 'devices' | 'wallpapers' | 'upload';
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   const response = await fetch(`/api/admin/${path}`, {
@@ -42,14 +42,20 @@ const statusClasses: Record<DeviceRow['status'], string> = {
   published: 'border-emerald-200 bg-emerald-50 text-emerald-800',
   unpublished: 'border-gray-200 bg-gray-100 text-gray-700',
 };
-const desktopBrands = getDesktopTabData().filter((tab) => isDesktopWallpaperCategory(tab.type));
-const brandOptions = [...BRAND_CATEGORIES.map((brand) => brand.slug), ...desktopBrands.map((tab) => tab.type)];
-
-function defaultDeviceCategory(brand: string): DeviceRow['device_category'] {
+function defaultDeviceCategory(brand: string, brands: AdminBrand[]): DeviceRow['device_category'] {
   if (brand === 'android' || brand === 'harmonyos') return 'os';
   if (brand === 'huawei-matepad') return 'pad';
-  if (desktopBrands.some((tab) => tab.type === brand)) return 'desktop';
+  if (brands.some((item) => item.slug === brand && item.kind === 'desktop')) return 'desktop';
   return 'phone';
+}
+
+function BrandOptions({ brands }: { brands: AdminBrand[] }) {
+  return <>
+    <optgroup label="手机与系统">{brands.filter((brand) => brand.kind === 'mobile')
+      .map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
+    <optgroup label="桌面">{brands.filter((brand) => brand.kind === 'desktop')
+      .map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
+  </>;
 }
 
 function fileMime(file: File): string {
@@ -83,6 +89,7 @@ export default function AdminConsole() {
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [tab, setTab] = useState<Tab>('devices');
+  const [brands, setBrands] = useState<AdminBrand[]>([]);
   const [devices, setDevices] = useState<DeviceRow[]>([]);
   const [wallpapers, setWallpapers] = useState<WallpaperListRow[]>([]);
   const [wallpaperTotal, setWallpaperTotal] = useState(0);
@@ -92,6 +99,7 @@ export default function AdminConsole() {
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [editingDevice, setEditingDevice] = useState<Partial<DeviceRow> | null>(null);
+  const [newBrand, setNewBrand] = useState<{ title: string; slug: string; kind: AdminBrand['kind'] } | null>(null);
   const [deviceCheck, setDeviceCheck] = useState<DeviceCheck | null>(null);
   const [editingWallpaper, setEditingWallpaper] = useState<Partial<WallpaperRow> | null>(null);
   const [uploadBrand, setUploadBrand] = useState('');
@@ -104,6 +112,7 @@ export default function AdminConsole() {
   const [newUploadCategory, setNewUploadCategory] = useState<DeviceRow['device_category']>('phone');
   const [newUploadDate, setNewUploadDate] = useState('');
   const [uploadRows, setUploadRows] = useState<UploadRow[]>([]);
+  const [uploadFolderName, setUploadFolderName] = useState('');
   const [batchTags, setBatchTags] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -125,11 +134,13 @@ export default function AdminConsole() {
       }
       if (filters.search) wallpaperQuery.set('search', filters.search);
       wallpaperQuery.set('page', String(wallpaperPage));
-      const [deviceResult, wallpaperResult] = await Promise.all([
+      const [brandResult, deviceResult, wallpaperResult] = await Promise.all([
+        api<{ data: AdminBrand[] }>('brands'),
         api<{ data: DeviceRow[] }>(`devices?${deviceQuery}`),
         api<{ data: WallpaperListRow[]; total: number; page: number }>(`wallpapers?${wallpaperQuery}`),
       ]);
       if (currentLoad !== loadId.current) return;
+      setBrands(brandResult.data);
       setDevices(deviceResult.data);
       setWallpapers(wallpaperResult.data);
       setWallpaperTotal(wallpaperResult.total);
@@ -137,6 +148,7 @@ export default function AdminConsole() {
       setError('');
     } catch (cause) {
       if (currentLoad !== loadId.current) return;
+      setBrands([]);
       setDevices([]);
       setWallpapers([]);
       setWallpaperTotal(0);
@@ -202,15 +214,41 @@ export default function AdminConsole() {
     });
   };
 
-  const selectUploadBrand = (brand: string) => {
+  const selectUploadBrand = (brand: string): boolean => {
+    if (brand === uploadBrand) return true;
+    if (uploadRows.length && !window.confirm('切换品牌将清空待上传文件，继续吗？')) return false;
     setUploadBrand(brand);
     setUploadDevice('');
     setUploadDevices([]);
+    setUploadRows([]);
+    setUploadFolderName('');
     setUploadSearch('');
     setCreatingUploadDevice(false);
     setNewUploadDeviceName('');
-    setNewUploadCategory(defaultDeviceCategory(brand));
+    setNewUploadCategory(defaultDeviceCategory(brand, brands));
     setNewUploadDate('');
+    return true;
+  };
+
+  const createBrand = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!newBrand) return;
+    await run(async () => {
+      const { data } = await api<{ data: AdminBrand }>('brands', 'POST', newBrand);
+      setBrands((current) => [...current, data]);
+      if (tab === 'upload' && uploadRows.length === 0) {
+        setUploadBrand(data.slug);
+        setUploadDevice('');
+        setUploadDevices([]);
+        setUploadSearch('');
+        setCreatingUploadDevice(false);
+        setNewUploadDeviceName('');
+        setUploadFolderName('');
+        setNewUploadCategory(data.kind === 'desktop' ? 'desktop' : 'phone');
+        setNewUploadDate('');
+      }
+      setNewBrand(null);
+    });
   };
 
   const createUploadDevice = async (event: React.FormEvent) => {
@@ -233,14 +271,38 @@ export default function AdminConsole() {
 
   const addFiles = (event: ChangeEvent<HTMLInputElement>, explicitRole?: 'origin' | 'compress') => {
     const files = Array.from(event.target.files || []);
+    const folderRoot = !explicitRole && files.length ? files[0].webkitRelativePath.split('/')[0] : '';
+    const roleFiles = !explicitRole ? files.filter((file) => /(^|\/)(origin|compress)\//i.test(file.webkitRelativePath)) : [];
+    if (!explicitRole && !uploadDevice && files.length &&
+        (!folderRoot || /^(origin|compress)$/i.test(folderRoot) ||
+         files.some((file) => file.webkitRelativePath.split('/')[0] !== folderRoot))) {
+      setError('请选择包含 origin 和 compress 子目录的设备或系统文件夹');
+      event.target.value = '';
+      return;
+    }
+    if (!explicitRole && !uploadDevice && roleFiles.some((file) => {
+      const parts = file.webkitRelativePath.split('/');
+      return parts.length !== 3 || parts[0] !== folderRoot || !/^(origin|compress)$/i.test(parts[1]);
+    })) {
+      setError('文件夹内的原图和预览图须直接放在 origin 与 compress 子目录');
+      event.target.value = '';
+      return;
+    }
+    if (!explicitRole && !uploadDevice && uploadFolderName && uploadFolderName !== folderRoot &&
+        uploadRows.some((row) => row.state !== 'done')) {
+      setError('一次只能上传一个设备或系统文件夹');
+      event.target.value = '';
+      return;
+    }
     if (!explicitRole && files.length && files.every((file) => !/(^|\/)(origin|compress)\//i.test(file.webkitRelativePath || file.name))) {
       setError('文件夹中未找到 origin 或 compress 文件');
       event.target.value = '';
       return;
     }
+    if (!explicitRole && !uploadDevice && folderRoot) setUploadFolderName(folderRoot);
     setError('');
     setUploadRows((current) => {
-      const next = [...current];
+      const next = current.length && current.every((row) => row.state === 'done') ? [] : [...current];
       for (const file of files) {
         const path = file.webkitRelativePath || file.name;
         const role = explicitRole || (/(^|\/)compress\//i.test(path) ? 'compress'
@@ -251,7 +313,7 @@ export default function AdminConsole() {
           ? path.replace(/(^|\/)(origin|compress)\/[^/]+$/i, `$1${stem}`) : stem;
         let row = next.find((entry) => entry.id === id || (!file.webkitRelativePath && entry.name === stem));
         if (!row) {
-          row = { id, name: stem, theme: 'normal', tags: batchTags, category: '', state: 'ready', progress: 0 };
+          row = { id, name: stem, theme: 'normal', tags: batchTags, category: '', folderName: folderRoot || undefined, state: 'ready', progress: 0 };
           next.push(row);
         }
         row[role === 'origin' ? 'origin' : 'preview'] = file;
@@ -266,22 +328,40 @@ export default function AdminConsole() {
   const patchUpload = (id: string, patch: Partial<UploadRow>) =>
     setUploadRows((current) => current.map((row) => row.id === id ? { ...row, ...patch } : row));
 
-  const uploadOne = async (row: UploadRow) => {
-    if (!uploadDevice || !row.origin || !row.preview) {
-      patchUpload(row.id, { state: 'failed', error: '请选择设备并提供原图和预览图' }); return;
+  const ensureUploadDevice = async (): Promise<string> => {
+    if (uploadDevice) return uploadDevice;
+    const name = uploadFolderName.trim();
+    if (!name) throw new Error('请选择设备或系统，或上传对应文件夹');
+    const existing = uploadDevices.find((device) => device.brand_name === uploadBrand &&
+      device.device_name === name);
+    if (existing) return existing.id;
+    if (uploadDevices.some((device) => device.brand_name === uploadBrand &&
+        device.device_name.toLowerCase() === name.toLowerCase())) {
+      throw new Error('存在大小写不同的同名设备，请明确选择设备或系统');
+    }
+    const { data } = await api<{ data: DeviceRow }>('devices', 'POST', {
+      brand_name: uploadBrand, device_name: name, device_category: newUploadCategory, release_date: newUploadDate,
+    });
+    setUploadDevices((current) => [data, ...current]);
+    return data.id;
+  };
+
+  const uploadOne = async (row: UploadRow, deviceId: string) => {
+    if (!row.origin || !row.preview) {
+      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return;
     }
     patchUpload(row.id, { state: 'uploading', progress: 0, error: undefined });
     try {
       const mediaType = fileMime(row.origin).startsWith('video/') ? 'dynamic' : 'static';
       const authorize = async (file: File, role: string) => api<{ url: string; token: string }>('upload', 'POST', {
-        action: 'authorize', device_id: uploadDevice, role, media_type: mediaType,
+        action: 'authorize', device_id: deviceId, role, media_type: mediaType,
         size_bytes: file.size, mime_type: fileMime(file),
       });
       const [origin, preview] = await Promise.all([authorize(row.origin, 'origin'), authorize(row.preview, 'compress')]);
       await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }));
       await putWithProgress(preview.url, row.preview, (progress) => patchUpload(row.id, { progress: 50 + Math.round(progress / 2) }));
       await api('upload', 'POST', {
-        action: 'complete', device_id: uploadDevice, name: row.name,
+        action: 'complete', device_id: deviceId, name: row.name,
         origin_token: origin.token, preview_token: preview.token,
         theme: row.theme, category: row.category || undefined,
         tags: row.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
@@ -294,6 +374,14 @@ export default function AdminConsole() {
 
   const visibleDevices = devices.filter((device) => !searchInput ||
     `${device.device_name} ${device.brand_name}`.toLowerCase().includes(searchInput.toLowerCase()));
+  const uploadBrandIsDesktop = brands.some((brand) => brand.slug === uploadBrand && brand.kind === 'desktop');
+  const inferredExistingDevice = !uploadDevice && uploadFolderName
+    ? uploadDevices.find((device) => device.brand_name === uploadBrand && device.device_name === uploadFolderName.trim())
+    : null;
+  const hasCaseVariant = !uploadDevice && !inferredExistingDevice && Boolean(uploadFolderName) &&
+    uploadDevices.some((device) => device.brand_name === uploadBrand &&
+      device.device_name.toLowerCase() === uploadFolderName.trim().toLowerCase());
+  const editingDeviceIsDesktop = brands.some((brand) => brand.slug === editingDevice?.brand_name && brand.kind === 'desktop');
   const changeFilters = (patch: Partial<typeof filters>) => {
     setDevicePage(0);
     setWallpaperPage(0);
@@ -341,12 +429,12 @@ export default function AdminConsole() {
       </header>
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-7">
         <nav className="mb-6 flex gap-1 border-b border-gray-200" aria-label="管理视图">
-          {([['devices', '设备', Smartphone], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud]] as const).map(([key, label, Icon]) => (
+          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud]] as const).map(([key, label, Icon]) => (
             <button key={key} onClick={() => setTab(key)} aria-current={tab === key ? 'page' : undefined} className={`inline-flex h-11 items-center gap-2 border-b-2 px-4 text-sm ${tab === key ? 'border-teal-700 font-semibold text-teal-800' : 'border-transparent text-gray-600 hover:text-gray-900'}`}><Icon size={16} />{label}</button>
           ))}
         </nav>
         {error && <div role="alert" className="mb-4 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><AlertCircle size={18} className="mt-0.5 shrink-0" /><span className="flex-1">{error}</span><button className="font-medium underline" onClick={() => void reload()}>重试</button></div>}
-        {tab !== 'upload' && <div className="mb-5 border-y border-gray-200 bg-white py-4">
+        {(tab === 'devices' || tab === 'wallpapers') && <div className="mb-5 border-y border-gray-200 bg-white py-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-3 top-3 text-gray-500" size={16} /><input className={`${inputClass} pl-9`} placeholder={tab === 'devices' ? '搜索设备或品牌' : '搜索壁纸或设备'} aria-label="搜索内容" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} /></div>
             {(searchInput || Object.entries(filters).some(([key, value]) => key !== 'search' && value)) && <button className={buttonClass} onClick={resetFilters}><X size={15} />清除筛选</button>}
@@ -354,8 +442,7 @@ export default function AdminConsole() {
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           <select className={inputClass} aria-label="品牌筛选" value={filters.brand} onChange={(event) => changeFilters({ brand: event.target.value, device: '' })}>
             <option value="">全部品牌</option>
-            <optgroup label="手机与系统">{BRAND_CATEGORIES.map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
-            <optgroup label="桌面">{desktopBrands.map((brand) => <option key={brand.type} value={brand.type}>{brand.title}</option>)}</optgroup>
+            <BrandOptions brands={brands} />
           </select>
           <select className={inputClass} aria-label="分类筛选" value={filters.category} onChange={(event) => changeFilters({ category: event.target.value })}>
             <option value="">全部分类</option>{categories.map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
@@ -380,6 +467,18 @@ export default function AdminConsole() {
           </>}
           </div>
         </div>}
+
+        {tab === 'brands' && <section>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold text-gray-950">品牌目录</h2><p className="text-sm text-gray-600">{brands.length} 个品牌</p></div>
+            <button className={primaryClass} onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} />新增品牌</button></div>
+          <div className="overflow-x-auto rounded-md border border-gray-200 bg-white" aria-busy={loading}><table className="w-full min-w-[600px] text-left text-sm">
+            <thead className="bg-gray-50 text-xs font-medium text-gray-600"><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">类型</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
+            <tbody>{loading ? <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-500">正在加载品牌…</td></tr> : brands.map((brand) => <tr key={brand.slug} className="border-t border-gray-100 hover:bg-gray-50/70">
+              <td className="px-4 py-3 font-medium text-gray-950">{brand.title}</td><td className="px-4 py-3 text-gray-600">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{brand.kind === 'desktop' ? '桌面' : '手机与系统'}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
+              <td className="px-4 py-3 text-right"><button className={buttonClass} title="上传到此品牌" aria-label={`上传到 ${brand.title}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} /></button></td>
+            </tr>)}</tbody>
+          </table></div>
+        </section>}
 
         {tab === 'devices' && <section>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold text-gray-950">设备目录</h2><p className="text-sm text-gray-600">{visibleDevices.length} 个设备</p></div>
@@ -422,18 +521,16 @@ export default function AdminConsole() {
           <div className="mb-5"><h2 className="text-lg font-semibold text-gray-950">上传壁纸</h2><p className="text-sm text-gray-600">{uploadRows.length} 项文件，{uploadRows.filter((row) => row.state === 'done').length} 项已入库</p></div>
           <div className="mb-4 grid gap-3 sm:grid-cols-[minmax(160px,1fr)_minmax(220px,2fr)_auto] sm:items-end">
             <label className="text-sm">品牌
-              <select className={`${inputClass} mt-1`} value={uploadBrand} disabled={busy} onChange={(event) => selectUploadBrand(event.target.value)}>
-                <option value="">选择品牌</option>
-                <optgroup label="手机与系统">{BRAND_CATEGORIES.map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
-                <optgroup label="桌面">{desktopBrands.map((brand) => <option key={brand.type} value={brand.type}>{brand.title}</option>)}</optgroup>
-              </select>
+              <div className="mt-1 flex gap-2"><select className={inputClass} value={uploadBrand} disabled={busy} onChange={(event) => selectUploadBrand(event.target.value)}>
+                <option value="">选择品牌</option><BrandOptions brands={brands} />
+              </select><button type="button" className={buttonClass} title="新增品牌" aria-label="新增品牌" onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} /></button></div>
             </label>
             <label className="text-sm">设备或系统
               <input className={`${inputClass} mt-1`} aria-label="搜索设备或系统" value={uploadSearch} disabled={!uploadBrand || busy}
                 onChange={(event) => setUploadSearch(event.target.value)} placeholder="搜索当前品牌" />
               <select className={`${inputClass} mt-1`} aria-label="选择设备或系统" value={uploadDevice} disabled={!uploadBrand || uploadDevicesLoading || busy}
                 onChange={(event) => setUploadDevice(event.target.value)}>
-                <option value="">{uploadDevicesLoading ? '加载中' : '选择设备或系统'}</option>
+                <option value="">{uploadDevicesLoading ? '加载中' : '不选设备或系统'}</option>
                 {uploadDevices.filter((device) => !uploadSearch || device.device_name.toLowerCase().includes(uploadSearch.toLowerCase()) || device.id === uploadDevice)
                   .map((device) => <option key={device.id} value={device.id}>{device.device_name}</option>)}
               </select>
@@ -452,8 +549,8 @@ export default function AdminConsole() {
             <label className="text-sm">类型
               <select className={`${inputClass} mt-1`} value={newUploadCategory}
                 onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
-                <option value="phone">手机</option><option value="phone_fold">折叠屏</option>
-                <option value="pad">平板</option><option value="desktop">桌面</option><option value="os">系统</option>
+                {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop)
+                  .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
               </select>
             </label>
             <label className="text-sm">发布日期
@@ -465,15 +562,27 @@ export default function AdminConsole() {
               <button type="button" className={buttonClass} title="取消新增" onClick={() => setCreatingUploadDevice(false)}><X size={16} /></button>
             </div>
           </form>}
+          {!uploadDevice && uploadFolderName && <div className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-[minmax(180px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)] sm:items-end">
+            <div className="text-sm"><div className="text-gray-600">{inferredExistingDevice ? '使用现有设备或系统' : '将创建草稿设备或系统'}</div><div className="mt-1 flex h-10 items-center font-medium text-gray-950">{uploadFolderName}</div></div>
+            {hasCaseVariant ? <p className="text-sm text-red-700 sm:col-span-2">存在大小写不同的同名设备，请在上方明确选择设备或系统</p> : inferredExistingDevice ? <div className="text-sm text-gray-600">{categoryLabels[inferredExistingDevice.device_category]} · {inferredExistingDevice.release_date || '无发布日期'}</div> : <><label className="text-sm">类型<select className={`${inputClass} mt-1`} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
+              {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop)
+                .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
+            </select></label>
+            <label className="text-sm">发布日期<input className={`${inputClass} mt-1`} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" /></label></>}
+          </div>}
           <label className="mb-4 block max-w-sm text-sm">批量标签
             <input className={`${inputClass} mt-1`} value={batchTags} onChange={(event) => setBatchTags(event.target.value)} placeholder="以逗号分隔" />
           </label>
           <div className="mb-4 flex flex-wrap gap-2">
             <label className={`${buttonClass} ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />原图文件<input className="sr-only" type="file" multiple accept="image/*,video/mp4,video/webm" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'origin')} /></label>
             <label className={`${buttonClass} ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />预览文件<input className="sr-only" type="file" multiple accept="image/*" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'compress')} /></label>
-            <label className={`${buttonClass} ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadDevice || busy} onChange={(event) => addFiles(event)} /></label>
-            <button className={primaryClass} disabled={busy || !uploadBrand || !uploadDevice || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
-              for (const row of uploadRows.filter((item) => item.state !== 'done')) await uploadOne(row);
+            <label className={`${buttonClass} ${!uploadBrand || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy} onChange={(event) => addFiles(event)} /></label>
+            <button className={primaryClass} disabled={busy || uploadDevicesLoading || hasCaseVariant || !uploadBrand || (!uploadDevice && !uploadFolderName) || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
+              const pending = uploadRows.filter((item) => item.state !== 'done');
+              if (pending.some((row) => !row.origin || !row.preview)) throw new Error('请先配齐每项原图和预览图');
+              if (!uploadDevice && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
+              const deviceId = await ensureUploadDevice();
+              for (const row of pending) await uploadOne(row, deviceId);
             })}><UploadCloud size={16} />{busy ? '上传中…' : `上传队列${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
           <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
@@ -495,6 +604,25 @@ export default function AdminConsole() {
         </section>}
       </div>
 
+      {newBrand && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation">
+        <form onSubmit={createBrand} onKeyDown={(event) => { if (event.key === 'Escape') setNewBrand(null); }} role="dialog" aria-modal="true" aria-label="新增品牌" className="w-full max-w-md rounded-md bg-white p-5 shadow-xl">
+          <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">新增品牌</h2>
+            <button type="button" className={buttonClass} title="关闭" onClick={() => setNewBrand(null)}><X size={16} /></button></div>
+          <div className="grid gap-3">
+            <label className="text-sm">品牌名称<input required maxLength={80} className={`${inputClass} mt-1`} value={newBrand.title} onChange={(event) => setNewBrand((current) => current && {
+              ...current, title: event.target.value,
+              slug: current.slug === slugifyWallpaperName(current.title) ? slugifyWallpaperName(event.target.value) : current.slug,
+            })} /></label>
+            <label className="text-sm">URL 标识<input required maxLength={80} className={`${inputClass} mt-1`} value={newBrand.slug} onChange={(event) => setNewBrand({ ...newBrand, slug: event.target.value.toLowerCase() })} placeholder="example-brand" /></label>
+            <label className="text-sm">品牌类型<select className={`${inputClass} mt-1`} value={newBrand.kind} onChange={(event) => setNewBrand({ ...newBrand, kind: event.target.value as AdminBrand['kind'] })}>
+              <option value="mobile">手机与系统</option><option value="desktop">桌面</option>
+            </select></label>
+          </div>
+          {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+          <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} onClick={() => setNewBrand(null)}>取消</button><button disabled={busy} className={primaryClass}><Check size={16} />{busy ? '保存中…' : '创建品牌'}</button></div>
+        </form>
+      </div>}
+
       {editingDevice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation">
         <form onSubmit={(event) => { event.preventDefault(); void run(async () => {
           await api('devices', editingDevice.id ? 'PATCH' : 'POST', editingDevice);
@@ -503,11 +631,12 @@ export default function AdminConsole() {
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">{editingDevice.id ? '编辑设备' : '新建设备'}</h2>
             <button type="button" className={buttonClass} title="关闭" onClick={() => setEditingDevice(null)}><X size={16} /></button></div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="text-sm">品牌<select disabled={!!editingDevice.id} required className={`${inputClass} mt-1`} value={editingDevice.brand_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_name: event.target.value })}>
-              <option value="">选择品牌</option>{brandOptions.map((brand) => <option key={brand} value={brand}>{brand}</option>)}
+            <label className="text-sm">品牌<select disabled={!!editingDevice.id} required className={`${inputClass} mt-1`} value={editingDevice.brand_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_name: event.target.value, device_category: defaultDeviceCategory(event.target.value, brands) })}>
+              <option value="">选择品牌</option><BrandOptions brands={brands} />
             </select></label>
             <label className="text-sm">设备名称<input required className={`${inputClass} mt-1`} value={editingDevice.device_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_name: event.target.value })} /></label>
-            <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
+            <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.filter((value) => (value === 'desktop') === editingDeviceIsDesktop)
+              .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
             <label className="text-sm">发布日期<input className={`${inputClass} mt-1`} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="YYYY/MM/DD" /></label>
             <label className="text-sm">Logo 路径<input className={`${inputClass} mt-1`} value={editingDevice.brand_logo || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_logo: event.target.value })} /></label>
             <label className="text-sm">宣传图 URL<input className={`${inputClass} mt-1`} value={editingDevice.device_splash_url || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_splash_url: event.target.value })} /></label>

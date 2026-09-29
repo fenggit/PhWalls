@@ -1,7 +1,6 @@
 import { getWallpaperDb, type DeviceCategory, type DeviceRow, type RecordStatus, type WallpaperRow } from '@/lib/wallpaper-db';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
-import { isWallpaperCategory } from '@/lib/wallpaper-data';
-import { isDesktopWallpaperCategory } from '@/lib/desktop-data';
+import { findAdminBrand } from '@/lib/admin-brands';
 import { headR2Object } from '@/lib/r2-upload';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
@@ -47,7 +46,7 @@ export async function listAdminDevices(filters: URLSearchParams): Promise<Device
   const values: string[] = [];
   for (const [param, column] of [['brand', 'brand_name'], ['category', 'device_category'], ['status', 'status']] as const) {
     const value = filters.get(param);
-    if (value) { clauses.push(param === 'brand' ? `${column} LIKE ?` : `${column} = ?`); values.push(param === 'brand' ? `${value}%` : value); }
+    if (value) { clauses.push(`${column} = ?`); values.push(value); }
   }
   const popular = filters.get('popular');
   if (popular === '0' || popular === '1') { clauses.push('is_popular_brand = ?'); values.push(popular); }
@@ -57,11 +56,13 @@ export async function listAdminDevices(filters: URLSearchParams): Promise<Device
 
 export async function createAdminDevice(input: Record<string, unknown>): Promise<DeviceRow> {
   const brand = slugifyWallpaperName(assertText(input.brand_name, '品牌', 80));
-  if (!isWallpaperCategory(brand) && !isDesktopWallpaperCategory(brand)) throw new Error('请选择现有品牌');
+  const brandInfo = await findAdminBrand(brand);
+  if (!brandInfo) throw new Error('请选择现有品牌');
   const name = assertText(input.device_name, '设备名称');
   const slug = slugifyWallpaperName(name);
   if (!brand || !slug) throw new Error('品牌或设备名称无法生成 URL');
   const selectedCategory = category(input.device_category);
+  if ((brandInfo.kind === 'desktop') !== (selectedCategory === 'desktop')) throw new Error('品牌类型与设备分类不匹配');
   const releaseDate = input.release_date ? assertText(input.release_date, '发布日期', 20) : '';
   const now = Date.now();
   const id = crypto.randomUUID();
@@ -83,6 +84,12 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   if (!previous) throw new Error('设备不存在');
   const name = input.device_name === undefined ? previous.device_name : assertText(input.device_name, '设备名称');
   const selectedCategory = input.device_category === undefined ? previous.device_category : category(input.device_category);
+  if (selectedCategory !== previous.device_category) {
+    const brandInfo = await findAdminBrand(previous.brand_name);
+    if (!brandInfo || (brandInfo.kind === 'desktop') !== (selectedCategory === 'desktop')) {
+      throw new Error('品牌类型与设备分类不匹配');
+    }
+  }
   const nextStatus = input.status === undefined ? previous.status : status(input.status);
   if (input.is_popular_brand !== undefined && input.is_popular_brand !== 0 && input.is_popular_brand !== 1) {
     throw new Error('热门品牌标记无效');
@@ -120,7 +127,7 @@ export async function listAdminWallpapers(filters: URLSearchParams): Promise<{
   for (const [param, column] of [['brand', 'd.brand_name'], ['device', 'w.device_id'], ['category', 'w.category'],
     ['theme', 'w.theme'], ['media', 'w.media_type'], ['format', 'w.file_format'], ['status', 'w.status']] as const) {
     const value = filters.get(param);
-    if (value) { clauses.push(param === 'brand' ? `${column} LIKE ?` : `${column} = ?`); values.push(param === 'brand' ? `${value}%` : value); }
+    if (value) { clauses.push(`${column} = ?`); values.push(value); }
   }
   const search = filters.get('search')?.trim();
   if (search) {
