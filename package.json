@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3100",
-    "predev": "node scripts/generate-home-index.mjs",
+    "predev": "node scripts/generate-home-index.mjs && echo 'Admin: http://localhost:3100/admin'",
     "prebuild": "node scripts/generate-home-index.mjs",
     "build": "next build",
     "start": "next start -p 3100",
