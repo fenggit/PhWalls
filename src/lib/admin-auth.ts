@@ -1,4 +1,6 @@
 import { getOptionalRequestContext } from '@cloudflare/next-on-pages';
+import { pbkdf2 } from '@noble/hashes/pbkdf2.js';
+import { sha256 } from '@noble/hashes/sha2.js';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -50,10 +52,9 @@ export async function verifyAdminPassword(username: string, password: string): P
   const iterations = Number(definition[1]);
   if (!Number.isInteger(iterations) || iterations < 100000 || iterations > 1000000) return false;
   try {
-    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password),
-      'PBKDF2', false, ['deriveBits']);
-    const derived = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256',
-      salt: base64ToBytes(definition[2]) as BufferSource, iterations }, key, 256));
+    // Cloudflare Edge does not implement WebCrypto PBKDF2.
+    const derived = pbkdf2(sha256, new TextEncoder().encode(password), base64ToBytes(definition[2]),
+      { c: iterations, dkLen: 32 });
     return equalBytes(derived, base64ToBytes(definition[3]));
   } catch {
     return false;

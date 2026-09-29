@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250913.0",
+    "@noble/hashes": "^2.4.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.544.0",
     "next": "^15.5.2",
