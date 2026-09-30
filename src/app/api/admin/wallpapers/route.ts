@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
-import { createAdminWallpaper, listAdminWallpapers, updateAdminWallpaper } from '@/lib/admin-data';
+import { createAdminWallpaper, deleteAdminWallpaper, listAdminWallpapers, updateAdminWallpaper } from '@/lib/admin-data';
 
 export const runtime = 'edge';
 
@@ -26,3 +26,14 @@ async function save(request: NextRequest, create: boolean) {
 
 export const POST = (request: NextRequest) => save(request, true);
 export const PATCH = (request: NextRequest) => save(request, false);
+
+export async function DELETE(request: NextRequest) {
+  const denied = await requireAdmin(request, true);
+  if (denied) return denied;
+  try {
+    const input = await request.json() as Record<string, unknown>;
+    return NextResponse.json(await deleteAdminWallpaper(input), { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : '删除失败' }, { status: 400 });
+  }
+}

@@ -45,6 +45,7 @@ export type WallpaperRow = {
   is_primary: number;
   tags: string;
   status: RecordStatus;
+  deletion_state: 'none' | 'processing' | 'pending';
   create_date: number;
   updated_date: number;
 };

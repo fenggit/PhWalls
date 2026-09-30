@@ -541,7 +541,7 @@ GET  /api/admin/session     # 查询登录状态
 ```
 GET/POST /api/admin/brands                     # 品牌列表与新增品牌
 GET/POST/PATCH /api/admin/devices              # 设备列表、新建与编辑
-GET/POST/PATCH /api/admin/wallpapers           # 壁纸列表、新建与编辑
+GET/POST/PATCH/DELETE /api/admin/wallpapers    # 壁纸列表、新建、编辑及删除记录和 R2 文件
 POST /api/admin/upload                        # 上传授权与入库
 ```
 

@@ -2,7 +2,8 @@ import { getWallpaperDb, type DeviceCategory, type DeviceRow, type RecordStatus,
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { findAdminBrand } from '@/lib/admin-brands';
 import { isUniqueConstraintError, normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
-import { headR2Object } from '@/lib/r2-upload';
+import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
+import { hasStaticWallpaperReference } from '@/lib/admin-static-assets';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
 const statuses = new Set<RecordStatus>(['draft', 'published', 'unpublished']);
@@ -10,6 +11,8 @@ const themes = new Set(['dark', 'light', 'normal']);
 const mediaTypes = new Set(['static', 'dynamic']);
 const imageExtensions = new Set(['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif']);
 const videoExtensions = new Set(['mp4', 'webm']);
+const availableFilesClause = `NOT EXISTS (SELECT 1 FROM w_wallpapers deleting
+  WHERE deleting.deletion_state != 'none' AND (deleting.origin_key IN (?, ?) OR deleting.compress_key IN (?, ?)))`;
 
 export function assertText(value: unknown, label: string, max = 200): string {
   if (typeof value !== 'string' || !value.trim() || value.length > max) throw new Error(`${label} 无效`);
@@ -42,6 +45,14 @@ function validKey(raw: unknown, role: 'origin' | 'compress', media: 'static' | '
   return value;
 }
 
+function deletionKey(raw: string, role: 'origin' | 'compress'): string {
+  const parts = raw.split('/');
+  if (!raw || raw.length > 500 || raw.startsWith('/') || raw.includes('\\') || raw.includes('://') ||
+      /[\u0000-\u001f\u007f]/.test(raw) || parts.some((part) => !part || part === '.' || part === '..') ||
+      parts.indexOf(role) < 1 || parts[parts.length - 1] === role) throw new Error('已存文件路径无效，无法删除');
+  return raw;
+}
+
 export async function listAdminDevices(filters: URLSearchParams): Promise<DeviceRow[]> {
   const clauses: string[] = [];
   const values: string[] = [];
@@ -49,6 +60,8 @@ export async function listAdminDevices(filters: URLSearchParams): Promise<Device
     const value = filters.get(param);
     if (value) { clauses.push(`${column} = ?`); values.push(value); }
   }
+  const name = filters.get('name');
+  if (name) { clauses.push('name_key = ?'); values.push(normalizeAdminName(assertText(name, '设备名称'))); }
   const popular = filters.get('popular');
   if (popular === '0' || popular === '1') { clauses.push('is_popular_brand = ?'); values.push(popular); }
   const sql = `SELECT * FROM w_devices ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY updated_date DESC, device_name LIMIT 1500`;
@@ -196,13 +209,14 @@ export async function createAdminWallpaper(input: Record<string, unknown>): Prom
   const extension = origin.split('.').pop()!.toLowerCase();
   const now = Date.now();
   const id = crypto.randomUUID();
-  await db.prepare(
+  const inserted = await db.prepare(
     `INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,width,height,file_format,
       theme,media_type,category,is_primary,tags,status,create_date,updated_date)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,'draft',?,?)`
+     SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,'draft',?,? WHERE ${availableFilesClause}`
   ).bind(id, deviceId, name, assertText(input.mime_type, 'MIME 类型', 100), size, origin, preview,
     input.width || null, input.height || null, extension, selectedTheme, media, selectedCategory,
-    tags(input.tags || []), now, now).run();
+    tags(input.tags || []), now, now, origin, preview, origin, preview).run();
+  if (inserted.meta.changes !== 1) throw new Error('文件正在删除，无法创建引用这些文件的壁纸');
   return (await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>())!;
 }
 
@@ -211,6 +225,7 @@ export async function updateAdminWallpaper(input: Record<string, unknown>): Prom
   const id = assertText(input.id, '壁纸 ID', 80);
   const previous = await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>();
   if (!previous) throw new Error('壁纸不存在');
+  if (previous.deletion_state !== 'none') throw new Error('壁纸正在删除或等待重试，无法编辑或重新发布');
   const media = input.media_type || previous.media_type;
   if (!mediaTypes.has(media as string)) throw new Error('媒体类型无效');
   const origin = input.origin_key === undefined ? previous.origin_key : validKey(input.origin_key, 'origin', media as 'static' | 'dynamic');
@@ -244,20 +259,79 @@ export async function updateAdminWallpaper(input: Record<string, unknown>): Prom
   const now = Date.now();
   const update = db.prepare(
     `UPDATE w_wallpapers SET name = ?, mime_type = ?, size_bytes = ?, origin_key = ?, compress_key = ?, width = ?, height = ?,
-      file_format = ?, theme = ?, media_type = ?, category = ?, is_primary = ?, tags = ?, status = ?, updated_date = ? WHERE id = ?`
+      file_format = ?, theme = ?, media_type = ?, category = ?, is_primary = ?, tags = ?, status = ?, updated_date = ?
+     WHERE id = ? AND deletion_state = 'none' AND ${availableFilesClause}`
   ).bind(input.name === undefined ? previous.name : assertText(input.name, '壁纸名称'),
     input.mime_type === undefined ? previous.mime_type : assertText(input.mime_type, 'MIME 类型', 100),
     size, origin, preview, input.width === undefined ? previous.width : input.width || null,
     input.height === undefined ? previous.height : input.height || null,
     origin.split('.').pop()!.toLowerCase(), nextTheme, media, selectedCategory, primary,
-    input.tags === undefined ? previous.tags : tags(input.tags), nextStatus, now, id);
+    input.tags === undefined ? previous.tags : tags(input.tags), nextStatus, now, id, origin, preview, origin, preview);
   if (primary) {
-    await db.batch([
-      db.prepare('UPDATE w_wallpapers SET is_primary = 0, updated_date = ? WHERE device_id = ? AND category = ? AND id != ? AND is_primary = 1')
-        .bind(now, previous.device_id, selectedCategory, id), update,
+    const results = await db.batch([
+      db.prepare(`UPDATE w_wallpapers SET is_primary = 0, updated_date = ? WHERE device_id = ? AND category = ? AND id != ? AND is_primary = 1 AND EXISTS (SELECT 1 FROM w_wallpapers target WHERE target.id = ? AND target.deletion_state = 'none') AND ${availableFilesClause}`)
+        .bind(now, previous.device_id, selectedCategory, id, id, origin, preview, origin, preview), update,
     ]);
+    if (results[1].meta.changes !== 1) throw new Error('壁纸已进入删除流程，请刷新后重试');
   } else {
-    await update.run();
+    const result = await update.run();
+    if (result.meta.changes !== 1) throw new Error('壁纸已进入删除流程，请刷新后重试');
   }
   return (await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>())!;
+}
+
+export async function deleteAdminWallpaper(input: Record<string, unknown>): Promise<{ id: string; deleted: true }> {
+  const id = assertText(input.id, '壁纸 ID', 80);
+  const db = getWallpaperDb();
+  const previous = await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>();
+  if (!previous) return { id, deleted: true };
+  if (previous.deletion_state === 'processing' && Date.now() - previous.updated_date < 120000) {
+    throw new Error('壁纸正在删除，请稍后重试；中断的操作可在两分钟后重试');
+  }
+  const origin = deletionKey(previous.origin_key, 'origin');
+  const preview = previous.compress_key ? deletionKey(previous.compress_key, 'compress') : null;
+  const keys = Array.from(new Set([origin, preview].filter((key): key is string => Boolean(key))));
+  if (await hasStaticWallpaperReference(keys)) {
+    throw new Error('文件仍被前台 JSON 数据引用，请先移除静态配置中的引用并同步公开站点后再删除');
+  }
+  const parent = await db.prepare('SELECT status FROM w_devices WHERE id = ?').bind(previous.device_id)
+    .first<{ status: RecordStatus }>();
+  if (previous.status === 'published' && previous.is_primary && parent?.status === 'published') {
+    throw new Error('这是已发布设备的主展示壁纸，请先设置另一张主图或取消发布设备');
+  }
+  const shared = await db.prepare(
+    'SELECT id FROM w_wallpapers WHERE id != ? AND (origin_key IN (?, ?) OR compress_key IN (?, ?)) LIMIT 1'
+  ).bind(id, origin, preview, origin, preview).first<{ id: string }>();
+  if (shared) throw new Error('原图或预览图仍被其他壁纸引用，请先处理关联记录');
+
+  // 先下架；R2 与 D1 不能跨服务原子提交，保留记录可让部分失败的删除重试。
+  const version = Math.max(Date.now(), previous.updated_date + 1);
+  const claim = db.prepare(
+    `UPDATE w_wallpapers SET status = 'unpublished', is_primary = 0, deletion_state = 'processing', updated_date = ?
+     WHERE id = ? AND updated_date = ? AND origin_key = ? AND compress_key IS ?
+       AND status = ? AND is_primary = ? AND deletion_state = ?
+       AND NOT EXISTS (SELECT 1 FROM w_devices d WHERE d.id = w_wallpapers.device_id
+         AND d.status = 'published' AND w_wallpapers.status = 'published' AND w_wallpapers.is_primary = 1)
+       AND NOT EXISTS (SELECT 1 FROM w_wallpapers other WHERE other.id != ?
+         AND (other.origin_key IN (?, ?) OR other.compress_key IN (?, ?)))`
+  ).bind(version, id, previous.updated_date, origin, preview, previous.status, previous.is_primary, previous.deletion_state,
+    id, origin, preview, origin, preview);
+  const claimed = await db.batch([claim, ...keys.map((key) => db.prepare(
+    `INSERT INTO w_deleted_wallpaper_files (object_key, deleted_at)
+     SELECT ?, ? WHERE EXISTS (SELECT 1 FROM w_wallpapers WHERE id = ? AND updated_date = ? AND deletion_state = 'processing')
+     ON CONFLICT(object_key) DO NOTHING`
+  ).bind(key, version, id, version))]);
+  if (claimed[0].meta.changes !== 1) throw new Error('壁纸或关联记录已变更，请刷新后再删除');
+  try {
+    for (const key of keys) await deleteR2Object(key);
+    const removed = await db.prepare(
+      "DELETE FROM w_wallpapers WHERE id = ? AND updated_date = ? AND deletion_state = 'processing' AND status = 'unpublished' AND origin_key = ? AND compress_key IS ?"
+    ).bind(id, version, origin, preview).run();
+    if (removed.meta.changes !== 1) throw new Error('后台记录发生变更，请刷新后检查');
+  } catch (error) {
+    await db.prepare("UPDATE w_wallpapers SET deletion_state = 'pending' WHERE id = ? AND updated_date = ? AND deletion_state = 'processing'")
+      .bind(id, version).run();
+    throw new Error(`${error instanceof Error ? error.message : 'R2 文件删除失败'}；壁纸已下架并保留记录，请重试删除`);
+  }
+  return { id, deleted: true };
 }

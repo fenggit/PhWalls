@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { assertText, createAdminWallpaper } from '@/lib/admin-data';
 import { getWallpaperDb, type DeviceRow } from '@/lib/wallpaper-db';
 import { createR2UploadUrl, createUploadGrant, headR2Object, verifyUploadGrant } from '@/lib/r2-upload';
+import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
 
 export const runtime = 'edge';
 
@@ -10,12 +11,6 @@ const mimeExtensions: Record<string, string> = {
   'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
   'image/avif': 'avif', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm',
 };
-
-function prefix(device: DeviceRow): string {
-  return device.device_category === 'desktop'
-    ? `desktopwalls/${device.brand_name}/${device.device_slug}`
-    : `${device.brand_name}/${device.device_slug}`;
-}
 
 export async function POST(request: NextRequest) {
   const denied = await requireAdmin(request, true);
@@ -26,7 +21,7 @@ export async function POST(request: NextRequest) {
     const deviceId = assertText(input.device_id, '设备 ID', 80);
     const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
     if (!device) throw new Error('设备不存在');
-    const base = prefix(device);
+    const base = deviceR2Prefix(device);
 
     if (action === 'authorize') {
       const role = input.role;
@@ -40,15 +35,21 @@ export async function POST(request: NextRequest) {
       if (!Number.isSafeInteger(size) || size < 1 || size > (video ? 200 : 50) * 1024 * 1024) {
         throw new Error('文件大小超出限制');
       }
-      const key = `${base}/${role}/${crypto.randomUUID()}.${extension}`;
+      const target = input.r2_prefix === undefined ? base : normalizeAdminR2Prefix(input.r2_prefix);
+      const key = `${target}/${role}/${crypto.randomUUID()}.${extension}`;
       return NextResponse.json({ key, url: await createR2UploadUrl(key, mime),
-        token: await createUploadGrant(key, size, mime) }, { headers: { 'Cache-Control': 'no-store' } });
+        token: await createUploadGrant(key, size, mime, { deviceId, role, prefix: target }) }, { headers: { 'Cache-Control': 'no-store' } });
     }
 
     if (action === 'complete') {
-      const origin = await verifyUploadGrant(assertText(input.origin_token, '原图授权', 2000));
-      const preview = await verifyUploadGrant(assertText(input.preview_token, '预览授权', 2000));
-      if (!origin.key.startsWith(`${base}/origin/`) || !preview.key.startsWith(`${base}/compress/`)) {
+      const origin = await verifyUploadGrant(assertText(input.origin_token, '原图授权', 6000));
+      const preview = await verifyUploadGrant(assertText(input.preview_token, '预览授权', 6000));
+      const originBase = origin.prefix ?? base;
+      const previewBase = preview.prefix ?? base;
+      if (originBase !== previewBase || (origin.deviceId !== undefined && origin.deviceId !== deviceId) ||
+          (preview.deviceId !== undefined && preview.deviceId !== deviceId) ||
+          (origin.role !== undefined && origin.role !== 'origin') || (preview.role !== undefined && preview.role !== 'compress') ||
+          !origin.key.startsWith(`${originBase}/origin/`) || !preview.key.startsWith(`${previewBase}/compress/`)) {
         throw new Error('文件与设备不匹配');
       }
       const [originInfo, previewInfo] = await Promise.all([headR2Object(origin.key), headR2Object(preview.key)]);

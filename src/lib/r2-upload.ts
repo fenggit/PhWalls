@@ -25,7 +25,7 @@ async function sign(key: Uint8Array, value: string): Promise<Uint8Array> {
   return new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(value)));
 }
 
-async function signR2Request(method: 'PUT' | 'HEAD', key: string, mimeType?: string): Promise<string> {
+async function signR2Request(method: 'PUT' | 'HEAD' | 'DELETE', key: string, mimeType?: string): Promise<string> {
   const config = configuration();
   const date = new Date().toISOString().replace(/[:-]|\.\d{3}/g, '');
   const stamp = date.slice(0, 8);
@@ -66,7 +66,13 @@ export async function headR2Object(key: string): Promise<{ size: number; mimeTyp
   };
 }
 
-type UploadGrant = { key: string; size: number; mimeType: string; expires: number };
+export async function deleteR2Object(key: string): Promise<void> {
+  const response = await fetch(await signR2Request('DELETE', key), { method: 'DELETE', signal: AbortSignal.timeout(15000) });
+  if (!response.ok && response.status !== 404) throw new Error(`R2 文件删除失败 (${response.status})`);
+}
+
+type UploadBinding = { deviceId: string; role: 'origin' | 'compress'; prefix: string };
+type UploadGrant = { key: string; size: number; mimeType: string; expires: number } & Partial<UploadBinding>;
 
 async function grantSignature(encoded: string): Promise<string> {
   const bindings = getOptionalRequestContext()?.env as Record<string, string> | undefined;
@@ -76,8 +82,9 @@ async function grantSignature(encoded: string): Promise<string> {
   return Array.from(signature).map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-export async function createUploadGrant(key: string, size: number, mimeType: string): Promise<string> {
-  const encoded = btoa(JSON.stringify({ key, size, mimeType, expires: Date.now() + 15 * 60 * 1000 } satisfies UploadGrant))
+export async function createUploadGrant(key: string, size: number, mimeType: string, binding: UploadBinding): Promise<string> {
+  const payload = JSON.stringify({ key, size, mimeType, ...binding, expires: Date.now() + 15 * 60 * 1000 } satisfies UploadGrant);
+  const encoded = btoa(String.fromCharCode(...Array.from(new TextEncoder().encode(payload))))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   return `${encoded}.${await grantSignature(encoded)}`;
 }
@@ -85,7 +92,8 @@ export async function createUploadGrant(key: string, size: number, mimeType: str
 export async function verifyUploadGrant(value: string): Promise<UploadGrant> {
   const [encoded, signature] = value.split('.');
   if (!encoded || !signature || signature !== await grantSignature(encoded)) throw new Error('上传授权无效');
-  const grant = JSON.parse(atob(encoded.replace(/-/g, '+').replace(/_/g, '/'))) as UploadGrant;
+  const bytes = Uint8Array.from(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0));
+  const grant = JSON.parse(new TextDecoder().decode(bytes)) as UploadGrant;
   if (!grant.key || !grant.size || !grant.mimeType || grant.expires < Date.now()) throw new Error('上传授权已过期');
   return grant;
 }

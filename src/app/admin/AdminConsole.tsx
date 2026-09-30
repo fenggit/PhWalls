@@ -1,10 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, UploadCloud, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import type { DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
+import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
+import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
@@ -26,11 +28,18 @@ async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> 
   return result as T;
 }
 
-const inputClass = 'h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100';
-const buttonClass = 'inline-flex h-10 items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-3 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50';
-const primaryClass = 'inline-flex h-10 items-center justify-center gap-2 rounded-md bg-teal-700 px-4 text-sm font-medium text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50';
+const inputClass = 'h-10 w-full min-w-0 rounded-md border border-[#d8dfdb] bg-white px-3 text-sm text-[#25332d] outline-none transition-colors placeholder:text-[#87918b] hover:border-[#adbcb3] focus-visible:border-[#247560] focus-visible:ring-2 focus-visible:ring-[#dcefe5]';
+const buttonClass = 'inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md border border-[#d8dfdb] bg-white px-3 text-sm font-medium text-[#34433b] transition-colors hover:border-[#aebeb4] hover:bg-[#f4f7f4] active:bg-[#eaf0eb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560] disabled:cursor-not-allowed disabled:opacity-50';
+const primaryClass = 'inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-[#247560] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#195b4b] active:bg-[#124839] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560] disabled:cursor-not-allowed disabled:opacity-50';
+const iconButtonClass = `${buttonClass} w-10 px-0`;
+const rowButtonClass = 'inline-flex h-8 items-center justify-center gap-1.5 rounded px-2 text-xs font-medium text-[#5e7065] transition-colors hover:bg-[#e7eee7] hover:text-[#1b5f4c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560]';
+const tableClass = 'w-full text-left text-sm';
+const tableHeadClass = 'border-b border-[#e3e9e4] bg-[#f8faf8] text-xs font-semibold text-[#5e7065]';
+const tableRowClass = 'border-b border-[#ebefeb] last:border-b-0 hover:bg-[#f8faf8]';
+const modalClass = 'max-h-[calc(100dvh-2rem)] w-full overflow-y-auto rounded-lg border border-[#dce5dd] bg-white p-5 shadow-[0_24px_80px_rgba(20,44,30,0.18)] sm:p-6';
 const categories = ['phone', 'phone_fold', 'pad', 'desktop', 'os'];
 const statuses = ['draft', 'published', 'unpublished'];
+const themeLabels: Record<string, string> = { normal: '默认', dark: '深色', light: '浅色' };
 const PAGE_SIZE = 50;
 const emptyFilters = { brand: '', category: '', status: '', popular: '', device: '', theme: '', media: '', format: '', search: '' };
 const statusLabels: Record<DeviceRow['status'], string> = { draft: '草稿', published: '已发布', unpublished: '已下架' };
@@ -56,6 +65,29 @@ function BrandOptions({ brands }: { brands: AdminBrand[] }) {
     <optgroup label="桌面">{brands.filter((brand) => brand.kind === 'desktop')
       .map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
   </>;
+}
+
+function AdminDialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    ref.current?.showModal();
+    const dialog = ref.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      dialog?.close();
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, []);
+  return <dialog ref={ref} aria-label={title} onCancel={(event) => { event.preventDefault(); onClose(); }} className="fixed m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-lg bg-transparent p-0 text-[#25332d] backdrop:bg-[#15271e]/50 backdrop:backdrop-blur-sm">{children}</dialog>;
+}
+
+function TableFeedback({ columns, loading, message, onReset }: { columns: number; loading: boolean; message: string; onReset?: () => void }) {
+  return <tr><td colSpan={columns} className="px-5 py-12">
+    {loading ? <div role="status" className="space-y-4"><span className="sr-only">正在加载数据</span>{[0, 1, 2].map((row) => <div key={row} className="flex items-center gap-4 motion-safe:animate-pulse"><div className="h-10 w-10 shrink-0 rounded bg-[#e9eee8]" /><div className="h-3 w-1/3 rounded bg-[#e9eee8]" /><div className="ml-auto h-3 w-1/5 rounded bg-[#edf1ec]" /></div>)}</div> : <div className="flex flex-col items-center gap-3 text-center"><Search size={24} className="text-[#9aaba0]" /><span className="text-sm text-[#66746b]">{message}</span>{onReset && <button className={buttonClass} onClick={onReset}>清除筛选</button>}</div>}
+  </td></tr>;
 }
 
 function fileMime(file: File): string {
@@ -116,7 +148,12 @@ export default function AdminConsole() {
   const [batchTags, setBatchTags] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [uploadFolderState, setUploadFolderState] = useState<'idle' | 'checking' | 'matched' | 'missing' | 'error'>('idle');
+  const [uploadPathMode, setUploadPathMode] = useState<'device' | 'custom'>('device');
+  const [uploadR2Prefix, setUploadR2Prefix] = useState('');
+  const [deletingWallpaper, setDeletingWallpaper] = useState<WallpaperListRow | null>(null);
   const loadId = useRef(0);
+  const folderLookupId = useRef(0);
 
   const reload = useCallback(async () => {
     if (!authenticated) return;
@@ -214,6 +251,23 @@ export default function AdminConsole() {
     });
   };
 
+  const deleteWallpaper = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!deletingWallpaper || busy) return;
+    setBusy(true);
+    setError('');
+    let failure = '';
+    try {
+      await api('wallpapers', 'DELETE', { id: deletingWallpaper.id });
+      setDeletingWallpaper(null);
+    } catch (cause) {
+      failure = cause instanceof Error ? cause.message : '删除失败';
+    }
+    await reload();
+    if (failure) setError(failure);
+    setBusy(false);
+  };
+
   const selectUploadBrand = (brand: string): boolean => {
     if (brand === uploadBrand) return true;
     if (uploadRows.length && !window.confirm('切换品牌将清空待上传文件，继续吗？')) return false;
@@ -222,6 +276,10 @@ export default function AdminConsole() {
     setUploadDevices([]);
     setUploadRows([]);
     setUploadFolderName('');
+    setUploadPathMode('device');
+    setUploadR2Prefix('');
+    setUploadFolderState('idle');
+    folderLookupId.current++;
     setUploadSearch('');
     setCreatingUploadDevice(false);
     setNewUploadDeviceName('');
@@ -244,6 +302,10 @@ export default function AdminConsole() {
         setCreatingUploadDevice(false);
         setNewUploadDeviceName('');
         setUploadFolderName('');
+        setUploadPathMode('device');
+        setUploadR2Prefix('');
+        setUploadFolderState('idle');
+        folderLookupId.current++;
         setNewUploadCategory(data.kind === 'desktop' ? 'desktop' : 'phone');
         setNewUploadDate('');
       }
@@ -251,17 +313,47 @@ export default function AdminConsole() {
     });
   };
 
-  const createUploadDevice = async (event: React.FormEvent) => {
+  const findFolderDevice = async (name: string): Promise<DeviceRow | undefined> => {
+    const query = new URLSearchParams({ brand: uploadBrand, name: normalizeAdminDisplay(name) });
+    const { data } = await api<{ data: DeviceRow[] }>(`devices?${query}`);
+    return data.find((device) => device.brand_name === uploadBrand &&
+      normalizeAdminName(device.device_name) === normalizeAdminName(name));
+  };
+
+  const checkUploadFolder = async (name: string) => {
+    const lookupId = ++folderLookupId.current;
+    setError('');
+    setUploadFolderState('checking');
+    setUploadDevice('');
+    try {
+      const existing = await findFolderDevice(name);
+      if (lookupId !== folderLookupId.current) return;
+      if (existing) {
+        setUploadDevices((current) => [existing, ...current.filter((device) => device.id !== existing.id)]);
+        setUploadDevice(existing.id);
+      }
+      setUploadFolderState(existing ? 'matched' : 'missing');
+    } catch (cause) {
+      if (lookupId !== folderLookupId.current) return;
+      setUploadFolderState('error');
+      setError(cause instanceof Error ? cause.message : '检查设备失败');
+    }
+  };
+
+  const createUploadDevice = async (event: React.FormEvent, folderName?: string) => {
     event.preventDefault();
     await run(async () => {
-      const { data } = await api<{ data: DeviceRow }>('devices', 'POST', {
+      const existing = folderName ? await findFolderDevice(folderName) : undefined;
+      const data = existing || (await api<{ data: DeviceRow }>('devices', 'POST', {
         brand_name: uploadBrand,
-        device_name: newUploadDeviceName,
+        device_name: folderName ? normalizeAdminDisplay(folderName) : newUploadDeviceName,
         device_category: newUploadCategory,
         release_date: newUploadDate,
-      });
-      setUploadDevices((current) => [data, ...current]);
+      })).data;
+      setUploadDevices((current) => [data, ...current.filter((device) => device.id !== data.id)]);
       setUploadDevice(data.id);
+      if (folderName) setUploadFolderState('matched');
+      else { setUploadFolderName(''); setUploadFolderState('idle'); folderLookupId.current++; }
       setUploadSearch('');
       setCreatingUploadDevice(false);
       setNewUploadDeviceName('');
@@ -269,18 +361,18 @@ export default function AdminConsole() {
     });
   };
 
-  const addFiles = (event: ChangeEvent<HTMLInputElement>, explicitRole?: 'origin' | 'compress') => {
+  const addFiles = async (event: ChangeEvent<HTMLInputElement>, explicitRole?: 'origin' | 'compress') => {
     const files = Array.from(event.target.files || []);
     const folderRoot = !explicitRole && files.length ? files[0].webkitRelativePath.split('/')[0] : '';
     const roleFiles = !explicitRole ? files.filter((file) => /(^|\/)(origin|compress)\//i.test(file.webkitRelativePath)) : [];
-    if (!explicitRole && !uploadDevice && files.length &&
+    if (!explicitRole && files.length &&
         (!folderRoot || /^(origin|compress)$/i.test(folderRoot) ||
          files.some((file) => file.webkitRelativePath.split('/')[0] !== folderRoot))) {
       setError('请选择包含 origin 和 compress 子目录的设备或系统文件夹');
       event.target.value = '';
       return;
     }
-    if (!explicitRole && !uploadDevice && roleFiles.some((file) => {
+    if (!explicitRole && roleFiles.some((file) => {
       const parts = file.webkitRelativePath.split('/');
       return parts.length !== 3 || parts[0] !== folderRoot || !/^(origin|compress)$/i.test(parts[1]);
     })) {
@@ -288,7 +380,7 @@ export default function AdminConsole() {
       event.target.value = '';
       return;
     }
-    if (!explicitRole && !uploadDevice && uploadFolderName && uploadFolderName !== folderRoot &&
+    if (!explicitRole && uploadFolderName && uploadFolderName !== folderRoot &&
         uploadRows.some((row) => row.state !== 'done')) {
       setError('一次只能上传一个设备或系统文件夹');
       event.target.value = '';
@@ -299,10 +391,23 @@ export default function AdminConsole() {
       event.target.value = '';
       return;
     }
-    if (!explicitRole && !uploadDevice && folderRoot) setUploadFolderName(folderRoot);
+    if (!explicitRole && !files.length) return;
+    if (!explicitRole && folderRoot && uploadRows.some((row) => row.state !== 'done' && !row.folderName)) {
+      setError('请先上传或移除已单独添加的文件，再选择设备文件夹');
+      event.target.value = '';
+      return;
+    }
+    if (!explicitRole && folderRoot) {
+      setUploadFolderName(folderRoot);
+      setCreatingUploadDevice(false);
+      setNewUploadDeviceName(normalizeAdminDisplay(folderRoot));
+      setNewUploadCategory(defaultDeviceCategory(uploadBrand, brands));
+      setNewUploadDate('');
+      setUploadSearch('');
+    }
     setError('');
     setUploadRows((current) => {
-      const next = current.length && current.every((row) => row.state === 'done') ? [] : [...current];
+      const next = current.length && current.every((row) => row.state === 'done') ? [] : current.map((row) => ({ ...row }));
       for (const file of files) {
         const path = file.webkitRelativePath || file.name;
         const role = explicitRole || (/(^|\/)compress\//i.test(path) ? 'compress'
@@ -323,30 +428,25 @@ export default function AdminConsole() {
       return [...next];
     });
     event.target.value = '';
+    if (!explicitRole && folderRoot) await checkUploadFolder(folderRoot);
   };
 
   const patchUpload = (id: string, patch: Partial<UploadRow>) =>
     setUploadRows((current) => current.map((row) => row.id === id ? { ...row, ...patch } : row));
 
   const ensureUploadDevice = async (): Promise<string> => {
-    if (uploadDevice) return uploadDevice;
-    const name = uploadFolderName.trim();
-    if (!name) throw new Error('请选择设备或系统，或上传对应文件夹');
-    const existing = uploadDevices.find((device) => device.brand_name === uploadBrand &&
-      device.device_name === name);
-    if (existing) return existing.id;
-    if (uploadDevices.some((device) => device.brand_name === uploadBrand &&
-        device.device_name.toLowerCase() === name.toLowerCase())) {
-      throw new Error('存在大小写不同的同名设备，请明确选择设备或系统');
+    if (uploadFolderName) {
+      if (uploadFolderState !== 'matched') throw new Error('请先检查并创建文件夹对应的设备或系统');
+      const selected = uploadDevices.find((device) => device.id === uploadDevice && device.brand_name === uploadBrand);
+      if (!selected || normalizeAdminName(selected.device_name) !== normalizeAdminName(uploadFolderName)) {
+        throw new Error('所选设备与文件夹名称不一致，请重新检查设备');
+      }
     }
-    const { data } = await api<{ data: DeviceRow }>('devices', 'POST', {
-      brand_name: uploadBrand, device_name: name, device_category: newUploadCategory, release_date: newUploadDate,
-    });
-    setUploadDevices((current) => [data, ...current]);
-    return data.id;
+    if (!uploadDevice) throw new Error('请选择设备或系统');
+    return uploadDevice;
   };
 
-  const uploadOne = async (row: UploadRow, deviceId: string) => {
+  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string) => {
     if (!row.origin || !row.preview) {
       patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return;
     }
@@ -356,6 +456,7 @@ export default function AdminConsole() {
       const authorize = async (file: File, role: string) => api<{ url: string; token: string }>('upload', 'POST', {
         action: 'authorize', device_id: deviceId, role, media_type: mediaType,
         size_bytes: file.size, mime_type: fileMime(file),
+        r2_prefix: r2Prefix,
       });
       const [origin, preview] = await Promise.all([authorize(row.origin, 'origin'), authorize(row.preview, 'compress')]);
       await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }));
@@ -375,12 +476,17 @@ export default function AdminConsole() {
   const visibleDevices = devices.filter((device) => !searchInput ||
     `${device.device_name} ${device.brand_name}`.toLowerCase().includes(searchInput.toLowerCase()));
   const uploadBrandIsDesktop = brands.some((brand) => brand.slug === uploadBrand && brand.kind === 'desktop');
-  const inferredExistingDevice = !uploadDevice && uploadFolderName
-    ? uploadDevices.find((device) => device.brand_name === uploadBrand && device.device_name === uploadFolderName.trim())
+  const inferredExistingDevice = uploadFolderName && uploadFolderState === 'matched'
+    ? uploadDevices.find((device) => device.brand_name === uploadBrand && device.id === uploadDevice)
     : null;
-  const hasCaseVariant = !uploadDevice && !inferredExistingDevice && Boolean(uploadFolderName) &&
-    uploadDevices.some((device) => device.brand_name === uploadBrand &&
-      device.device_name.toLowerCase() === uploadFolderName.trim().toLowerCase());
+  const folderTargetLocked = Boolean(uploadFolderName) && uploadRows.some((row) => row.state !== 'done');
+  const selectedUploadDevice = uploadDevices.find((device) => device.id === uploadDevice && device.brand_name === uploadBrand);
+  let uploadStoragePath = selectedUploadDevice ? deviceR2Prefix(selectedUploadDevice) : '';
+  let uploadStoragePathError = '';
+  if (uploadPathMode === 'custom') {
+    try { uploadStoragePath = normalizeAdminR2Prefix(uploadR2Prefix); }
+    catch (cause) { uploadStoragePath = ''; uploadStoragePathError = cause instanceof Error ? cause.message : 'R2 目录无效'; }
+  }
   const editingDeviceIsDesktop = brands.some((brand) => brand.slug === editingDevice?.brand_name && brand.kind === 'desktop');
   const changeFilters = (patch: Partial<typeof filters>) => {
     setDevicePage(0);
@@ -389,57 +495,73 @@ export default function AdminConsole() {
   };
   const resetFilters = () => { setDevicePage(0); setWallpaperPage(0); setFilters({ ...emptyFilters }); setSearchInput(''); };
 
-  if (authenticated === null) return <main className="flex min-h-screen items-center justify-center bg-gray-50 text-sm text-gray-600">正在检查登录状态…</main>;
+  if (authenticated === null) return <main className="flex min-h-screen items-center justify-center bg-[#f5f7f4] text-sm text-[#66746b]" role="status">正在检查登录状态…</main>;
   if (!authenticated) return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <form onSubmit={login} className="w-full max-w-sm rounded-md border border-gray-200 bg-white p-7 shadow-sm">
-        <div className="mb-1 text-sm font-semibold text-teal-800">PhWalls</div>
-        <h1 className="mb-6 text-xl font-semibold text-gray-950">登录内容管理后台</h1>
-        <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="admin-username">账号</label>
-        <input id="admin-username" autoComplete="username" className={`${inputClass} mb-4`} value={username} onChange={(event) => setUsername(event.target.value)} />
-        <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="admin-password">密码</label>
-        <input id="admin-password" type="password" autoComplete="current-password" className={`${inputClass} mb-3`} value={password} onChange={(event) => setPassword(event.target.value)} />
-        <label className="mb-5 flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
+    <main className="flex min-h-screen flex-col bg-[#f5f7f4] text-[#25332d]">
+      <header className="border-b border-[#e0e7e0] px-5 py-5 sm:px-10"><div className="mx-auto flex max-w-6xl items-center gap-3"><img src="/brand/option-03/icon-32.png" alt="" className="h-9 w-9 rounded-md" /><span className="text-base font-semibold">PhWalls</span><span className="h-5 w-px bg-[#d8e0d9]" /><span className="text-sm text-[#66746b]">内容管理</span></div></header>
+      <div className="mx-auto flex w-full max-w-6xl flex-1 items-center px-5 py-12 sm:px-10">
+      <form onSubmit={login} className="mx-auto w-full max-w-sm">
+        <div className="mb-2 h-1 w-10 bg-[#247560]" />
+        <h1 className="mb-2 text-3xl font-semibold text-[#17251d]">登录管理后台</h1>
+        <p className="mb-8 text-sm text-[#66746b]">PhWalls 内容工作区</p>
+        <label className="mb-1.5 block text-sm font-medium text-[#34433b]" htmlFor="admin-username">账号</label>
+        <input id="admin-username" autoComplete="username" required className={`${inputClass} mb-5`} value={username} onChange={(event) => setUsername(event.target.value)} />
+        <label className="mb-1.5 block text-sm font-medium text-[#34433b]" htmlFor="admin-password">密码</label>
+        <input id="admin-password" type="password" autoComplete="current-password" required className={`${inputClass} mb-4`} value={password} onChange={(event) => setPassword(event.target.value)} />
+        <label className="mb-7 flex items-center gap-2 text-sm text-[#56675b]">
+          <input type="checkbox" className="accent-[#247560]" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
           记住登录状态（30 天）
         </label>
-        {error && <p role="alert" className="mb-4 text-sm text-red-700">{error}</p>}
+        {error && <p role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>}
         <button className={`${primaryClass} w-full`} disabled={busy}>{busy ? '登录中…' : '登录'}</button>
       </form>
+      </div>
     </main>
   );
 
   return (
-    <main className="min-h-screen bg-[#f7f9f8] text-gray-900">
-      <header className="border-b border-gray-200 bg-white px-4 py-3 sm:px-7">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-teal-800 text-sm font-bold text-white">P</div>
-            <div className="min-w-0"><h1 className="truncate text-base font-semibold text-gray-950">PhWalls</h1><p className="text-xs text-gray-500">内容管理</p></div>
-          </div>
+    <main className="min-h-screen bg-[#f5f7f4] text-[#25332d] lg:grid lg:grid-cols-[216px_minmax(0,1fr)]">
+      <aside className="border-b border-[#dfe6df] bg-[#18261f] text-white lg:min-h-screen lg:border-b-0">
+        <div className="flex h-17 items-center justify-between gap-2 px-5 lg:h-20 lg:border-b lg:border-white/10 lg:px-6">
+          <div className="flex min-w-0 items-center gap-3"><img src="/brand/option-03/icon-32.png" alt="" className="h-9 w-9 shrink-0 rounded-md" /><div className="min-w-0"><div className="truncate text-base font-semibold">PhWalls</div><div className="text-[11px] text-white/55">CONTENT STUDIO</div></div></div>
+          <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] text-white/70 lg:hidden">{process.env.NODE_ENV === 'development' ? '本地' : '线上'}</span>
+        </div>
+        <nav className="flex overflow-x-auto px-3 pb-3 lg:block lg:space-y-1 lg:overflow-visible lg:px-3 lg:py-6" aria-label="管理视图">
+          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud]] as const).map(([key, label, Icon]) => (
+            <button key={key} onClick={() => setTab(key)} aria-current={tab === key ? 'page' : undefined} className={`flex h-10 shrink-0 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-white lg:w-full lg:justify-start ${tab === key ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/8 hover:text-white'}`}><Icon size={16} />{label}</button>
+          ))}
+        </nav>
+        <div className="hidden px-6 pt-4 text-xs text-white/45 lg:block">{process.env.NODE_ENV === 'development' ? '本地数据' : '线上数据'}</div>
+      </aside>
+      <div className="min-w-0">
+      <header className="border-b border-[#e0e7e0] bg-white px-4 py-3 sm:px-7 lg:h-20 lg:px-9">
+        <div className="mx-auto flex h-full max-w-[1480px] items-center justify-between gap-3">
+          <div className="min-w-0"><h1 className="truncate text-base font-semibold text-[#17251d]">{tab === 'brands' ? '品牌管理' : tab === 'devices' ? '设备管理' : tab === 'wallpapers' ? '壁纸管理' : '上传壁纸'}</h1><p className="text-xs text-[#758278]">PhWalls / 内容管理</p></div>
           <div className="flex items-center gap-2">
-            <span className="hidden rounded border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-600 sm:inline-flex">{process.env.NODE_ENV === 'development' ? '本地数据' : '线上数据'}</span>
             <a className={buttonClass} href={process.env.NODE_ENV === 'development' ? '/' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com')} target="_blank" rel="noopener noreferrer" title="打开网站"><ExternalLink size={16} /><span className="hidden sm:inline">查看网站</span></a>
-            <button className={buttonClass} title="刷新数据" aria-label="刷新数据" disabled={loading} onClick={() => void reload()}><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
-            <button className={buttonClass} title="退出登录" aria-label="退出登录" onClick={() => void run(async () => {
+            <button className={iconButtonClass} title="刷新数据" aria-label="刷新数据" disabled={loading} onClick={() => void reload()}><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
+            <button className={iconButtonClass} title="退出登录" aria-label="退出登录" onClick={() => void run(async () => {
               await api('logout', 'POST'); setAuthenticated(false);
             })}><LogOut size={16} /></button>
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-7">
-        <nav className="mb-6 flex gap-1 border-b border-gray-200" aria-label="管理视图">
-          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud]] as const).map(([key, label, Icon]) => (
-            <button key={key} onClick={() => setTab(key)} aria-current={tab === key ? 'page' : undefined} className={`inline-flex h-11 items-center gap-2 border-b-2 px-4 text-sm ${tab === key ? 'border-teal-700 font-semibold text-teal-800' : 'border-transparent text-gray-600 hover:text-gray-900'}`}><Icon size={16} />{label}</button>
-          ))}
-        </nav>
+      <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-7 lg:px-9 lg:py-8">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div><h2 className="text-2xl font-semibold tracking-tight text-[#17251d]">{tab === 'brands' ? '品牌目录' : tab === 'devices' ? '设备目录' : tab === 'wallpapers' ? '壁纸目录' : '上传工作区'}</h2>
+            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 个设备` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
+          </div>
+          {tab === 'brands' && <button className={primaryClass} onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} />新增品牌</button>}
+          {tab === 'devices' && <button className={primaryClass} onClick={() => setEditingDevice({ device_category: 'phone', status: 'draft', is_popular_brand: 0, release_date: '' })}><Plus size={16} />新建设备</button>}
+          {tab === 'wallpapers' && <button className={primaryClass} onClick={() => setTab('upload')}><ImagePlus size={16} />上传壁纸</button>}
+        </div>
         {error && <div role="alert" className="mb-4 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><AlertCircle size={18} className="mt-0.5 shrink-0" /><span className="flex-1">{error}</span><button className="font-medium underline" onClick={() => void reload()}>重试</button></div>}
-        {(tab === 'devices' || tab === 'wallpapers') && <div className="mb-5 border-y border-gray-200 bg-white py-4">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <div className="relative w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-3 top-3 text-gray-500" size={16} /><input className={`${inputClass} pl-9`} placeholder={tab === 'devices' ? '搜索设备或品牌' : '搜索壁纸或设备'} aria-label="搜索内容" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} /></div>
+        {(tab === 'devices' || tab === 'wallpapers') && <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="relative w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-3 top-3 text-[#758278]" size={16} /><input className={`${inputClass} pl-9`} placeholder={tab === 'devices' ? '搜索设备或品牌' : '搜索壁纸或设备'} aria-label="搜索内容" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} /></div>
             {(searchInput || Object.entries(filters).some(([key, value]) => key !== 'search' && value)) && <button className={buttonClass} onClick={resetFilters}><X size={15} />清除筛选</button>}
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+          <div className={`grid grid-cols-2 gap-2 ${tab === 'devices' ? 'xl:grid-cols-4' : 'lg:grid-cols-4 xl:grid-cols-7'}`}>
           <select className={inputClass} aria-label="品牌筛选" value={filters.brand} onChange={(event) => changeFilters({ brand: event.target.value, device: '' })}>
             <option value="">全部品牌</option>
             <BrandOptions brands={brands} />
@@ -451,14 +573,14 @@ export default function AdminConsole() {
             <option value="">全部状态</option>{statuses.map((value) => <option key={value} value={value}>{statusLabels[value as DeviceRow['status']]}</option>)}
           </select>
           {tab === 'devices' && <select className={inputClass} aria-label="热门品牌筛选" value={filters.popular} onChange={(event) => changeFilters({ popular: event.target.value })}>
-            <option value="">全部品牌</option><option value="1">热门品牌</option><option value="0">普通品牌</option>
+            <option value="">全部热度</option><option value="1">热门品牌</option><option value="0">普通品牌</option>
           </select>}
           {tab === 'wallpapers' && <>
             <select className={inputClass} aria-label="设备筛选" value={filters.device} onChange={(event) => changeFilters({ device: event.target.value })}>
               <option value="">全部设备</option>{devices.map((device) => <option key={device.id} value={device.id}>{device.device_name}</option>)}
             </select>
             <select className={inputClass} aria-label="主题筛选" value={filters.theme} onChange={(event) => changeFilters({ theme: event.target.value })}>
-              <option value="">全部主题</option>{['dark', 'light', 'normal'].map((value) => <option key={value}>{value}</option>)}
+              <option value="">全部主题</option>{['dark', 'light', 'normal'].map((value) => <option key={value} value={value}>{themeLabels[value]}</option>)}
             </select>
             <select className={inputClass} aria-label="媒体筛选" value={filters.media} onChange={(event) => changeFilters({ media: event.target.value })}>
               <option value="">全部媒体</option><option value="static">静态</option><option value="dynamic">动态</option>
@@ -468,77 +590,79 @@ export default function AdminConsole() {
           </div>
         </div>}
 
-        {tab === 'brands' && <section>
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold text-gray-950">品牌目录</h2><p className="text-sm text-gray-600">{brands.length} 个品牌</p></div>
-            <button className={primaryClass} onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} />新增品牌</button></div>
-          <div className="overflow-x-auto rounded-md border border-gray-200 bg-white" aria-busy={loading}><table className="w-full min-w-[600px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs font-medium text-gray-600"><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">类型</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
-            <tbody>{loading ? <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-500">正在加载品牌…</td></tr> : brands.map((brand) => <tr key={brand.slug} className="border-t border-gray-100 hover:bg-gray-50/70">
-              <td className="px-4 py-3 font-medium text-gray-950">{brand.title}</td><td className="px-4 py-3 text-gray-600">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{brand.kind === 'desktop' ? '桌面' : '手机与系统'}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
-              <td className="px-4 py-3 text-right"><button className={buttonClass} title="上传到此品牌" aria-label={`上传到 ${brand.title}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} /></button></td>
+        {tab === 'brands' && <section aria-label="品牌目录">
+          <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[600px]`}>
+            <thead className={tableHeadClass}><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">类型</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
+            <tbody>{loading ? <TableFeedback columns={5} loading message="" /> : brands.length === 0 ? <TableFeedback columns={5} loading={false} message="暂无品牌" /> : brands.map((brand) => <tr key={brand.slug} className={tableRowClass}>
+              <td className="px-4 py-3 font-medium text-gray-950"><div className="flex items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-[#edf2eb] text-xs font-semibold uppercase text-[#526950]">{brand.title.slice(0, 2)}</span>{brand.title}</div></td><td className="px-4 py-3 font-mono text-xs text-[#758278]">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{brand.kind === 'desktop' ? '桌面' : '手机与系统'}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
+              <td className="px-4 py-3 text-right"><button className={rowButtonClass} title="上传到此品牌" aria-label={`上传到 ${brand.title}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} />上传</button></td>
             </tr>)}</tbody>
           </table></div>
         </section>}
 
-        {tab === 'devices' && <section>
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold text-gray-950">设备目录</h2><p className="text-sm text-gray-600">{visibleDevices.length} 个设备</p></div>
-            <button className={primaryClass} onClick={() => setEditingDevice({ device_category: 'phone', status: 'draft', is_popular_brand: 0, release_date: '' })}><Plus size={16} />新建设备</button></div>
-          <div className="overflow-x-auto rounded-md border border-gray-200 bg-white" aria-busy={loading}><table className="w-full min-w-[740px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs font-medium text-gray-600"><tr><th className="px-4 py-3">设备</th><th className="px-4 py-3">品牌</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">状态</th><th className="px-4 py-3">发布日期</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
-            <tbody>{loading ? <tr><td colSpan={6} className="px-4 py-12 text-center text-gray-500">正在加载设备…</td></tr> : visibleDevices.length === 0 ? <tr><td colSpan={6} className="px-4 py-12 text-center text-gray-500">没有符合条件的设备</td></tr> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map((device) => <tr key={device.id} className="border-t border-gray-100 hover:bg-gray-50/70">
-              <td className="px-4 py-3 font-medium text-gray-950">{device.device_name}</td><td className="px-4 py-3">{device.brand_name}{device.is_popular_brand ? <span className="ml-2 text-xs text-amber-700">热门</span> : null}</td>
-              <td className="px-4 py-3 text-gray-600">{categoryLabels[device.device_category]}</td><td className="px-4 py-3"><span className={`inline-flex rounded border px-2 py-0.5 text-xs font-medium ${statusClasses[device.status]}`}>{statusLabels[device.status]}</span></td><td className="px-4 py-3 text-gray-600">{device.release_date || '—'}</td>
-              <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><button className={buttonClass} title="查看该设备的壁纸" aria-label={`查看 ${device.device_name} 的壁纸`} onClick={() => { setSearchInput(''); setFilters({ ...emptyFilters, brand: device.brand_name, device: device.id }); setDevicePage(0); setWallpaperPage(0); setTab('wallpapers'); }}><Images size={15} /></button><button className={buttonClass} title="编辑设备" aria-label={`编辑 ${device.device_name}`} onClick={() => setEditingDevice(device)}><Pencil size={15} /></button></div></td>
+        {tab === 'devices' && <section aria-label="设备目录">
+          <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[740px]`}>
+            <thead className={tableHeadClass}><tr><th className="px-4 py-3">设备</th><th className="px-4 py-3">品牌</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">状态</th><th className="px-4 py-3">发布日期</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
+            <tbody>{loading ? <TableFeedback columns={6} loading message="" /> : visibleDevices.length === 0 ? <TableFeedback columns={6} loading={false} message="没有符合条件的设备" onReset={resetFilters} /> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map((device) => <tr key={device.id} className={tableRowClass}>
+              <td className="px-4 py-3 font-medium text-gray-950">{device.device_name}</td><td className="px-4 py-3">{brands.find((brand) => brand.slug === device.brand_name)?.title || device.brand_name}{device.is_popular_brand ? <span className="ml-2 text-xs text-amber-700">热门</span> : null}</td>
+              <td className="px-4 py-3 text-gray-600">{categoryLabels[device.device_category]}</td><td className="px-4 py-3"><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${statusClasses[device.status]}`}>{statusLabels[device.status]}</span></td><td className="px-4 py-3 font-mono text-xs tabular-nums text-gray-600">{device.release_date || '—'}</td>
+              <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><button className={rowButtonClass} title="查看该设备的壁纸" aria-label={`查看 ${device.device_name} 的壁纸`} onClick={() => { setSearchInput(''); setFilters({ ...emptyFilters, brand: device.brand_name, device: device.id }); setDevicePage(0); setWallpaperPage(0); setTab('wallpapers'); }}><Images size={15} />壁纸</button><button className={rowButtonClass} title="编辑设备" aria-label={`编辑 ${device.device_name}`} onClick={() => setEditingDevice(device)}><Pencil size={15} />编辑</button></div></td>
             </tr>)}</tbody>
           </table></div>
-          <div className="mt-3 flex items-center justify-end gap-2 text-sm text-gray-600">
-            <button className={buttonClass} title="上一页" aria-label="上一页设备" disabled={devicePage === 0 || loading} onClick={() => setDevicePage((page) => page - 1)}><ChevronLeft size={16} /></button>
+          <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-xs tabular-nums text-[#66746b]">
+            <button className={iconButtonClass} title="上一页" aria-label="上一页设备" disabled={devicePage === 0 || loading} onClick={() => setDevicePage((page) => page - 1)}><ChevronLeft size={16} /></button>
             <span>第 {devicePage + 1} / {Math.max(1, Math.ceil(visibleDevices.length / PAGE_SIZE))} 页</span>
-            <button className={buttonClass} title="下一页" aria-label="下一页设备" disabled={(devicePage + 1) * PAGE_SIZE >= visibleDevices.length || loading} onClick={() => setDevicePage((page) => page + 1)}><ChevronRight size={16} /></button>
+            <button className={iconButtonClass} title="下一页" aria-label="下一页设备" disabled={(devicePage + 1) * PAGE_SIZE >= visibleDevices.length || loading} onClick={() => setDevicePage((page) => page + 1)}><ChevronRight size={16} /></button>
           </div>
         </section>}
 
-        {tab === 'wallpapers' && <section>
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold text-gray-950">壁纸目录</h2><p className="text-sm text-gray-600">{wallpaperTotal} 张壁纸</p></div>
-            <button className={primaryClass} onClick={() => setTab('upload')}><ImagePlus size={16} />上传壁纸</button></div>
-          <div className="overflow-x-auto rounded-md border border-gray-200 bg-white" aria-busy={loading}><table className="w-full min-w-[900px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs font-medium text-gray-600"><tr><th className="px-4 py-3">预览</th><th className="px-4 py-3">名称 / 设备</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">主题</th><th className="px-4 py-3">格式</th><th className="px-4 py-3">状态</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
-            <tbody>{loading ? <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-500">正在加载壁纸…</td></tr> : wallpapers.length === 0 ? <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-500">没有符合条件的壁纸</td></tr> : wallpapers.map((item) => <tr key={item.id} className="border-t border-gray-100 hover:bg-gray-50/70">
-              <td className="px-4 py-2"><div className="h-12 w-12 overflow-hidden rounded border border-gray-200 bg-gray-100">{item.compress_key && <img className="h-full w-full object-cover" alt="" src={buildPublicR2Url(item.compress_key) || ''} />}</div></td>
-              <td className="px-4 py-2"><div className="font-medium text-gray-950">{item.name}{item.is_primary ? <span className="ml-2 text-xs text-teal-700">主图</span> : null}</div><div className="text-xs text-gray-500">{item.brand_name} / {item.device_name}</div></td>
-              <td className="px-4 py-2 text-gray-600">{categoryLabels[item.category]}</td><td className="px-4 py-2 text-gray-600">{item.theme}</td><td className="px-4 py-2 uppercase text-gray-600">{item.file_format}</td><td className="px-4 py-2"><span className={`inline-flex rounded border px-2 py-0.5 text-xs font-medium ${statusClasses[item.status]}`}>{statusLabels[item.status]}</span></td>
-              <td className="px-4 py-2 text-right"><button className={buttonClass} title="编辑壁纸" aria-label={`编辑 ${item.name}`} onClick={() => setEditingWallpaper({ ...item, tags: (JSON.parse(item.tags) as string[]).join(', ') })}><Pencil size={15} /></button></td>
+        {tab === 'wallpapers' && <section aria-label="壁纸目录">
+          <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[850px]`}>
+            <thead className={tableHeadClass}><tr><th className="px-4 py-3">预览</th><th className="px-4 py-3">名称 / 设备</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">主题</th><th className="px-4 py-3">格式</th><th className="px-4 py-3">状态</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
+            <tbody>{loading ? <TableFeedback columns={7} loading message="" /> : wallpapers.length === 0 ? <TableFeedback columns={7} loading={false} message="没有符合条件的壁纸" onReset={resetFilters} /> : wallpapers.map((item) => <tr key={item.id} className={tableRowClass}>
+              <td className="px-4 py-3"><div className="h-16 w-12 overflow-hidden rounded bg-[#edf1ec]">{item.compress_key && (!item.deletion_state || item.deletion_state === 'none') ? <img className="h-full w-full object-cover" alt={`${item.name} 预览`} loading="lazy" src={buildPublicR2Url(item.compress_key) || ''} /> : <Images size={18} className="mx-auto mt-5 text-[#9aaba0]" />}</div></td>
+              <td className="px-4 py-2"><div className="font-medium text-gray-950">{item.name}{item.is_primary ? <span className="ml-2 text-xs text-teal-700">主图</span> : null}</div><div className="text-xs text-gray-500">{brands.find((brand) => brand.slug === item.brand_name)?.title || item.brand_name} / {item.device_name}</div></td>
+              <td className="px-4 py-2 text-gray-600">{categoryLabels[item.category]}</td><td className="px-4 py-2 text-gray-600">{themeLabels[item.theme] || item.theme}</td><td className="px-4 py-2 font-mono text-xs uppercase text-gray-600">{item.file_format}</td><td className="px-4 py-2"><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${item.deletion_state && item.deletion_state !== 'none' ? 'bg-red-50 text-red-800' : statusClasses[item.status]}`}>{item.deletion_state === 'processing' ? '删除中' : item.deletion_state === 'pending' ? '待重试删除' : statusLabels[item.status]}</span></td>
+              <td className="px-4 py-2 text-right"><div className="flex justify-end gap-1"><button className={`${rowButtonClass} disabled:cursor-not-allowed disabled:opacity-40`} title="编辑壁纸" aria-label={`编辑 ${item.name}`} disabled={busy || (!!item.deletion_state && item.deletion_state !== 'none')} onClick={() => setEditingWallpaper({ ...item, tags: (JSON.parse(item.tags) as string[]).join(', ') })}><Pencil size={15} />编辑</button><button className={`${rowButtonClass} text-red-700 hover:bg-red-50 hover:text-red-800 disabled:opacity-40`} title="删除壁纸和 R2 文件" aria-label={`删除 ${item.name}`} disabled={busy} onClick={() => { setError(''); setDeletingWallpaper(item); }}><Trash2 size={15} />删除</button></div></td>
             </tr>)}</tbody>
           </table></div>
-          <div className="mt-3 flex items-center justify-end gap-2 text-sm text-gray-600">
-            <button className={buttonClass} title="上一页" aria-label="上一页壁纸" disabled={wallpaperPage === 0 || loading} onClick={() => setWallpaperPage((page) => page - 1)}><ChevronLeft size={16} /></button>
+          <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-xs tabular-nums text-[#66746b]">
+            <button className={iconButtonClass} title="上一页" aria-label="上一页壁纸" disabled={wallpaperPage === 0 || loading} onClick={() => setWallpaperPage((page) => page - 1)}><ChevronLeft size={16} /></button>
             <span>第 {wallpaperPage + 1} / {Math.max(1, Math.ceil(wallpaperTotal / PAGE_SIZE))} 页</span>
-            <button className={buttonClass} title="下一页" aria-label="下一页壁纸" disabled={(wallpaperPage + 1) * PAGE_SIZE >= wallpaperTotal || loading} onClick={() => setWallpaperPage((page) => page + 1)}><ChevronRight size={16} /></button>
+            <button className={iconButtonClass} title="下一页" aria-label="下一页壁纸" disabled={(wallpaperPage + 1) * PAGE_SIZE >= wallpaperTotal || loading} onClick={() => setWallpaperPage((page) => page + 1)}><ChevronRight size={16} /></button>
           </div>
         </section>}
 
-        {tab === 'upload' && <section>
-          <div className="mb-5"><h2 className="text-lg font-semibold text-gray-950">上传壁纸</h2><p className="text-sm text-gray-600">{uploadRows.length} 项文件，{uploadRows.filter((row) => row.state === 'done').length} 项已入库</p></div>
-          <div className="mb-4 grid gap-3 sm:grid-cols-[minmax(160px,1fr)_minmax(220px,2fr)_auto] sm:items-end">
+        {tab === 'upload' && <section aria-label="上传工作区">
+          <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4 sm:p-5">
+          <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">1</span>上传目标</h3>
+          <div className="mb-4 grid gap-3 md:grid-cols-[minmax(140px,1fr)_minmax(180px,2fr)] xl:grid-cols-[minmax(160px,1fr)_minmax(220px,2fr)_auto] xl:items-end">
             <label className="text-sm">品牌
               <div className="mt-1 flex gap-2"><select className={inputClass} value={uploadBrand} disabled={busy} onChange={(event) => selectUploadBrand(event.target.value)}>
                 <option value="">选择品牌</option><BrandOptions brands={brands} />
               </select><button type="button" className={buttonClass} title="新增品牌" aria-label="新增品牌" onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} /></button></div>
             </label>
             <label className="text-sm">设备或系统
-              <input className={`${inputClass} mt-1`} aria-label="搜索设备或系统" value={uploadSearch} disabled={!uploadBrand || busy}
+              <div className="mt-1 grid gap-2 sm:grid-cols-2">
+              <input className={inputClass} aria-label="搜索设备或系统" value={uploadSearch} disabled={!uploadBrand || busy}
                 onChange={(event) => setUploadSearch(event.target.value)} placeholder="搜索当前品牌" />
-              <select className={`${inputClass} mt-1`} aria-label="选择设备或系统" value={uploadDevice} disabled={!uploadBrand || uploadDevicesLoading || busy}
-                onChange={(event) => setUploadDevice(event.target.value)}>
+              <select className={inputClass} aria-label="选择设备或系统" value={uploadDevice} disabled={!uploadBrand || uploadDevicesLoading || busy || folderTargetLocked}
+                onChange={(event) => { setUploadDevice(event.target.value); setUploadFolderName(''); setUploadFolderState('idle'); folderLookupId.current++; }}>
                 <option value="">{uploadDevicesLoading ? '加载中' : '不选设备或系统'}</option>
                 {uploadDevices.filter((device) => !uploadSearch || device.device_name.toLowerCase().includes(uploadSearch.toLowerCase()) || device.id === uploadDevice)
                   .map((device) => <option key={device.id} value={device.id}>{device.device_name}</option>)}
               </select>
+              </div>
             </label>
-            <button className={buttonClass} disabled={!uploadBrand || busy} onClick={() => setCreatingUploadDevice((current) => !current)}>
+            <button className={buttonClass} disabled={!uploadBrand || busy || folderTargetLocked} onClick={() => setCreatingUploadDevice((current) => !current)}>
               <Plus size={16} />新增设备/系统
             </button>
           </div>
+          <div className="mb-4 grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)]">
+            <label className="text-sm">R2 存储目录<select className={`${inputClass} mt-1`} aria-label="R2 目录方式" disabled={busy} value={uploadPathMode} onChange={(event) => setUploadPathMode(event.target.value as 'device' | 'custom')}><option value="device">默认设备目录</option><option value="custom">指定 R2 目录</option></select></label>
+            <label className="text-sm">目录路径<input className={`${inputClass} mt-1 font-mono text-xs`} aria-label="R2 存储路径" aria-describedby="r2-path-help" aria-invalid={uploadPathMode === 'custom' && !!uploadStoragePathError} disabled={busy} readOnly={uploadPathMode === 'device'} value={uploadPathMode === 'custom' ? uploadR2Prefix : uploadStoragePath} onChange={(event) => setUploadR2Prefix(event.target.value)} placeholder={uploadPathMode === 'custom' ? 'google-pixel/google-pixel-3a' : '选择设备后显示默认目录'} maxLength={300} /></label>
+          </div>
+          <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError || (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或填写 R2 桶内的相对目录路径。')}</p>
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
           {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
@@ -562,52 +686,84 @@ export default function AdminConsole() {
               <button type="button" className={buttonClass} title="取消新增" onClick={() => setCreatingUploadDevice(false)}><X size={16} /></button>
             </div>
           </form>}
-          {!uploadDevice && uploadFolderName && <div className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-[minmax(180px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)] sm:items-end">
-            <div className="text-sm"><div className="text-gray-600">{inferredExistingDevice ? '使用现有设备或系统' : '将创建草稿设备或系统'}</div><div className="mt-1 flex h-10 items-center font-medium text-gray-950">{uploadFolderName}</div></div>
-            {hasCaseVariant ? <p className="text-sm text-red-700 sm:col-span-2">存在大小写不同的同名设备，请在上方明确选择设备或系统</p> : inferredExistingDevice ? <div className="text-sm text-gray-600">{categoryLabels[inferredExistingDevice.device_category]} · {inferredExistingDevice.release_date || '无发布日期'}</div> : <><label className="text-sm">类型<select className={`${inputClass} mt-1`} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
-              {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop)
-                .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
-            </select></label>
-            <label className="text-sm">发布日期<input className={`${inputClass} mt-1`} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" /></label></>}
-          </div>}
-          <label className="mb-4 block max-w-sm text-sm">批量标签
+          <label className="block max-w-sm text-sm">批量标签
             <input className={`${inputClass} mt-1`} value={batchTags} onChange={(event) => setBatchTags(event.target.value)} placeholder="以逗号分隔" />
           </label>
-          <div className="mb-4 flex flex-wrap gap-2">
-            <label className={`${buttonClass} ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />原图文件<input className="sr-only" type="file" multiple accept="image/*,video/mp4,video/webm" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'origin')} /></label>
-            <label className={`${buttonClass} ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />预览文件<input className="sr-only" type="file" multiple accept="image/*" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'compress')} /></label>
-            <label className={`${buttonClass} ${!uploadBrand || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy} onChange={(event) => addFiles(event)} /></label>
-            <button className={primaryClass} disabled={busy || uploadDevicesLoading || hasCaseVariant || !uploadBrand || (!uploadDevice && !uploadFolderName) || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
+          </div>
+          <div className="mb-5 rounded-lg border border-dashed border-[#bdccbf] bg-[#edf2eb]/60 p-4 sm:p-5">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#dfe9de] text-xs text-[#526950]">2</span>选择文件</h3>
+          <p className="mb-4 text-xs leading-5 text-[#66746b]">选择含 origin 和 compress 子目录的文件夹，或为已选设备分别添加原图与预览图。</p>
+          <div className="flex flex-wrap gap-2">
+            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />原图文件<input className="sr-only" type="file" multiple accept="image/*,video/mp4,video/webm" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'origin')} /></label>
+            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />预览文件<input className="sr-only" type="file" multiple accept="image/*" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'compress')} /></label>
+            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadBrand || busy || uploadFolderState === 'checking' ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy || uploadFolderState === 'checking'} onChange={(event) => addFiles(event)} /></label>
+          </div>
+          {uploadFolderName && <div className="mt-4 border-t border-[#d4dfd3] pt-4">
+            {uploadFolderState === 'checking' && <p role="status" className="text-sm text-[#66746b]">正在检查设备：{uploadFolderName}…</p>}
+            {inferredExistingDevice && <div role="status" className="flex items-start gap-2 text-sm text-[#247560]"><Check size={18} className="mt-0.5 shrink-0" /><div>已选中设备：<span className="font-semibold">{inferredExistingDevice.device_name}</span><div className="mt-1 text-xs text-[#66746b]">{categoryLabels[inferredExistingDevice.device_category]} · {inferredExistingDevice.release_date || '无发布日期'}</div></div></div>}
+            {uploadFolderState === 'missing' && <form onSubmit={(event) => createUploadDevice(event, uploadFolderName)}>
+              <p role="status" className="mb-3 text-sm text-amber-800">当前品牌下未找到设备“{normalizeAdminDisplay(uploadFolderName)}”，请先创建设备再上传。</p>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
+                <label className="text-sm">类型<select className={`${inputClass} mt-1`} disabled={busy} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
+                  {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop).map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
+                </select></label>
+                <label className="text-sm">发布日期<input className={`${inputClass} mt-1`} disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" /></label>
+                <button className={primaryClass} disabled={busy}><Plus size={16} />{busy ? '创建中…' : '创建设备'}</button>
+              </div>
+            </form>}
+            {uploadFolderState === 'error' && <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-red-700">设备检查失败，请重试后再上传。</p><button className={buttonClass} disabled={busy} onClick={() => void checkUploadFolder(uploadFolderName)}><RefreshCw size={16} />重新检查</button></div>}
+          </div>}
+          </div>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">3</span>上传队列<span className="text-xs font-normal tabular-nums text-[#758278]">{uploadRows.length} 项</span></h3>
+            <button className={primaryClass} disabled={busy || uploadDevicesLoading || !uploadBrand || !uploadDevice || !uploadStoragePath || !!uploadStoragePathError || (!!uploadFolderName && uploadFolderState !== 'matched') || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
               const pending = uploadRows.filter((item) => item.state !== 'done');
               if (pending.some((row) => !row.origin || !row.preview)) throw new Error('请先配齐每项原图和预览图');
-              if (!uploadDevice && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
+              if (uploadFolderName && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
               const deviceId = await ensureUploadDevice();
-              for (const row of pending) await uploadOne(row, deviceId);
-            })}><UploadCloud size={16} />{busy ? '上传中…' : `上传队列${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
+              if (!uploadStoragePath || uploadStoragePathError) throw new Error(uploadStoragePathError || '请选择 R2 存储目录');
+              for (const row of pending) await uploadOne(row, deviceId, uploadStoragePath);
+            })}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
-          <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
-            {uploadRows.length === 0 && <div className="flex min-h-40 flex-col items-center justify-center gap-2 px-4 text-center text-sm text-gray-500"><ImagePlus size={24} className="text-gray-400" /><span>暂无待上传文件</span></div>}
-            {uploadRows.map((row) => <div key={row.id} className="grid gap-2 border-b border-gray-100 p-3 sm:grid-cols-[minmax(160px,1fr)_110px_110px_minmax(130px,1fr)_110px_40px] sm:items-center">
+          <div className="overflow-hidden rounded-lg border border-[#dfe6df] bg-white">
+            {uploadRows.length === 0 && <div className="flex min-h-44 flex-col items-center justify-center gap-3 px-4 text-center text-sm text-[#758278]"><ImagePlus size={28} className="text-[#9aaba0]" /><span>暂无待上传文件</span><span className="text-xs">添加文件后，在这里检查名称、主题与标签</span></div>}
+            {uploadRows.map((row) => <div key={row.id} className="grid gap-3 border-b border-[#ebefeb] p-4 last:border-b-0 sm:grid-cols-2 xl:grid-cols-[minmax(160px,1fr)_90px_90px_minmax(120px,1fr)_110px_40px] xl:items-center">
               <div className="min-w-0"><input className={inputClass} aria-label="壁纸名称" value={row.name} onChange={(event) => patchUpload(row.id, { name: event.target.value })} />
                 <div className="mt-1 truncate text-xs text-gray-500">{row.origin?.name || '缺原图'} / {row.preview?.name || '缺预览'}</div></div>
               <select className={inputClass} aria-label="主题" value={row.theme} onChange={(event) => patchUpload(row.id, { theme: event.target.value })}>
-                {['normal', 'dark', 'light'].map((value) => <option key={value}>{value}</option>)}
+                {['normal', 'dark', 'light'].map((value) => <option key={value} value={value}>{themeLabels[value]}</option>)}
               </select>
               <select className={inputClass} aria-label="壁纸分类" value={row.category} onChange={(event) => patchUpload(row.id, { category: event.target.value })}>
                 <option value="">同设备</option>{categories.map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
               </select>
               <input className={inputClass} aria-label="标签" value={row.tags} onChange={(event) => patchUpload(row.id, { tags: event.target.value })} placeholder="标签" />
               <div className={`text-xs ${row.state === 'failed' ? 'text-red-700' : row.state === 'done' ? 'text-emerald-700' : 'text-gray-600'}`}>{row.state === 'uploading' ? `${row.progress}%` : row.state === 'done' ? '已入库（草稿）' : row.error || (row.origin && row.preview ? '待上传' : '文件未配齐')}{row.state === 'uploading' && <div className="mt-1 h-1 overflow-hidden rounded bg-gray-200"><div className="h-full bg-teal-700" style={{ width: `${row.progress}%` }} /></div>}</div>
-              <button className={buttonClass} title="移除" aria-label={`移除 ${row.name}`} disabled={row.state === 'uploading'} onClick={() => setUploadRows((current) => current.filter((item) => item.id !== row.id))}><X size={15} /></button>
+              <button className={iconButtonClass} title="移除" aria-label={`移除 ${row.name}`} disabled={row.state === 'uploading'} onClick={() => {
+                const remaining = uploadRows.filter((item) => item.id !== row.id);
+                setUploadRows(remaining);
+                if (!remaining.length) { setUploadFolderName(''); setUploadFolderState('idle'); folderLookupId.current++; }
+              }}><X size={15} /></button>
             </div>)}
           </div>
         </section>}
       </div>
+      </div>
 
-      {newBrand && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation">
-        <form onSubmit={createBrand} onKeyDown={(event) => { if (event.key === 'Escape') setNewBrand(null); }} role="dialog" aria-modal="true" aria-label="新增品牌" className="w-full max-w-md rounded-md bg-white p-5 shadow-xl">
+      {deletingWallpaper && <AdminDialog title="删除壁纸" onClose={() => { if (!busy) setDeletingWallpaper(null); }}>
+        <form onSubmit={deleteWallpaper} className={modalClass}>
+          <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">删除壁纸</h2><button type="button" className={iconButtonClass} title="关闭" disabled={busy} onClick={() => setDeletingWallpaper(null)}><X size={16} /></button></div>
+          <p className="mb-1 text-sm font-semibold">{deletingWallpaper.name}</p><p className="mb-4 text-xs text-[#66746b]">{deletingWallpaper.brand_name} / {deletingWallpaper.device_name}</p>
+          <p className="mb-4 text-sm leading-6 text-red-800">将永久删除后台记录以及以下 R2 文件，此操作无法撤销。</p>
+          <dl className="space-y-3 rounded-md bg-[#f5f7f4] p-3 text-xs"><div><dt className="mb-1 text-[#66746b]">原图</dt><dd className="break-all font-mono">{deletingWallpaper.origin_key}</dd></div>{deletingWallpaper.compress_key && <div><dt className="mb-1 text-[#66746b]">预览图</dt><dd className="break-all font-mono">{deletingWallpaper.compress_key}</dd></div>}</dl>
+          {error && <p role="alert" className="mt-4 text-sm leading-6 text-red-700">{error}</p>}
+          <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} disabled={busy} onClick={() => setDeletingWallpaper(null)}>取消</button><button className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-red-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}><Trash2 size={16} />{busy ? '删除中…' : '确认删除'}</button></div>
+        </form>
+      </AdminDialog>}
+
+      {newBrand && <AdminDialog title="新增品牌" onClose={() => setNewBrand(null)}>
+        <form onSubmit={createBrand} className={modalClass}>
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">新增品牌</h2>
-            <button type="button" className={buttonClass} title="关闭" onClick={() => setNewBrand(null)}><X size={16} /></button></div>
+            <button type="button" className={iconButtonClass} title="关闭" onClick={() => setNewBrand(null)}><X size={16} /></button></div>
           <div className="grid gap-3">
             <label className="text-sm">品牌名称<input required maxLength={80} className={`${inputClass} mt-1`} value={newBrand.title} onChange={(event) => setNewBrand((current) => current && {
               ...current, title: event.target.value,
@@ -621,15 +777,15 @@ export default function AdminConsole() {
           {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
           <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} onClick={() => setNewBrand(null)}>取消</button><button disabled={busy} className={primaryClass}><Check size={16} />{busy ? '保存中…' : '创建品牌'}</button></div>
         </form>
-      </div>}
+      </AdminDialog>}
 
-      {editingDevice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation">
+      {editingDevice && <AdminDialog title={editingDevice.id ? '编辑设备' : '新建设备'} onClose={() => setEditingDevice(null)}>
         <form onSubmit={(event) => { event.preventDefault(); void run(async () => {
           await api('devices', editingDevice.id ? 'PATCH' : 'POST', editingDevice);
           setEditingDevice(null);
-        }); }} onKeyDown={(event) => { if (event.key === 'Escape') setEditingDevice(null); }} role="dialog" aria-modal="true" aria-label={editingDevice.id ? '编辑设备' : '新建设备'} className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-md bg-white p-5 shadow-xl">
+        }); }} className={modalClass}>
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">{editingDevice.id ? '编辑设备' : '新建设备'}</h2>
-            <button type="button" className={buttonClass} title="关闭" onClick={() => setEditingDevice(null)}><X size={16} /></button></div>
+            <button type="button" className={iconButtonClass} title="关闭" onClick={() => setEditingDevice(null)}><X size={16} /></button></div>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-sm">品牌<select disabled={!!editingDevice.id} required className={`${inputClass} mt-1`} value={editingDevice.brand_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_name: event.target.value, device_category: defaultDeviceCategory(event.target.value, brands) })}>
               <option value="">选择品牌</option><BrandOptions brands={brands} />
@@ -649,20 +805,20 @@ export default function AdminConsole() {
           {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
           <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} onClick={() => setEditingDevice(null)}>取消</button><button disabled={busy} className={primaryClass}><Check size={16} />{busy ? '保存中…' : '保存设备'}</button></div>
         </form>
-      </div>}
+      </AdminDialog>}
 
-      {editingWallpaper && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="presentation">
+      {editingWallpaper && <AdminDialog title="编辑壁纸" onClose={() => setEditingWallpaper(null)}>
         <form onSubmit={(event) => { event.preventDefault(); void run(async () => {
           await api('wallpapers', 'PATCH', { ...editingWallpaper,
             tags: typeof editingWallpaper.tags === 'string' ? editingWallpaper.tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [] });
           setEditingWallpaper(null);
-        }); }} onKeyDown={(event) => { if (event.key === 'Escape') setEditingWallpaper(null); }} role="dialog" aria-modal="true" aria-label="编辑壁纸" className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-md bg-white p-5 shadow-xl">
+        }); }} className={modalClass}>
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">编辑壁纸</h2>
-            <button type="button" className={buttonClass} title="关闭" onClick={() => setEditingWallpaper(null)}><X size={16} /></button></div>
+            <button type="button" className={iconButtonClass} title="关闭" onClick={() => setEditingWallpaper(null)}><X size={16} /></button></div>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-sm sm:col-span-2">名称<input required className={`${inputClass} mt-1`} value={editingWallpaper.name || ''} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, name: event.target.value })} /></label>
             <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingWallpaper.category} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, category: event.target.value as WallpaperRow['category'] })}>{categories.map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
-            <label className="text-sm">主题<select className={`${inputClass} mt-1`} value={editingWallpaper.theme} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, theme: event.target.value as WallpaperRow['theme'] })}>{['normal', 'dark', 'light'].map((value) => <option key={value}>{value}</option>)}</select></label>
+            <label className="text-sm">主题<select className={`${inputClass} mt-1`} value={editingWallpaper.theme} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, theme: event.target.value as WallpaperRow['theme'] })}>{['normal', 'dark', 'light'].map((value) => <option key={value} value={value}>{themeLabels[value]}</option>)}</select></label>
             <label className="text-sm sm:col-span-2">标签<input className={`${inputClass} mt-1`} value={editingWallpaper.tags || ''} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, tags: event.target.value })} /></label>
             <label className="text-sm">状态<select className={`${inputClass} mt-1`} value={editingWallpaper.status} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, status: event.target.value as WallpaperRow['status'] })}>{statuses.map((value) => <option key={value} value={value}>{statusLabels[value as DeviceRow['status']]}</option>)}</select></label>
             <label className="flex items-center gap-2 self-end py-2 text-sm"><input type="checkbox" checked={!!editingWallpaper.is_primary} onChange={(event) => setEditingWallpaper({ ...editingWallpaper, is_primary: event.target.checked ? 1 : 0 })} />主展示壁纸</label>
@@ -670,7 +826,7 @@ export default function AdminConsole() {
           {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
           <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} onClick={() => setEditingWallpaper(null)}>取消</button><button disabled={busy} className={primaryClass}><Check size={16} />{busy ? '保存中…' : '保存壁纸'}</button></div>
         </form>
-      </div>}
+      </AdminDialog>}
     </main>
   );
 }
