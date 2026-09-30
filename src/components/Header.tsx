@@ -927,7 +927,7 @@ export default function Header({
           >
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-gray-100 px-4">
               <h2 id="mobile-navigation-title" className="text-base font-semibold text-gray-950">
-                {texts.mainNavigationLabel}
+                {texts.siteName}
               </h2>
               <button
                 type="button"
@@ -999,7 +999,7 @@ export default function Header({
               )}
             </div>
 
-            <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-gray-100 p-4">
+            <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-gray-100 px-4 py-2">
               <button
                 type="button"
                 data-mobile-drawer-action="share"

@@ -8,6 +8,13 @@ export interface I18nTexts {
   heroTitle: string;
   heroSeoTitle: string;
   heroDescription: string;
+  homeHeroLead: string;
+  homeLatestTitle: string;
+  homePopularBrandsTitle: string;
+  homeDesktopTitle: string;
+  homeAllBrandsTitle: string;
+  homeSystemTitle: string;
+  homeBrowseDesktop: string;
   loading: string;
   
   // 导航相关
@@ -379,6 +386,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     heroTitle: '手机与电脑内置壁纸',
     heroSeoTitle: '手机与电脑内置壁纸 - 原图免费下载',
     heroDescription: '免费下载三星、华为、小米、OPPO、Google Pixel 等品牌手机内置壁纸，以及 Windows、Ubuntu 等电脑桌面壁纸。按品牌和机型浏览合集，预览图片并下载无水印原图。',
+    homeHeroLead: '按品牌与机型浏览官方内置壁纸，免费下载无水印原图。',
+    homeLatestTitle: '最近更新',
+    homePopularBrandsTitle: '热门手机品牌',
+    homeDesktopTitle: '电脑壁纸',
+    homeAllBrandsTitle: '按品牌浏览手机壁纸',
+    homeSystemTitle: '系统壁纸',
+    homeBrowseDesktop: '浏览全部电脑壁纸',
     loading: '加载中...',
     exploreButton: '开始探索',
     learnMore: '了解更多',
@@ -742,6 +756,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     heroTitle: 'Stock Wallpapers for Phones & Desktops',
     heroSeoTitle: 'Stock Phone & Desktop Wallpapers - Free Download',
     heroDescription: 'Download stock wallpapers from Samsung, Google Pixel, Xiaomi, Huawei and more. Browse phone and desktop collections and get original images for free.',
+    homeHeroLead: 'Explore original stock wallpapers by brand and device, then download in full resolution.',
+    homeLatestTitle: 'Recently updated',
+    homePopularBrandsTitle: 'Popular phone brands',
+    homeDesktopTitle: 'Desktop wallpapers',
+    homeAllBrandsTitle: 'Browse phone wallpapers by brand',
+    homeSystemTitle: 'System wallpapers',
+    homeBrowseDesktop: 'Browse all desktop wallpapers',
     loading: 'Loading...',
     exploreButton: 'Start Exploring',
     learnMore: 'Learn More',
@@ -1105,6 +1126,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     heroTitle: 'スマホ・PCの標準壁紙',
     heroSeoTitle: 'スマホ・PCの標準壁紙を無料ダウンロード',
     heroDescription: 'Galaxy・Xperia・Google Pixel・Xiaomi などのスマホ標準壁紙や、Windows・Ubuntu のデスクトップ壁紙を収録。機種や OS ごとに探して、元の解像度の画像を無料でダウンロードできます。',
+    homeHeroLead: 'メーカーや機種から標準壁紙を探して、元の解像度で無料ダウンロード。',
+    homeLatestTitle: '最近の更新',
+    homePopularBrandsTitle: '人気のスマホブランド',
+    homeDesktopTitle: 'PC 壁紙',
+    homeAllBrandsTitle: 'ブランド別のスマホ壁紙',
+    homeSystemTitle: 'OS 壁紙',
+    homeBrowseDesktop: 'すべての PC 壁紙を見る',
     loading: '読み込み中...',
     exploreButton: '探索を開始',
     learnMore: '詳細を見る',
@@ -1468,6 +1496,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     heroTitle: 'Hình nền gốc cho điện thoại và máy tính',
     heroSeoTitle: 'Hình nền gốc điện thoại và máy tính - Tải miễn phí',
     heroDescription: 'Tải hình nền gốc Samsung, Xiaomi, OPPO, vivo, Google Pixel và hình nền máy tính Windows, Ubuntu miễn phí. Chọn theo mẫu máy, xem trước và tải ảnh ở độ phân giải gốc.',
+    homeHeroLead: 'Khám phá hình nền gốc theo hãng và thiết bị, tải ảnh độ phân giải đầy đủ miễn phí.',
+    homeLatestTitle: 'Cập nhật gần đây',
+    homePopularBrandsTitle: 'Hãng điện thoại phổ biến',
+    homeDesktopTitle: 'Hình nền máy tính',
+    homeAllBrandsTitle: 'Hình nền điện thoại theo hãng',
+    homeSystemTitle: 'Hình nền hệ điều hành',
+    homeBrowseDesktop: 'Xem tất cả hình nền máy tính',
     loading: 'Đang tải...',
     exploreButton: 'Bắt đầu khám phá',
     learnMore: 'Tìm hiểu thêm',
@@ -1804,6 +1839,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     heroTitle: '手機與電腦內建桌布',
     heroSeoTitle: '手機與電腦內建桌布 - 原圖免費下載',
     heroDescription: '免費下載三星、小米、OPPO、Google Pixel、華為等品牌手機內建桌布，以及 Windows、Ubuntu 電腦桌布。依品牌與機型瀏覽，預覽圖片並下載無浮水印原圖。',
+    homeHeroLead: '依品牌與機型瀏覽官方內建桌布，免費下載無浮水印原圖。',
+    homeLatestTitle: '最近更新',
+    homePopularBrandsTitle: '熱門手機品牌',
+    homeDesktopTitle: '電腦壁紙',
+    homeAllBrandsTitle: '依品牌瀏覽手機桌布',
+    homeSystemTitle: '系統壁紙',
+    homeBrowseDesktop: '瀏覽全部電腦壁紙',
     loading: '載入中...',
     exploreButton: '開始探索',
     learnMore: '了解更多',

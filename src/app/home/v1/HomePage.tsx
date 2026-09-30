@@ -1,63 +1,63 @@
-import Home from './Home';
-import { headers } from 'next/headers';
-import { getHomeCollectionsByCategory, getInitialHomeCollections } from '@/lib/home-index';
+import HomeLanding from './HomeLanding';
+import desktopHomeIndex from '@/data/desktop-home-index.json';
+import { BRAND_CATEGORIES } from '@/lib/brands';
+import { selectRecentCollections } from '@/lib/home-curation';
+import { getHomeCollectionsByCategory } from '@/lib/home-index';
+import { isHomeCategoryVisible } from '@/lib/home-priority';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import { getTabData } from '@/lib/data';
-import { isLanguage, LANGUAGE_HEADER_NAME } from '@/lib/language';
+import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
 import {
-  filterHomeTabs,
-  isHomeCategoryVisible,
-  sortHomeTabsByPriority,
-} from '@/lib/home-priority';
+  buildWallpaperDetailPath,
+  type WallpaperCollectionEntry,
+} from '@/lib/wallpaper-data';
 
-type WallpaperEntry = {
-  name: string;
-  item?: Array<{
-    compressPath?: string;
-    originPath?: string;
-  }>;
-};
+const POPULAR_BRANDS = [
+  'samsung', 'xiaomi', 'huawei', 'google-pixel',
+  'oppo', 'vivo', 'honor', 'motorola',
+] as const;
 
-const buildInitialHomeImageUrls = (collectionLimit: number) => {
-  const map: Record<string, string> = {};
-  const addEntry = (entry: WallpaperEntry, categorySlug: string) => {
-    const firstImage = entry.item?.[0];
-    const path = firstImage?.compressPath || firstImage?.originPath;
-    const publicUrl = path ? buildPublicR2Url(path) : null;
-    if (publicUrl) {
-      map[`${categorySlug}::${entry.name}`] = publicUrl;
-    }
-  };
+const FEATURED_DESKTOP_CATEGORIES = [
+  'microsoft-windows',
+  'microsoft-surface',
+  'ubuntu',
+] as const;
 
-  getInitialHomeCollections(collectionLimit).forEach(({ category, collection }) => {
-    if (isHomeCategoryVisible(category)) {
-      addEntry(collection as WallpaperEntry, category);
-    }
+export default function HomePage() {
+  const collectionsByCategory = getHomeCollectionsByCategory();
+  const now = new Date();
+  const phoneCategories = BRAND_CATEGORIES
+    .map((brand) => brand.slug)
+    .filter((slug) => isHomeCategoryVisible(slug) && slug !== 'android');
+
+  const latest = selectRecentCollections(
+    collectionsByCategory,
+    phoneCategories,
+    8,
+    now
+  );
+  const toPhoneCard = ({ category, collection }: WallpaperCollectionEntry) => ({
+    category,
+    name: collection.name,
+    date: collection.date,
+    count: collection.count || collection.item?.length || 0,
+    href: buildWallpaperDetailPath(category, collection.name),
+    imageUrl: buildPublicR2Url(collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || ''),
   });
 
-  return map;
-};
+  const popular = POPULAR_BRANDS.map((category) => ({
+    category,
+    cards: selectRecentCollections(collectionsByCategory, [category], 6, now, 6)
+      .map(toPhoneCard),
+  }));
 
-export default async function HomePage() {
-  const headerList = await headers();
-  const userAgent = headerList.get('user-agent') || '';
-  const rawLanguage = headerList.get(LANGUAGE_HEADER_NAME);
-  const language = isLanguage(rawLanguage) ? rawLanguage : undefined;
-  const isMobileRequest = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
-  const initialImageUrls = buildInitialHomeImageUrls(isMobileRequest ? 4 : 12);
-  const homeTabs = filterHomeTabs(sortHomeTabsByPriority(getTabData(language)));
-  const contentCollectionsByCategory = Object.fromEntries(
-    Object.entries(getHomeCollectionsByCategory()).filter(([category]) =>
-      isHomeCategoryVisible(category)
-    )
+  const desktop = FEATURED_DESKTOP_CATEGORIES.flatMap((category) =>
+    desktopHomeIndex[category].map((collection) => ({
+      category,
+      name: collection.name,
+      href: buildDesktopWallpaperDetailPath(category, collection.name),
+      imageUrl: buildPublicR2Url(collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || ''),
+    }))
   );
-  return (
-    <Home
-      initialImageUrls={initialImageUrls}
-      isMobilePriority={isMobileRequest}
-      contentTabs={homeTabs.filter((tab) => tab.type.toLowerCase() !== 'desktop')}
-      navigationTabs={homeTabs}
-      contentCollectionsByCategory={contentCollectionsByCategory}
-    />
-  );
+
+  return <HomeLanding latest={latest.map(toPhoneCard)} popular={popular} desktop={desktop} />;
 }

@@ -44,5 +44,5 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// 首页路由页面：网站主入口，展示所有壁纸分类概览。
+// 首页路由页面：网站主入口，展示精选合集与分类入口。
 export default HomePage;

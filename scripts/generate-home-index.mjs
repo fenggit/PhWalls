@@ -1,13 +1,12 @@
 // 生成首页轻量索引：src/data/home-index.json
 //
-// 首页（/、/zh、/en 等）需要展示「全部品牌的所有壁纸集合」概览，
+// 首页精选和 sitemap 需要所有品牌的轻量集合索引，
 // 若在 Edge Function 里直接解析全部品牌 JSON，冷启动 CPU 时间
 // 可能超出 Cloudflare 限制。
 //
 // 本脚本在构建前把每个集合裁剪为「封面图 + 数量」的极小数据：
 //   { name, date, count, item: [firstImage] }
-// 首页只解析这个极小索引即可渲染卡片；完整 item 列表由预览时按需经
-// /api/public/wallpapers 拉取。
+// 首页只从索引中挑选少量卡片；完整 item 列表仍由品牌页按需加载。
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -60,6 +59,30 @@ for (const [slug, file] of Object.entries(brandFiles)) {
 }
 
 await writeFile(join(dataDir, 'home-index.json'), JSON.stringify(index));
+
+const desktopIndex = {};
+for (const [slug, file] of Object.entries({
+  'microsoft-windows': 'microsoft-windows.json',
+  'microsoft-surface': 'microsoft-surface.json',
+  ubuntu: 'ubuntu.json',
+})) {
+  const raw = await readFile(join(dataDir, 'desktopwalls', file), 'utf8');
+  const collections = JSON.parse(raw);
+  desktopIndex[slug] = (Array.isArray(collections) ? collections : [])
+    .filter((collection) =>
+      Array.isArray(collection.item) && collection.item.length > 0 &&
+      Date.parse(collection.date) <= Date.now() && !/mobile phone/i.test(collection.name)
+    )
+    .sort((left, right) => Date.parse(right.date) - Date.parse(left.date))
+    .slice(0, 1)
+    .map((collection) => ({
+      name: collection.name,
+      date: collection.date,
+      count: collection.item.length,
+      item: [collection.item[0]],
+    }));
+}
+await writeFile(join(dataDir, 'desktop-home-index.json'), JSON.stringify(desktopIndex));
 
 const totalCollections = Object.values(index).reduce((sum, list) => sum + list.length, 0);
 console.log(`home-index.json generated: ${Object.keys(index).length} brands, ${totalCollections} collections`);
