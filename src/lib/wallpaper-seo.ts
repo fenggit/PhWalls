@@ -1,4 +1,4 @@
-import { formatWallpaperDisplayName, localizeWallpaperCollectionName } from '@/lib/data';
+import { buildWallpaperListTitle, formatWallpaperDisplayName, localizeWallpaperCollectionName } from '@/lib/data';
 import { LanguageCode, type Language } from '@/types';
 import type { WallpaperCollection } from '@/lib/wallpaper-data';
 
@@ -141,7 +141,7 @@ export function buildWallpaperDetailSeoCopy(
         galleryName: `${seoName} 官方内置壁纸`,
         galleryDescription: `${input.count} 张来自 ${input.categoryLabel} 的 ${seoName} 官方内置高清壁纸。`,
         breadcrumbHome: '首页',
-        breadcrumbCategory: `${input.categoryLabel} 壁纸`,
+        breadcrumbCategory: buildWallpaperListTitle(input.categoryLabel, '壁纸'),
         labels: {
           collection: '合集',
           brand: '品牌',
@@ -161,7 +161,7 @@ export function buildWallpaperDetailSeoCopy(
         galleryName: `${seoName} 官方內建桌布`,
         galleryDescription: `${input.count} 張來自 ${input.categoryLabel} 的 ${seoName} 官方內建高清桌布。`,
         breadcrumbHome: '首頁',
-        breadcrumbCategory: `${input.categoryLabel} 桌布`,
+        breadcrumbCategory: buildWallpaperListTitle(input.categoryLabel, '桌布'),
         labels: {
           collection: '合集',
           brand: '品牌',

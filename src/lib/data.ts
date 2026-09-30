@@ -71,7 +71,10 @@ export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string)
     return baseTitle;
   }
 
-  return `${baseTitle} ${suffix}`;
+  const separator = /[\u3400-\u9fff]$/.test(baseTitle) && /^[\u3400-\u9fff]/.test(suffix)
+    ? ''
+    : ' ';
+  return `${baseTitle}${separator}${suffix}`;
 };
 
 type DateSortableItem = {

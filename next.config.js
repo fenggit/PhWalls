@@ -54,7 +54,7 @@ const nextConfig = {
           },
         ],
       },
-      {
+      ...(process.env.NODE_ENV === 'production' ? [{
         source: '/:path*\\.(css|js|png|jpg|jpeg|gif|ico|svg|webp)',
         headers: [
           {
@@ -62,7 +62,7 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
-      },
+      }] : []),
       {
         source: '/api/files/private-url',
         headers: [

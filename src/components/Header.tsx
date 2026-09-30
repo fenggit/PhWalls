@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import {
@@ -11,6 +12,7 @@ import {
   Info,
   Menu,
   Monitor,
+  Search,
   Share2,
   Smartphone,
   X,
@@ -25,6 +27,8 @@ import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
 import { getShareTexts } from '@/lib/share';
 import { Language, LanguageCode, TabInfo } from '@/types';
+
+const SearchDialog = dynamic(() => import('@/components/SearchDialog'), { ssr: false });
 
 export interface HeaderProps {
   currentLang: Language;
@@ -150,6 +154,7 @@ export default function Header({
   activeCategoryTypeOverride,
 }: HeaderProps) {
   const [isDeviceMenuOpen, setIsDeviceMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMiniProgramMenuOpen, setIsMiniProgramMenuOpen] = useState(false);
   const [openPrimaryMenu, setOpenPrimaryMenu] = useState<PrimaryMenu | null>(null);
@@ -309,6 +314,7 @@ export default function Header({
     setActiveCategoryType(resolveActiveType(pathname));
     setOpenPrimaryMenu(null);
     setIsDeviceMenuOpen(false);
+    setIsSearchOpen(false);
   }, [pathname, resolveActiveType, clearPrimaryMenuTimer]);
 
   useEffect(() => {
@@ -774,6 +780,19 @@ export default function Header({
             </div>
 
             <div className="ml-auto flex shrink-0 items-center gap-1 lg:border-l lg:border-gray-200/70 lg:pl-5">
+              <button
+                type="button"
+                onClick={() => {
+                  closeMenus();
+                  setIsSearchOpen(true);
+                }}
+                className={utilityButtonClass(isSearchOpen)}
+                aria-label={texts.search}
+                title={texts.search}
+                aria-expanded={isSearchOpen}
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+              </button>
               <div>
                 <button
                   type="button"
@@ -929,14 +948,24 @@ export default function Header({
               <h2 id="mobile-navigation-title" className="text-base font-semibold text-gray-950">
                 {texts.siteName}
               </h2>
-              <button
-                type="button"
-                onClick={closeMobileMenu}
-                className={utilityButtonClass()}
-                aria-label="Close menu"
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
+              <div className="flex items-center gap-1">
+                <Link
+                  href={withLanguagePath('/about', currentLang)}
+                  onClick={closeMenus}
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-blue-600"
+                >
+                  <Info className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {texts.about}
+                </Link>
+                <button
+                  type="button"
+                  onClick={closeMobileMenu}
+                  className={utilityButtonClass()}
+                  aria-label="Close menu"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <div className="shrink-0 px-4 pt-4">
@@ -999,27 +1028,12 @@ export default function Header({
               )}
             </div>
 
-            <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-gray-100 px-4 py-2">
-              <button
-                type="button"
-                data-mobile-drawer-action="share"
-                onClick={handleShareClick}
-                className="flex min-h-11 items-center justify-center gap-2 rounded-md text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <Share2 className="h-4 w-4" aria-hidden="true" />
-                {shareTexts.share}
-              </button>
-              <Link
-                href={withLanguagePath('/about', currentLang)}
-                onClick={closeMenus}
-                className="flex min-h-11 items-center justify-center gap-2 rounded-md text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <Info className="h-4 w-4" aria-hidden="true" />
-                {texts.about}
-              </Link>
-            </div>
           </div>
         </div>
+      )}
+
+      {isSearchOpen && (
+        <SearchDialog language={currentLang} onClose={() => setIsSearchOpen(false)} />
       )}
 
       {isLanguageMenuOpen && (

@@ -122,9 +122,6 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
   const tabBySlug = new Map(tabs.map((tab) => [normalizeCategoryType(tab.type), tab]));
   const getPopularBrandTitle = (category: string) => {
     const label = (tabBySlug.get(category)?.title || category).trim();
-    if ((language === 'zh' || language === 'zh-hant') && /[\u3400-\u9fff]$/.test(label)) {
-      return `${label}${texts.wallpapersTitleSuffix}`;
-    }
     return buildWallpaperListTitle(label, texts.wallpapersTitleSuffix);
   };
   const phoneBrands = tabs.filter((tab) =>

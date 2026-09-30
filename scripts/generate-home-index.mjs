@@ -43,10 +43,27 @@ const brandFiles = {
 };
 
 const index = {};
+const searchIndex = [];
+
+const addSearchEntries = (slug, collections, desktop) => {
+  for (const collection of collections) {
+    const items = Array.isArray(collection.item) ? collection.item : [];
+    if (!collection.name || items.length === 0) continue;
+    searchIndex.push({
+      category: slug,
+      name: collection.name,
+      date: collection.date || '',
+      count: items.length,
+      desktop,
+      keywords: items.map((item) => item.name || '').join(' '),
+    });
+  }
+};
 
 for (const [slug, file] of Object.entries(brandFiles)) {
   const raw = await readFile(join(dataDir, file), 'utf8');
   const collections = JSON.parse(raw);
+  addSearchEntries(slug, Array.isArray(collections) ? collections : [], false);
   index[slug] = (Array.isArray(collections) ? collections : []).map((collection) => {
     const items = Array.isArray(collection.item) ? collection.item : [];
     return {
@@ -61,13 +78,19 @@ for (const [slug, file] of Object.entries(brandFiles)) {
 await writeFile(join(dataDir, 'home-index.json'), JSON.stringify(index));
 
 const desktopIndex = {};
-for (const [slug, file] of Object.entries({
+const desktopFiles = {
+  'google-os': 'google-os.json',
+  'google-chromeos': 'google-chromeos.json',
   'microsoft-windows': 'microsoft-windows.json',
   'microsoft-surface': 'microsoft-surface.json',
+  'omarchy-linux': 'omarchy-linux.json',
   ubuntu: 'ubuntu.json',
-})) {
+};
+for (const [slug, file] of Object.entries(desktopFiles)) {
   const raw = await readFile(join(dataDir, 'desktopwalls', file), 'utf8');
   const collections = JSON.parse(raw);
+  addSearchEntries(slug, Array.isArray(collections) ? collections : [], true);
+  if (!['microsoft-windows', 'microsoft-surface', 'ubuntu'].includes(slug)) continue;
   desktopIndex[slug] = (Array.isArray(collections) ? collections : [])
     .filter((collection) =>
       Array.isArray(collection.item) && collection.item.length > 0 &&
@@ -83,6 +106,7 @@ for (const [slug, file] of Object.entries({
     }));
 }
 await writeFile(join(dataDir, 'desktop-home-index.json'), JSON.stringify(desktopIndex));
+await writeFile(join(dataDir, '..', '..', 'public', 'search-index.json'), JSON.stringify(searchIndex));
 
 const totalCollections = Object.values(index).reduce((sum, list) => sum + list.length, 0);
 console.log(`home-index.json generated: ${Object.keys(index).length} brands, ${totalCollections} collections`);

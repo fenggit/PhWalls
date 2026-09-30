@@ -21,11 +21,7 @@ const formatBrandList = (brandTitles: string[], language: Language): string => {
   const head = brandTitles.slice(0, -1);
 
   if (language === 'zh' || language === 'zh-hant') {
-    if (head.length === 1) {
-      return `${head[0]}和${last}`;
-    }
-
-    return `${head.join('、')}和${last}`;
+    return brandTitles.join('、');
   }
 
   if (language === 'ja') {
@@ -51,6 +47,14 @@ const formatBrandList = (brandTitles: string[], language: Language): string => {
   return `${head.join(', ')}, and ${last}`;
 };
 
+const getFeaturedBrandTitles = (language: Language, fallback: string[]): string[] => {
+  const featuredTypes = new Set(['samsung', 'google-pixel', 'xiaomi', 'huawei', 'oppo']);
+  const featured = getTabData(language)
+    .filter((tab) => featuredTypes.has(tab.type.toLowerCase().replace(/\s+/g, '-')))
+    .map((tab) => tab.title);
+  return featured.length ? featured : fallback.slice(0, 5);
+};
+
 export const getBrandTitlesFromTabs = (language: Language = DEFAULT_LANGUAGE): string[] => {
   const tabs = (getTabData(language) as BrandTab[]).filter((item) => {
     const type = item.type?.toLowerCase().trim();
@@ -64,20 +68,20 @@ export const getFooterBrandDescription = (
   language: Language,
   brandTitles: string[] = getBrandTitlesFromTabs(language)
 ): string => {
-  const brandList = formatBrandList(brandTitles, language);
+  const brandList = formatBrandList(getFeaturedBrandTitles(language, brandTitles), language);
 
   switch (language) {
     case 'zh':
-      return `PhWalls 收录 ${brandList} 等手机品牌官方内置壁纸，并提供 Windows、Ubuntu、ChromeOS、Surface 等 Desktop/PC 桌面壁纸合集，支持 4K/5K/6K 高清原图、无水印免费下载。`;
+      return `PhWalls 收录 ${brandList} 等品牌手机内置壁纸，以及 Windows、Ubuntu 等电脑桌面壁纸。按机型浏览合集，免费下载无水印原图。`;
     case 'zh-hant':
-      return `PhWalls 收錄 ${brandList} 等手機品牌官方內建桌布，並提供 Windows、Ubuntu、ChromeOS、Surface 等 Desktop/PC 桌面桌布合集，支援 4K/5K/6K 高清原圖、無浮水印免費下載。`;
+      return `PhWalls 收錄 ${brandList} 等品牌手機內建桌布，以及 Windows、Ubuntu 等電腦桌布。依機型瀏覽合集，免費下載無浮水印原圖。`;
     case 'ja':
-      return `PhWalls は ${brandList} などのスマートフォン公式内蔵壁紙に加え、Windows、Ubuntu、ChromeOS、Surface などの Desktop/PC 壁紙コレクションを収録。4K/5K/6K の高解像度・透かしなしダウンロードに対応しています。`;
+      return `PhWalls は ${brandList} などのスマートフォン標準壁紙と Windows・Ubuntu などのデスクトップ壁紙を収録。機種別に閲覧し、透かしのない原画像を無料でダウンロードできます。`;
     case 'vi':
-      return `PhWalls tổng hợp hình nền điện thoại tích hợp sẵn từ các thương hiệu như ${brandList}, cùng bộ sưu tập hình nền Desktop/PC cho Windows, Ubuntu, ChromeOS và Surface. Hỗ trợ tải ảnh gốc 4K/5K/6K không watermark.`;
+      return `PhWalls tổng hợp hình nền điện thoại từ ${brandList} và các thương hiệu khác, cùng hình nền máy tính Windows và Ubuntu. Duyệt theo thiết bị và tải ảnh gốc miễn phí, không watermark.`;
     case 'en':
     default:
-      return `PhWalls curates official built-in phone wallpapers for brands like ${brandList}, plus Desktop/PC wallpaper collections for Windows, Ubuntu, ChromeOS, and Surface. Download 4K/5K/6K original wallpapers with no watermark.`;
+      return `PhWalls collects stock phone wallpapers from ${brandList} and other brands, plus Windows and Ubuntu desktop wallpapers. Browse by device and download original images for free, without watermarks.`;
   }
 };
 
@@ -89,39 +93,39 @@ export const getAboutBrandCopy = (
   subtitle: string;
   resourceDesc: string;
 } => {
-  const brandList = formatBrandList(brandTitles, language);
+  const brandList = formatBrandList(getFeaturedBrandTitles(language, brandTitles), language);
 
   switch (language) {
     case 'zh':
       return {
-        heroTagline: '多品牌官方壁纸资源档案',
-        subtitle: `PhWalls 提供 ${brandList} 等品牌官方内置高清壁纸整理与下载，按品牌与机型归档，便于查找与保存。`,
-        resourceDesc: `覆盖 ${brandList} 在内的品牌壁纸资源，支持按品牌入口快速浏览与下载。`,
+        heroTagline: '手机与电脑内置壁纸档案',
+        subtitle: `PhWalls 收录 ${brandList} 等品牌手机内置壁纸，以及 Windows、Ubuntu 等电脑桌面壁纸。按品牌和机型浏览合集，免费下载无水印原图。`,
+        resourceDesc: `浏览 ${brandList} 等手机品牌壁纸合集，按品牌进入对应机型页面，查看图片并下载原图。`,
       };
     case 'zh-hant':
       return {
-        heroTagline: '多品牌官方桌布資源檔案',
-        subtitle: `PhWalls 提供 ${brandList} 等品牌官方內建高清桌布整理與下載，按品牌與機型歸檔，便於查找與保存。`,
-        resourceDesc: `覆蓋 ${brandList} 在內的品牌桌布資源，支援按品牌入口快速瀏覽與下載。`,
+        heroTagline: '手機與電腦內建桌布檔案',
+        subtitle: `PhWalls 收錄 ${brandList} 等品牌手機內建桌布，以及 Windows、Ubuntu 等電腦桌布。依品牌和機型瀏覽合集，免費下載無浮水印原圖。`,
+        resourceDesc: `瀏覽 ${brandList} 等手機品牌桌布合集，依品牌進入對應機型頁面，預覽圖片並下載原圖。`,
       };
     case 'ja':
       return {
-        heroTagline: 'マルチブランド公式壁紙アーカイブ',
-        subtitle: `PhWalls は ${brandList} などのブランド公式内蔵壁紙を整理し、ブランドと機種ごとに探しやすく提供します。`,
-        resourceDesc: `ブランド別の入口から、${brandList} を含む壁紙コレクションをすばやく閲覧・ダウンロードできます。`,
+        heroTagline: 'スマートフォンとデスクトップの標準壁紙',
+        subtitle: `PhWalls は ${brandList} などのスマートフォン標準壁紙と、Windows・Ubuntu などのデスクトップ壁紙を収録しています。ブランドや機種から探して、透かしのない原画像を無料でダウンロードできます。`,
+        resourceDesc: `${brandList} などのブランド別コレクションから機種を選び、画像を確認して原画像をダウンロードできます。`,
       };
     case 'vi':
       return {
-        heroTagline: 'Kho hình nền chính thức đa thương hiệu',
-        subtitle: `PhWalls tổng hợp và cung cấp hình nền HD chính thức cho các thương hiệu như ${brandList}, được phân loại theo thương hiệu và dòng máy để dễ tìm kiếm.`,
-        resourceDesc: `Bao phủ bộ sưu tập từ ${brandList} và nhiều thương hiệu khác, giúp bạn duyệt và tải nhanh theo từng danh mục thương hiệu.`,
+        heroTagline: 'Kho hình nền điện thoại và máy tính',
+        subtitle: `PhWalls tổng hợp hình nền có sẵn của ${brandList} và nhiều điện thoại khác, cùng hình nền máy tính Windows và Ubuntu. Duyệt theo thương hiệu, thiết bị và tải ảnh gốc miễn phí, không watermark.`,
+        resourceDesc: `Khám phá bộ sưu tập của ${brandList} và các thương hiệu khác, chọn dòng máy để xem và tải ảnh gốc.`,
       };
     case 'en':
     default:
       return {
-        heroTagline: 'Official Multi-Brand Wallpaper Archive',
-        subtitle: `PhWalls curates downloadable HD built-in wallpapers for brands like ${brandList}, organized by brand and device model for faster discovery.`,
-        resourceDesc: `Browse and download wallpaper collections across ${brandList} and more through structured brand entry points.`,
+        heroTagline: 'Stock phone and desktop wallpapers',
+        subtitle: `PhWalls collects stock wallpapers from ${brandList} and other phones, plus desktop wallpapers for Windows and Ubuntu. Browse by brand and device to preview and download original images for free.`,
+        resourceDesc: `Explore phone wallpaper collections from ${brandList} and more, then choose a device model to preview and download original images.`,
       };
   }
 };
@@ -134,7 +138,7 @@ export const getAboutFaqItems = (
       return [
         {
           question: '哪里可以下载各品牌官方内置壁纸？',
-          answer: '可在 About 页下方品牌入口进入对应品牌分类，下载官方内置高清壁纸原图。',
+          answer: '通过本页的手机品牌和电脑壁纸入口进入合集页，预览壁纸后即可下载原图。',
         },
         {
           question: '支持哪些手机品牌壁纸下载？',
@@ -142,7 +146,7 @@ export const getAboutFaqItems = (
         },
         {
           question: '可以按品牌和机型精准查找壁纸吗？',
-          answer: '可以。先进入品牌页，再按机型或系统版本浏览，即可快速定位目标壁纸合集。',
+          answer: '可以。使用页面顶部搜索品牌、机型或壁纸名称，也可以先进入品牌页，再按机型浏览合集。',
         },
         {
           question: '新机型和新系统壁纸会更新吗？',
@@ -161,7 +165,7 @@ export const getAboutFaqItems = (
       return [
         {
           question: '哪裡可以下載各品牌官方內建桌布？',
-          answer: '可在 About 頁下方品牌入口進入對應品牌分類，下載官方內建高清桌布原圖。',
+          answer: '透過本頁的手機品牌與電腦桌布入口進入合集頁，預覽桌布後即可下載原圖。',
         },
         {
           question: '支援哪些手機品牌桌布下載？',
@@ -169,7 +173,7 @@ export const getAboutFaqItems = (
         },
         {
           question: '可以按品牌與機型精準查找桌布嗎？',
-          answer: '可以。先進入品牌頁，再依機型或系統版本瀏覽，即可快速定位目標桌布合集。',
+          answer: '可以。使用頁面頂部搜尋品牌、機型或桌布名稱，也可以先進入品牌頁，再依機型瀏覽合集。',
         },
         {
           question: '新機型與新系統桌布會更新嗎？',
@@ -188,7 +192,7 @@ export const getAboutFaqItems = (
       return [
         {
           question: '各ブランドの公式壁紙はどこでダウンロードできますか？',
-          answer: 'About ページ下部のブランド入口から各ブランドページに進み、公式内蔵壁紙をダウンロードできます。',
+          answer: 'このページのスマートフォンとデスクトップの入口からコレクションを開き、画像を確認して原画像をダウンロードできます。',
         },
         {
           question: '対応ブランドはどこで確認できますか？',
@@ -196,7 +200,7 @@ export const getAboutFaqItems = (
         },
         {
           question: 'ブランドや機種で絞って探せますか？',
-          answer: 'はい。ブランドページに入った後、機種やバージョン単位で目的の壁紙を見つけられます。',
+          answer: 'はい。ページ上部の検索でブランド・機種・壁紙名を探すか、ブランドページから機種別コレクションを閲覧できます。',
         },
         {
           question: '新機種・新OSの壁紙は更新されますか？',
@@ -215,7 +219,7 @@ export const getAboutFaqItems = (
       return [
         {
           question: 'Tải hình nền chính thức theo từng thương hiệu ở đâu?',
-          answer: 'Bạn có thể vào từng danh mục thương hiệu từ phần liên kết bên dưới trang About để tải hình nền gốc.',
+          answer: 'Mở bộ sưu tập từ các liên kết điện thoại và máy tính trên trang này, xem trước rồi tải ảnh gốc.',
         },
         {
           question: 'Trang hỗ trợ những thương hiệu nào?',
@@ -223,7 +227,7 @@ export const getAboutFaqItems = (
         },
         {
           question: 'Có thể tìm hình nền theo thương hiệu và dòng máy không?',
-          answer: 'Có. Vào trang thương hiệu trước, sau đó lọc theo dòng máy hoặc phiên bản hệ điều hành.',
+          answer: 'Có. Dùng tìm kiếm ở đầu trang theo thương hiệu, dòng máy hoặc tên hình nền, hoặc duyệt bộ sưu tập từ trang thương hiệu.',
         },
         {
           question: 'Hình nền máy mới và hệ điều hành mới có được cập nhật không?',
@@ -243,7 +247,7 @@ export const getAboutFaqItems = (
       return [
         {
           question: 'Where can I download official built-in wallpapers by brand?',
-          answer: 'Use the brand entry points on the About page to open each brand collection and download the original wallpapers.',
+          answer: 'Open a phone or desktop collection from this page, preview the wallpapers and download the original image.',
         },
         {
           question: 'Which brands are currently supported?',
@@ -251,7 +255,7 @@ export const getAboutFaqItems = (
         },
         {
           question: 'Can I find wallpapers by brand and model?',
-          answer: 'Yes. Open a brand page first, then browse by device model or OS version to find the exact collection.',
+          answer: 'Yes. Search for a brand, device model or wallpaper name from the top of the page, or browse collections from a brand page.',
         },
         {
           question: 'Do you update wallpapers for new devices and OS releases?',

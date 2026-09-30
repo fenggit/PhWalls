@@ -3,93 +3,38 @@
 // Cloudflare Pages 部署必需，请勿删除
 export const runtime = 'edge';
 
-import { Suspense } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
+import { ArrowRight, ChevronLeft, Download, Mail, Monitor, Smartphone } from 'lucide-react';
 import Footer from '@/components/Footer';
-import BackNavButton from '@/components/BackNavButton';
+import Header from '@/components/Header';
 import { useLanguage } from '@/components/LanguageProvider';
+import { getAboutBrandCopy, getAboutFaqItems } from '@/lib/brand-copy';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
-import { getAboutBrandCopy, getAboutFaqItems, getFooterBrandDescription } from '@/lib/brand-copy';
 import { buildWallpaperListTitle, getTabData } from '@/lib/data';
+import { getDesktopTabData } from '@/lib/desktop-data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
-import { getDesktopTabData } from '@/lib/desktop-data';
-import {
-  CheckCircle2,
-  Clock3,
-  Download,
-  ExternalLink,
-  Mail,
-  MessageCircle,
-  Monitor,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react';
 
-function AboutContent() {
-  const { language, texts } = useLanguage();
-  const homeHref = withLanguagePath('/', language);
-  const brandTabs = getTabData(language).filter(
-    (item) => normalizeCategoryType(item.type) !== 'design' && !item.link
+export default function AboutPage() {
+  const { language, setLanguage, texts } = useLanguage();
+  const phoneTabs = getTabData(language).filter(
+    (tab) => !tab.link && !['design', 'desktop'].includes(normalizeCategoryType(tab.type))
   );
-  const brandTitles = brandTabs.map((item) => item.title);
-  const dynamicAboutCopy = getAboutBrandCopy(language, brandTitles);
-  const dynamicFooterDescription = getFooterBrandDescription(language, brandTitles);
-
-  const pageCopy = {
-    heroTagline: dynamicAboutCopy.heroTagline,
-    subtitle: dynamicAboutCopy.subtitle,
-    resourceTitle: texts.aboutResourceTitle,
-    resourceDesc: dynamicAboutCopy.resourceDesc,
-    trustTitle: texts.aboutTrustTitle,
-    trustDesc: texts.aboutTrustDesc,
-    contactTitle: texts.aboutContactTitle,
-    contactDesc: texts.aboutContactDesc,
-  };
-  const collectionTones = [
-    'from-blue-50 to-cyan-50 border-blue-100',
-    'from-green-50 to-emerald-50 border-green-100',
-    'from-violet-50 to-fuchsia-50 border-violet-100',
-    'from-sky-50 to-indigo-50 border-sky-100',
-  ];
-
-  const collections = brandTabs.map((item, index) => ({
-    href: withLanguagePath(buildBrandPath(item.type), language),
-    title: buildWallpaperListTitle(item.title, texts.wallpapersTitleSuffix),
-    desc:
-      language === 'zh'
-        ? `浏览 ${item.title} 官方壁纸合集，支持高清原图下载。`
-        : language === 'zh-hant'
-          ? `瀏覽 ${item.title} 官方桌布合集，支援高清原圖下載。`
-          : language === 'ja'
-            ? `${item.title} の公式壁紙コレクションを閲覧し、高解像度でダウンロードできます。`
-            : language === 'vi'
-              ? `Khám phá bộ sưu tập hình nền chính thức của ${item.title} và tải xuống chất lượng cao.`
-              : `Explore official ${item.title} wallpaper collections and download them in full resolution.`,
-    tone: collectionTones[index % collectionTones.length],
-  }));
-
-  const desktopTabs = getDesktopTabData();
-  const desktopCollections = desktopTabs.map((item, index) => ({
-    href: item.link ? item.link : withLanguagePath(`/desktop#${item.type}`, language),
-    title: buildWallpaperListTitle(item.title, texts.wallpapersTitleSuffix),
-    desc: texts.aboutDesktopItemDescTemplate.replace('{brand}', item.title),
-    tone: collectionTones[index % collectionTones.length],
-    external: !!item.link,
-  }));
-
+  const desktopTabs = getDesktopTabData().filter((tab) => !tab.link);
+  const copy = getAboutBrandCopy(language, phoneTabs.map((tab) => tab.title));
   const faqItems = getAboutFaqItems(language);
+  const aboutUrl = withLanguageUrl(`${SITE_URL}/about`, language);
 
-  const seoStructuredData = {
+  const structuredData = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'AboutPage',
         name: texts.aboutTitle,
-        description: pageCopy.subtitle,
+        description: copy.subtitle,
         inLanguage: language,
-        url: withLanguageUrl(`${SITE_URL}/about`, language),
+        url: aboutUrl,
         isPartOf: {
           '@type': 'WebSite',
           name: texts.siteName,
@@ -101,240 +46,146 @@ function AboutContent() {
         mainEntity: faqItems.map((item) => ({
           '@type': 'Question',
           name: item.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: item.answer,
-          },
+          acceptedAnswer: { '@type': 'Answer', text: item.answer },
         })),
       },
     ],
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 via-white to-sky-50">
-      <Script
-        id="about-structured-data"
+    <div className="min-h-screen bg-white text-gray-900">
+      <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(seoStructuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-
-      <main className="flex-1">
-        <section className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-indigo-700 to-cyan-700">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.25),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(255,255,255,0.2),transparent_35%)]" />
-          <div className="absolute inset-0 bg-black/15" />
-
-          <div className="absolute left-6 top-6 z-20">
-            <BackNavButton homeHref={homeHref} label={texts.returnHome} variant="light" />
-          </div>
-
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-28">
-            <p className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.2em] text-white/90 uppercase">
-              {pageCopy.heroTagline}
-            </p>
-            <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-white">
+      <Header currentLang={language} onLanguageChange={setLanguage} />
+      <main className="pt-12 md:pt-16">
+        <section className="relative isolate overflow-hidden bg-gray-900 text-white" aria-labelledby="about-title">
+          <Image
+            src="/hero/phwalls-home-hero-v1.webp"
+            alt=""
+            fill
+            unoptimized
+            priority
+            sizes="100vw"
+            className="object-cover object-left md:object-center"
+          />
+          <div className="relative mx-auto flex min-h-[280px] max-w-7xl flex-col justify-center px-4 py-12 sm:min-h-[320px] sm:px-6 lg:px-8">
+            <Link
+              href={withLanguagePath('/', language)}
+              aria-label={texts.aboutBackHome}
+              title={texts.aboutBackHome}
+              className="group inline-flex min-h-9 max-w-full self-start items-center gap-1 rounded-md pr-2 text-sm text-white/85 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <ChevronLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span className="min-w-0 font-semibold">{copy.heroTagline}</span>
+            </Link>
+            <h1 id="about-title" className="mt-3 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
               {texts.aboutTitle}
             </h1>
-            <p className="mt-6 max-w-3xl text-base md:text-xl leading-relaxed text-white/90">
-              {pageCopy.subtitle}
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/95 sm:text-base">
+              {copy.subtitle}
             </p>
+          </div>
+        </section>
 
-            <div className="mt-10 flex flex-wrap items-center gap-6 text-white/90">
-              <span className="inline-flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4" />
-                {texts.systemNative}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                {texts.hdWatermarkFree}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Clock3 className="h-4 w-4" />
-                {texts.regularUpdates}
-              </span>
+        <section className="border-b border-gray-200" aria-labelledby="about-purpose">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-14 md:py-16 lg:px-8">
+            <div>
+              <h2 id="about-purpose" className="text-2xl font-bold text-gray-950 sm:text-3xl">{texts.aboutTrustTitle}</h2>
+              <p className="mt-4 text-base leading-7 text-gray-700">{texts.missionDescription}</p>
+              <p className="mt-4 text-base leading-7 text-gray-700">{texts.missionDescription2}</p>
             </div>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link
-                href={withLanguagePath('/', language)}
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors"
-              >
-                <Sparkles className="h-4 w-4" />
-                {texts.exploreButton}
-              </Link>
-              <Link
-                href={withLanguagePath('/design', language)}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
-              >
-                {texts.customWallpaper}
-              </Link>
+            <div className="grid content-start gap-5 border-t border-gray-200 pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0">
+              <div className="flex gap-3">
+                <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-blue-700" aria-hidden="true" />
+                <p className="text-sm leading-6 text-gray-700">{texts.aboutResourceDesc}</p>
+              </div>
+              <div className="flex gap-3">
+                <Monitor className="mt-0.5 h-5 w-5 shrink-0 text-blue-700" aria-hidden="true" />
+                <p className="text-sm leading-6 text-gray-700">{texts.aboutDesktopDesc}</p>
+              </div>
+              <div className="flex gap-3">
+                <Download className="mt-0.5 h-5 w-5 shrink-0 text-blue-700" aria-hidden="true" />
+                <p className="text-sm leading-6 text-gray-700">{texts.aboutTrustDesc}</p>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="relative z-10 -mt-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs tracking-[0.18em] uppercase text-slate-500">{texts.systemNative}</p>
-              <p className="mt-2 text-sm text-slate-600">{pageCopy.trustDesc}</p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs tracking-[0.18em] uppercase text-slate-500">4K / 5K / 6K</p>
-              <p className="mt-2 text-sm text-slate-600">{dynamicFooterDescription}</p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs tracking-[0.18em] uppercase text-slate-500">{texts.faqTitle}</p>
-              <p className="mt-2 text-sm text-slate-600">{texts.faqSubtitle}</p>
-            </div>
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8" aria-labelledby="about-phone-brands">
+          <div className="max-w-3xl">
+            <h2 id="about-phone-brands" className="text-2xl font-bold text-gray-950 sm:text-3xl">{texts.aboutResourceTitle}</h2>
+            <p className="mt-3 text-base leading-7 text-gray-700">{copy.resourceDesc}</p>
+          </div>
+          <div className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            {phoneTabs.map((tab) => (
+              <Link
+                key={tab.type}
+                href={withLanguagePath(buildBrandPath(tab.type), language)}
+                className="group flex min-h-14 min-w-0 items-center justify-between gap-2 rounded-md border border-gray-200 px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600"
+              >
+                <span className="min-w-0 text-sm font-semibold leading-5 text-gray-800 group-hover:text-blue-800">
+                  {buildWallpaperListTitle(tab.title, texts.wallpapersTitleSuffix)}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
+              </Link>
+            ))}
           </div>
         </section>
 
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900">
-              {pageCopy.resourceTitle}
-            </h2>
-            <p className="mt-4 max-w-3xl text-slate-600 text-lg leading-relaxed">{pageCopy.resourceDesc}</p>
-
-            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {collections.map((item) => (
+        <section className="border-y border-gray-200 bg-gray-50" aria-labelledby="about-desktop-brands">
+          <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+            <div className="max-w-3xl">
+              <h2 id="about-desktop-brands" className="text-2xl font-bold text-gray-950 sm:text-3xl">{texts.aboutDesktopTitle}</h2>
+              <p className="mt-3 text-base leading-7 text-gray-700">{texts.aboutDesktopDesc}</p>
+            </div>
+            <div className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {desktopTabs.map((tab) => (
                 <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`group rounded-2xl border bg-gradient-to-br ${item.tone} p-5 transition-transform duration-200 hover:-translate-y-0.5`}
+                  key={tab.type}
+                  href={withLanguagePath(`/desktop/${normalizeCategoryType(tab.type)}`, language)}
+                  className="group flex min-h-14 min-w-0 items-center justify-between gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600"
                 >
-                  <h3 className="font-semibold text-slate-900">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.desc}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-700">
-                    {texts.learnMore}
-                    <ExternalLink className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  <span className="min-w-0 text-sm font-semibold leading-5 text-gray-800 group-hover:text-blue-800">
+                    {buildWallpaperListTitle(tab.title, texts.wallpapersTitleSuffix)}
                   </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50/60">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 flex items-center gap-3">
-              <Monitor className="h-7 w-7 text-slate-600" />
-              {texts.aboutDesktopTitle}
-            </h2>
-            <p className="mt-4 max-w-3xl text-slate-600 text-lg leading-relaxed">
-              {texts.aboutDesktopDesc}
-            </p>
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8" aria-labelledby="about-faq">
+          <h2 id="about-faq" className="text-2xl font-bold text-gray-950 sm:text-3xl">{texts.faqTitle}</h2>
+          <div className="mt-6 max-w-4xl border-t border-gray-200">
+            {faqItems.map((item) => (
+              <details key={item.question} className="group border-b border-gray-200 py-4">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-base font-semibold leading-6 text-gray-950 focus-visible:outline-2 focus-visible:outline-blue-600">
+                  <span>{item.question}</span>
+                  <span className="shrink-0 text-gray-500 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                </summary>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-700">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
 
-            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {desktopCollections.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className={`group rounded-2xl border bg-gradient-to-br ${item.tone} p-5 transition-transform duration-200 hover:-translate-y-0.5`}
-                >
-                  <h3 className="font-semibold text-slate-900">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.desc}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-700">
-                    {texts.learnMore}
-                    <ExternalLink className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
-              ))}
+        <section className="border-t border-gray-200 bg-gray-50" aria-labelledby="about-contact">
+          <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-between md:py-14 lg:px-8">
+            <div className="max-w-2xl">
+              <h2 id="about-contact" className="text-2xl font-bold text-gray-950">{texts.aboutContactTitle}</h2>
+              <p className="mt-2 text-sm leading-6 text-gray-700">{texts.aboutContactDesc}</p>
             </div>
-          </div>
-        </section>
-
-        <section className="py-4 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <article className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="inline-flex items-center gap-2 text-2xl font-semibold text-slate-900">
-                <ShieldCheck className="h-5 w-5 text-emerald-600" />
-                {pageCopy.trustTitle}
-              </h2>
-              <p className="mt-4 text-slate-600 leading-relaxed">{texts.missionDescription}</p>
-              <p className="mt-3 text-slate-600 leading-relaxed">{texts.missionDescription2}</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-6">
-            <article className="lg:col-span-2 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="text-3xl font-semibold text-slate-900">{texts.faqTitle}</h2>
-              <p className="mt-3 text-slate-600">{texts.faqSubtitle}</p>
-              <div className="mt-8 space-y-3">
-                {faqItems.map((item, index) => (
-                  <details
-                    key={item.question}
-                    className="group rounded-2xl border border-slate-200 bg-slate-50/70 p-5 open:bg-white open:shadow-sm transition-all"
-                    open={index === 0}
-                  >
-                    <summary className="cursor-pointer list-none font-medium text-slate-900 flex items-center justify-between gap-4">
-                      <span>{item.question}</span>
-                      <span className="text-slate-400 group-open:rotate-45 transition-transform">+</span>
-                    </summary>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-600">{item.answer}</p>
-                  </details>
-                ))}
-              </div>
-            </article>
-
-            <aside className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="text-2xl font-semibold text-slate-900">{pageCopy.contactTitle}</h2>
-              <p className="mt-3 text-slate-600 leading-relaxed">{pageCopy.contactDesc}</p>
-              <div className="mt-6 space-y-3">
-                <div className="inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  <MessageCircle className="h-4 w-4 text-slate-500" />
-                  <span>{texts.qqGroup}</span>
-                </div>
-                <a
-                  href="https://t.me/+1Ce-76yIVu4yZDg1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
-                >
-                  <MessageCircle className="h-4 w-4 text-slate-500" />
-                  <span>Telegram</span>
-                </a>
-                <a
-                  href="mailto:fenggit@gmail.com"
-                  className="inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
-                >
-                  <Mail className="h-4 w-4 text-slate-500" />
-                  <span>fenggit@gmail.com</span>
-                </a>
-                <Link
-                  href={withLanguagePath('/privacy', language)}
-                  className="inline-flex w-full items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
-                >
-                  {texts.privacyPolicy}
-                </Link>
-              </div>
-            </aside>
+            <a href="mailto:fenggit@gmail.com" className="inline-flex min-h-11 items-center gap-2 self-start rounded-md border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-900 hover:border-blue-400 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-blue-600">
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              fenggit@gmail.com
+            </a>
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
-  );
-}
-
-function AboutLoading() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-      </div>
-    </div>
-  );
-}
-
-// 关于页面：介绍站点定位、资源说明、FAQ 和联系信息。
-export default function AboutPage() {
-  return (
-    <Suspense fallback={<AboutLoading />}>
-      <AboutContent />
-    </Suspense>
   );
 }

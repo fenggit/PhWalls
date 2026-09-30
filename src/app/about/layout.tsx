@@ -10,19 +10,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const language = await resolveMetadataLanguage();
   const texts = getI18nTexts(language);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}/about`, language);
-  const title = `${texts.aboutTitle} | PhWalls`;
+  const title = `${texts.aboutTitle} | ${texts.heroSeoTitle}`;
   const brandTitles = getBrandTitlesFromTabs(language);
   const description = getAboutBrandCopy(language, brandTitles).subtitle;
-  const keywordList = [
-    'PhWalls',
-    'phone wallpapers',
-    ...brandTitles.map((brand) => `${brand.toLowerCase()} wallpapers`),
-  ].join(', ');
-
   return {
     title,
     description,
-    keywords: keywordList,
     openGraph: {
       title,
       description,
