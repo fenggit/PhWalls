@@ -537,6 +537,7 @@ export default function AdminConsole() {
     event.preventDefault();
     await run(async () => {
       const existing = folderName ? await findFolderDevice(folderName) : undefined;
+      if (!existing && !newUploadDate.trim()) throw new Error('请填写新设备的发布日期');
       const data = existing || (await api<{ data: DeviceRow }>('devices', 'POST', {
         brand_name: uploadBrand,
         device_name: folderName ? normalizeAdminDisplay(folderName) : newUploadDeviceName,
@@ -878,8 +879,8 @@ export default function AdminConsole() {
                   .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
               </select>
             </label>
-            <label className="text-sm">发布日期
-              <input className={`${inputClass} mt-1`} value={newUploadDate} maxLength={20}
+            <label className="text-sm">发布日期（必填）
+              <input className={`${inputClass} mt-1`} required value={newUploadDate} maxLength={20}
                 onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" />
             </label>
             <div className="flex gap-2">
@@ -908,7 +909,7 @@ export default function AdminConsole() {
                 <label className="text-sm">类型<select className={`${inputClass} mt-1`} disabled={busy} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
                   {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop).map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
                 </select></label>
-                <label className="text-sm">发布日期<input className={`${inputClass} mt-1`} disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" /></label>
+                <label className="text-sm">发布日期（必填）<input className={`${inputClass} mt-1`} required disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" /></label>
                 <button className={primaryClass} disabled={busy}><Plus size={16} />{busy ? '创建中…' : '创建设备'}</button>
               </div>
             </form>}
@@ -1000,7 +1001,7 @@ export default function AdminConsole() {
             <label className="text-sm">设备名称<input required className={`${inputClass} mt-1`} value={editingDevice.device_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_name: event.target.value })} /></label>
             <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.filter((value) => (value === 'desktop') === editingDeviceIsDesktop)
               .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
-            <label className="text-sm">发布日期<input className={`${inputClass} mt-1`} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="YYYY/MM/DD" /></label>
+            <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（必填）'}<input className={`${inputClass} mt-1`} required={!editingDevice.id} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="YYYY/MM/DD" /></label>
             <label className="text-sm">Logo 路径<input className={`${inputClass} mt-1`} value={editingDevice.brand_logo || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_logo: event.target.value })} /></label>
             <label className="text-sm">宣传图 URL<input className={`${inputClass} mt-1`} value={editingDevice.device_splash_url || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_splash_url: event.target.value })} /></label>
             {editingDevice.id && <><label className="text-sm">状态<select className={`${inputClass} mt-1`} value={editingDevice.status} onChange={(event) => setEditingDevice({ ...editingDevice, status: event.target.value as DeviceRow['status'] })}>{statuses.map((value) => <option key={value} value={value}>{statusLabels[value as DeviceRow['status']]}</option>)}</select></label>

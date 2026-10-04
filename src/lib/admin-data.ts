@@ -78,7 +78,7 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   if (!brand || !slug) throw new Error('品牌或设备名称无法生成 URL');
   const selectedCategory = category(input.device_category);
   if ((brandInfo.kind === 'desktop') !== (selectedCategory === 'desktop')) throw new Error('品牌类型与设备分类不匹配');
-  const releaseDate = input.release_date ? assertText(input.release_date, '发布日期', 20) : '';
+  const releaseDate = assertText(input.release_date, '发布日期', 20);
   const now = Date.now();
   const id = crypto.randomUUID();
   const db = getWallpaperDb();
