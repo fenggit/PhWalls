@@ -16,6 +16,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
   for (const migration of readdirSync(`${root}migrations`).filter((name) => name.endsWith('.sql')).sort()) {
     sqlite.exec(readFileSync(`${root}migrations/${migration}`, 'utf8'));
   }
+  sqlite.exec("INSERT INTO w_brands (slug,title,title_key,kind,create_date,updated_date) VALUES ('test','Test','test','mobile',1,1)");
   sqlite.exec(`INSERT INTO w_devices (id, brand_name, device_name, name_key, device_slug, device_category,
     release_date, create_date, updated_date)
     VALUES ('device-1', 'test', 'Device One', 'device one', 'device-one', 'phone', '2026/10/04', 1, 1)`);
@@ -222,5 +223,19 @@ test('device checks distinguish selected draft primaries from published primarie
     assert.equal(data.primary_count, 1);
     assert.equal(data.published_primary, 0);
     assert.equal(data.published, 0);
+  } finally { sqlite.close(); }
+});
+
+test('device creation and editing store Chinese release dates in canonical numeric form', async () => {
+  const { sqlite, service } = fixture();
+  try {
+    const created = await service.createAdminDevice({
+      brand_name: 'test', device_name: 'New Phone', device_category: 'phone', release_date: '2021年9月22日',
+    });
+    assert.equal(created.release_date, '2021/09/22');
+    const edited = await service.updateAdminDevice({ id: created.id, release_date: '2024年2月29日' });
+    assert.equal(edited.release_date, '2024/02/29');
+    await assert.rejects(() => service.updateAdminDevice({ id: created.id, release_date: '2021年2月29日' }));
+    assert.equal(sqlite.prepare('SELECT release_date FROM w_devices WHERE id = ?').get(created.id).release_date, '2024/02/29');
   } finally { sqlite.close(); }
 });

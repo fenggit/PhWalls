@@ -4,6 +4,7 @@ import { findAdminBrand } from '@/lib/admin-brands';
 import { isUniqueConstraintError, normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
 import { hasStaticWallpaperReference } from '@/lib/admin-static-assets';
+import { normalizeAdminReleaseDate } from '@/lib/admin-release-date';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
 const statuses = new Set<RecordStatus>(['draft', 'published', 'unpublished']);
@@ -78,7 +79,7 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   if (!brand || !slug) throw new Error('品牌或设备名称无法生成 URL');
   const selectedCategory = category(input.device_category);
   if ((brandInfo.kind === 'desktop') !== (selectedCategory === 'desktop')) throw new Error('品牌类型与设备分类不匹配');
-  const releaseDate = assertText(input.release_date, '发布日期', 20);
+  const releaseDate = normalizeAdminReleaseDate(input.release_date);
   const now = Date.now();
   const id = crypto.randomUUID();
   const db = getWallpaperDb();
@@ -127,6 +128,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
     }
   }
   const nextStatus = input.status === undefined ? previous.status : status(input.status);
+  const releaseDate = input.release_date === undefined ? previous.release_date : normalizeAdminReleaseDate(input.release_date, true);
   if (input.is_popular_brand !== undefined && input.is_popular_brand !== 0 && input.is_popular_brand !== 1) {
     throw new Error('热门品牌标记无效');
   }
@@ -166,7 +168,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
     ).bind(name, nameKey === previousNameKey ? previous.name_key : nameKey, selectedCategory,
       input.brand_logo === undefined ? previous.brand_logo : input.brand_logo || null,
       input.device_splash_url === undefined ? previous.device_splash_url : input.device_splash_url || null,
-      input.release_date === undefined ? previous.release_date : String(input.release_date || ''),
+      releaseDate,
       nextStatus, now, id, ...(publishDrafts ? [previous.updated_date] : []));
     if (publishDrafts) {
       // 所有草稿都必须仍匹配 R2 核验时的快照，避免发布并发编辑或刚上传的未核验文件。

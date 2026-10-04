@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
 import AdminDeviceI18nPanel from '@/app/manager/AdminDeviceI18nPanel';
 import { adminTabHref, resolveAdminTab, type AdminTab } from '@/lib/admin-navigation';
+import { uploadAdminBatch } from '@/lib/admin-upload-batch';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import type { DeviceI18nRow, DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
 import type { Language } from '@/types';
@@ -18,7 +19,7 @@ import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path'
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
 type UploadRow = { id: string; name: string; origin?: File; preview?: File; theme: string; tags: string;
-  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean };
+  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean; isPublished?: boolean };
 type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; primary_count: number; published_primary: number };
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
@@ -342,6 +343,8 @@ export default function AdminConsole() {
   const [newUploadCategory, setNewUploadCategory] = useState<DeviceRow['device_category']>('phone');
   const [newUploadDate, setNewUploadDate] = useState('');
   const [uploadRows, setUploadRows] = useState<UploadRow[]>([]);
+  const [uploadPublication, setUploadPublication] = useState<{ device: Pick<DeviceRow, 'id' | 'device_name'>; count: number } | null>(null);
+  const createdUploadDevices = useRef(new Set<string>());
   const [uploadFolderName, setUploadFolderName] = useState('');
   const [batchTags, setBatchTags] = useState('');
   const [busy, setBusy] = useState(false);
@@ -551,6 +554,7 @@ export default function AdminConsole() {
         device_category: newUploadCategory,
         release_date: newUploadDate,
       })).data;
+      if (!existing) createdUploadDevices.current.add(data.id);
       setUploadDevices((current) => [data, ...current.filter((device) => device.id !== data.id)]);
       setUploadDevice(data.id);
       if (folderName) setUploadFolderState('matched');
@@ -647,9 +651,9 @@ export default function AdminConsole() {
     return uploadDevice;
   };
 
-  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string) => {
+  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string): Promise<boolean> => {
     if (!row.origin || !row.preview) {
-      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return;
+      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return false;
     }
     patchUpload(row.id, { state: 'uploading', progress: 0, error: undefined });
     try {
@@ -668,10 +672,24 @@ export default function AdminConsole() {
         theme: row.theme, category: row.category || undefined,
         tags: row.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
       });
-      patchUpload(row.id, { state: 'done', progress: 100, isPrimary: !!data.is_primary });
+      patchUpload(row.id, { state: 'done', progress: 100, isPrimary: !!data.is_primary, isPublished: false });
+      return true;
     } catch (cause) {
       patchUpload(row.id, { state: 'failed', error: cause instanceof Error ? cause.message : '上传失败' });
+      return false;
     }
+  };
+
+  const publishUploadedDevice = async () => {
+    if (!uploadPublication || busy) return;
+    await run(async () => {
+      const { data } = await api<{ data: DeviceRow }>('devices', 'PATCH', {
+        id: uploadPublication.device.id, status: 'published', publish_drafts: true,
+      });
+      setUploadDevices((current) => current.map((device) => device.id === data.id ? data : device));
+      setUploadRows((current) => current.map((row) => row.state === 'done' ? { ...row, isPublished: true } : row));
+      setUploadPublication(null);
+    });
   };
 
   const visibleDevices = devices.filter((device) => !searchInput ||
@@ -888,7 +906,7 @@ export default function AdminConsole() {
             </label>
             <label className="text-sm">发布日期（必填）
               <input className={`${inputClass} mt-1`} required value={newUploadDate} maxLength={20}
-                onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" />
+                onChange={(event) => setNewUploadDate(event.target.value)} placeholder="2021/09/22 或 2021年9月22日" />
             </label>
             <div className="flex gap-2">
               <button className={primaryClass} disabled={busy}><Check size={16} />创建并选中</button>
@@ -916,7 +934,7 @@ export default function AdminConsole() {
                 <label className="text-sm">类型<select className={`${inputClass} mt-1`} disabled={busy} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
                   {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop).map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
                 </select></label>
-                <label className="text-sm">发布日期（必填）<input className={`${inputClass} mt-1`} required disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="YYYY/MM/DD" /></label>
+                <label className="text-sm">发布日期（必填）<input className={`${inputClass} mt-1`} required disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="2021/09/22 或 2021年9月22日" /></label>
                 <button className={primaryClass} disabled={busy}><Plus size={16} />{busy ? '创建中…' : '创建设备'}</button>
               </div>
             </form>}
@@ -931,7 +949,13 @@ export default function AdminConsole() {
               if (uploadFolderName && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
               const deviceId = await ensureUploadDevice();
               if (!uploadStoragePath || uploadStoragePathError) throw new Error(uploadStoragePathError || '请选择 R2 存储目录');
-              for (const row of pending) await uploadOne(row, deviceId, uploadStoragePath);
+              await uploadAdminBatch(pending, (row) => uploadOne(row, deviceId, uploadStoragePath), (count) => {
+                const device = uploadDevices.find((item) => item.id === deviceId);
+                if (device && createdUploadDevices.current.has(deviceId)) {
+                  createdUploadDevices.current.delete(deviceId);
+                  setUploadPublication({ device, count: count + uploadRows.filter((row) => row.state === 'done').length });
+                }
+              });
             })}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
           <div className="overflow-hidden rounded-lg border border-[#dfe6df] bg-white">
@@ -946,7 +970,7 @@ export default function AdminConsole() {
                 <option value="">同设备</option>{categories.map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
               </select>
               <input className={inputClass} aria-label="标签" value={row.tags} onChange={(event) => patchUpload(row.id, { tags: event.target.value })} placeholder="标签" />
-              <div className={`text-xs ${row.state === 'failed' ? 'text-red-700' : row.state === 'done' ? 'text-emerald-700' : 'text-gray-600'}`}>{row.state === 'uploading' ? `${row.progress}%` : row.state === 'done' ? (row.isPrimary ? '已入库（草稿 · 主图）' : '已入库（草稿）') : row.error || (row.origin && row.preview ? '待上传' : '文件未配齐')}{row.state === 'uploading' && <div className="mt-1 h-1 overflow-hidden rounded bg-gray-200"><div className="h-full bg-teal-700" style={{ width: `${row.progress}%` }} /></div>}</div>
+              <div className={`text-xs ${row.state === 'failed' ? 'text-red-700' : row.state === 'done' ? 'text-emerald-700' : 'text-gray-600'}`}>{row.state === 'uploading' ? `${row.progress}%` : row.state === 'done' ? `已入库（${row.isPublished ? '已发布' : '草稿'}${row.isPrimary ? ' · 主图' : ''}）` : row.error || (row.origin && row.preview ? '待上传' : '文件未配齐')}{row.state === 'uploading' && <div className="mt-1 h-1 overflow-hidden rounded bg-gray-200"><div className="h-full bg-teal-700" style={{ width: `${row.progress}%` }} /></div>}</div>
               <button className={iconButtonClass} title="移除" aria-label={`移除 ${row.name}`} disabled={row.state === 'uploading'} onClick={() => {
                 const remaining = uploadRows.filter((item) => item.id !== row.id);
                 setUploadRows(remaining);
@@ -957,6 +981,18 @@ export default function AdminConsole() {
         </section>}
       </div>
       </div>
+
+      {uploadPublication && <AdminDialog title="上传完成，是否直接发布？" onClose={() => { if (!busy) setUploadPublication(null); }}>
+        <div className={modalClass}>
+          <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">上传完成，是否直接发布？</h2>
+            <button type="button" className={iconButtonClass} title="关闭" disabled={busy} onClick={() => setUploadPublication(null)}><X size={16} /></button></div>
+          <p className="text-sm leading-6">已成功上传 {uploadPublication.count} 张壁纸到“{uploadPublication.device.device_name}”。是否直接发布该设备或系统及其草稿壁纸？</p>
+          <p className="mt-2 text-xs leading-5 text-gray-600">发布后可在网站查看；选择“暂不发布”会保留草稿。</p>
+          {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+          <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} disabled={busy} onClick={() => setUploadPublication(null)}>暂不发布</button>
+            <button type="button" className={primaryClass} disabled={busy} onClick={() => void publishUploadedDevice()}><Check size={16} />{busy ? '发布中…' : '直接发布'}</button></div>
+        </div>
+      </AdminDialog>}
 
       {choosingR2Directory && <R2DirectoryDialog selected={uploadR2Prefix} onClose={() => setChoosingR2Directory(false)}
         onSelect={(path) => { setUploadR2Prefix(path); setChoosingR2Directory(false); }} />}
@@ -1010,7 +1046,7 @@ export default function AdminConsole() {
             <label className="text-sm">设备名称<input required className={`${inputClass} mt-1`} value={editingDevice.device_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_name: event.target.value })} /></label>
             <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.filter((value) => (value === 'desktop') === editingDeviceIsDesktop)
               .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
-            <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（必填）'}<input className={`${inputClass} mt-1`} required={!editingDevice.id} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="YYYY/MM/DD" /></label>
+            <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（必填）'}<input className={`${inputClass} mt-1`} required={!editingDevice.id} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="2021/09/22 或 2021年9月22日" /></label>
             <label className="text-sm">Logo 路径<input className={`${inputClass} mt-1`} value={editingDevice.brand_logo || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_logo: event.target.value })} /></label>
             <label className="text-sm">宣传图 URL<input className={`${inputClass} mt-1`} value={editingDevice.device_splash_url || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_splash_url: event.target.value })} /></label>
             {editingDevice.id && <><label className="text-sm">状态<select className={`${inputClass} mt-1`} value={editingDevice.status} onChange={(event) => setEditingDevice({ ...editingDevice, status: event.target.value as DeviceRow['status'] })}>{statuses.map((value) => <option key={value} value={value}>{statusLabels[value as DeviceRow['status']]}</option>)}</select></label>
