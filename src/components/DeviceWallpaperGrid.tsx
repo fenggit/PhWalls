@@ -27,7 +27,10 @@ interface DeviceItem {
 }
 
 interface DeviceData {
+  deviceId?: string;
   name: string;
+  seoTitle?: string | null;
+  description?: string | null;
   date: string;
   item: DeviceItem[];
 }
@@ -61,8 +64,8 @@ export default function DeviceWallpaperGrid({
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const displayDeviceName = displayName || deviceData.name;
   const pageTitle = useMemo(
-    () => buildWallpaperListTitle(displayDeviceName, texts.wallpapersTitleSuffix),
-    [displayDeviceName, texts.wallpapersTitleSuffix]
+    () => deviceData.seoTitle || buildWallpaperListTitle(displayDeviceName, texts.wallpapersTitleSuffix, Boolean(deviceData.deviceId)),
+    [deviceData.deviceId, deviceData.seoTitle, displayDeviceName, texts.wallpapersTitleSuffix]
   );
 
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(initialImageUrls ?? {});
@@ -288,8 +291,8 @@ export default function DeviceWallpaperGrid({
   }, [category, categoryLandingPathOverride]);
 
   const pageDescription = useMemo(
-    () => texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
-    [pageTitle, texts.multiResolutionPageDescription]
+    () => deviceData.description || texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
+    [deviceData.description, pageTitle, texts.multiResolutionPageDescription]
   );
   const sharePayload = useMemo(() => {
     return {
@@ -346,7 +349,7 @@ export default function DeviceWallpaperGrid({
             {categoryBreadcrumbLabel}
           </Link>
           <span className="px-2">›</span>
-          <span className="font-medium text-gray-600">{pageTitle}</span>
+          <span className="font-medium text-gray-600">{deviceData.name}</span>
         </nav>
 
         <section className="mb-10">

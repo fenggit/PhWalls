@@ -25,14 +25,16 @@ async function sign(key: Uint8Array, value: string): Promise<Uint8Array> {
   return new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(value)));
 }
 
-async function signR2Request(method: 'PUT' | 'HEAD' | 'DELETE', key: string, mimeType?: string): Promise<string> {
+async function signR2Request(method: 'PUT' | 'HEAD' | 'DELETE' | 'GET', key: string, mimeType?: string,
+  extraQuery: Record<string, string> = {}): Promise<string> {
   const config = configuration();
   const date = new Date().toISOString().replace(/[:-]|\.\d{3}/g, '');
   const stamp = date.slice(0, 8);
   const scope = `${stamp}/${config.region}/s3/aws4_request`;
-  const path = `/${encode(config.bucket)}/${key.split('/').map(encode).join('/')}`;
+  const path = `/${encode(config.bucket)}${key ? `/${key.split('/').map(encode).join('/')}` : ''}`;
   const signedHeaders = mimeType ? 'content-type;host' : 'host';
   const params: Record<string, string> = {
+    ...extraQuery,
     'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
     'X-Amz-Credential': `${config.access}/${scope}`,
     'X-Amz-Date': date,
@@ -69,6 +71,18 @@ export async function headR2Object(key: string): Promise<{ size: number; mimeTyp
 export async function deleteR2Object(key: string): Promise<void> {
   const response = await fetch(await signR2Request('DELETE', key), { method: 'DELETE', signal: AbortSignal.timeout(15000) });
   if (!response.ok && response.status !== 404) throw new Error(`R2 文件删除失败 (${response.status})`);
+}
+
+export async function listR2DirectoryPage(prefix: string, cursor?: string): Promise<string> {
+  const query: Record<string, string> = {
+    'list-type': '2', delimiter: '/', prefix, 'encoding-type': 'url', 'max-keys': '200',
+  };
+  if (cursor) query['continuation-token'] = cursor;
+  const response = await fetch(await signR2Request('GET', '', undefined, query), {
+    method: 'GET', signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok) throw new Error(`R2 目录读取失败 (${response.status})`);
+  return response.text();
 }
 
 type UploadBinding = { deviceId: string; role: 'origin' | 'compress'; prefix: string };

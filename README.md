@@ -254,7 +254,7 @@ npm start
 
 ### 功能开关配置
 
-后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/admin` 与 `/api/admin`，本地开发允许通过 `localhost:3100/admin` 访问。
+后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/admin` 与 `/api/admin`，本地开发允许通过 `localhost:3100/admin` 访问。前后台 Pages 项目合并方案见[合并说明](docs/cloudflare-pages-consolidation.md)；合并完成后 `a.phwalls.com` 与 `phwalls.com` 共用 `phwalls` 项目，统一部署命令为 `npm run deploy`，`npm run admin:deploy` 为兼容别名。
 
 ## 功能模块
 

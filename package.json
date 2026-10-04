@@ -12,7 +12,7 @@
     "pages:build": "node scripts/generate-home-index.mjs && npx @cloudflare/next-on-pages",
     "preview": "npm run pages:build && wrangler pages dev .vercel/output/static",
     "deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static --project-name phwalls",
-    "admin:deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static --project-name phwalls-admin --branch release/2.0.0",
+    "admin:deploy": "npm run deploy",
     "postdeploy": "npm run indexnow",
     "indexnow": "node scripts/submit-indexnow.mjs",
     "db:import:dry-run": "node scripts/import-wallpapers-d1.mjs",

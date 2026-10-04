@@ -1,0 +1,54 @@
+{
+  "checked_date": "2026-10-02",
+  "database": "phwalls",
+  "table": "w_device_desc",
+  "written_records": 4975,
+  "devices": 995,
+  "languages": [
+    {
+      "language": "en",
+      "rows": 995
+    },
+    {
+      "language": "ja",
+      "rows": 995
+    },
+    {
+      "language": "vi",
+      "rows": 995
+    },
+    {
+      "language": "zh",
+      "rows": 995
+    },
+    {
+      "language": "zh-hant",
+      "rows": 995
+    }
+  ],
+  "full_content_matches": 4975,
+  "incomplete_devices": 0,
+  "invalid_records": 0,
+  "foreign_key_errors": 0,
+  "wallpaper_records_unchanged": 8594,
+  "backup": "/tmp/phwalls-before-device-seo-20261002.sql",
+  "content_sha256": "ee4cd6cc7c5d520d64df119ca7bf26da5e3b819caed24147d0ed83dd865093c1",
+  "validations": [
+    "17 tests passed",
+    "npm run lint passed",
+    "npm run build passed",
+    "full SQLite dry-run passed"
+  ],
+  "admin_api": {
+    "http_status": 200,
+    "sample_device": "Oppo Find X10",
+    "languages": [
+      "en",
+      "ja",
+      "vi",
+      "zh",
+      "zh-hant"
+    ],
+    "exact_copy_matches": 5
+  }
+}

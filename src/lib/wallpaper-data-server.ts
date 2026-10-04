@@ -1,11 +1,12 @@
 import 'server-only';
+import type { Language } from '@/types';
 import { loadDbCollection, loadDbCollections, isWallpaperDbEnabled } from '@/lib/wallpaper-db';
 import { loadWallpaperCollection as loadJsonCollection, loadWallpaperCollections as loadJsonCollections } from '@/lib/wallpaper-data';
 
-export async function loadWallpaperCollections(category: string) {
-  return isWallpaperDbEnabled() ? loadDbCollections(category) : loadJsonCollections(category);
+export async function loadWallpaperCollections(category: string, language: Language = 'en') {
+  return isWallpaperDbEnabled() ? loadDbCollections(category, language) : loadJsonCollections(category);
 }
 
-export async function loadWallpaperCollection(category: string, slug: string) {
-  return isWallpaperDbEnabled() ? loadDbCollection(category, slug) : loadJsonCollection(category, slug);
+export async function loadWallpaperCollection(category: string, slug: string, language: Language = 'en') {
+  return isWallpaperDbEnabled() ? loadDbCollection(category, slug, language) : loadJsonCollection(category, slug);
 }

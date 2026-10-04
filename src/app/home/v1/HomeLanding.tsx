@@ -18,6 +18,7 @@ import type { I18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
 
 type CollectionCard = {
+  deviceId?: string;
   category: string;
   name: string;
   href: string;
@@ -59,8 +60,8 @@ function PhoneCard({
   headingLevel?: 3 | 4;
   className?: string;
 }) {
-  const displayName = localizeWallpaperCollectionName(language, item.name);
-  const title = buildWallpaperListTitle(displayName, texts.wallpapersTitleSuffix);
+  const displayName = item.deviceId ? item.name : localizeWallpaperCollectionName(language, item.name);
+  const title = buildWallpaperListTitle(displayName, texts.wallpapersTitleSuffix, Boolean(item.deviceId));
 
   return (
     <Link

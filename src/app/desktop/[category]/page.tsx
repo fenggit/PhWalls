@@ -45,8 +45,10 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
  const { category } = await params;
  if (!isDesktopWallpaperCategory(category)) notFound();
  const label = getDesktopWallpaperCategoryLabel(category);
- const collections = sortByDateDesc(await loadDesktopWallpaperCollections(category));
+  const language = await resolveMetadataLanguage();
+ const collections = sortByDateDesc(await loadDesktopWallpaperCollections(category, language));
  const cards = collections.map((c) => ({
+  deviceId: c.deviceId,
   name: c.name,
   slug: c.slug,
   date: c.date,
@@ -54,7 +56,6 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
   imageKey: c.item?.[0]?.compressPath || c.item?.[0]?.originPath || null,
   wallpapers: c.item || [],
  }));
- const language = await resolveMetadataLanguage();
  const seoCopy = getDesktopCategorySeoCopy(language, category, label, cards.length);
  return (
   <SeoLandingPage

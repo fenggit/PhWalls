@@ -1,0 +1,70 @@
+[
+  {
+    "device_id": "a5b889df2749e81dcb049c0b3e692cc4",
+    "brand_name": "google-os",
+    "device_name": "Google Aluminium OS",
+    "query_url": "https://www.bing.com/search?q=%22Google+Aluminium+OS%22+wallpapers&setlang=en-US&cc=us&count=10",
+    "checked_date": "2026-10-02",
+    "results": [
+      {
+        "url": "https://www.google.com.hk/?hl=hk",
+        "title": "Google",
+        "snippet": "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find …",
+        "exact_model_mention": false
+      },
+      {
+        "url": "https://www.google.com.hk/?hl=zh",
+        "title": "Google",
+        "snippet": "Google 提供搜索、地图、翻译等多种服务，帮助用户获取信息和解决问题。",
+        "exact_model_mention": false
+      },
+      {
+        "url": "https://search.google/",
+        "title": "Google Search - A new kind of help",
+        "snippet": "Explore a new kind of help for your everyday with breakthroughs in Search intelligence from Google I/O.",
+        "exact_model_mention": false
+      },
+      {
+        "url": "https://www.google.co.uk/chrome/",
+        "title": "Google Chrome – Download the fast, secure browser from Google",
+        "snippet": "Sep 2, 2026 · Get more done with the new Google Chrome. A more simple, secure and faster web browser than ever, with Google’s …",
+        "exact_model_mention": false
+      }
+    ],
+    "status": "no_exact_evidence"
+  },
+  {
+    "device_id": "6c1c239bb0d623bfc8e5c07495ba2579",
+    "brand_name": "google-os",
+    "device_name": "Google Fuchsia OS",
+    "query_url": "https://www.bing.com/search?q=%22Google+Fuchsia+OS%22+wallpapers&setlang=en-US&cc=us&count=10",
+    "checked_date": "2026-10-02",
+    "results": [
+      {
+        "url": "https://www.google.com.hk/?hl=hk",
+        "title": "Google",
+        "snippet": "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find …",
+        "exact_model_mention": false
+      },
+      {
+        "url": "https://www.google.com.hk/?hl=zh",
+        "title": "Google",
+        "snippet": "Google 提供搜索、地图、翻译等多种服务，帮助用户获取信息和解决问题。",
+        "exact_model_mention": false
+      },
+      {
+        "url": "https://search.google/",
+        "title": "Google Search - A new kind of help",
+        "snippet": "Explore a new kind of help for your everyday with breakthroughs in Search intelligence from Google I/O.",
+        "exact_model_mention": false
+      },
+      {
+        "url": "https://www.google.co.uk/chrome/",
+        "title": "Google Chrome – Download the fast, secure browser from Google",
+        "snippet": "Sep 2, 2026 · Get more done with the new Google Chrome. A more simple, secure and faster web browser than ever, with Google’s …",
+        "exact_model_mention": false
+      }
+    ],
+    "status": "no_exact_evidence"
+  }
+]

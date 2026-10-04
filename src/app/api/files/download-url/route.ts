@@ -52,9 +52,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Failed to generate download URL',
-        details: error instanceof Error ? error.message : 'Unknown error'
       },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }

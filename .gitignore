@@ -8,6 +8,7 @@ lerna-debug.log*
 
 # Next.js
 .next/
+.next-dev/
 out/
 build/
 dist/

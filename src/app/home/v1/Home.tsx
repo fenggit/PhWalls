@@ -2,16 +2,11 @@
 
 import Link from 'next/link';
 import { Fragment, useState, useEffect, useCallback, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
 
-// 预览模态体积较大且仅在点击后使用，按需懒加载以减小首屏 JS、降低 INP/TBT
-const WallpaperPreviewDownload = dynamic(() => import('@/components/WallpaperPreviewDownload'), {
-  ssr: false,
-});
 import { Language, TabInfo } from '@/types';
 import {
   buildWallpaperListTitle,
@@ -25,13 +20,11 @@ import { buildPublicR2Url } from '@/lib/r2-public-url';
 import {
   buildWallpaperDetailPath,
   isWallpaperCategory,
-  type WallpaperAsset,
   type WallpaperCollection,
   type WallpaperCategory,
 } from '@/lib/wallpaper-data';
 import { withLanguagePath } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
-import { trackAnalyticsEvent } from '@/lib/analytics';
 import { filterHomeTabs, sortHomeTabsByPriority } from '@/lib/home-priority';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
@@ -83,7 +76,7 @@ const getHomeGridColumns = (
   return 2;
 };
 
-// 首页组件：聚合展示所有壁纸分类、卡片预览和广告位。
+// 合集列表组件：展示分类封面与数量，点击进入详情页。
 export default function Home({
   initialImageUrls = {},
   isMobilePriority = false,
@@ -104,12 +97,6 @@ export default function Home({
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(initialImageUrls);
   const [imageLoadingStates, setImageLoadingStates] = useState<Record<string, boolean>>({});
   const [viewportWidth, setViewportWidth] = useState(isMobilePriority ? 390 : 1536);
-  
-  // 预览模态框状态
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewWallpapers, setPreviewWallpapers] = useState<WallpaperAsset[]>([]);
-  const [previewIndex, setPreviewIndex] = useState(0);
-  const [previewCategory, setPreviewCategory] = useState('');
   
   // 返回顶部按钮显示状态
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -329,65 +316,6 @@ export default function Home({
       top: 0,
       behavior: 'smooth'
     });
-  }, []);
-
-  // 打开预览模态框
-  // 首页使用轻量索引（每个集合仅含封面图），点击预览时需按需拉取完整 item 列表。
-  // 完整数据来源（如桌面页）本地已有全部 item，则直接使用，不发起请求。
-  const openPreview = useCallback(async (categoryType: string, collection: WallpaperCollection) => {
-    const localItems = collection.item || [];
-    const expectedCount = collection.count ?? localItems.length;
-
-    trackAnalyticsEvent('w_preview_wallpaper', {
-      action: 'open',
-      category_name: collection.name,
-      wallpaper_name: localItems[0]?.name || collection.name,
-      wallpaper_category: categoryType,
-      page_path: pathname,
-    });
-
-    setPreviewCategory(collection.name);
-    setPreviewIndex(0);
-    setPreviewWallpapers(localItems);
-    setIsPreviewOpen(true);
-
-    // 本地已是完整列表，无需请求
-    if (localItems.length >= expectedCount) {
-      return;
-    }
-
-    try {
-      const params = new URLSearchParams({ type: categoryType, device: collection.name });
-      const response = await fetch(`/api/public/wallpapers?${params.toString()}`);
-      if (!response.ok) {
-        return;
-      }
-      const data = (await response.json()) as {
-        data?: Array<{ name: string; item: WallpaperAsset[] }>;
-      };
-      const match = data.data?.find((entry) => entry.name === collection.name) || data.data?.[0];
-      if (match?.item?.length) {
-        setPreviewWallpapers(match.item);
-      }
-    } catch (error) {
-      console.error('Failed to load wallpapers for preview:', error);
-    }
-  }, [pathname]);
-
-  // 关闭预览模态框
-  const closePreview = useCallback(() => {
-    trackAnalyticsEvent('w_preview_wallpaper', {
-      action: 'close',
-      category_name: previewCategory,
-      wallpaper_name: previewWallpapers[previewIndex]?.name,
-      page_path: pathname,
-    });
-    setIsPreviewOpen(false);
-  }, [pathname, previewCategory, previewIndex, previewWallpapers]);
-
-  // 处理预览索引变化
-  const handlePreviewIndexChange = useCallback((index: number) => {
-    setPreviewIndex(index);
   }, []);
 
   const visibleCategories = useMemo(
@@ -623,8 +551,8 @@ export default function Home({
                           currentLang
                         )
                       : null;
-                    const itemDisplayName = localizeWallpaperCollectionName(currentLang, item.name);
-                    const itemTitle = buildWallpaperListTitle(itemDisplayName, texts.wallpapersTitleSuffix);
+                    const itemDisplayName = item.deviceId ? item.name : localizeWallpaperCollectionName(currentLang, item.name);
+                    const itemTitle = buildWallpaperListTitle(itemDisplayName, texts.wallpapersTitleSuffix, Boolean(item.deviceId));
                     // 首屏首个分类的前几张作为 LCP 候选，固定 eager + high，避免依赖不可靠的 UA 嗅探
                     const isAboveFold = index === 0 && listIndex < 4;
                     const isLcpCandidate = index === 0 && listIndex < 2;
@@ -759,38 +687,26 @@ export default function Home({
                           </div>
                             </Link>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (itemCount > 0) {
-                                  void openPreview(categoryType, item);
-                                } else {
-                                  alert(texts.noWallpaperData);
-                                }
-                              }}
-                              className="block w-full text-left"
-                            >
+                            <div className="block w-full text-left">
                               <div className={`${cardStyle.aspectRatio} bg-gradient-to-br ${cardStyle.gradientFrom} ${cardStyle.gradientTo} relative overflow-hidden critical-above-fold`} />
                               <div className="p-3">
                                 <div className="text-sm font-semibold text-gray-900 line-clamp-1 leading-tight" role="heading" aria-level={3}>
                                   {itemTitle}
                                 </div>
                               </div>
-                            </button>
+                            </div>
                           )}
 
-                          {itemCount > 0 && (
+                          {itemCount > 0 && detailHref && (
                             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/20">
-                              <button 
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  void openPreview(categoryType, item);
-                                }}
-                                className="pointer-events-auto opacity-0 group-hover:opacity-100 bg-white/90 text-gray-900 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0 hover:bg-white"
+                              <Link
+                                href={detailHref}
+                                prefetch={false}
+                                aria-label={`${itemTitle} ${texts.preview}`}
+                                className="pointer-events-auto opacity-0 group-hover:opacity-100 focus-visible:opacity-100 bg-white/90 text-gray-900 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out transform translate-y-2 group-hover:translate-y-0 focus-visible:translate-y-0 hover:bg-white"
                               >
                                 {texts.preview}
-                              </button>
+                              </Link>
                             </div>
                           )}
 
@@ -838,23 +754,11 @@ export default function Home({
 
       <Footer />
 
-      {/* 壁纸预览模态框：按需挂载，首次点击预览时才加载其 JS */}
-      {isPreviewOpen && (
-        <WallpaperPreviewDownload
-          isOpen={isPreviewOpen}
-          onClose={closePreview}
-          wallpapers={previewWallpapers}
-          currentIndex={previewIndex}
-          onIndexChange={handlePreviewIndexChange}
-          categoryName={previewCategory}
-        />
-      )}
-
-      {/* 返回顶部按钮 - 预览时不显示 */}
+      {/* 返回顶部按钮 */}
       <button
         onClick={scrollToTop}
         className={`fixed right-6 bottom-6 z-50 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group ${
-          showBackToTop && !isPreviewOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+          showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
         aria-label="返回顶部"
       >

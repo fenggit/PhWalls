@@ -40,8 +40,8 @@ function buildInitialDesktopImageUrls(collections: Record<string, import('@/lib/
   return map;
 }
 
-async function buildDesktopCollectionsByCategory() {
-  if (isWallpaperDbEnabled()) return loadDbIndex(getDesktopTabData().map((tab) => tab.type));
+async function buildDesktopCollectionsByCategory(language: import('@/types').Language) {
+  if (isWallpaperDbEnabled()) return loadDbIndex(getDesktopTabData().map((tab) => tab.type), language);
   return Object.fromEntries(
     getDesktopTabData().map((tab) => [tab.type, getDesktopWallpaperCollections(tab.type)])
   );
@@ -82,7 +82,7 @@ export default async function DesktopPage() {
   const isMobileRequest = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
   const language = await resolveMetadataLanguage();
   const seoCopy = getDesktopHomeSeoCopy(language);
-  const collections = await buildDesktopCollectionsByCategory();
+  const collections = await buildDesktopCollectionsByCategory(language);
 
   return (
     <Home

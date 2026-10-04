@@ -62,7 +62,9 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
     notFound();
   }
 
-  const cards = sortByDateDesc(await loadWallpaperCollections(brandInfo.slug)).map((collection) => ({
+  const language = await resolveMetadataLanguage();
+  const cards = sortByDateDesc(await loadWallpaperCollections(brandInfo.slug, language)).map((collection) => ({
+    deviceId: collection.deviceId,
     name: collection.name,
     slug: collection.slug,
     date: collection.date,
@@ -70,7 +72,6 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
     imageKey: collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || null,
     wallpapers: collection.item || [],
   }));
-  const language = await resolveMetadataLanguage();
   const seoCopy = getCategorySeoCopy(language, brandInfo.slug, cards.length);
 
   return (

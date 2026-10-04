@@ -1,3 +1,4 @@
+import { resolveMetadataLanguage } from '@/lib/metadata';
 import HomeLanding from './HomeLanding';
 import desktopHomeIndex from '@/data/desktop-home-index.json';
 import { BRAND_CATEGORIES } from '@/lib/brands';
@@ -9,6 +10,7 @@ import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
 import { isWallpaperDbEnabled, loadDbIndex } from '@/lib/wallpaper-db';
 import {
   buildWallpaperDetailPath,
+  type WallpaperCollection,
   type WallpaperCollectionEntry,
 } from '@/lib/wallpaper-data';
 
@@ -17,6 +19,10 @@ const POPULAR_BRANDS = [
   'oppo', 'vivo', 'honor', 'motorola',
 ] as const;
 
+type DesktopHomeCollection = Pick<WallpaperCollection, 'deviceId' | 'name' | 'slug'> & {
+  item: Array<{ compressPath?: string; originPath?: string }>;
+};
+
 const FEATURED_DESKTOP_CATEGORIES = [
   'microsoft-windows',
   'microsoft-surface',
@@ -24,7 +30,8 @@ const FEATURED_DESKTOP_CATEGORIES = [
 ] as const;
 
 export default async function HomePage() {
-  const collectionsByCategory = await getHomeCollectionsByCategory();
+  const language = await resolveMetadataLanguage();
+  const collectionsByCategory = await getHomeCollectionsByCategory(language);
   const now = new Date();
   const phoneCategories = BRAND_CATEGORIES
     .map((brand) => brand.slug)
@@ -38,10 +45,11 @@ export default async function HomePage() {
   );
   const toPhoneCard = ({ category, collection }: WallpaperCollectionEntry) => ({
     category,
+    deviceId: collection.deviceId,
     name: collection.name,
     date: collection.date,
     count: collection.count || collection.item?.length || 0,
-    href: buildWallpaperDetailPath(category, collection.name),
+    href: buildWallpaperDetailPath(category, collection.slug || collection.name),
     imageUrl: buildPublicR2Url(collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || ''),
   });
 
@@ -51,14 +59,15 @@ export default async function HomePage() {
       .map(toPhoneCard),
   }));
 
-  const desktopCollectionsByCategory = isWallpaperDbEnabled()
-    ? await loadDbIndex([...FEATURED_DESKTOP_CATEGORIES])
+  const desktopCollectionsByCategory: Record<string, DesktopHomeCollection[]> = isWallpaperDbEnabled()
+    ? await loadDbIndex([...FEATURED_DESKTOP_CATEGORIES], language)
     : desktopHomeIndex;
   const desktop = FEATURED_DESKTOP_CATEGORIES.flatMap((category) =>
     (desktopCollectionsByCategory[category] || []).map((collection) => ({
       category,
+      deviceId: collection.deviceId,
       name: collection.name,
-      href: buildDesktopWallpaperDetailPath(category, collection.name),
+      href: buildDesktopWallpaperDetailPath(category, collection.slug || collection.name),
       imageUrl: buildPublicR2Url(collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || ''),
     }))
   );

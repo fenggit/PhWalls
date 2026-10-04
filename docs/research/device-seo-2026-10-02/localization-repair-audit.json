@@ -1,0 +1,63 @@
+{
+  "inspected": 4975,
+  "displayNamesFilled": 4975,
+  "seoTitlesCorrected": 2985,
+  "descriptionsCorrected": 2361,
+  "idempotent": true,
+  "devicesUnchanged": 995,
+  "wallpapersUnchanged": 8594,
+  "samples": [
+    {
+      "language": "en",
+      "display_name": "Samsung Galaxy A01",
+      "seo_title": "Samsung Galaxy A01 Wallpapers"
+    },
+    {
+      "language": "zh-hant",
+      "display_name": "三星 Galaxy A01",
+      "seo_title": "三星 Galaxy A01 桌布"
+    },
+    {
+      "language": "ja",
+      "display_name": "サムスン Galaxy A01",
+      "seo_title": "サムスン Galaxy A01の壁紙"
+    },
+    {
+      "language": "zh",
+      "display_name": "三星 Galaxy A01",
+      "seo_title": "三星 Galaxy A01 壁纸"
+    },
+    {
+      "language": "vi",
+      "display_name": "Samsung Galaxy A01",
+      "seo_title": "Hình nền Samsung Galaxy A01"
+    }
+  ],
+  "languages": {
+    "en": {
+      "records": 995,
+      "titlesCorrected": 332,
+      "descriptionsCorrected": 332
+    },
+    "zh": {
+      "records": 995,
+      "titlesCorrected": 808,
+      "descriptionsCorrected": 477
+    },
+    "ja": {
+      "records": 995,
+      "titlesCorrected": 705,
+      "descriptionsCorrected": 705
+    },
+    "vi": {
+      "records": 995,
+      "titlesCorrected": 332,
+      "descriptionsCorrected": 332
+    },
+    "zh-hant": {
+      "records": 995,
+      "titlesCorrected": 808,
+      "descriptionsCorrected": 515
+    }
+  }
+}

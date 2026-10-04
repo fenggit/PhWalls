@@ -1,9 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
-import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
+import AdminDeviceI18nPanel from '@/app/admin/AdminDeviceI18nPanel';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import type { DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
+import type { DeviceI18nRow, DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
+import type { Language } from '@/types';
+import { SUPPORTED_LANGUAGES } from '@/lib/language';
+import { getI18nTexts } from '@/lib/i18n';
+import { buildWallpaperListTitle } from '@/lib/data';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
@@ -13,7 +18,7 @@ type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; sou
 type UploadRow = { id: string; name: string; origin?: File; preview?: File; theme: string; tags: string;
   category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string };
 type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; published_primary: number };
-type Tab = 'brands' | 'devices' | 'wallpapers' | 'upload';
+type Tab = 'brands' | 'devices' | 'i18n' | 'wallpapers' | 'upload';
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   const response = await fetch(`/api/admin/${path}`, {
@@ -90,6 +95,191 @@ function TableFeedback({ columns, loading, message, onReset }: { columns: number
   </td></tr>;
 }
 
+type R2DirectoryListing = { prefix: string; directories: string[]; cursor: string | null };
+
+function R2DirectoryDialog({ selected, onSelect, onClose }: {
+  selected: string; onSelect: (path: string) => void; onClose: () => void;
+}) {
+  const [prefix, setPrefix] = useState(selected);
+  const [listing, setListing] = useState<R2DirectoryListing | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState('');
+  const [attempt, setAttempt] = useState(0);
+  const requestId = useRef<{ cancelled: boolean } | null>(null);
+
+  useEffect(() => {
+    const current = { cancelled: false };
+    requestId.current = current;
+    setLoading(true); setLoadingMore(false); setListing(null); setError('');
+    void api<{ data: R2DirectoryListing }>(`r2-directories?${new URLSearchParams({ prefix })}`)
+      .then(({ data }) => { if (!current.cancelled) setListing(data); })
+      .catch((cause) => { if (!current.cancelled) setError(cause instanceof Error ? cause.message : '目录加载失败'); })
+      .finally(() => { if (!current.cancelled) setLoading(false); });
+    return () => { current.cancelled = true; };
+  }, [prefix, attempt]);
+
+  const loadMore = async () => {
+    if (!listing?.cursor || loadingMore) return;
+    const current = requestId.current;
+    if (!current || current.cancelled) return;
+    setLoadingMore(true); setError('');
+    try {
+      const { data } = await api<{ data: R2DirectoryListing }>(`r2-directories?${new URLSearchParams({ prefix, cursor: listing.cursor })}`);
+      if (current.cancelled) return;
+      setListing((previous) => ({ ...data, directories: Array.from(new Set([...(previous?.directories || []), ...data.directories])).sort() }));
+    } catch (cause) { if (!current.cancelled) setError(cause instanceof Error ? cause.message : '目录加载失败'); }
+    finally { if (!current.cancelled) setLoadingMore(false); }
+  };
+  const parts = prefix.split('/').filter(Boolean);
+
+  return <AdminDialog title="选择 R2 目录" onClose={onClose}>
+    <div className={modalClass}>
+      <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">选择 R2 目录</h2>
+        <button className={iconButtonClass} aria-label="关闭目录选择" onClick={onClose}><X size={16} /></button></div>
+      <p className="mb-4 text-xs leading-5 text-[#66746b]">进入已有目录后，点击“使用此目录”。原图与预览图将分别存入该目录的 origin 和 compress 子目录。</p>
+      <nav aria-label="R2 目录层级" className="mb-3 flex flex-wrap items-center gap-1 text-xs">
+        <button className={rowButtonClass} disabled={loadingMore} onClick={() => setPrefix('')}>根目录</button>
+        {parts.map((part, index) => <span key={index} className="inline-flex items-center gap-1"><ChevronRight size={12} />
+          <button className={rowButtonClass} disabled={loadingMore} onClick={() => setPrefix(parts.slice(0, index + 1).join('/'))}>{part}</button></span>)}
+      </nav>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <span className="min-w-0 break-all font-mono text-xs text-[#66746b]">{prefix || '/'}</span>
+        <div className="flex gap-1"><button className={iconButtonClass} aria-label="返回上级目录" disabled={!prefix || loadingMore}
+          onClick={() => setPrefix(parts.slice(0, -1).join('/'))}><ChevronLeft size={16} /></button>
+          <button className={iconButtonClass} aria-label="刷新目录" disabled={loading || loadingMore} onClick={() => setAttempt((value) => value + 1)}><RefreshCw size={16} /></button></div>
+      </div>
+      <div className="max-h-64 min-h-32 overflow-y-auto rounded-md border border-[#dfe6df]" aria-busy={loading || loadingMore}>
+        {loading ? <p role="status" className="p-4 text-sm text-[#66746b]">正在加载目录…</p>
+          : listing?.directories.length ? listing.directories.map((path) => <button key={path}
+            className="flex w-full items-center gap-3 border-b border-[#ebefeb] px-4 py-3 text-left text-sm last:border-0 hover:bg-[#f4f7f4] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#247560] disabled:opacity-50"
+            disabled={loadingMore} onClick={() => setPrefix(path)}><FolderOpen size={18} className="shrink-0 text-[#247560]" />
+            <span className="min-w-0 flex-1 break-all">{path.slice(prefix ? prefix.length + 1 : 0)}</span><ChevronRight size={16} /></button>)
+          : !error && <p className="p-4 text-sm text-[#66746b]">没有可进入的子目录{prefix ? '，可使用当前目录' : ''}。</p>}
+        {!loading && listing?.cursor && <button className={`${buttonClass} m-3`} disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? '正在加载…' : '加载更多目录'}</button>}
+      </div>
+      {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}<button className="ml-2 underline" onClick={() => setAttempt((value) => value + 1)}>重试</button></p>}
+      <div className="mt-5 flex justify-end gap-2"><button className={buttonClass} onClick={onClose}>取消</button>
+        <button className={primaryClass} disabled={!prefix || !listing || loading || loadingMore || !!error} onClick={() => onSelect(prefix)}><Check size={16} />使用此目录</button></div>
+    </div>
+  </AdminDialog>;
+}
+
+const translationLanguageLabels: Record<Language, string> = {
+  en: '英语', zh: '简体中文', ja: '日语', vi: '越南语', 'zh-hant': '繁体中文',
+};
+
+type TranslationDraft = { display_name: string; seo_title: string; description: string };
+const emptyTranslation: TranslationDraft = { display_name: '', seo_title: '', description: '' };
+function translationDraft(row?: DeviceI18nRow): TranslationDraft {
+  return { display_name: row?.display_name || '', seo_title: row?.seo_title || '', description: row?.description || '' };
+}
+
+function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
+  device: Pick<DeviceRow, 'id' | 'device_name'>; initialLanguage: Language; onChanged: () => void; onClose: () => void;
+}) {
+  const [language, setLanguage] = useState<Language>(initialLanguage);
+  const [rows, setRows] = useState<DeviceI18nRow[]>([]);
+  const [drafts, setDrafts] = useState<Partial<Record<Language, TranslationDraft>>>({});
+  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true); setError('');
+    void api<{ data: DeviceI18nRow[] }>(`device-i18n?device_id=${encodeURIComponent(device.id)}`)
+      .then(({ data }) => {
+        if (cancelled) return;
+        setRows(data);
+        setDrafts(Object.fromEntries(data.map((row) => [row.language, translationDraft(row)])));
+        setLoaded(true);
+      })
+      .catch((cause) => { if (!cancelled) setError(cause instanceof Error ? cause.message : '多语言内容加载失败'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [device.id, attempt]);
+
+  const saved = rows.find((row) => row.language === language);
+  const draft = drafts[language] || emptyTranslation;
+  const fields = ['display_name', 'seo_title', 'description'] as const;
+  const changed = (value: Language) => fields.some((field) =>
+    (drafts[value]?.[field] || '') !== (rows.find((row) => row.language === value)?.[field] || ''));
+  const dirty = SUPPORTED_LANGUAGES.some(changed);
+  const hasContent = fields.some((field) => draft[field].trim());
+  const update = (field: keyof TranslationDraft, value: string) => {
+    setDrafts((current) => ({ ...current, [language]: { ...(current[language] || emptyTranslation), [field]: value } }));
+    setError(''); setMessage('');
+  };
+  const close = () => {
+    if (busy) return;
+    if (dirty && !window.confirm('多语言内容有未保存的修改，确认关闭并放弃修改？')) return;
+    onClose();
+  };
+  const save = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (busy || !loaded || !hasContent) return;
+    setBusy(true); setError(''); setMessage('');
+    try {
+      const { data } = await api<{ data: DeviceI18nRow }>('device-i18n', 'POST', { device_id: device.id, language, ...draft });
+      setRows((current) => [...current.filter((row) => row.language !== language), data]);
+      setDrafts((current) => ({ ...current, [language]: translationDraft(data) }));
+      setMessage(`已保存${translationLanguageLabels[language]}内容`);
+      onChanged();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : '多语言内容保存失败'); }
+    finally { setBusy(false); }
+  };
+  const remove = async () => {
+    if (busy || !saved || !window.confirm(`确认删除“${device.device_name}”的${translationLanguageLabels[language]}设备名、SEO 标题和描述？此操作无法撤销。`)) return;
+    setBusy(true); setError(''); setMessage('');
+    try {
+      await api('device-i18n', 'DELETE', { device_id: device.id, language });
+      setRows((current) => current.filter((row) => row.language !== language));
+      setDrafts((current) => ({ ...current, [language]: { ...emptyTranslation } }));
+      setMessage(`已删除${translationLanguageLabels[language]}内容`);
+      onChanged();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : '多语言内容删除失败'); }
+    finally { setBusy(false); }
+  };
+
+  return <AdminDialog title="设备多语言内容" onClose={close}>
+    <form onSubmit={save} className={modalClass}>
+      <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">设备多语言内容</h2>
+        <button type="button" className={iconButtonClass} aria-label="关闭多语言内容" disabled={busy} onClick={close}><X size={16} /></button></div>
+      <p className="mb-1 text-sm font-semibold">{device.device_name}</p>
+      <p className="mb-4 text-xs leading-5 text-[#66746b]">设备名用于列表与面包屑，SEO 标题用于详情页，可包含“壁纸”等关键词。至少填写一项，留空使用默认内容。各语言独立保存，切换语言保留未保存的修改。</p>
+      {loading && <p role="status" className="mb-4 text-sm text-[#66746b]">正在加载多语言内容…</p>}
+      <fieldset disabled={!loaded || loading || busy} className="space-y-4 disabled:opacity-60">
+        <label className="block text-sm">语言<select className={`${inputClass} mt-1`} value={language} onChange={(event) => {
+          setLanguage(event.target.value as Language); setError(''); setMessage('');
+        }}>{SUPPORTED_LANGUAGES.map((value) => <option key={value} value={value}>
+          {translationLanguageLabels[value]} · {rows.some((row) => row.language === value) ? '已保存' : '未填写'}
+        </option>)}</select></label>
+        <label className="block text-sm">{translationLanguageLabels[language]}设备名<input maxLength={200}
+          className={`${inputClass} mt-1`} value={draft.display_name} onChange={(event) => update('display_name', event.target.value)} placeholder={device.device_name} /></label>
+        <label className="block text-sm">{translationLanguageLabels[language]} SEO 标题<input maxLength={200}
+          className={`${inputClass} mt-1`} value={draft.seo_title} onChange={(event) => update('seo_title', event.target.value)}
+          placeholder={buildWallpaperListTitle(draft.display_name.trim() || device.device_name, getI18nTexts(language).wallpapersTitleSuffix)} /></label>
+        <label className="block text-sm">{translationLanguageLabels[language]}描述<textarea maxLength={5000}
+          className={`${inputClass} mt-1 h-48 resize-y py-3 leading-6`} value={draft.description} onChange={(event) => update('description', event.target.value)}
+          placeholder="填写这组壁纸的内容、风格或背景说明" /></label>
+        <p className="text-right text-xs tabular-nums text-[#66746b]">{draft.description.length} / 5000 · 已保存 {rows.length} / 5 种语言</p>
+      </fieldset>
+      {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}{!loaded && !loading &&
+        <button type="button" className="ml-2 underline" onClick={() => setAttempt((value) => value + 1)}>重新加载</button>}</p>}
+      {message && <p role="status" className="mt-3 text-sm text-[#247560]">{message}</p>}
+      <div className="mt-5 flex flex-wrap justify-between gap-2">
+        <button type="button" className={`${buttonClass} text-red-700`} disabled={!loaded || loading || busy || !saved} onClick={() => void remove()}><Trash2 size={16} />删除此语言</button>
+        <div className="flex gap-2"><button type="button" className={buttonClass} disabled={busy} onClick={close}>关闭</button>
+          <button className={primaryClass} disabled={!loaded || loading || busy || !hasContent || !changed(language)}><Check size={16} />{busy ? '处理中…' : '保存此语言'}</button></div>
+      </div>
+    </form>
+  </AdminDialog>;
+}
+
 function fileMime(file: File): string {
   if (file.type) return file.type;
   const extension = file.name.split('.').pop()?.toLowerCase();
@@ -131,6 +321,8 @@ export default function AdminConsole() {
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [editingDevice, setEditingDevice] = useState<Partial<DeviceRow> | null>(null);
+  const [describingDevice, setDescribingDevice] = useState<{ device: Pick<DeviceRow, 'id' | 'device_name'>; language: Language } | null>(null);
+  const [i18nRevision, setI18nRevision] = useState(0);
   const [newBrand, setNewBrand] = useState<{ title: string; slug: string; kind: AdminBrand['kind'] } | null>(null);
   const [deviceCheck, setDeviceCheck] = useState<DeviceCheck | null>(null);
   const [editingWallpaper, setEditingWallpaper] = useState<Partial<WallpaperRow> | null>(null);
@@ -151,6 +343,7 @@ export default function AdminConsole() {
   const [uploadFolderState, setUploadFolderState] = useState<'idle' | 'checking' | 'matched' | 'missing' | 'error'>('idle');
   const [uploadPathMode, setUploadPathMode] = useState<'device' | 'custom'>('device');
   const [uploadR2Prefix, setUploadR2Prefix] = useState('');
+  const [choosingR2Directory, setChoosingR2Directory] = useState(false);
   const [deletingWallpaper, setDeletingWallpaper] = useState<WallpaperListRow | null>(null);
   const loadId = useRef(0);
   const folderLookupId = useRef(0);
@@ -527,7 +720,7 @@ export default function AdminConsole() {
           <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] text-white/70 lg:hidden">{process.env.NODE_ENV === 'development' ? '本地' : '线上'}</span>
         </div>
         <nav className="flex overflow-x-auto px-3 pb-3 lg:block lg:space-y-1 lg:overflow-visible lg:px-3 lg:py-6" aria-label="管理视图">
-          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud]] as const).map(([key, label, Icon]) => (
+          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['i18n', '多语言', Pencil], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud]] as const).map(([key, label, Icon]) => (
             <button key={key} onClick={() => setTab(key)} aria-current={tab === key ? 'page' : undefined} className={`flex h-10 shrink-0 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-white lg:w-full lg:justify-start ${tab === key ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/8 hover:text-white'}`}><Icon size={16} />{label}</button>
           ))}
         </nav>
@@ -536,10 +729,10 @@ export default function AdminConsole() {
       <div className="min-w-0">
       <header className="border-b border-[#e0e7e0] bg-white px-4 py-3 sm:px-7 lg:h-20 lg:px-9">
         <div className="mx-auto flex h-full max-w-[1480px] items-center justify-between gap-3">
-          <div className="min-w-0"><h1 className="truncate text-base font-semibold text-[#17251d]">{tab === 'brands' ? '品牌管理' : tab === 'devices' ? '设备管理' : tab === 'wallpapers' ? '壁纸管理' : '上传壁纸'}</h1><p className="text-xs text-[#758278]">PhWalls / 内容管理</p></div>
+          <div className="min-w-0"><h1 className="truncate text-base font-semibold text-[#17251d]">{tab === 'brands' ? '品牌管理' : tab === 'devices' ? '设备管理' : tab === 'wallpapers' ? '壁纸管理' : tab === 'i18n' ? '多语言管理' : '上传壁纸'}</h1><p className="text-xs text-[#758278]">PhWalls / 内容管理</p></div>
           <div className="flex items-center gap-2">
             <a className={buttonClass} href={process.env.NODE_ENV === 'development' ? '/' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com')} target="_blank" rel="noopener noreferrer" title="打开网站"><ExternalLink size={16} /><span className="hidden sm:inline">查看网站</span></a>
-            <button className={iconButtonClass} title="刷新数据" aria-label="刷新数据" disabled={loading} onClick={() => void reload()}><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
+            <button className={iconButtonClass} title="刷新数据" aria-label="刷新数据" disabled={loading} onClick={() => { if (tab === 'i18n') setI18nRevision((value) => value + 1); else void reload(); }}><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
             <button className={iconButtonClass} title="退出登录" aria-label="退出登录" onClick={() => void run(async () => {
               await api('logout', 'POST'); setAuthenticated(false);
             })}><LogOut size={16} /></button>
@@ -548,8 +741,8 @@ export default function AdminConsole() {
       </header>
       <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-7 lg:px-9 lg:py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div><h2 className="text-2xl font-semibold tracking-tight text-[#17251d]">{tab === 'brands' ? '品牌目录' : tab === 'devices' ? '设备目录' : tab === 'wallpapers' ? '壁纸目录' : '上传工作区'}</h2>
-            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 个设备` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
+          <div><h2 className="text-2xl font-semibold tracking-tight text-[#17251d]">{tab === 'brands' ? '品牌目录' : tab === 'devices' ? '设备目录' : tab === 'wallpapers' ? '壁纸目录' : tab === 'i18n' ? '多语言内容' : '上传工作区'}</h2>
+            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 个设备` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : tab === 'i18n' ? '设备名称、SEO 标题与合集描述' : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
           </div>
           {tab === 'brands' && <button className={primaryClass} onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} />新增品牌</button>}
           {tab === 'devices' && <button className={primaryClass} onClick={() => setEditingDevice({ device_category: 'phone', status: 'draft', is_popular_brand: 0, release_date: '' })}><Plus size={16} />新建设备</button>}
@@ -590,6 +783,9 @@ export default function AdminConsole() {
           </div>
         </div>}
 
+        {tab === 'i18n' && <AdminDeviceI18nPanel brands={brands} refreshKey={i18nRevision}
+          onEdit={(device, language) => setDescribingDevice({ device, language })} />}
+
         {tab === 'brands' && <section aria-label="品牌目录">
           <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[600px]`}>
             <thead className={tableHeadClass}><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">类型</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
@@ -606,7 +802,7 @@ export default function AdminConsole() {
             <tbody>{loading ? <TableFeedback columns={6} loading message="" /> : visibleDevices.length === 0 ? <TableFeedback columns={6} loading={false} message="没有符合条件的设备" onReset={resetFilters} /> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map((device) => <tr key={device.id} className={tableRowClass}>
               <td className="px-4 py-3 font-medium text-gray-950">{device.device_name}</td><td className="px-4 py-3">{brands.find((brand) => brand.slug === device.brand_name)?.title || device.brand_name}{device.is_popular_brand ? <span className="ml-2 text-xs text-amber-700">热门</span> : null}</td>
               <td className="px-4 py-3 text-gray-600">{categoryLabels[device.device_category]}</td><td className="px-4 py-3"><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${statusClasses[device.status]}`}>{statusLabels[device.status]}</span></td><td className="px-4 py-3 font-mono text-xs tabular-nums text-gray-600">{device.release_date || '—'}</td>
-              <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><button className={rowButtonClass} title="查看该设备的壁纸" aria-label={`查看 ${device.device_name} 的壁纸`} onClick={() => { setSearchInput(''); setFilters({ ...emptyFilters, brand: device.brand_name, device: device.id }); setDevicePage(0); setWallpaperPage(0); setTab('wallpapers'); }}><Images size={15} />壁纸</button><button className={rowButtonClass} title="编辑设备" aria-label={`编辑 ${device.device_name}`} onClick={() => setEditingDevice(device)}><Pencil size={15} />编辑</button></div></td>
+              <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><button className={rowButtonClass} title="查看该设备的壁纸" aria-label={`查看 ${device.device_name} 的壁纸`} onClick={() => { setSearchInput(''); setFilters({ ...emptyFilters, brand: device.brand_name, device: device.id }); setDevicePage(0); setWallpaperPage(0); setTab('wallpapers'); }}><Images size={15} />壁纸</button><button className={rowButtonClass} title="管理五语言设备名、SEO 标题与描述" aria-label={`管理 ${device.device_name} 的多语言内容`} onClick={() => setDescribingDevice({ device, language: 'en' })}><Pencil size={15} />多语言</button><button className={rowButtonClass} title="编辑设备" aria-label={`编辑 ${device.device_name}`} onClick={() => setEditingDevice(device)}><Pencil size={15} />编辑</button></div></td>
             </tr>)}</tbody>
           </table></div>
           <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-xs tabular-nums text-[#66746b]">
@@ -660,9 +856,14 @@ export default function AdminConsole() {
           </div>
           <div className="mb-4 grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)]">
             <label className="text-sm">R2 存储目录<select className={`${inputClass} mt-1`} aria-label="R2 目录方式" disabled={busy} value={uploadPathMode} onChange={(event) => setUploadPathMode(event.target.value as 'device' | 'custom')}><option value="device">默认设备目录</option><option value="custom">指定 R2 目录</option></select></label>
-            <label className="text-sm">目录路径<input className={`${inputClass} mt-1 font-mono text-xs`} aria-label="R2 存储路径" aria-describedby="r2-path-help" aria-invalid={uploadPathMode === 'custom' && !!uploadStoragePathError} disabled={busy} readOnly={uploadPathMode === 'device'} value={uploadPathMode === 'custom' ? uploadR2Prefix : uploadStoragePath} onChange={(event) => setUploadR2Prefix(event.target.value)} placeholder={uploadPathMode === 'custom' ? 'google-pixel/google-pixel-3a' : '选择设备后显示默认目录'} maxLength={300} /></label>
+            <div className="text-sm"><label htmlFor="r2-upload-path">目录路径</label><div className="mt-1 flex gap-2">
+              <input id="r2-upload-path" className={`${inputClass} font-mono text-xs`} aria-describedby="r2-path-help" readOnly
+                value={uploadPathMode === 'custom' ? uploadR2Prefix : uploadStoragePath}
+                placeholder={uploadPathMode === 'custom' ? '请选择 R2 目录' : '选择设备后显示默认目录'} />
+              {uploadPathMode === 'custom' && <button type="button" className={buttonClass} disabled={busy} onClick={() => setChoosingR2Directory(true)}><FolderOpen size={16} />选择目录</button>}
+            </div></div>
           </div>
-          <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError || (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或填写 R2 桶内的相对目录路径。')}</p>
+          <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError && uploadR2Prefix ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError && uploadR2Prefix ? uploadStoragePathError : (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或点击“选择目录”浏览 R2 已有目录。')}</p>
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
           {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
@@ -748,6 +949,12 @@ export default function AdminConsole() {
         </section>}
       </div>
       </div>
+
+      {choosingR2Directory && <R2DirectoryDialog selected={uploadR2Prefix} onClose={() => setChoosingR2Directory(false)}
+        onSelect={(path) => { setUploadR2Prefix(path); setChoosingR2Directory(false); }} />}
+
+      {describingDevice && <DeviceI18nDialog key={`${describingDevice.device.id}:${describingDevice.language}`} device={describingDevice.device}
+        initialLanguage={describingDevice.language} onChanged={() => setI18nRevision((value) => value + 1)} onClose={() => setDescribingDevice(null)} />}
 
       {deletingWallpaper && <AdminDialog title="删除壁纸" onClose={() => { if (!busy) setDeletingWallpaper(null); }}>
         <form onSubmit={deleteWallpaper} className={modalClass}>

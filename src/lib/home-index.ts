@@ -1,3 +1,4 @@
+import type { Language } from '@/types';
 import homeIndex from '@/data/home-index.json';
 import { BRAND_CATEGORIES } from '@/lib/brands';
 import { sortByDateDesc } from '@/lib/data';
@@ -11,8 +12,8 @@ const HOME_COLLECTIONS = homeIndex as unknown as Record<string, WallpaperCollect
 export const HOME_INITIAL_COLLECTION_LIMIT = 12;
 
 // 供首页按分类渲染卡片（封面 + 数量）。
-export async function getHomeCollectionsByCategory(): Promise<Record<string, WallpaperCollection[]>> {
-  return isWallpaperDbEnabled() ? loadDbIndex(BRAND_CATEGORIES.map((brand) => brand.slug)) : HOME_COLLECTIONS;
+export async function getHomeCollectionsByCategory(language: Language = 'en'): Promise<Record<string, WallpaperCollection[]>> {
+  return isWallpaperDbEnabled() ? loadDbIndex(BRAND_CATEGORIES.map((brand) => brand.slug), language) : HOME_COLLECTIONS;
 }
 
 // 供首页构建封面缩略图 URL 映射。

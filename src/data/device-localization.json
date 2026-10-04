@@ -1,0 +1,600 @@
+{
+  "samsung": {
+    "prefixes": [
+      "Samsung"
+    ],
+    "titles": {
+      "en": "Samsung",
+      "zh": "三星",
+      "ja": "サムスン",
+      "vi": "Samsung",
+      "zh-hant": "三星"
+    },
+    "names": {
+      "en": "Samsung",
+      "zh": "三星",
+      "ja": "サムスン",
+      "vi": "Samsung",
+      "zh-hant": "三星"
+    }
+  },
+  "sony": {
+    "prefixes": [
+      "Sony"
+    ],
+    "titles": {
+      "en": "Sony",
+      "zh": "索尼",
+      "ja": "ソニー",
+      "vi": "Sony",
+      "zh-hant": "索尼"
+    },
+    "names": {
+      "en": "Sony",
+      "zh": "索尼",
+      "ja": "ソニー",
+      "vi": "Sony",
+      "zh-hant": "索尼"
+    }
+  },
+  "xiaomi": {
+    "prefixes": [
+      "Xiaomi"
+    ],
+    "titles": {
+      "en": "Xiaomi",
+      "zh": "小米",
+      "ja": "シャオミ",
+      "vi": "Xiaomi",
+      "zh-hant": "小米"
+    },
+    "names": {
+      "en": "Xiaomi",
+      "zh": "小米",
+      "ja": "シャオミ",
+      "vi": "Xiaomi",
+      "zh-hant": "小米"
+    }
+  },
+  "redmi": {
+    "prefixes": [
+      "Xiaomi Redmi",
+      "Redmi"
+    ],
+    "titles": {
+      "en": "Redmi",
+      "zh": "红米",
+      "ja": "Redmi",
+      "vi": "Redmi",
+      "zh-hant": "紅米"
+    },
+    "names": {
+      "en": "Redmi",
+      "zh": "红米",
+      "ja": "Redmi",
+      "vi": "Redmi",
+      "zh-hant": "紅米"
+    }
+  },
+  "poco": {
+    "prefixes": [
+      "Poco"
+    ],
+    "titles": {
+      "en": "POCO",
+      "zh": "POCO",
+      "ja": "POCO",
+      "vi": "POCO",
+      "zh-hant": "POCO"
+    },
+    "names": {
+      "en": "POCO",
+      "zh": "POCO",
+      "ja": "POCO",
+      "vi": "POCO",
+      "zh-hant": "POCO"
+    }
+  },
+  "vivo": {
+    "prefixes": [
+      "Vivo"
+    ],
+    "titles": {
+      "en": "vivo",
+      "zh": "vivo",
+      "ja": "vivo",
+      "vi": "vivo",
+      "zh-hant": "vivo"
+    },
+    "names": {
+      "en": "vivo",
+      "zh": "vivo",
+      "ja": "vivo",
+      "vi": "vivo",
+      "zh-hant": "vivo"
+    }
+  },
+  "iqoo": {
+    "prefixes": [
+      "iQOO"
+    ],
+    "titles": {
+      "en": "iQOO",
+      "zh": "iQOO",
+      "ja": "iQOO",
+      "vi": "iQOO",
+      "zh-hant": "iQOO"
+    },
+    "names": {
+      "en": "iQOO",
+      "zh": "iQOO",
+      "ja": "iQOO",
+      "vi": "iQOO",
+      "zh-hant": "iQOO"
+    }
+  },
+  "oppo": {
+    "prefixes": [
+      "Oppo"
+    ],
+    "titles": {
+      "en": "OPPO",
+      "zh": "OPPO",
+      "ja": "OPPO",
+      "vi": "OPPO",
+      "zh-hant": "OPPO"
+    },
+    "names": {
+      "en": "OPPO",
+      "zh": "OPPO",
+      "ja": "OPPO",
+      "vi": "OPPO",
+      "zh-hant": "OPPO"
+    }
+  },
+  "huawei": {
+    "prefixes": [
+      "Huawei"
+    ],
+    "titles": {
+      "en": "HUAWEI",
+      "zh": "华为",
+      "ja": "ファーウェイ",
+      "vi": "HUAWEI",
+      "zh-hant": "華為"
+    },
+    "names": {
+      "en": "HUAWEI",
+      "zh": "华为",
+      "ja": "ファーウェイ",
+      "vi": "HUAWEI",
+      "zh-hant": "華為"
+    },
+    "special_prefixes": [
+      {
+        "from": "Huawei Enjoy",
+        "names": {
+          "en": "HUAWEI Enjoy",
+          "zh": "华为 畅享",
+          "ja": "ファーウェイ Enjoy",
+          "vi": "HUAWEI Enjoy",
+          "zh-hant": "華為 暢享"
+        }
+      }
+    ]
+  },
+  "huawei-matepad": {
+    "prefixes": [
+      "Huawei"
+    ],
+    "titles": {
+      "en": "HUAWEI MatePad",
+      "zh": "华为 MatePad",
+      "ja": "ファーウェイ MatePad",
+      "vi": "HUAWEI MatePad",
+      "zh-hant": "華為 MatePad"
+    },
+    "names": {
+      "en": "HUAWEI",
+      "zh": "华为",
+      "ja": "ファーウェイ",
+      "vi": "HUAWEI",
+      "zh-hant": "華為"
+    },
+    "special_prefixes": [
+      {
+        "from": "Huawei Enjoy",
+        "names": {
+          "en": "HUAWEI Enjoy",
+          "zh": "华为 畅享",
+          "ja": "ファーウェイ Enjoy",
+          "vi": "HUAWEI Enjoy",
+          "zh-hant": "華為 暢享"
+        }
+      }
+    ]
+  },
+  "honor": {
+    "prefixes": [
+      "Honor"
+    ],
+    "titles": {
+      "en": "HONOR",
+      "zh": "荣耀",
+      "ja": "HONOR",
+      "vi": "HONOR",
+      "zh-hant": "榮耀"
+    },
+    "names": {
+      "en": "HONOR",
+      "zh": "荣耀",
+      "ja": "HONOR",
+      "vi": "HONOR",
+      "zh-hant": "榮耀"
+    }
+  },
+  "google-pixel": {
+    "prefixes": [
+      "Google Pixel"
+    ],
+    "titles": {
+      "en": "Google Pixel",
+      "zh": "Google Pixel",
+      "ja": "Google Pixel",
+      "vi": "Google Pixel",
+      "zh-hant": "Google Pixel"
+    },
+    "names": {
+      "en": "Google Pixel",
+      "zh": "Google Pixel",
+      "ja": "Google Pixel",
+      "vi": "Google Pixel",
+      "zh-hant": "Google Pixel"
+    }
+  },
+  "realme": {
+    "prefixes": [
+      "Realme"
+    ],
+    "titles": {
+      "en": "realme",
+      "zh": "真我",
+      "ja": "realme",
+      "vi": "realme",
+      "zh-hant": "真我"
+    },
+    "names": {
+      "en": "realme",
+      "zh": "真我",
+      "ja": "realme",
+      "vi": "realme",
+      "zh-hant": "真我"
+    }
+  },
+  "transsion-infinix": {
+    "prefixes": [
+      "Infinix"
+    ],
+    "titles": {
+      "en": "Infinix",
+      "zh": "传音 Infinix",
+      "ja": "Infinix",
+      "vi": "Infinix",
+      "zh-hant": "傳音 Infinix"
+    },
+    "names": {
+      "en": "Infinix",
+      "zh": "传音 Infinix",
+      "ja": "Infinix",
+      "vi": "Infinix",
+      "zh-hant": "傳音 Infinix"
+    }
+  },
+  "transsion-tecno": {
+    "prefixes": [
+      "Tecno"
+    ],
+    "titles": {
+      "en": "TECNO",
+      "zh": "传音 TECNO",
+      "ja": "TECNO",
+      "vi": "TECNO",
+      "zh-hant": "傳音 TECNO"
+    },
+    "names": {
+      "en": "TECNO",
+      "zh": "传音 TECNO",
+      "ja": "TECNO",
+      "vi": "TECNO",
+      "zh-hant": "傳音 TECNO"
+    }
+  },
+  "motorola": {
+    "prefixes": [
+      "Moto"
+    ],
+    "titles": {
+      "en": "Motorola",
+      "zh": "摩托罗拉",
+      "ja": "モトローラ",
+      "vi": "Motorola",
+      "zh-hant": "摩托羅拉"
+    },
+    "names": {
+      "en": "Moto",
+      "zh": "摩托罗拉 Moto",
+      "ja": "モトローラ Moto",
+      "vi": "Moto",
+      "zh-hant": "摩托羅拉 Moto"
+    }
+  },
+  "nothing": {
+    "prefixes": [
+      "Nothing"
+    ],
+    "titles": {
+      "en": "Nothing",
+      "zh": "Nothing",
+      "ja": "Nothing",
+      "vi": "Nothing",
+      "zh-hant": "Nothing"
+    },
+    "names": {
+      "en": "Nothing",
+      "zh": "Nothing",
+      "ja": "Nothing",
+      "vi": "Nothing",
+      "zh-hant": "Nothing"
+    }
+  },
+  "asus-rog-phone": {
+    "prefixes": [
+      "ASUS"
+    ],
+    "titles": {
+      "en": "ASUS ROG Phone",
+      "zh": "华硕 ROG Phone",
+      "ja": "ASUS ROG Phone",
+      "vi": "ASUS ROG Phone",
+      "zh-hant": "華碩 ROG Phone"
+    },
+    "names": {
+      "en": "ASUS",
+      "zh": "华硕",
+      "ja": "ASUS",
+      "vi": "ASUS",
+      "zh-hant": "華碩"
+    }
+  },
+  "nokia": {
+    "prefixes": [
+      "Nokia"
+    ],
+    "titles": {
+      "en": "Nokia",
+      "zh": "诺基亚",
+      "ja": "Nokia",
+      "vi": "Nokia",
+      "zh-hant": "諾基亞"
+    },
+    "names": {
+      "en": "Nokia",
+      "zh": "诺基亚",
+      "ja": "Nokia",
+      "vi": "Nokia",
+      "zh-hant": "諾基亞"
+    }
+  },
+  "oneplus": {
+    "prefixes": [
+      "OnePlus"
+    ],
+    "titles": {
+      "en": "OnePlus",
+      "zh": "一加",
+      "ja": "ワンプラス",
+      "vi": "OnePlus",
+      "zh-hant": "一加"
+    },
+    "names": {
+      "en": "OnePlus",
+      "zh": "一加",
+      "ja": "ワンプラス",
+      "vi": "OnePlus",
+      "zh-hant": "一加"
+    }
+  },
+  "harmonyos": {
+    "prefixes": [
+      "HarmonyOS"
+    ],
+    "titles": {
+      "en": "HarmonyOS",
+      "zh": "鸿蒙",
+      "ja": "HarmonyOS",
+      "vi": "HarmonyOS",
+      "zh-hant": "鴻蒙"
+    },
+    "names": {
+      "en": "HarmonyOS",
+      "zh": "鸿蒙 HarmonyOS",
+      "ja": "HarmonyOS",
+      "vi": "HarmonyOS",
+      "zh-hant": "鴻蒙 HarmonyOS"
+    }
+  },
+  "smartisan": {
+    "prefixes": [
+      "Smartisan"
+    ],
+    "titles": {
+      "en": "Smartisan",
+      "zh": "锤子",
+      "ja": "Smartisan",
+      "vi": "Smartisan",
+      "zh-hant": "錘子"
+    },
+    "names": {
+      "en": "Smartisan",
+      "zh": "锤子",
+      "ja": "Smartisan",
+      "vi": "Smartisan",
+      "zh-hant": "錘子"
+    },
+    "special_prefixes": [
+      {
+        "from": "Smartisan Nut",
+        "names": {
+          "en": "Smartisan Nut",
+          "zh": "坚果",
+          "ja": "Smartisan Nut",
+          "vi": "Smartisan Nut",
+          "zh-hant": "堅果"
+        }
+      },
+      {
+        "from": "Smartisan Footprint",
+        "names": {
+          "en": "Smartisan Footprint",
+          "zh": "锤子足迹",
+          "ja": "Smartisan Footprint",
+          "vi": "Smartisan Footprint",
+          "zh-hant": "錘子足跡"
+        }
+      }
+    ]
+  },
+  "android": {
+    "prefixes": [
+      "Android"
+    ],
+    "titles": {
+      "en": "Android",
+      "zh": "Android",
+      "ja": "Android",
+      "vi": "Android",
+      "zh-hant": "Android"
+    },
+    "names": {
+      "en": "Android",
+      "zh": "Android",
+      "ja": "Android",
+      "vi": "Android",
+      "zh-hant": "Android"
+    }
+  },
+  "google-os": {
+    "prefixes": [
+      "Google"
+    ],
+    "titles": {
+      "en": "Google OS",
+      "zh": "Google OS",
+      "ja": "Google OS",
+      "vi": "Google OS",
+      "zh-hant": "Google OS"
+    },
+    "names": {
+      "en": "Google",
+      "zh": "Google",
+      "ja": "Google",
+      "vi": "Google",
+      "zh-hant": "Google"
+    }
+  },
+  "google-chromeos": {
+    "prefixes": [
+      "Chrome OS"
+    ],
+    "titles": {
+      "en": "Google ChromeOS",
+      "zh": "Google ChromeOS",
+      "ja": "Google ChromeOS",
+      "vi": "Google ChromeOS",
+      "zh-hant": "Google ChromeOS"
+    },
+    "names": {
+      "en": "Chrome OS",
+      "zh": "Chrome OS",
+      "ja": "Chrome OS",
+      "vi": "Chrome OS",
+      "zh-hant": "Chrome OS"
+    }
+  },
+  "microsoft-surface": {
+    "prefixes": [
+      "Microsoft"
+    ],
+    "titles": {
+      "en": "Microsoft Surface",
+      "zh": "微软 Surface",
+      "ja": "マイクロソフト Surface",
+      "vi": "Microsoft Surface",
+      "zh-hant": "微軟 Surface"
+    },
+    "names": {
+      "en": "Microsoft",
+      "zh": "微软",
+      "ja": "マイクロソフト",
+      "vi": "Microsoft",
+      "zh-hant": "微軟"
+    }
+  },
+  "microsoft-windows": {
+    "prefixes": [
+      "Windows"
+    ],
+    "titles": {
+      "en": "Microsoft Windows",
+      "zh": "微软 Windows",
+      "ja": "マイクロソフト Windows",
+      "vi": "Microsoft Windows",
+      "zh-hant": "微軟 Windows"
+    },
+    "names": {
+      "en": "Windows",
+      "zh": "Windows",
+      "ja": "Windows",
+      "vi": "Windows",
+      "zh-hant": "Windows"
+    }
+  },
+  "omarchy-linux": {
+    "prefixes": [
+      "Omarchy"
+    ],
+    "titles": {
+      "en": "Omarchy Linux",
+      "zh": "Omarchy Linux",
+      "ja": "Omarchy Linux",
+      "vi": "Omarchy Linux",
+      "zh-hant": "Omarchy Linux"
+    },
+    "names": {
+      "en": "Omarchy",
+      "zh": "Omarchy",
+      "ja": "Omarchy",
+      "vi": "Omarchy",
+      "zh-hant": "Omarchy"
+    }
+  },
+  "ubuntu": {
+    "prefixes": [
+      "Ubuntu"
+    ],
+    "titles": {
+      "en": "Ubuntu",
+      "zh": "Ubuntu",
+      "ja": "Ubuntu",
+      "vi": "Ubuntu",
+      "zh-hant": "Ubuntu"
+    },
+    "names": {
+      "en": "Ubuntu",
+      "zh": "Ubuntu",
+      "ja": "Ubuntu",
+      "vi": "Ubuntu",
+      "zh-hant": "Ubuntu"
+    }
+  }
+}

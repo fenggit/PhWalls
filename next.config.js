@@ -2,6 +2,9 @@ const { setupDevPlatform } = require('@cloudflare/next-on-pages/next-dev');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 开发与生产产物隔离，避免 next build 覆盖运行中的 dev 模块与 HMR 清单。
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
+
   // 启用压缩
   compress: true,
 

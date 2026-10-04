@@ -1,0 +1,1072 @@
+{
+  "researched_at": "2026-10-02",
+  "locale": "ja",
+  "method": "Public HTTP HTML retrieval; Japanese media onsite search and official Japanese documentation; no volume, difficulty, rank, or demand measurement.",
+  "search_engine_limitations": [
+    {
+      "url": "https://www.bing.com/search?q=Pixel+9+%E5%A3%81%E7%B4%99+%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89&setlang=ja-JP&cc=jp",
+      "final_url": "https://cn.bing.com/search?q=Pixel+9+%E5%A3%81%E7%B4%99+%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89&setlang=ja-JP&cc=jp",
+      "http_status": 200,
+      "title": "Pixel 9 壁紙 ダウンロード - 検索",
+      "wallpaper_links": [],
+      "query": "Pixel 9 壁紙 ダウンロード",
+      "provider": "bing",
+      "locale": "ja-JP",
+      "usable_results": false,
+      "observation": "Response contained no result items and explicitly displayed 結果がありません; this is a retrieval limitation, not evidence of absent demand.",
+      "snippet": "結果がありません: Pixel 9 壁紙 ダウンロード スペルを確認するか、別のキーワードを試してみてください"
+    },
+    {
+      "url": "https://www.bing.com/search?q=Xperia+%E5%A3%81%E7%B4%99+%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89&setlang=ja-JP&cc=jp",
+      "final_url": "https://cn.bing.com/search?q=Xperia+%E5%A3%81%E7%B4%99+%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89&setlang=ja-JP&cc=jp",
+      "http_status": 200,
+      "title": "Xperia 壁紙 ダウンロード - 検索",
+      "wallpaper_links": [],
+      "query": "Xperia 壁紙 ダウンロード",
+      "provider": "bing",
+      "locale": "ja-JP",
+      "usable_results": false,
+      "observation": "Response contained no result items and explicitly displayed 結果がありません; this is a retrieval limitation, not evidence of absent demand.",
+      "snippet": "結果がありません: Xperia 壁紙 ダウンロード スペルを確認するか、別のキーワードを試してみてください"
+    },
+    {
+      "url": "https://www.bing.com/search?q=Windows+11+%E5%A3%81%E7%B4%99+%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89&setlang=ja-JP&cc=jp",
+      "final_url": "https://cn.bing.com/search?q=Windows+11+%E5%A3%81%E7%B4%99+%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89&setlang=ja-JP&cc=jp",
+      "http_status": 200,
+      "title": "Windows 11 壁紙 ダウンロード - 検索",
+      "wallpaper_links": [],
+      "query": "Windows 11 壁紙 ダウンロード",
+      "provider": "bing",
+      "locale": "ja-JP",
+      "usable_results": false,
+      "observation": "Response contained no result items and explicitly displayed 結果がありません; this is a retrieval limitation, not evidence of absent demand.",
+      "snippet": "結果がありません: Windows 11 壁紙 ダウンロード スペルを確認するか、別のキーワードを試してみてください"
+    },
+    {
+      "url": "https://www.bing.com/search?q=Galaxy+S24+%E5%A3%81%E7%B4%99&setlang=ja-JP&cc=jp",
+      "final_url": "https://cn.bing.com/search?q=Galaxy+S24+%E5%A3%81%E7%B4%99&setlang=ja-JP&cc=jp",
+      "http_status": 200,
+      "title": "Galaxy S24 壁紙 - 検索",
+      "wallpaper_links": [],
+      "query": "Galaxy S24 壁紙",
+      "provider": "bing",
+      "locale": "ja-JP",
+      "usable_results": false,
+      "observation": "Response contained no result items and explicitly displayed 結果がありません; this is a retrieval limitation, not evidence of absent demand.",
+      "snippet": "結果がありません: Galaxy S24 壁紙 スペルを確認するか、別のキーワードを試してみてください"
+    },
+    {
+      "url": "https://www.bing.com/search?q=%E3%82%B9%E3%83%9E%E3%83%9B+%E5%A3%81%E7%B4%99+%E7%84%A1%E6%96%99&setlang=ja-JP&cc=jp",
+      "final_url": "https://cn.bing.com/search?q=%E3%82%B9%E3%83%9E%E3%83%9B+%E5%A3%81%E7%B4%99+%E7%84%A1%E6%96%99&setlang=ja-JP&cc=jp",
+      "http_status": 200,
+      "title": "スマホ 壁紙 無料 - 検索",
+      "wallpaper_links": [],
+      "query": "スマホ 壁紙 無料",
+      "provider": "bing",
+      "locale": "ja-JP",
+      "usable_results": false,
+      "observation": "Response contained no result items and explicitly displayed 結果がありません; this is a retrieval limitation, not evidence of absent demand.",
+      "snippet": "結果がありません: スマホ 壁紙 無料 スペルを確認するか、別のキーワードを試してみてください"
+    },
+    {
+      "url": "https://www.bing.com/search?q=%E5%BE%85%E3%81%A1%E5%8F%97%E3%81%91+%E5%A3%81%E7%B4%99+%E9%81%95%E3%81%84&setlang=ja-JP&cc=jp",
+      "final_url": "https://cn.bing.com/search?q=%E5%BE%85%E3%81%A1%E5%8F%97%E3%81%91+%E5%A3%81%E7%B4%99+%E9%81%95%E3%81%84&setlang=ja-JP&cc=jp",
+      "http_status": 200,
+      "title": "待ち受け 壁紙 違い - 検索",
+      "wallpaper_links": [],
+      "query": "待ち受け 壁紙 違い",
+      "provider": "bing",
+      "locale": "ja-JP",
+      "usable_results": false,
+      "observation": "Response contained no result items and explicitly displayed 結果がありません; this is a retrieval limitation, not evidence of absent demand.",
+      "snippet": "結果がありません: 待ち受け 壁紙 違い スペルを確認するか、別のキーワードを試してみてください"
+    }
+  ],
+  "onsite_searches": [
+    {
+      "url": "https://orefolder.net/?s=Pixel%20%E5%A3%81%E7%B4%99",
+      "error": "<urlopen error EOF occurred in violation of protocol (_ssl.c:1129)>",
+      "query": "Pixel 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "observation": "Retrieval failed; no demand conclusion drawn."
+    },
+    {
+      "url": "https://orefolder.net/?s=Galaxy%20%E5%A3%81%E7%B4%99",
+      "error": "<urlopen error EOF occurred in violation of protocol (_ssl.c:1129)>",
+      "query": "Galaxy 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "observation": "Retrieval failed; no demand conclusion drawn."
+    },
+    {
+      "url": "https://orefolder.net/?s=Xperia%20%E5%A3%81%E7%B4%99",
+      "error": "<urlopen error EOF occurred in violation of protocol (_ssl.c:1129)>",
+      "query": "Xperia 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "observation": "Retrieval failed; no demand conclusion drawn."
+    },
+    {
+      "url": "https://orefolder.net/?s=Xiaomi%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Xiaomi%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Xiaomi 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [],
+      "query": "Xiaomi 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“Xiaomi 壁紙” の検索結果 – OREFOLDER 「Xiaomi 壁紙」の検索結果 Leica Leitzphone powered by Xiaomiが200",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=OPPO%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=OPPO%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“OPPO 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "はじめてのホーム画面カスタマイズ：壁紙設定あれこれ 2014年02月15日",
+          "url": "https://orefolder.jp/2014/02/wallpaper/"
+        }
+      ],
+      "query": "OPPO 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "おサイフ・防水・4眼カメラでメインを任せられる快適スマホ 2020年06月25日 はじめてのホーム画面カスタマイズ：壁紙設定あれこれ 2014年02月15日 格安SIMの",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=Nothing%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Nothing%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Nothing 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [],
+      "query": "Nothing 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“Nothing 壁紙” の検索結果 – OREFOLDER 「Nothing 壁紙」の検索結果 Nothingがコミュニティと共創したスマホ「Phone (2a) Co",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=Huawei%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Huawei%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Huawei 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "ファーウェイのスマホで「テーマ」をダウンロードしてアイコンや壁紙をまとめて変更する方法 2018年01月01日",
+          "url": "https://orefolder.jp/2018/01/huawei-themes/"
+        }
+      ],
+      "query": "Huawei 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“Huawei 壁紙” の検索結果 – OREFOLDER 「Huawei 壁紙」の検索結果 ファーウェイ、長時間バッテリーと音楽再生に対応した「HUAWEI WATCH",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=Motorola%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Motorola%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Motorola 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [],
+      "query": "Motorola 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“Motorola 壁紙” の検索結果 – OREFOLDER 「Motorola 壁紙」の検索結果 格安SIMの主なキャンペーンまとめ【2026年7月】MVNO編：II",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=Zenfone%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Zenfone%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Zenfone 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "壁紙を黒にするとスマホのバッテリーが長持ちするって本当？というわけで実験してみた 2018年06月04日",
+          "url": "https://orefolder.jp/2018/06/display-bw-battery/"
+        }
+      ],
+      "query": "Zenfone 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“Zenfone 壁紙” の検索結果 – OREFOLDER 「Zenfone 壁紙」の検索結果 Zenfone 12 Ultra レビュー：ハイスペックでおサイフも防水",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=ROG%20Phone%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=ROG%20Phone%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“ROG Phone 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [],
+      "query": "ROG Phone 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“ROG Phone 壁紙” の検索結果 – OREFOLDER 「ROG Phone 壁紙」の検索結果 Leica Leitzphone powered by Xiao",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=%E6%8A%98%E3%82%8A%E3%81%9F%E3%81%9F%E3%81%BF%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=%E6%8A%98%E3%82%8A%E3%81%9F%E3%81%9F%E3%81%BF%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“折りたたみ 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [],
+      "query": "折りたたみ 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“折りたたみ 壁紙” の検索結果 – OREFOLDER 「折りたたみ 壁紙」の検索結果 Google Pixel シリーズに2026年7月のアップデート配信開始！",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=%E5%BE%85%E3%81%A1%E5%8F%97%E3%81%91%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=%E5%BE%85%E3%81%A1%E5%8F%97%E3%81%91%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“待ち受け 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [],
+      "query": "待ち受け 壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“待ち受け 壁紙” の検索結果 – OREFOLDER 「待ち受け 壁紙」の検索結果 ホーム画面コンテスト2021 結果発表！",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=%E3%83%A9%E3%82%A4%E3%83%96%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=%E3%83%A9%E3%82%A4%E3%83%96%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“ライブ壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "Music Live Wallpaper：再生中の曲のアルバムアートを表示するライブ壁紙 2023年06月27日",
+          "url": "https://orefolder.jp/2023/06/music-live-wallpaper/"
+        },
+        {
+          "title": "ライブ壁紙カスタマイズアプリ『KLWP』のProキーが620円→260円！Androidアプリセール情報 2021年11月03日",
+          "url": "https://orefolder.jp/2021/11/sale-20211103/"
+        },
+        {
+          "title": "地図をライブ壁紙にできるアプリ『Cartogram』が400円→120円！などAndroidアプリセール情報 2020年10月31日",
+          "url": "https://orefolder.jp/2020/10/sale-20201031/"
+        },
+        {
+          "title": "飛行機雲 ライブ壁紙：青い空を飛行機が飛んでいく、夏っぽい爽やかなライブ壁紙 2020年08月12日",
+          "url": "https://orefolder.jp/2020/08/contrails-live-wallpaper/"
+        },
+        {
+          "title": "Geometric Weather：ダークモード対応しウィジェットにライブ壁紙もある天気アプリ 2020年08月01日",
+          "url": "https://orefolder.jp/2020/08/geometric-weather/"
+        },
+        {
+          "title": "Screen Stopwatch：スマホを使ってる時間をカウントアップしていくライブ壁紙 2020年01月28日",
+          "url": "https://orefolder.jp/2020/01/screen-stopwatch/"
+        },
+        {
+          "title": "Activity Bubbles：スマホを操作した時間がバブルとなって積み重なっていくライブ壁紙 2020年01月27日",
+          "url": "https://orefolder.jp/2020/01/activity-bubbles/"
+        },
+        {
+          "title": "Unlock Clock：その日にスマホのロックを解除した回数を表示するライブ壁紙 2019年11月28日",
+          "url": "https://orefolder.jp/2019/11/unlock-clock/"
+        },
+        {
+          "title": "Clock Widget & Wallpaper：フラットで可愛いFORM書体の時計ウィジェト&ライブ壁紙 2019年08月03日",
+          "url": "https://orefolder.jp/2019/08/clock-widget-wallpaper/"
+        },
+        {
+          "title": "天空の塩湖ライブ壁紙：時間に連動して変化する美しいウユニ塩湖のライブ壁紙 2019年06月25日",
+          "url": "https://orefolder.jp/2019/06/tenkulivewall/"
+        },
+        {
+          "title": "Paperland Live Wallpaper：切り紙で作られた景色がアニメーションで流れるライブ壁紙 2019年05月02日",
+          "url": "https://orefolder.jp/2019/05/paperland-live-wallpaper/"
+        },
+        {
+          "title": "Holo Droid Free：近未来風サイバーな雰囲気でデイバイス情報を表示するライブ壁紙 2018年10月17日",
+          "url": "https://orefolder.jp/2018/10/holo-droid-free/"
+        },
+        {
+          "title": "GIF Live Wallpaper：好きなアニメgif画像をライブ壁紙として設定できるアプリ 2017年06月30日",
+          "url": "https://orefolder.jp/2017/06/gif-live-wallpaper/"
+        },
+        {
+          "title": "Hypno Clock Live Wallpaper : 自由に色をカスタマイズできる機械式時計のライブ壁紙 2016年09月25日",
+          "url": "https://orefolder.jp/2016/09/hypno-clock-live-wallpaper/"
+        },
+        {
+          "title": "KLWPを使ってカッコいいテキスト時計なライブ壁紙を作る【KLWP勉強中】 2016年06月10日",
+          "url": "https://orefolder.jp/2016/06/klwp-text/"
+        },
+        {
+          "title": "EVA System Monitor : エヴァンゲリオン風にシステム情報を表示するライブ壁紙 2016年05月04日",
+          "url": "https://orefolder.jp/2016/05/eva-system-monitor/"
+        },
+        {
+          "title": "天気ライブ無料 : 個性的でカッコいいウィジェットとライブ壁紙を持つお天気アプリ 2016年04月10日",
+          "url": "https://orefolder.jp/2016/04/weatherlive-2/"
+        }
+      ],
+      "query": "ライブ壁紙",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“ライブ壁紙” の検索結果 – OREFOLDER 「ライブ壁紙」の検索結果 Music Live Wallpaper：再生中の曲のアルバムアートを表示するライブ壁紙 2",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://orefolder.net/?s=%E5%A3%81%E7%B4%99%20%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89",
+      "final_url": "https://orefolder.jp/?s=%E5%A3%81%E7%B4%99%20%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89",
+      "http_status": 200,
+      "title": "“壁紙 ダウンロード” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "ファーウェイのスマホで「テーマ」をダウンロードしてアイコンや壁紙をまとめて変更する方法 2018年01月01日",
+          "url": "https://orefolder.jp/2018/01/huawei-themes/"
+        },
+        {
+          "title": "ミニマルフラットな壁紙でセンスアップ！フラットデザインの壁紙がダウンロードできるアプリ5選 2017年02月06日",
+          "url": "https://orefolder.jp/2017/02/minimal-flat-design-wallpapers/"
+        },
+        {
+          "title": "Google、創立25周年を記念したオリジナルのスマホ壁紙を配布中 2023年08月08日",
+          "url": "https://orefolder.jp/2023/08/google-25th-wallpaper/"
+        },
+        {
+          "title": "Pixelで絵文字の壁紙を生成できる「絵文字ワークショップ」を設定する 2023年06月18日",
+          "url": "https://orefolder.jp/2023/06/emoji-workshop-wallpaper/"
+        },
+        {
+          "title": "ライブ壁紙カスタマイズアプリ『KLWP』のProキーが620円→260円！Androidアプリセール情報 2021年11月03日",
+          "url": "https://orefolder.jp/2021/11/sale-20211103/"
+        },
+        {
+          "title": "Daily Bing Wallpaper：Bingの日替わり画像をスマホの壁紙に設定できるアプリ 2021年06月29日",
+          "url": "https://orefolder.jp/2021/06/daily-bing-wallpaper/"
+        },
+        {
+          "title": "画像を選ぶだけじゃない！Androidの壁紙アプリあれこれ9選 2020年12月02日",
+          "url": "https://orefolder.jp/2020/12/android-wallpaper-apps/"
+        },
+        {
+          "title": "地図をライブ壁紙にできるアプリ『Cartogram』が400円→120円！などAndroidアプリセール情報 2020年10月31日",
+          "url": "https://orefolder.jp/2020/10/sale-20201031/"
+        },
+        {
+          "title": "Geometric Weather：ダークモード対応しウィジェットにライブ壁紙もある天気アプリ 2020年08月01日",
+          "url": "https://orefolder.jp/2020/08/geometric-weather/"
+        },
+        {
+          "title": "Yahoo!きせかえならRakuten Miniでも壁紙変更が可能 2020年05月16日",
+          "url": "https://orefolder.jp/2020/05/rakuten-mini-home-wallpaper-2/"
+        },
+        {
+          "title": "Pixel 4でよく見るP4と描かれた壁紙「愛、そしてPixel」を設定する方法 2019年10月25日",
+          "url": "https://orefolder.jp/2019/10/pixel-4-wallpaper-2/"
+        },
+        {
+          "title": "Pixel 4（仮称）っぽい壁紙画像を作ってみました 2019年10月10日",
+          "url": "https://orefolder.jp/2019/10/pixel-4-wallpaper/"
+        },
+        {
+          "title": "KLWPで3つの画面それぞれに違う壁紙画像を設定してスクロールさせる方法 2018年10月16日",
+          "url": "https://orefolder.jp/2018/10/klwp-scroll-wallpaper/"
+        },
+        {
+          "title": "3D Wallpaper Parallax 2018：壁紙に奥行きと立体感を生み出すパララックス壁紙 2018年03月02日",
+          "url": "https://orefolder.jp/2018/03/3d-wallpaper-parallax/"
+        },
+        {
+          "title": "ランダムを楽しむ：壁紙はその時次第なホーム画面【ホーム画面企画2016】 2016年11月23日",
+          "url": "https://orefolder.jp/2016/11/home2016-51/"
+        },
+        {
+          "title": "壁紙：Googleが作った壁紙設定アプリ！ 美麗な壁紙選んで日替わりでも楽しめる 2016年10月20日",
+          "url": "https://orefolder.jp/2016/10/google-wallpaper/"
+        },
+        {
+          "title": "KLWPを使ってカッコいいテキスト時計なライブ壁紙を作る【KLWP勉強中】 2016年06月10日",
+          "url": "https://orefolder.jp/2016/06/klwp-text/"
+        },
+        {
+          "title": "家電少女のホーム画面を作るよ！まずは壁紙からだね。まあ、どっちでもいいけどね。 2015年05月19日",
+          "url": "https://orefolder.jp/2015/05/kaden-shojo-home1/"
+        },
+        {
+          "title": "はじめてのホーム画面カスタマイズ：壁紙設定あれこれ 2014年02月15日",
+          "url": "https://orefolder.jp/2014/02/wallpaper/"
+        }
+      ],
+      "query": "壁紙 ダウンロード",
+      "provider": "onsite_search",
+      "domain": "orefolder.net",
+      "snippet": "“壁紙 ダウンロード” の検索結果 – OREFOLDER 「壁紙 ダウンロード」の検索結果 ファーウェイのスマホで「テーマ」をダウンロードしてアイコンや壁紙をまとめて変",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://helentech.net/?s=Pixel%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://helentech.jp/?s=Pixel%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "検索結果: Pixel 壁紙 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Google の Pixel 壁紙アプリが Android 15 QPR1 で新しい UI に再設計 2024年8月27日 Google Pixel",
+          "url": "https://helentech.jp/news-50972/"
+        },
+        {
+          "title": "Pixel の「壁紙とスタイル」で新しい写真シャッフル機能が開発中。Android 17 QPR1 Beta 5 で発見 2026年6月29日 Google Pixel",
+          "url": "https://helentech.jp/news-pixel-photo-shuffle-wallpaper-87997/"
+        },
+        {
+          "title": "Google Pixel で「テーマパック」を設定する方法。壁紙やアイコンを一括カスタマイズ 2026年4月9日 Google Pixel",
+          "url": "https://helentech.jp/how-to-setup-google-pixel-theme-pack/"
+        },
+        {
+          "title": "Pixel の｢ライブ効果｣壁紙、Android Canary で位置調整とズームに対応 2025年11月20日 Google Pixel",
+          "url": "https://helentech.jp/news-78554/"
+        },
+        {
+          "title": "Pixel の｢スナップショット｣、壁紙に応じた背景色の自動調整機能をテスト中か 2025年9月16日 Google Pixel",
+          "url": "https://helentech.jp/news-74277/"
+        },
+        {
+          "title": "Android 16 QPR1、Pixel の壁紙機能「ライブ効果」が数秒で消えるのは仕様か 2025年9月6日 Google Pixel",
+          "url": "https://helentech.jp/news-73817/"
+        },
+        {
+          "title": "Pixel 10 Pro の｢常に表示状態のディスプレイ｣で、ロック画面の壁紙を表示可能に 2025年8月23日 Google Pixel",
+          "url": "https://helentech.jp/news-72720/"
+        },
+        {
+          "title": "Android 16 QPR1、Pixel に新機能｢Magic Portrait｣が導入。ロック画面の壁紙を簡単カスタマイズ 2025年5月21日 Google Pixel",
+          "url": "https://helentech.jp/news-66679/"
+        },
+        {
+          "title": "Android 16 QPR1 Beta 1 で｢壁紙とスタイル｣も刷新。Pixel Tablet のロック画面カスタマイズも強化 2025年5月21日 Google Pixel",
+          "url": "https://helentech.jp/news-66667/"
+        },
+        {
+          "title": "Google Pixel Table にも新しい｢渦巻く花びら｣の壁紙コレクションが追加 2024年12月22日 Google Pixel",
+          "url": "https://helentech.jp/news-57795/"
+        }
+      ],
+      "query": "Pixel 壁紙",
+      "provider": "onsite_search",
+      "domain": "helentech.net",
+      "snippet": "「Pixel 壁紙」の検索結果 Google の Pixel 壁紙アプリが Android 15 QPR1 で新しい UI に再設計 2024年8月27日 Google ",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://helentech.net/?s=Pixel%20Fold%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://helentech.jp/?s=Pixel%20Fold%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "検索結果: Pixel Fold 壁紙 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Pixel Fold と Pixel Tablet に新しいライブ壁紙が追加 2023年9月3日 Google Pixel",
+          "url": "https://helentech.jp/news-33252/"
+        }
+      ],
+      "query": "Pixel Fold 壁紙",
+      "provider": "onsite_search",
+      "domain": "helentech.net",
+      "snippet": "「Pixel Fold 壁紙」の検索結果 Pixel Fold と Pixel Tablet に新しいライブ壁紙が追加 2023年9月3日 Google Pixel Go",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://helentech.net/?s=Pixel%20Tablet%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://helentech.jp/?s=Pixel%20Tablet%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "検索結果: Pixel Tablet 壁紙 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Android 16 QPR1 Beta 1 で｢壁紙とスタイル｣も刷新。Pixel Tablet のロック画面カスタマイズも強化 2025年5月21日 Google Pixel",
+          "url": "https://helentech.jp/news-66667/"
+        },
+        {
+          "title": "Pixel Fold と Pixel Tablet に新しいライブ壁紙が追加 2023年9月3日 Google Pixel",
+          "url": "https://helentech.jp/news-33252/"
+        }
+      ],
+      "query": "Pixel Tablet 壁紙",
+      "provider": "onsite_search",
+      "domain": "helentech.net",
+      "snippet": "「Pixel Tablet 壁紙」の検索結果 Android 16 QPR1 Beta 1 で｢壁紙とスタイル｣も刷新。",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://helentech.net/?s=ChromeOS%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://helentech.jp/?s=ChromeOS%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "検索結果: ChromeOS 壁紙 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Chromebook Plus で使える AI 壁紙生成の｢独自に作成｣の使い方。ChromeOS 138 からの新機能 2025年8月20日 Chromebook 設定・活用",
+          "url": "https://helentech.jp/chromebook-plus-ai-wallpaper-how-to/"
+        },
+        {
+          "title": "Aluminium OS 向け「Desktop Exclusive」壁紙の 4 種類が新たに判明 2026年5月11日 Googlebook OS 開発情報",
+          "url": "https://helentech.jp/news-aluminium-os-desktop-exclusive-wallpapers-85998/"
+        },
+        {
+          "title": "Google の「Aluminium OS」の壁紙がリーク。開発中の Chromebook のコードネームも確認 2026年4月1日 Googlebook OS 開発情報",
+          "url": "https://helentech.jp/news-chromebook-84072/"
+        },
+        {
+          "title": "Chromebook の壁紙を変更する方法。設定手順を解説 2025年11月10日 Chromebook 設定・活用",
+          "url": "https://helentech.jp/how-to-change-wallpaper-on-chromebook/"
+        }
+      ],
+      "query": "ChromeOS 壁紙",
+      "provider": "onsite_search",
+      "domain": "helentech.net",
+      "snippet": "「ChromeOS 壁紙」の検索結果 Chromebook Plus で使える AI 壁紙生成の｢独自に作成｣の使い方。",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://helentech.net/?s=Chrome%20OS%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://helentech.jp/?s=Chrome%20OS%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "検索結果: Chrome OS 壁紙 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Google の「Aluminium OS」の壁紙がリーク。開発中の Chromebook のコードネームも確認 2026年4月1日 Googlebook OS 開発情報",
+          "url": "https://helentech.jp/news-chromebook-84072/"
+        },
+        {
+          "title": "Chromebook Plus で使える AI 壁紙生成の｢独自に作成｣の使い方。ChromeOS 138 からの新機能 2025年8月20日 Chromebook 設定・活用",
+          "url": "https://helentech.jp/chromebook-plus-ai-wallpaper-how-to/"
+        },
+        {
+          "title": "Aluminium OS 向け「Desktop Exclusive」壁紙の 4 種類が新たに判明 2026年5月11日 Googlebook OS 開発情報",
+          "url": "https://helentech.jp/news-aluminium-os-desktop-exclusive-wallpapers-85998/"
+        }
+      ],
+      "query": "Chrome OS 壁紙",
+      "provider": "onsite_search",
+      "domain": "helentech.net",
+      "snippet": "「Chrome OS 壁紙」の検索結果 Google の「Aluminium OS」の壁紙がリーク。",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://helentech.net/?s=Android%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://helentech.jp/?s=Android%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "検索結果: Android 壁紙 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Pixel の「壁紙とスタイル」で新しい写真シャッフル機能が開発中。Android 17 QPR1 Beta 5 で発見 2026年6月29日 Google Pixel",
+          "url": "https://helentech.jp/news-pixel-photo-shuffle-wallpaper-87997/"
+        },
+        {
+          "title": "Pixel の｢ライブ効果｣壁紙、Android Canary で位置調整とズームに対応 2025年11月20日 Google Pixel",
+          "url": "https://helentech.jp/news-78554/"
+        },
+        {
+          "title": "Android 16 QPR1、Pixel の壁紙機能「ライブ効果」が数秒で消えるのは仕様か 2025年9月6日 Google Pixel",
+          "url": "https://helentech.jp/news-73817/"
+        },
+        {
+          "title": "Android Auto、スマートフォンの壁紙に合わせたアクセントカラーテーマの完全サポートを展開 2025年8月1日 Android アプリ",
+          "url": "https://helentech.jp/news-71080/"
+        },
+        {
+          "title": "Android 16 QPR1 Beta 2、壁紙選択画面に「ライブ効果」設定が追加 2025年6月13日 Android",
+          "url": "https://helentech.jp/news-67945/"
+        },
+        {
+          "title": "Android 16 QPR1、Googleフォトから「おすすめ壁紙の提案」をする新機能が導入 2025年6月3日 Android",
+          "url": "https://helentech.jp/news-67359/"
+        },
+        {
+          "title": "Android 16、ロック画面の壁紙をぼかして常時表示する｢アンビエント AOD｣機能を開発中か 2025年5月21日 Android",
+          "url": "https://helentech.jp/news-66696/"
+        },
+        {
+          "title": "Android 16 QPR1、Pixel に新機能｢Magic Portrait｣が導入。ロック画面の壁紙を簡単カスタマイズ 2025年5月21日 Google Pixel",
+          "url": "https://helentech.jp/news-66679/"
+        },
+        {
+          "title": "Android 16 QPR1 Beta 1 で｢壁紙とスタイル｣も刷新。Pixel Tablet のロック画面カスタマイズも強化 2025年5月21日 Google Pixel",
+          "url": "https://helentech.jp/news-66667/"
+        },
+        {
+          "title": "Google の Pixel 壁紙アプリが Android 15 QPR1 で新しい UI に再設計 2024年8月27日 Google Pixel",
+          "url": "https://helentech.jp/news-50972/"
+        }
+      ],
+      "query": "Android 壁紙",
+      "provider": "onsite_search",
+      "domain": "helentech.net",
+      "snippet": "「Android 壁紙」の検索結果 Pixel の「壁紙とスタイル」で新しい写真シャッフル機能が開発中。",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://gori.me/?s=Windows%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://gori.me/?s=Windows%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "Windows 壁紙 | ゴリミー",
+      "wallpaper_links": [
+        {
+          "title": "Windows XP「草原」壁紙デザインのクロックスが一般販売開始、Microsoft創立50周年記念モデル 2025年10月11日",
+          "url": "https://gori.me/microsoft/windows/161911"
+        },
+        {
+          "title": "もうすぐクリスマス！iPhone 5用（1136×640）のクリスマス壁紙を配布しているページを集めてみた！ 2012年11月26日",
+          "url": "https://gori.me/iphone/23147"
+        }
+      ],
+      "query": "Windows 壁紙",
+      "provider": "onsite_search",
+      "domain": "gori.me",
+      "snippet": "Windows 壁紙 | ゴリミー Windows 壁紙の記事まとめ 注目キーワード [SBKeyword] Windows 壁紙の記事まとめ （全42件） Window",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://gori.me/?s=Surface%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://gori.me/?s=Surface%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "Surface 壁紙 | ゴリミー",
+      "wallpaper_links": [],
+      "query": "Surface 壁紙",
+      "provider": "onsite_search",
+      "domain": "gori.me",
+      "snippet": "Surface 壁紙 | ゴリミー Surface 壁紙の記事まとめ 注目キーワード [SBKeyword] Surface 壁紙の記事まとめ （全1件） 発売前の「iP",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://gori.me/?s=Ubuntu%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://gori.me/?s=Ubuntu%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "Ubuntu 壁紙 | ゴリミー",
+      "wallpaper_links": [],
+      "query": "Ubuntu 壁紙",
+      "provider": "onsite_search",
+      "domain": "gori.me",
+      "snippet": "Ubuntu 壁紙 | ゴリミー Ubuntu 壁紙の記事まとめ 注目キーワード [SBKeyword] Ubuntu 壁紙の記事まとめ （全0件） 該当する記事が 見つ",
+      "observation": "Public Japanese onsite search; returned titles are local editorial vocabulary, not general-web ranking or measured user demand."
+    },
+    {
+      "url": "https://gori.me/?s=Xperia%20%E5%A3%81%E7%B4%99",
+      "error": "The read operation timed out",
+      "query": "Xperia 壁紙",
+      "provider": "onsite_search",
+      "domain": "gori.me",
+      "observation": "Retrieval failed; no demand conclusion drawn."
+    },
+    {
+      "url": "https://gori.me/?s=Galaxy%20%E5%A3%81%E7%B4%99",
+      "error": "The read operation timed out",
+      "query": "Galaxy 壁紙",
+      "provider": "onsite_search",
+      "domain": "gori.me",
+      "observation": "Retrieval failed; no demand conclusion drawn."
+    },
+    {
+      "url": "https://gori.me/?s=%E5%A3%81%E7%B4%99%20%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89",
+      "error": "The read operation timed out",
+      "query": "壁紙 ダウンロード",
+      "provider": "onsite_search",
+      "domain": "gori.me",
+      "observation": "Retrieval failed; no demand conclusion drawn."
+    }
+  ],
+  "verified_sources": [
+    {
+      "url": "https://support.google.com/pixelphone/answer/7283443?hl=ja",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://support.google.com/chromebook/answer/1251809?hl=ja",
+      "final_url": "https://support.google.com/chromebook/answer/1251809?hl=ja",
+      "http_status": 200,
+      "title": "Chromebook の背景の壁紙とスクリーン セーバーを変更する - Chromebook ヘルプ",
+      "wallpaper_links": [],
+      "observation": "Official Japanese Chromebook wording identifies 背景の壁紙, デスクトップ, and downloaded PNG/JPG images. Screensavers and AI-generation features are separate from wallpaper downloads.",
+      "snippet": "Chromebook の背景の壁紙とスクリーン セーバーを変更する - Chromebook ヘルプ メイン コンテンツにスキップ Chromebook の背景の壁紙とス"
+    },
+    {
+      "url": "https://developers.google.com/search/docs/appearance/title-link?hl=ja",
+      "final_url": "https://developers.google.com/search/docs/appearance/title-link?hl=ja",
+      "http_status": 200,
+      "title": "Google 検索結果のタイトルリンクの変更 | Google 検索セントラル  |  Documentation  |  Google for Developers",
+      "wallpaper_links": [],
+      "observation": "Google recommends accurate, concrete, concise titles in the page language; avoid repeated keyword strings and unsupported content promises.",
+      "snippet": "ホーム Search Central Documentation フィードバックを送信 Google 検索結果のタイトルリンク（見出し）の変更 タイトルリンクは、Goog"
+    },
+    {
+      "url": "https://developers.google.com/search/docs/appearance/snippet?hl=ja",
+      "final_url": "https://developers.google.com/search/docs/appearance/snippet?hl=ja",
+      "http_status": 200,
+      "title": "スニペットの管理・メタ ディスクリプションについて | Google 検索セントラル  |  Documentation  |  Google for Developers",
+      "wallpaper_links": [],
+      "observation": "Google allows accurate programmatic descriptions for large databases, requires page-specific information, and can rewrite snippets based on query and page text; no fixed Japanese description-character limit is guaranteed.",
+      "snippet": "ホーム Search Central Documentation フィードバックを送信 検索結果のスニペットを管理する スニペット とは、Google 検索やその他のサー"
+    },
+    {
+      "url": "https://orefolder.jp/2019/10/pixel-4-wallpaper-2/",
+      "final_url": "https://orefolder.jp/2019/10/pixel-4-wallpaper-2/",
+      "http_status": 200,
+      "title": "Pixel 4でよく見るP4と描かれた壁紙「愛、そしてPixel」を設定する方法 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "Pixel 4（仮称）っぽい壁紙画像を作ってみました",
+          "url": "https://orefolder.jp/2019/10/pixel-4-wallpaper/"
+        }
+      ],
+      "observation": "Japanese article distinguishes promotional wallpaper from the default home-screen wallpaper; device attribution alone does not prove a file is default or official.",
+      "snippet": "Pixel 4でよく見るP4と描かれた壁紙「愛、そしてPixel」を設定する方法 – OREFOLDER ホーム画面カスタマイズ Pixel 4でよく見るP4と描かれた壁"
+    },
+    {
+      "url": "https://orefolder.jp/2018/01/huawei-themes/",
+      "final_url": "https://orefolder.jp/2018/01/huawei-themes/",
+      "http_status": 200,
+      "title": "ファーウェイのスマホで「テーマ」をダウンロードしてアイコンや壁紙をまとめて変更する方法 – OREFOLDER",
+      "wallpaper_links": [],
+      "observation": "Japanese phrasing uses ファーウェイ for editorial brand mentions and Latin Huawei/P10 lite for model identifiers; a theme changes icons and wallpaper together, so a wallpaper image gallery must not promise a downloadable theme.",
+      "snippet": "ファーウェイのスマホで「テーマ」をダウンロードしてアイコンや壁紙をまとめて変更する方法 – OREFOLDER スマホの使い方 ファーウェイのスマホで「テーマ」をダウンロ"
+    },
+    {
+      "url": "https://orefolder.jp/2014/02/wallpaper/",
+      "final_url": "https://orefolder.jp/2014/02/wallpaper/",
+      "http_status": 200,
+      "title": "はじめてのホーム画面カスタマイズ：壁紙設定あれこれ – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "画像を選ぶだけじゃない！Androidの壁紙アプリあれこれ9選 | OREFOLDER",
+          "url": "https://orefolder.jp/2020/12/android-wallpaper-apps/"
+        },
+        {
+          "title": "自動壁紙せっちゃん",
+          "url": "https://play.google.com/store/apps/details?id=jp.hyoromo.automaticsettingwallpaper"
+        }
+      ],
+      "observation": "Japanese vocabulary centers 壁紙 and ホーム画面. The dated sizing advice is not adopted as a modern universal compatibility guarantee.",
+      "snippet": "はじめてのホーム画面カスタマイズ：壁紙設定あれこれ – OREFOLDER チュートリアル はじめてのホーム画面カスタマイズ：壁紙設定あれこれ orefolder 201"
+    },
+    {
+      "url": "https://orefolder.jp/2017/02/minimal-flat-design-wallpapers/",
+      "final_url": "https://orefolder.jp/2017/02/minimal-flat-design-wallpapers/",
+      "http_status": 200,
+      "title": "ミニマルフラットな壁紙でセンスアップ！フラットデザインの壁紙がダウンロードできるアプリ5選 – OREFOLDER",
+      "wallpaper_links": [],
+      "observation": "Titles naturally combine a design style, 壁紙, and ダウンロード. Styles should describe visible/listed assets, not arbitrary SEO adjectives.",
+      "snippet": "ミニマルフラットな壁紙でセンスアップ！"
+    },
+    {
+      "url": "https://helentech.jp/news-33252/",
+      "final_url": "https://helentech.jp/news-33252/",
+      "http_status": 200,
+      "title": "Pixel Fold と Pixel Tablet に新しいライブ壁紙が追加 | HelenTech",
+      "wallpaper_links": [],
+      "observation": "Uses exact Pixel Fold/Pixel Tablet names and ライブ壁紙 for a real motion/software feature; a static JPG/PNG collection must not inherit this feature or the article’s asset counts.",
+      "snippet": "Pixel Fold と Pixel Tablet に新しいライブ壁紙が追加 2023 9/03 2023年9月3日 Masahide Omura 当サイトは Googl"
+    },
+    {
+      "url": "https://helentech.jp/how-to-change-wallpaper-on-chromebook/",
+      "final_url": "https://helentech.jp/how-to-change-wallpaper-on-chromebook/",
+      "http_status": 200,
+      "title": "Chromebook の壁紙を変更する方法。設定手順を解説 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Chromebook Plus で使える AI 壁紙生成の｢独自に作成｣の使い方。ChromeOS 138 からの新機能",
+          "url": "https://helentech.jp/chromebook-plus-ai-wallpaper-how-to/"
+        },
+        {
+          "title": "Chromebook Plus に新しい限定壁紙・スクリーンセーバー｢木星｣が登場",
+          "url": "https://helentech.jp/news-71028/"
+        }
+      ],
+      "observation": "Uses デスクトップの壁紙 for Chromebook, 自分の画像 for saved JPG/PNG assets, and separate language for dynamic themes.",
+      "snippet": "Chromebook の壁紙を変更する方法。"
+    },
+    {
+      "url": "https://helentech.jp/news-aluminium-os-desktop-exclusive-wallpapers-85998/",
+      "final_url": "https://helentech.jp/news-aluminium-os-desktop-exclusive-wallpapers-85998/",
+      "http_status": 200,
+      "title": "Aluminium OS 向け「Desktop Exclusive」壁紙の 4 種類が新たに判明 | HelenTech",
+      "wallpaper_links": [
+        {
+          "title": "Pixel 11 Pro Fold の壁紙が Android 17 QPR1 Beta 1 から発見。新色が追加か",
+          "url": "https://helentech.jp/news-pixel-85279/"
+        },
+        {
+          "title": "Google の「Aluminium OS」の壁紙がリーク。開発中の Chromebook のコードネームも確認",
+          "url": "https://helentech.jp/news-chromebook-84072/"
+        }
+      ],
+      "observation": "Distinguishes desktop-specific assets from phone assets. Device/OS association does not guarantee that every file is appropriate for both aspect ratios.",
+      "snippet": "Aluminium OS 向け「Desktop Exclusive」壁紙の 4 種類が新たに判明 2026 5/11 2026年5月11日 Masahide Omura "
+    },
+    {
+      "url": "https://gori.me/microsoft/windows/161911",
+      "final_url": "https://gori.me/microsoft/windows/161911",
+      "http_status": 200,
+      "title": "Windows XP「草原」壁紙デザインのクロックスが一般販売開始、Microsoft創立50周年記念モデル | ゴリミー",
+      "wallpaper_links": [],
+      "observation": "Japanese copy keeps Windows XP in Latin script and uses デスクトップ壁紙. This source is vocabulary evidence, not proof that PhWalls contains the Bliss image.",
+      "snippet": "このクロックスは、Windows XPの象徴的なデスクトップ壁紙 「草原（Bliss）」 がテーマ。"
+    },
+    {
+      "url": "https://orefolder.jp/?s=Xperia%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Xperia%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Xperia 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "壁紙を楽しむ【ホーム画面コンテスト2021】 2021年05月10日",
+          "url": "https://orefolder.jp/2021/05/contest-2021-14/"
+        },
+        {
+          "title": "どっちが壁紙!? 【あなたのホーム画面見せてください 2018】 2018年11月24日",
+          "url": "https://orefolder.jp/2018/11/home2018-20/"
+        },
+        {
+          "title": "ランダムを楽しむ：壁紙はその時次第なホーム画面【ホーム画面企画2016】 2016年11月23日",
+          "url": "https://orefolder.jp/2016/11/home2016-51/"
+        },
+        {
+          "title": "MEZZO”の壁紙と必要なアプリ・機能を共存させたホーム画面【ホーム画面企画2016】 2016年10月27日",
+          "url": "https://orefolder.jp/2016/10/home2016-07/"
+        },
+        {
+          "title": "ミクさんのこの壁紙を使いたくて作りました。【ホーム画面企画2015】 2015年11月05日",
+          "url": "https://orefolder.jp/2015/11/home2015-32/"
+        }
+      ],
+      "observation": "Directly fetched Japanese wording. Collection provenance in this article must not be generalized to every PhWalls model.",
+      "snippet": "“Xperia 壁紙” の検索結果 – OREFOLDER 「Xperia 壁紙」の検索結果 Xperia 10 VIIIの価格とキャンペーンのまとめ（ソニーストアと各キ",
+      "provider": "onsite_search",
+      "query": "Xperia 壁紙"
+    },
+    {
+      "url": "https://orefolder.jp/?s=Galaxy%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Galaxy%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Galaxy 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "EDGE WALLPAPER：Galaxyのエッジスクリーンのような壁紙を作るアプリ 2018年02月28日",
+          "url": "https://orefolder.jp/2018/02/edge-wallpaper-creator/"
+        },
+        {
+          "title": "壁紙を黒にするとスマホのバッテリーが長持ちするって本当？というわけで実験してみた 2018年06月04日",
+          "url": "https://orefolder.jp/2018/06/display-bw-battery/"
+        }
+      ],
+      "observation": "Directly fetched Japanese wording. Collection provenance in this article must not be generalized to every PhWalls model.",
+      "snippet": "“Galaxy 壁紙” の検索結果 – OREFOLDER 「Galaxy 壁紙」の検索結果 EDGE WALLPAPER：Galaxyのエッジスクリーンのような壁紙を作",
+      "provider": "onsite_search",
+      "query": "Galaxy 壁紙"
+    },
+    {
+      "url": "https://orefolder.jp/?s=Pixel%20%E5%A3%81%E7%B4%99",
+      "final_url": "https://orefolder.jp/?s=Pixel%20%E5%A3%81%E7%B4%99",
+      "http_status": 200,
+      "title": "“Pixel 壁紙” の検索結果 – OREFOLDER",
+      "wallpaper_links": [
+        {
+          "title": "GoogleがPixel 11専用壁紙を配布 ー 内部基板やバッテリーを描いたデザイン 2026年09月16日",
+          "url": "https://orefolder.jp/2026/09/google-pixel11-wallpaper/"
+        },
+        {
+          "title": "Pixel 8のAI壁紙を試してみるー生成AIで自分だけの壁紙を作成しよう 2023年10月14日",
+          "url": "https://orefolder.jp/2023/10/pixel-8-ai-wallpaper/"
+        },
+        {
+          "title": "Pixelで絵文字の壁紙を生成できる「絵文字ワークショップ」を設定する 2023年06月18日",
+          "url": "https://orefolder.jp/2023/06/emoji-workshop-wallpaper/"
+        },
+        {
+          "title": "Pixelで端末の傾きに合わせて動くシネマティック壁紙を設定する 2023年06月16日",
+          "url": "https://orefolder.jp/2023/06/pixel-cinematic-wallpaper/"
+        },
+        {
+          "title": "Pixel 4でよく見るP4と描かれた壁紙「愛、そしてPixel」を設定する方法 2019年10月25日",
+          "url": "https://orefolder.jp/2019/10/pixel-4-wallpaper-2/"
+        },
+        {
+          "title": "Pixel 4（仮称）っぽい壁紙画像を作ってみました 2019年10月10日",
+          "url": "https://orefolder.jp/2019/10/pixel-4-wallpaper/"
+        }
+      ],
+      "observation": "Directly fetched Japanese wording. Collection provenance in this article must not be generalized to every PhWalls model.",
+      "snippet": "“Pixel 壁紙” の検索結果 – OREFOLDER 「Pixel 壁紙」の検索結果 GoogleがPixel 11専用壁紙を配布 ー 内部基板やバッテリーを描いたデ",
+      "provider": "onsite_search",
+      "query": "Pixel 壁紙"
+    }
+  ],
+  "additional_search_limitations": [
+    {
+      "provider": "Google Search",
+      "url": "https://www.google.com/search?q=Pixel+9+%E5%A3%81%E7%B4%99&hl=ja&gl=jp&gbv=1&udm=14",
+      "observation": "Only JavaScript/redirect shell; no usable SERP."
+    },
+    {
+      "provider": "DuckDuckGo HTML",
+      "url": "https://html.duckduckgo.com/html/?q=Pixel+9+%E5%A3%81%E7%B4%99&kl=jp-jp",
+      "observation": "Human verification challenge; not bypassed."
+    },
+    {
+      "provider": "Yahoo Japan",
+      "url": "https://search.yahoo.co.jp/search?p=Pixel+9+%E5%A3%81%E7%B4%99",
+      "observation": "Simplified search page with no result entries; related searches pixel 9 a 壁紙 and google pixel 9 a 壁紙 appeared, but these are not measured search-volume evidence."
+    },
+    {
+      "provider": "YTECHB",
+      "observation": "Parent reported API/sitemap403. Not accessed or bypassed by this research."
+    }
+  ],
+  "recommendations": {
+    "evidence_level": "Japanese-language source vocabulary and editorial conventions, not measured search habits or model-by-model provenance verification.",
+    "primary_terms": [
+      "壁紙",
+      "ダウンロード"
+    ],
+    "secondary_terms": {
+      "phone": [
+        "ホーム画面",
+        "ロック画面"
+      ],
+      "desktop": [
+        "デスクトップ壁紙",
+        "デスクトップ背景",
+        "PC用"
+      ],
+      "pad": [
+        "タブレット用",
+        "壁紙"
+      ],
+      "verified_video": [
+        "動く壁紙",
+        "動画壁紙"
+      ]
+    },
+    "title_patterns": {
+      "phone": "{exact model}の壁紙{count}枚｜無料ダウンロード | PhWalls",
+      "desktop": "{exact collection}の壁紙{count}枚｜デスクトップ背景 | PhWalls",
+      "mobile_os_variant": "{OS/version/code name}のスマホ用壁紙{count}枚 | PhWalls",
+      "edition": "{exact model + full edition}の壁紙{count}枚 | PhWalls"
+    },
+    "description_pattern": "Lead with exact model/edition and actual inventory count; add one or two verified collection features (dark/light counts, formats, colors/styles, specific dimensions), then the appropriate use and download action.",
+    "native_style": "Use Japanese sentence grammar around exact Latin product names. Do not translate Pixel, Xperia, Galaxy, Fold, Flip, Pro, Ultra, FE, Community Edition into vague Japanese identifiers. Avoid stuffing 壁紙, 待ち受け, 無料, 高画質 in every sentence.",
+    "conditional_claims": {
+      "無料": "Only if PhWalls download is actually free. This does not imply copyright-free or permitted commercial reuse.",
+      "純正/公式/標準/デフォルト": "Use only with per-collection or per-file provenance confirming the claim.",
+      "4K/8K": "Use only with file-level dimensions and intended aspect-ratio verification; do not derive from model display specification.",
+      "ライブ壁紙": "Prefer 動画壁紙/動画 for actual MP4 downloads; an MP4 is not necessarily a native live-wallpaper installation package.",
+      "待ち受け": "Optional phone secondary wording; no measured demand evidence supports prioritizing it, and it is unsuitable for PC/OS desktop collections."
+    },
+    "classification_exceptions": [
+      "Ubuntu ... Mobile Phone uses 2160×3840 phone images despite desktop category.",
+      "Chrome OS for Phone is a named phone variant despite desktop category.",
+      "Microsoft Surface Duo/Duo 2 are stored as desktop but should not automatically say PC wallpaper.",
+      "Android 15 sample contains 5120×2880 landscape images; do not universally label all Android OS images as vertical smartphone wallpapers.",
+      "Galaxy Z Flip cover assets can be identified where filenames explicitly include cover; do not assert all Fold/Flip files support both cover and inner displays.",
+      "Samsung Galaxy Z TriFold and some Samsung Wxx collections may have phone category; preserve exact model and avoid category-based hardware claims."
+    ],
+    "variant_integrity": [
+      "Retain Pro, XL, Ultra, FE, Plus, 4G/5G, Fold/Flip and full named editions.",
+      "Google Pixel 6(October 8) and Google Pixel 3 Promotional must retain their collection distinctions.",
+      "Galaxy Note 10+ Star Wars and Star Wars Edition remain distinct collections (9 vs8 assets).",
+      "Windows 7, Windows 7 Downloadable and Windows 7 Regional are separate collections; do not silently merge.",
+      "Preserve Ubuntu version/codename and Mobile Phone suffix; collection names are evidence, not proof of release status."
+    ]
+  },
+  "examples": [
+    {
+      "id": "e5600fd675b1435fe654418688295371",
+      "device_name": "Google Pixel 9",
+      "device_slug": "google-pixel-9",
+      "wallpaper_count": 8,
+      "title": "Google Pixel 9の壁紙8枚｜無料ダウンロード | PhWalls",
+      "description": "Google Pixel 9の壁紙8枚を無料ダウンロード。Jade、Obsidian、Peony、Porcelainのライト版・ダーク版を各4枚収録。3000×3000のJPEG画像から、ホーム画面やロック画面に使いたい1枚を選べます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "ae22f35d6c81032e28e929219deef7f4",
+      "device_name": "Google Pixel 9 Pro Fold",
+      "device_slug": "google-pixel-9-pro-fold",
+      "wallpaper_count": 4,
+      "title": "Google Pixel 9 Pro Foldの壁紙4枚｜無料ダウンロード | PhWalls",
+      "description": "Google Pixel 9 Pro Foldの壁紙4枚を掲載。ObsidianとPorcelainのライト版・ダーク版をJPEGでダウンロードできます。Pixel 9や9 Proの壁紙と区別して、このコレクションの画像を選べます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "1164cda26debcfeadcf618aa428dc4b1",
+      "device_name": "Samsung Galaxy Z Flip 5",
+      "device_slug": "samsung-galaxy-z-flip-5",
+      "wallpaper_count": 45,
+      "title": "Samsung Galaxy Z Flip 5の壁紙45枚｜無料ダウンロード | PhWalls",
+      "description": "Samsung Galaxy Z Flip 5の壁紙45枚を無料ダウンロード。カバー画面用の画像を含むPNG・JPGのコレクションです。グラデーションや抽象デザインを見比べて、表示したい画面に合わせて選べます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "05afc2fbc5135fbe9a5a133ca89a3900",
+      "device_name": "Sony Xperia 1 II",
+      "device_slug": "sony-xperia-1-ii",
+      "wallpaper_count": 33,
+      "title": "Sony Xperia 1 IIの壁紙33枚｜無料ダウンロード | PhWalls",
+      "description": "Sony Xperia 1 IIの壁紙33枚をPNG・JPGでダウンロード。黒を基調にした抽象デザインやグラデーションなどを収録しています。Xperia 1や1 IVと区別して、1 IIの画像を探せます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "6b28e7dd71f516ae8a7dc9510f5a3102",
+      "device_name": "Huawei MatePad Pro",
+      "device_slug": "huawei-matepad-pro",
+      "wallpaper_count": 4,
+      "title": "Huawei MatePad Proの壁紙4枚｜タブレット用 | PhWalls",
+      "description": "Huawei MatePad Proの壁紙4枚を無料ダウンロード。2000×1600のJPG画像で、ゴールドやグリーン系のグラデーション・抽象デザインを収録。タブレットの背景に使う画像を選べます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "f79315c496629e6991310ec351f5d2ac",
+      "device_name": "Windows 11",
+      "device_slug": "windows-11",
+      "wallpaper_count": 31,
+      "title": "Windows 11の壁紙31枚｜デスクトップ背景 | PhWalls",
+      "description": "Windows 11の壁紙31枚をJPG・PNGで無料ダウンロード。抽象デザインやグラデーション、写真を収録しています。PCのデスクトップ背景に使いたい画像を、デザインを見比べながら選べます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "f5f4f9855d31bf00ff897d99c6fc7cdc",
+      "device_name": "Ubuntu 24.04 LTS Noble Numbat Mobile Phone",
+      "device_slug": "ubuntu-24-04-lts-noble-numbat-mobile-phone",
+      "wallpaper_count": 4,
+      "title": "Ubuntu 24.04 LTS Noble Numbatのスマホ用壁紙4枚 | PhWalls",
+      "description": "Ubuntu 24.04 LTS Noble NumbatのMobile Phone版を4枚収録。2160×3840の縦長JPG画像をダウンロードできます。カラー版に加えてダーク・ライト・Dimmed版を掲載した、スマートフォン向けコレクションです。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "ce527fbcb2837e226804d07711a10130",
+      "device_name": "Android 15 (Vanilla Ice Cream)",
+      "device_slug": "android-15-vanilla-ice-cream",
+      "wallpaper_count": 3,
+      "title": "Android 15（Vanilla Ice Cream）の壁紙3枚 | PhWalls",
+      "description": "Android 15（Vanilla Ice Cream）の壁紙3枚を掲載。5120×2880の横長JPG画像で、ダーク版も1枚収録しています。OS名で探せる壁紙コレクションから、好みの背景を無料ダウンロードできます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "0a9b124b6c9a17430fc471f999ab9d4b",
+      "device_name": "Nothing Phone 3a Community Edition",
+      "device_slug": "nothing-phone-3a-community-edition",
+      "wallpaper_count": 4,
+      "title": "Nothing Phone 3a Community Editionの壁紙4枚 | PhWalls",
+      "description": "Nothing Phone 3a Community Editionの壁紙4枚を無料ダウンロード。アクア、シアン、マゼンタ、パープルのPNG画像を1200×2676で収録。通常のPhone 3aと区別して、Community Editionのコレクションを見られます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    },
+    {
+      "id": "ce28b6e8a7261f39480d61d8a6846b30",
+      "device_name": "Samsung Galaxy Note 10+ Star Wars Edition",
+      "device_slug": "samsung-galaxy-note-10-star-wars-edition",
+      "wallpaper_count": 8,
+      "title": "Samsung Galaxy Note 10+ Star Wars Editionの壁紙8枚 | PhWalls",
+      "description": "Samsung Galaxy Note 10+ Star Wars Editionの壁紙8枚をPNGでダウンロード。黒や赤を基調にしたグラデーション・抽象デザインなどを収録しています。このEdition名のコレクションから画像を選べます。",
+      "factual_basis": "inventory.json counts/formats/dimensions/asset names; native wording based on verified Japanese sources; free download claim requires product confirmation."
+    }
+  ],
+  "summary_counts": {
+    "inventory_collections": 995,
+    "onsite_queries": 29,
+    "recorded_bing_queries": 6,
+    "accessible_direct_sources": 11,
+    "example_collections": 10
+  }
+}

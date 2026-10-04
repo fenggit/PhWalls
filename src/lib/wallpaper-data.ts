@@ -12,8 +12,11 @@ export type WallpaperAsset = {
 };
 
 export type WallpaperCollection = {
+  deviceId?: string;
   name: string;
   slug?: string;
+  seoTitle?: string | null;
+  description?: string | null;
   date: string;
   item: WallpaperAsset[];
   // 首页轻量索引专用：集合内壁纸总数。

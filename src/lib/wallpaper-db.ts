@@ -1,5 +1,7 @@
 import { getOptionalRequestContext } from '@cloudflare/next-on-pages';
 import type { WallpaperAsset, WallpaperCollection } from '@/lib/wallpaper-data';
+import type { Language } from '@/types';
+import { withWallpaperQueryCache } from '@/lib/wallpaper-query-cache';
 
 export type RecordStatus = 'draft' | 'published' | 'unpublished';
 export type DeviceCategory = 'phone' | 'phone_fold' | 'pad' | 'desktop' | 'os';
@@ -50,6 +52,22 @@ export type WallpaperRow = {
   updated_date: number;
 };
 
+export type DeviceI18nRow = {
+  id: string;
+  device_id: string;
+  display_name: string | null;
+  seo_title: string | null;
+  description: string | null;
+  language: Language;
+  create_date: number;
+  updated_date: number;
+};
+
+export type DeviceI18nListRow = DeviceI18nRow & {
+  device_name: string;
+  brand_name: string;
+};
+
 export function isWallpaperDbEnabled(): boolean {
   const bindings = getOptionalRequestContext()?.env as { WALLPAPER_DATA_SOURCE?: string } | undefined;
   return (bindings?.WALLPAPER_DATA_SOURCE || process.env.WALLPAPER_DATA_SOURCE) === 'd1';
@@ -67,6 +85,20 @@ export async function isPublishedWallpaperKey(key: string, originOnly = false): 
   const result = await getWallpaperDb().prepare(query)
     .bind(...(originOnly ? [key, /\.(mp4|webm)$/i.test(key) ? 1 : 0] : [key, key])).first();
   return Boolean(result);
+}
+
+export async function getPublishedWallpaperKeys(keys: string[]): Promise<Set<string>> {
+  if (!keys.length) return new Set();
+  if (!isWallpaperDbEnabled()) return new Set(keys.filter((key) => !/\.(mp4|webm)$/i.test(key)));
+  const { results } = await getWallpaperDb().prepare(
+    `SELECT k.value AS key FROM json_each(?) k
+     WHERE EXISTS (
+       SELECT 1 FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id
+       WHERE d.status = 'published' AND w.status = 'published'
+         AND (w.origin_key = k.value OR w.compress_key = k.value)
+     )`
+  ).bind(JSON.stringify(keys)).all<{ key: string }>();
+  return new Set(results.map((row) => row.key));
 }
 
 export function getWallpaperDb(): D1Database {
@@ -94,20 +126,35 @@ export function toWallpaperAsset(row: WallpaperRow): WallpaperAsset {
   };
 }
 
-function toCollection(device: DeviceRow, wallpapers: WallpaperRow[]): WallpaperCollection {
+type LocalizedDeviceRow = DeviceRow & { display_name: string; seo_title: string | null; description: string | null };
+
+const localizedFields = `COALESCE(local.display_name, english.display_name, d.device_name) AS display_name,
+  local.seo_title, COALESCE(local.description, english.description) AS description`;
+const translationJoins = `LEFT JOIN w_device_i18n local ON local.device_id = d.id AND local.language = ?
+  LEFT JOIN w_device_i18n english ON english.device_id = d.id AND english.language = 'en'`;
+
+function toCollection(device: LocalizedDeviceRow, wallpapers: WallpaperRow[]): WallpaperCollection {
   return {
-    name: device.device_name,
+    deviceId: device.id,
+    name: device.display_name,
+    seoTitle: device.seo_title,
+    description: device.description,
     slug: device.device_slug,
     date: device.release_date,
     item: wallpapers.map(toWallpaperAsset),
   };
 }
 
-export async function loadDbCollections(brand: string): Promise<WallpaperCollection[]> {
+export async function loadDbCollections(brand: string, language: Language = 'en'): Promise<WallpaperCollection[]> {
+  return withWallpaperQueryCache(['collections', brand, language], () => queryDbCollections(brand, language));
+}
+
+async function queryDbCollections(brand: string, language: Language): Promise<WallpaperCollection[]> {
   const db = getWallpaperDb();
   const { results: devices } = await db.prepare(
-    "SELECT * FROM w_devices WHERE brand_name = ? AND status = 'published' ORDER BY release_date DESC, device_name"
-  ).bind(brand).all<DeviceRow>();
+    `SELECT d.*, ${localizedFields} FROM w_devices d ${translationJoins}
+     WHERE d.brand_name = ? AND d.status = 'published' ORDER BY d.release_date DESC, d.device_name`
+  ).bind(language, brand).all<LocalizedDeviceRow>();
   if (!devices.length) return [];
   const { results: wallpapers } = await db.prepare(
     `SELECT w.* FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id
@@ -124,11 +171,16 @@ export async function loadDbCollections(brand: string): Promise<WallpaperCollect
     .map((device) => toCollection(device, byDevice.get(device.id)!));
 }
 
-export async function loadDbCollection(brand: string, slug: string): Promise<WallpaperCollection | null> {
+export async function loadDbCollection(brand: string, slug: string, language: Language = 'en'): Promise<WallpaperCollection | null> {
+  return withWallpaperQueryCache(['collection', brand, slug, language], () => queryDbCollection(brand, slug, language));
+}
+
+async function queryDbCollection(brand: string, slug: string, language: Language): Promise<WallpaperCollection | null> {
   const db = getWallpaperDb();
   const device = await db.prepare(
-    "SELECT * FROM w_devices WHERE brand_name = ? AND device_slug = ? AND status = 'published'"
-  ).bind(brand, slug).first<DeviceRow>();
+    `SELECT d.*, ${localizedFields} FROM w_devices d ${translationJoins}
+     WHERE d.brand_name = ? AND d.device_slug = ? AND d.status = 'published'`
+  ).bind(language, brand, slug).first<LocalizedDeviceRow>();
   if (!device) return null;
   const { results } = await db.prepare(
     "SELECT * FROM w_wallpapers WHERE device_id = ? AND status = 'published' ORDER BY is_primary DESC, create_date ASC, name ASC"
@@ -136,26 +188,36 @@ export async function loadDbCollection(brand: string, slug: string): Promise<Wal
   return results.length ? toCollection(device, results) : null;
 }
 
-export async function loadDbIndex(brands: string[]): Promise<Record<string, WallpaperCollection[]>> {
+export async function loadDbIndex(brands: string[], language: Language = 'en'): Promise<Record<string, WallpaperCollection[]>> {
+  return withWallpaperQueryCache(['index', brands, language], () => queryDbIndex(brands, language));
+}
+
+async function queryDbIndex(brands: string[], language: Language): Promise<Record<string, WallpaperCollection[]>> {
   const db = getWallpaperDb();
   const index: Record<string, WallpaperCollection[]> = Object.fromEntries(brands.map((brand) => [brand, []]));
   const { results } = await db.prepare(
     `WITH ranked AS (
-       SELECT w.*, COUNT(*) OVER (PARTITION BY w.device_id) AS count,
+       SELECT w.device_id, w.name, w.mime_type, w.size_bytes, w.origin_key, w.compress_key, w.tags,
+         COUNT(*) OVER (PARTITION BY w.device_id) AS count,
          ROW_NUMBER() OVER (PARTITION BY w.device_id ORDER BY w.is_primary DESC, w.create_date ASC, w.name ASC) AS rank
-       FROM w_wallpapers w WHERE w.status = 'published'
+       FROM w_devices d JOIN w_wallpapers w ON w.device_id = d.id
+       WHERE d.brand_name IN (SELECT value FROM json_each(?))
+         AND d.status = 'published' AND w.status = 'published'
      )
-     SELECT d.brand_name, d.device_name, d.device_slug, d.release_date,
+     SELECT d.id, d.brand_name, d.device_name, d.device_slug, d.release_date, ${localizedFields},
        w.count, w.name, w.mime_type, w.size_bytes, w.origin_key, w.compress_key, w.tags
-     FROM w_devices d JOIN ranked w ON w.device_id = d.id AND w.rank = 1
+     FROM w_devices d JOIN ranked w ON w.device_id = d.id AND w.rank = 1 ${translationJoins}
      WHERE d.status = 'published'
      ORDER BY d.release_date DESC, d.device_name`
-  ).all<Pick<DeviceRow, 'brand_name' | 'device_name' | 'device_slug' | 'release_date'> &
+  ).bind(JSON.stringify(brands), language).all<Pick<LocalizedDeviceRow, 'id' | 'brand_name' | 'display_name' | 'seo_title' | 'description' | 'device_slug' | 'release_date'> &
     Pick<WallpaperRow, 'name' | 'mime_type' | 'size_bytes' | 'origin_key' | 'compress_key' | 'tags'> & { count: number }>();
   for (const row of results) {
     if (!Object.prototype.hasOwnProperty.call(index, row.brand_name)) continue;
     index[row.brand_name].push({
-      name: row.device_name,
+      deviceId: row.id,
+      name: row.display_name,
+      seoTitle: row.seo_title,
+      description: row.description,
       slug: row.device_slug,
       date: row.release_date,
       count: row.count,

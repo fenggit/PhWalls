@@ -1,3 +1,4 @@
+import { applyCollectionSeo } from '@/lib/collection-seo';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, localizeWallpaperCollectionName } from '@/lib/data';
 import { LanguageCode, type Language } from '@/types';
 import type { WallpaperCollection } from '@/lib/wallpaper-data';
@@ -12,6 +13,7 @@ export type WallpaperDeviceGroup =
 
 type WallpaperDetailSeoCopyInput = {
   collectionName: string;
+  displayName?: string;
   categoryLabel: string;
   count: number;
   formats: string[];
@@ -112,22 +114,23 @@ export function buildWallpaperCollectionSeoCopy(
   collection: WallpaperCollection,
   categoryLabel: string
 ): WallpaperDetailSeoCopy {
-  return buildWallpaperDetailSeoCopy(language, {
+  return applyCollectionSeo(buildWallpaperDetailSeoCopy(language, {
     collectionName: collection.name,
+    displayName: collection.deviceId ? collection.name : undefined,
     categoryLabel,
     count: collection.item.length,
     formats: Array.from(new Set(
       collection.item.map((item) => item.type.trim().replace(/^image\//i, '').toUpperCase()).filter(Boolean)
     )).slice(0, 4),
     variantLabels: collectWallpaperVariantLabels(collection.name, collection.item.map((item) => item.name)),
-  });
+  }), collection);
 }
 
 export function buildWallpaperDetailSeoCopy(
   language: Language,
   input: WallpaperDetailSeoCopyInput
 ): WallpaperDetailSeoCopy {
-  const seoName = buildSeoName(language, input.collectionName, input.variantLabels);
+  const seoName = input.displayName || buildSeoName(language, input.collectionName, input.variantLabels);
   const formatText = buildFormatText(input.formats);
 
   switch (language) {

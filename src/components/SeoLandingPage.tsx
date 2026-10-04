@@ -27,6 +27,7 @@ type LandingWallpaperItem = {
 };
 
 type LandingCard = {
+  deviceId?: string;
   name: string;
   slug?: string;
   date: string;
@@ -178,8 +179,8 @@ export default function SeoLandingPage({
               const detailHref = detailPathPrefix
                 ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`,currentLang)
                 : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
-              const cardDisplayName = localizeWallpaperCollectionName(currentLang, card.name);
-              const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix);
+              const cardDisplayName = card.deviceId ? card.name : localizeWallpaperCollectionName(currentLang, card.name);
+              const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix, Boolean(card.deviceId));
               return (
                 <article key={card.name} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
                   <Link href={detailHref} className="block w-full text-left" aria-label={cardTitle}>
