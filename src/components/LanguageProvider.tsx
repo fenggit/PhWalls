@@ -71,7 +71,7 @@ export function LanguageProvider({
   // 初始化语言设置（仅在客户端执行一次）
   useEffect(() => {
     if (typeof window === 'undefined' || isInitialized) return;
-    if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')) {
+    if (/^\/(?:admin|manager)(?:\/|$)/.test(window.location.pathname)) {
       setIsInitialized(true);
       return;
     }

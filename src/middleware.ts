@@ -111,20 +111,27 @@ export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname.toLowerCase();
   const adminHost = (process.env.ADMIN_HOST || 'a.phwalls.com').toLowerCase();
   const localAdmin = process.env.NODE_ENV === 'development' && hostname === 'localhost';
-  if (/^\/(?:en|zh|ja|vi|zh-hant)\/admin(?:\/|$)/.test(pathname)) {
+  const localizedAdmin = pathname.match(/^\/(?:en|zh|ja|vi|zh-hant)(\/(?:admin|manager)(?:\/.*)?)$/);
+  const adminPage = /^\/(?:admin|manager)(?:\/|$)/.test(pathname);
+  const adminApi = /^\/api\/admin(?:\/|$)/.test(pathname);
+  if (localizedAdmin || adminPage || adminApi) {
     if (hostname !== adminHost && !localAdmin) return new NextResponse(null, { status: 404 });
-    return NextResponse.redirect(new URL('/admin', request.url), 308);
+    if (localizedAdmin || /^\/admin(?:\/|$)/.test(pathname)) {
+      const target = request.nextUrl.clone();
+      target.pathname = (localizedAdmin?.[1] || pathname).replace(/^\/admin(?=\/|$)/, '/manager');
+      return NextResponse.redirect(target, 308);
+    }
+    return NextResponse.next();
   }
   if (hostname === adminHost && !localAdmin) {
-    if (pathname === '/') return NextResponse.redirect(new URL('/admin', request.url));
-    if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin') &&
-        !pathname.startsWith('/_next') && !pathname.match(/\.[a-z0-9]+$/i)) {
+    if (pathname === '/') {
+      const target = request.nextUrl.clone();
+      target.pathname = '/manager';
+      return NextResponse.redirect(target);
+    }
+    if (!pathname.startsWith('/_next') && !pathname.match(/\.[a-z0-9]+$/i)) {
       return new NextResponse(null, { status: 404 });
     }
-  }
-  if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-    if (hostname !== adminHost && !localAdmin) return new NextResponse(null, { status: 404 });
-    return NextResponse.next();
   }
   const pathLanguage = getLanguageFromPath(pathname);
   const strippedPath = pathLanguage ? stripLanguagePrefix(pathname).path : pathname;

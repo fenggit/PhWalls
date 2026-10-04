@@ -130,22 +130,67 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   if (input.is_popular_brand !== undefined && input.is_popular_brand !== 0 && input.is_popular_brand !== 1) {
     throw new Error('热门品牌标记无效');
   }
-  if (nextStatus === 'published' && previous.status !== 'published') {
-    const check = await db.prepare(
-      `SELECT COUNT(*) AS count FROM w_wallpapers WHERE device_id = ? AND status = 'published' AND is_primary = 1`
-    ).bind(id).first<{ count: number }>();
-    if (!check?.count) throw new Error('发布前至少需要一张已发布的主展示壁纸');
+  if (input.publish_drafts !== undefined && typeof input.publish_drafts !== 'boolean') {
+    throw new Error('草稿发布选项无效');
   }
+  const publishDrafts = nextStatus === 'published' && input.publish_drafts === true;
   const now = Date.now();
+  let drafts: WallpaperRow[] = [];
+  if (publishDrafts) {
+    const { results } = await db.prepare(
+      "SELECT * FROM w_wallpapers WHERE device_id = ? AND status IN ('draft', 'published') AND deletion_state = 'none'"
+    ).bind(id).all<WallpaperRow>();
+    if (!results.some((wallpaper) => wallpaper.is_primary)) throw new Error('请先设置一张主展示壁纸');
+    drafts = results.filter((wallpaper) => wallpaper.status === 'draft');
+    for (const wallpaper of drafts) {
+      if (!wallpaper.compress_key) throw new Error(`壁纸“${wallpaper.name}”缺少预览图或视频封面`);
+      const [originInfo, previewInfo] = await Promise.all([
+        headR2Object(wallpaper.origin_key), headR2Object(wallpaper.compress_key),
+      ]);
+      if (!originInfo || !previewInfo) throw new Error(`壁纸“${wallpaper.name}”的 R2 原图或预览文件不存在`);
+      if (originInfo.size !== wallpaper.size_bytes) throw new Error(`壁纸“${wallpaper.name}”的原图大小与 R2 不一致`);
+    }
+  } else if (nextStatus === 'published' && previous.status !== 'published') {
+    const check = await db.prepare(
+      `SELECT COUNT(*) AS count FROM w_wallpapers WHERE device_id = ? AND status = 'published' AND is_primary = 1 AND deletion_state = 'none'`
+    ).bind(id).first<{ count: number }>();
+    if (!check?.count) throw new Error('主图标记不会自动发布壁纸，请勾选“一并发布草稿壁纸”，或先将主展示壁纸设为已发布');
+  }
   try {
-    await db.prepare(
+    const update = db.prepare(
       `UPDATE w_devices SET device_name = ?, name_key = ?, device_category = ?, brand_logo = ?, device_splash_url = ?,
-        release_date = ?, status = ?, updated_date = ? WHERE id = ?`
+        release_date = ?, status = ?, updated_date = ? WHERE id = ?${publishDrafts ? `
+        AND updated_date = ?
+        AND EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'published' AND is_primary = 1 AND deletion_state = 'none')
+        AND NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'draft' AND deletion_state = 'none')` : ''}`
     ).bind(name, nameKey === previousNameKey ? previous.name_key : nameKey, selectedCategory,
       input.brand_logo === undefined ? previous.brand_logo : input.brand_logo || null,
       input.device_splash_url === undefined ? previous.device_splash_url : input.device_splash_url || null,
       input.release_date === undefined ? previous.release_date : String(input.release_date || ''),
-      nextStatus, now, id).run();
+      nextStatus, now, id, ...(publishDrafts ? [previous.updated_date] : []));
+    if (publishDrafts) {
+      // 所有草稿都必须仍匹配 R2 核验时的快照，避免发布并发编辑或刚上传的未核验文件。
+      const publish = db.prepare(
+        `UPDATE w_wallpapers SET status = 'published', updated_date = ?
+         WHERE device_id = ? AND status = 'draft' AND deletion_state = 'none'
+         AND EXISTS (SELECT 1 FROM w_devices WHERE id = ? AND updated_date = ?)
+         AND EXISTS (SELECT 1 FROM w_wallpapers primary_wallpaper WHERE primary_wallpaper.device_id = ?
+           AND primary_wallpaper.is_primary = 1 AND primary_wallpaper.status IN ('draft', 'published') AND primary_wallpaper.deletion_state = 'none')
+         AND NOT EXISTS (
+           SELECT 1 FROM w_wallpapers draft WHERE draft.device_id = ? AND draft.status = 'draft' AND draft.deletion_state = 'none'
+           AND NOT EXISTS (SELECT 1 FROM json_each(?) checked
+             WHERE json_extract(checked.value, '$.id') = draft.id
+               AND json_extract(checked.value, '$.updated_date') = draft.updated_date
+               AND json_extract(checked.value, '$.origin_key') = draft.origin_key
+               AND json_extract(checked.value, '$.compress_key') = draft.compress_key
+               AND json_extract(checked.value, '$.size_bytes') = draft.size_bytes))`
+      ).bind(now, id, id, previous.updated_date, id, id, JSON.stringify(drafts.map(({ id, updated_date, origin_key, compress_key, size_bytes }) =>
+        ({ id, updated_date, origin_key, compress_key, size_bytes }))));
+      const results = await db.batch([publish, update]);
+      if (results[1].meta.changes !== 1) throw new Error('设备或壁纸在发布期间发生变化，请刷新后重试');
+    } else {
+      await update.run();
+    }
   } catch (error) {
     if (isUniqueConstraintError(error)) throw new Error('该品牌下设备或系统已存在');
     throw error;
@@ -212,10 +257,12 @@ export async function createAdminWallpaper(input: Record<string, unknown>): Prom
   const inserted = await db.prepare(
     `INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,width,height,file_format,
       theme,media_type,category,is_primary,tags,status,create_date,updated_date)
-     SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,'draft',?,? WHERE ${availableFilesClause}`
+     SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,
+       CASE WHEN NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = ? AND category = ?) THEN 1 ELSE 0 END,
+       ?,'draft',?,? WHERE ${availableFilesClause}`
   ).bind(id, deviceId, name, assertText(input.mime_type, 'MIME 类型', 100), size, origin, preview,
     input.width || null, input.height || null, extension, selectedTheme, media, selectedCategory,
-    tags(input.tags || []), now, now, origin, preview, origin, preview).run();
+    deviceId, selectedCategory, tags(input.tags || []), now, now, origin, preview, origin, preview).run();
   if (inserted.meta.changes !== 1) throw new Error('文件正在删除，无法创建引用这些文件的壁纸');
   return (await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>())!;
 }

@@ -1,11 +1,9 @@
-import type { Metadata } from 'next';
-import AdminConsole from './AdminConsole';
+import { redirect } from 'next/navigation';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = { title: '壁纸管理 | PhWalls', robots: { index: false, follow: false } };
-
-export default function AdminPage() {
-  return <AdminConsole />;
+// 旧入口由中间件保留查询参数并重定向；页面兜底也只进入新入口。
+export default function LegacyAdminPage() {
+  redirect('/manager');
 }

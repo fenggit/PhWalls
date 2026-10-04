@@ -1,8 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
-import AdminDeviceI18nPanel from '@/app/admin/AdminDeviceI18nPanel';
+import AdminDeviceI18nPanel from '@/app/manager/AdminDeviceI18nPanel';
+import { adminTabHref, resolveAdminTab, type AdminTab } from '@/lib/admin-navigation';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import type { DeviceI18nRow, DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
 import type { Language } from '@/types';
@@ -16,9 +18,8 @@ import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path'
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
 type UploadRow = { id: string; name: string; origin?: File; preview?: File; theme: string; tags: string;
-  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string };
-type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; published_primary: number };
-type Tab = 'brands' | 'devices' | 'i18n' | 'wallpapers' | 'upload';
+  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean };
+type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; primary_count: number; published_primary: number };
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   const response = await fetch(`/api/admin/${path}`, {
@@ -310,7 +311,11 @@ export default function AdminConsole() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
-  const [tab, setTab] = useState<Tab>('devices');
+  const searchParams = useSearchParams();
+  const tab = resolveAdminTab(searchParams.get('tab'));
+  const setTab = (nextTab: AdminTab) => {
+    if (nextTab !== tab) window.history.pushState(null, '', adminTabHref(new URL(window.location.href), nextTab));
+  };
   const [brands, setBrands] = useState<AdminBrand[]>([]);
   const [devices, setDevices] = useState<DeviceRow[]>([]);
   const [wallpapers, setWallpapers] = useState<WallpaperListRow[]>([]);
@@ -325,6 +330,7 @@ export default function AdminConsole() {
   const [i18nRevision, setI18nRevision] = useState(0);
   const [newBrand, setNewBrand] = useState<{ title: string; slug: string; kind: AdminBrand['kind'] } | null>(null);
   const [deviceCheck, setDeviceCheck] = useState<DeviceCheck | null>(null);
+  const [publishDeviceDrafts, setPublishDeviceDrafts] = useState(true);
   const [editingWallpaper, setEditingWallpaper] = useState<Partial<WallpaperRow> | null>(null);
   const [uploadBrand, setUploadBrand] = useState('');
   const [uploadDevices, setUploadDevices] = useState<DeviceRow[]>([]);
@@ -423,6 +429,7 @@ export default function AdminConsole() {
     return () => { cancelled = true; };
   }, [authenticated, uploadBrand]);
   useEffect(() => {
+    setPublishDeviceDrafts(true);
     if (!editingDevice?.id) { setDeviceCheck(null); return; }
     void api<{ data: DeviceCheck }>(`device-check?id=${encodeURIComponent(editingDevice.id)}`)
       .then((result) => setDeviceCheck(result.data)).catch(() => setDeviceCheck(null));
@@ -655,13 +662,13 @@ export default function AdminConsole() {
       const [origin, preview] = await Promise.all([authorize(row.origin, 'origin'), authorize(row.preview, 'compress')]);
       await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }));
       await putWithProgress(preview.url, row.preview, (progress) => patchUpload(row.id, { progress: 50 + Math.round(progress / 2) }));
-      await api('upload', 'POST', {
+      const { data } = await api<{ data: WallpaperRow }>('upload', 'POST', {
         action: 'complete', device_id: deviceId, name: row.name,
         origin_token: origin.token, preview_token: preview.token,
         theme: row.theme, category: row.category || undefined,
         tags: row.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
       });
-      patchUpload(row.id, { state: 'done', progress: 100 });
+      patchUpload(row.id, { state: 'done', progress: 100, isPrimary: !!data.is_primary });
     } catch (cause) {
       patchUpload(row.id, { state: 'failed', error: cause instanceof Error ? cause.message : '上传失败' });
     }
@@ -704,7 +711,7 @@ export default function AdminConsole() {
         <input id="admin-password" type="password" autoComplete="current-password" required className={`${inputClass} mb-4`} value={password} onChange={(event) => setPassword(event.target.value)} />
         <label className="mb-7 flex items-center gap-2 text-sm text-[#56675b]">
           <input type="checkbox" className="accent-[#247560]" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
-          记住登录状态（30 天）
+          记住登录状态
         </label>
         {error && <p role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>}
         <button className={`${primaryClass} w-full`} disabled={busy}>{busy ? '登录中…' : '登录'}</button>
@@ -894,7 +901,7 @@ export default function AdminConsole() {
           </div>
           <div className="mb-5 rounded-lg border border-dashed border-[#bdccbf] bg-[#edf2eb]/60 p-4 sm:p-5">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#dfe9de] text-xs text-[#526950]">2</span>选择文件</h3>
-          <p className="mb-4 text-xs leading-5 text-[#66746b]">选择含 origin 和 compress 子目录的文件夹，或为已选设备分别添加原图与预览图。</p>
+          <p className="mb-4 text-xs leading-5 text-[#66746b]">选择含 origin 和 compress 子目录的文件夹，或为已选设备分别添加原图与预览图。新设备每个分类的第一张成功上传壁纸默认设为主图，上传后保存为草稿。</p>
           <div className="flex flex-wrap gap-2">
             <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />原图文件<input className="sr-only" type="file" multiple accept="image/*,video/mp4,video/webm" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'origin')} /></label>
             <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />预览文件<input className="sr-only" type="file" multiple accept="image/*" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'compress')} /></label>
@@ -939,7 +946,7 @@ export default function AdminConsole() {
                 <option value="">同设备</option>{categories.map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
               </select>
               <input className={inputClass} aria-label="标签" value={row.tags} onChange={(event) => patchUpload(row.id, { tags: event.target.value })} placeholder="标签" />
-              <div className={`text-xs ${row.state === 'failed' ? 'text-red-700' : row.state === 'done' ? 'text-emerald-700' : 'text-gray-600'}`}>{row.state === 'uploading' ? `${row.progress}%` : row.state === 'done' ? '已入库（草稿）' : row.error || (row.origin && row.preview ? '待上传' : '文件未配齐')}{row.state === 'uploading' && <div className="mt-1 h-1 overflow-hidden rounded bg-gray-200"><div className="h-full bg-teal-700" style={{ width: `${row.progress}%` }} /></div>}</div>
+              <div className={`text-xs ${row.state === 'failed' ? 'text-red-700' : row.state === 'done' ? 'text-emerald-700' : 'text-gray-600'}`}>{row.state === 'uploading' ? `${row.progress}%` : row.state === 'done' ? (row.isPrimary ? '已入库（草稿 · 主图）' : '已入库（草稿）') : row.error || (row.origin && row.preview ? '待上传' : '文件未配齐')}{row.state === 'uploading' && <div className="mt-1 h-1 overflow-hidden rounded bg-gray-200"><div className="h-full bg-teal-700" style={{ width: `${row.progress}%` }} /></div>}</div>
               <button className={iconButtonClass} title="移除" aria-label={`移除 ${row.name}`} disabled={row.state === 'uploading'} onClick={() => {
                 const remaining = uploadRows.filter((item) => item.id !== row.id);
                 setUploadRows(remaining);
@@ -989,7 +996,9 @@ export default function AdminConsole() {
 
       {editingDevice && <AdminDialog title={editingDevice.id ? '编辑设备' : '新建设备'} onClose={() => setEditingDevice(null)}>
         <form onSubmit={(event) => { event.preventDefault(); void run(async () => {
-          await api('devices', editingDevice.id ? 'PATCH' : 'POST', editingDevice);
+          await api('devices', editingDevice.id ? 'PATCH' : 'POST', { ...editingDevice,
+            ...(editingDevice.id && editingDevice.status === 'published' ? { publish_drafts: publishDeviceDrafts } : {}),
+          });
           setEditingDevice(null);
         }); }} className={modalClass}>
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">{editingDevice.id ? '编辑设备' : '新建设备'}</h2>
@@ -1008,7 +1017,12 @@ export default function AdminConsole() {
               <label className="flex items-center gap-2 self-end py-2 text-sm"><input type="checkbox" checked={!!editingDevice.is_popular_brand} onChange={(event) => setEditingDevice({ ...editingDevice, is_popular_brand: event.target.checked ? 1 : 0 })} />热门品牌</label></>}
           </div>
           {editingDevice.id && deviceCheck && <div className="mt-4 border-t border-gray-200 pt-3 text-sm text-gray-600">
-            壁纸 {deviceCheck.total} 张 · 已发布 {deviceCheck.published} · 待处理 {deviceCheck.pending} · 缺预览 {deviceCheck.missing_preview} · 已发布主图 {deviceCheck.published_primary}
+            壁纸 {deviceCheck.total} 张 · 已发布 {deviceCheck.published} · 待处理 {deviceCheck.pending} · 缺预览 {deviceCheck.missing_preview} · 主图 {deviceCheck.primary_count} · 已发布主图 {deviceCheck.published_primary}
+          </div>}
+          {editingDevice.id && editingDevice.status === 'published' && <div className="mt-4 text-sm">
+            <label className="flex items-center gap-2"><input type="checkbox" checked={publishDeviceDrafts} disabled={busy}
+              onChange={(event) => setPublishDeviceDrafts(event.target.checked)} />一并发布草稿壁纸</label>
+            <p className="mt-2 text-xs leading-5 text-gray-600">保存时核验并发布全部草稿壁纸，保留已选主图；已下架或正在删除的壁纸不参与发布。</p>
           </div>}
           {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
           <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} onClick={() => setEditingDevice(null)}>取消</button><button disabled={busy} className={primaryClass}><Check size={16} />{busy ? '保存中…' : '保存设备'}</button></div>

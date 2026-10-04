@@ -354,7 +354,7 @@ test('translation table exposes persisted names, titles, descriptions and a lang
   try {
     const React = require('react');
     const { renderToStaticMarkup } = require('react-dom/server');
-    const { AdminDeviceI18nTable } = load(`${root}src/app/admin/AdminDeviceI18nPanel.tsx`);
+    const { AdminDeviceI18nTable } = load(`${root}src/app/manager/AdminDeviceI18nPanel.tsx`);
     const html = renderToStaticMarkup(React.createElement(AdminDeviceI18nTable, {
       rows: [{ id: 'translation-1', device_id: 'device-1', device_name: 'Device One', brand_name: 'test',
         language: 'zh', display_name: '设备一', seo_title: '设备一原装壁纸', description: '保存的壁纸合集说明', create_date: 1, updated_date: 2 }],
@@ -376,7 +376,7 @@ test('admin table displays the brand in the record language instead of the Engli
   try {
     const React = require('react');
     const { renderToStaticMarkup } = require('react-dom/server');
-    const { AdminDeviceI18nTable } = load(`${root}src/app/admin/AdminDeviceI18nPanel.tsx`);
+    const { AdminDeviceI18nTable } = load(`${root}src/app/manager/AdminDeviceI18nPanel.tsx`);
     const html = renderToStaticMarkup(React.createElement(AdminDeviceI18nTable, {
       rows: [{ id: 'translation-1', device_id: 'device-1', device_name: 'Samsung Galaxy A01', brand_name: 'samsung',
         language: 'zh', display_name: '三星 Galaxy A01', seo_title: '三星 Galaxy A01 壁纸', description: '三星 Galaxy A01壁纸合集', create_date: 1, updated_date: 2 }],

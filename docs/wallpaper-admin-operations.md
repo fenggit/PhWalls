@@ -2,7 +2,7 @@
 
 ## 本地验证
 
-以下命令只操作本机 D1，不影响线上数据库。本地开发服务器默认使用本机 D1；正式后台通过 `DB` 绑定访问线上 D1，入口为 `a.phwalls.com`。前后台统一到 Pages 项目 `phwalls` 的迁移步骤与当前进度见[项目合并说明](cloudflare-pages-consolidation.md)。
+以下命令只操作本机 D1，不影响线上数据库。本地开发服务器默认使用本机 D1；正式后台通过 `DB` 绑定访问线上 D1，入口为 `https://a.phwalls.com/manager`。前后台统一到 Pages 项目 `phwalls` 的迁移步骤与当前进度见[项目合并说明](cloudflare-pages-consolidation.md)。
 
 1. `npx wrangler d1 migrations apply phwalls --local` 建表。
 2. `npm run db:import:dry-run` 查看 JSON 条目数量和冲突映射。
@@ -29,7 +29,7 @@ npx wrangler d1 execute phwalls --remote --command "SELECT LOWER(TRIM(title)) AS
 
 ### 合并后的部署方式
 
-前台 `phwalls.com` 与后台 `a.phwalls.com` 统一绑定 Pages 项目 `phwalls`，按请求域名区分页面与管理 API。`ADMIN_HOST=a.phwalls.com`，后台路由在公开站点域名仍返回 404，后台页面仍禁止索引。
+前台 `phwalls.com` 与后台 `a.phwalls.com` 统一绑定 Pages 项目 `phwalls`，按请求域名区分页面与管理 API。`ADMIN_HOST=a.phwalls.com`，后台入口为 `/manager`，旧 `/admin` 与带语言前缀的后台地址兼容跳转并保留栏目参数；后台路由在公开站点域名仍返回 404，后台页面仍禁止索引。左侧栏目通过 `tab` 查询参数保存，刷新以及浏览器前进、后退均能恢复选中项。
 
 完成 Cloudflare 项目迁移后，向 `phwalls` 配置的生产分支推送代码会同时自动部署前后台；合并方案使用当前前后台开发分支 `release/2.0.0`，其他分支仍属于预览。Git 构建命令应设置为 `npm run pages:build`，输出目录为 `.vercel/output/static`。生产与预览环境需要分别核对 D1 绑定与变量，生产 Secret 不会自动复制到预览环境。
 
@@ -51,7 +51,7 @@ ADMIN_PASSWORD="$ADMIN_PASSWORD" npm run admin:hash-password
 unset ADMIN_PASSWORD
 ```
 
-脚本会输出两种写法：Cloudflare Pages Secret 使用原始值；本地 `.env.local` 使用带 `\$` 转义的整行配置。Next.js 会展开未转义的 `$`，直接粘贴原始值会导致登录失败。生成工具要求管理员原密码至少 8 位；登录时输入原密码，不输入哈希。不要提交密码或 Secret。`ADMIN_SESSION_SECRET` 使用不少于 32 字符的随机值。未勾选“记住登录状态”时会话有效期为 12 小时，勾选后为 30 天；只保存签名的 HttpOnly Cookie，不在浏览器保存明文密码。轮换密钥时旧值可暂放 `ADMIN_SESSION_SECRET_PREVIOUS`，等待最长 30 天会话过期后移除。对 `/api/admin/login` 在 Cloudflare WAF 配置登录失败限速。
+脚本会输出两种写法：Cloudflare Pages Secret 使用原始值；本地 `.env.local` 使用带 `\$` 转义的整行配置。Next.js 会展开未转义的 `$`，直接粘贴原始值会导致登录失败。生成工具要求管理员原密码至少 8 位；登录时输入原密码，不输入哈希。不要提交密码或 Secret。`ADMIN_SESSION_SECRET` 使用不少于 32 字符的随机值。未勾选“记住登录状态”时会话有效期为 12 小时；勾选后令牌不设服务端到期时间，直到退出、清理浏览器数据或轮换会话密钥时失效。浏览器使用远期到期时间的持久 Cookie，实际保留期仍受浏览器自己的 Cookie 策略限制。只保存签名的 HttpOnly Cookie，不在浏览器保存明文密码。轮换密钥时旧值可暂放 `ADMIN_SESSION_SECRET_PREVIOUS`，主动安排兼容窗口后移除；记住的会话不会按 30 天自动到期。更换线上登录凭据时同时更新会话密钥并取消旧密钥兼容，使已有会话重新登录。对 `/api/admin/login` 在 Cloudflare WAF 配置登录失败限速。
 
 R2 存储桶需要允许 `https://a.phwalls.com` 和本地 `http://localhost:3100` 的 `PUT` 与 `Content-Type` 请求头。后台上传使用 15 分钟单对象签名 URL；原图与预览都上传并通过 R2 HEAD 核验后才写入草稿。图片上限 50 MiB，视频上限 200 MiB；视频原件支持 MP4/WebM，预览仍为图片。后台不会生成压缩图或视频封面。
 
@@ -64,6 +64,16 @@ R2 存储桶需要允许 `https://a.phwalls.com` 和本地 `http://localhost:310
 壁纸列表的“删除”会弹出确认窗口，列出数据库记录对应的原图与预览图 key。确认后同时删除后台记录和这些 R2 文件；客户端仅提交壁纸 ID，服务端从数据库读取删除路径。已发布设备的主展示壁纸须先更换主图或下架设备，共用文件须先处理其他引用。仍被仓库手机或桌面 JSON 数据引用的文件受保护，须先移除静态配置中的引用并同步公开站点，避免影响仍使用 JSON 的页面和数据源回退。删除会先下架并锁定记录；R2 删除失败时保留记录，列表显示“待重试删除”，可再次点击“删除”完成清理。等待删除的记录不能编辑、重新发布或被新记录引用。进程意外中断时，原操作的两分钟占用期过后可重试。已删除或不存在的 R2 文件可重复清理。删除时会持久化文件 key，数据库触发器阻止迟到的上传完成、编辑或旧导入 SQL 再次引用这些文件。R2 与 D1 无法跨服务原子提交，失败后应完成重试，不要将待删除的记录重新上线。
 
 上线此功能前，先备份 D1，再执行 `npx wrangler d1 migrations apply phwalls --remote` 应用 `0006_wallpaper_deletion_state.sql` 和 `0007_deleted_wallpaper_files.sql`，然后部署后台代码。本地使用 `--local`。迁移新增删除状态字段与已删文件 key 表，保留现有壁纸记录；部署需要具备对象删除权限的 R2 凭据。
+
+## 上传主图与设备发布
+
+上传时创建新设备或系统必须填写发布日期。每个壁纸分类的第一张成功入库壁纸默认设为主展示壁纸，仍保存为草稿；后续上传不会覆盖已有主图，也不会恢复被手动取消的主图。上传队列会标明自动设置的主图。
+
+主图标记与发布状态分别维护。设备编辑窗口同时显示“主图”和“已发布主图”数量；仅勾选主展示壁纸不会自动发布该壁纸。将设备状态改为“已发布”时，默认勾选“一并发布草稿壁纸”：保存前核验全部草稿的 R2 原图、预览图或视频封面以及原图大小，再通过 D1 批量更新发布草稿和设备，保留已选主图。已下架或正在删除的壁纸不参与发布。缺少主图、预览或 R2 文件时中止发布；核验过程中出现新的草稿或文件编辑时，需要刷新后重试，避免发布未经核验的文件。
+
+取消“一并发布草稿壁纸”后，只更新设备状态，须先单独发布至少一张主展示壁纸。接口 `PATCH /api/admin/devices` 仅在明确传入 `publish_drafts: true` 且目标状态为 `published` 时一并发布草稿；省略该选项保留独立发布行为。验证命令：`node --test tests/admin-wallpaper-publication.test.mjs`。
+
+2026-10-04 修正生产 `OnePlus 16`：设备 ID `68637b22-fa9d-4097-a5f0-c5c23fdbdc75` 的品牌由 `oppo` 改为 `oneplus`，统一设备显示名大小写；4 张壁纸的 8 个 R2 对象从 `oppo/oneplus-16/` 复制至 `oneplus/oneplus-16/`，逐个核对 SHA-256 和 MIME 后更新数据库路径。壁纸 ID、手动选择的主图、发布日期和草稿状态保留。本地 JSON 与本地 D1 没有该新设备记录。旧路径无数据库或静态 JSON 引用后登记已删文件路径并清理，防止迟到写入再次引用旧文件。
 
 ## 设备与合集多语言内容
 

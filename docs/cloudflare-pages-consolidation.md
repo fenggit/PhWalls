@@ -6,6 +6,8 @@
 
 2026-10-04 已完成生产合并：`a.phwalls.com`、`phwalls.com` 和 `www.phwalls.com` 均在 `phwalls` 项目中处于 active，后台 CNAME 已由 `phwalls-admin.pages.dev` 改为 `phwalls.pages.dev`，代理设置保留。验证 Git 提交 `4a5a288` 的自动生产部署成功后，按用户明确要求删除旧 `phwalls-admin` 项目及其历史部署；D1、R2 和统一项目保持不变。
 
+后台后续入口更新为 `https://a.phwalls.com/manager`，旧 `/admin` 兼容跳转；下文 `/admin` 校验结果记录的是合并当时的路径。
+
 用户已将 Git 生产分支调整为 `release/2.0.0` 并确认线上迁移。合并时的生产部署为 `23ee2d41-dd2e-43a5-a4e3-326d78b96555`，部署分支为 `release/2.0.0`，Git 生产自动部署保持启用，构建命令已设为 `npm run pages:build`。该次发布使用已验证的本地工作区构建；当前应用改动、部署别名及 `wrangler.toml` 中的后台域名变量随后统一提交到该分支，由 Git 推送触发后续自动部署。
 
 | 项目 | 迁移前配置 | 已完成配置 |

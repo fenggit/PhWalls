@@ -108,9 +108,8 @@ src/
 │       ├── AdBanner.tsx       # 横幅广告
 │       └── AdVerticalBanner.tsx  # 垂直广告
 ├── lib/                        # 工具库
-│   ├── admin/                  # 管理后台工具
-│   │   ├── auth.ts            # 认证工具
-│   │   └── middleware.ts      # 中间件
+│   ├── admin-auth.ts           # 后台认证与会话
+│   ├── admin-data.ts           # 后台设备与壁纸管理
 │   ├── config/                 # 配置
 │   │   └── environments.ts    # 环境配置
 │   ├── services/               # 服务层
@@ -254,7 +253,7 @@ npm start
 
 ### 功能开关配置
 
-后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/admin` 与 `/api/admin`，本地开发允许通过 `localhost:3100/admin` 访问。前后台 Pages 项目合并方案见[合并说明](docs/cloudflare-pages-consolidation.md)；合并完成后 `a.phwalls.com` 与 `phwalls.com` 共用 `phwalls` 项目，统一部署命令为 `npm run deploy`，`npm run admin:deploy` 为兼容别名。
+后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/manager` 与 `/api/admin`，本地开发允许通过 `localhost:3100/manager` 访问。前后台 Pages 项目合并方案见[合并说明](docs/cloudflare-pages-consolidation.md)；合并完成后 `a.phwalls.com` 与 `phwalls.com` 共用 `phwalls` 项目，统一部署命令为 `npm run deploy`，`npm run admin:deploy` 为兼容别名。
 
 ## 功能模块
 
@@ -349,9 +348,9 @@ https://phwalls.com/{设备名称}
 
 #### 访问方式
 
-1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/admin`。
+1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/manager`。
 2. 使用 `ADMIN_USERNAME` 与生成哈希时输入的原密码登录。
-3. 正式后台部署并绑定专用域名后访问 `https://a.phwalls.com/admin`。
+3. 正式后台部署并绑定专用域名后访问 `https://a.phwalls.com/manager`。
 
 ### Cloudflare R2 存储
 
@@ -698,7 +697,7 @@ wrangler r2 bucket cors put phwalls --rules ./cors.json
 
 5. **访问应用**
    - 前端：http://localhost:3100
-   - 管理后台：http://localhost:3100/admin
+   - 管理后台：http://localhost:3100/manager
 
 ### 构建和部署
 

@@ -6,11 +6,7 @@ import { NextResponse } from 'next/server';
 
 const COOKIE_NAME = 'phwalls_admin_session';
 const SESSION_SECONDS = 60 * 60 * 12;
-const REMEMBER_SESSION_SECONDS = 60 * 60 * 24 * 30;
-
-function sessionDuration(remember: boolean): number {
-  return remember ? REMEMBER_SESSION_SECONDS : SESSION_SECONDS;
-}
+const REMEMBERED_SESSION = 'remember';
 
 function secret(name: string): string {
   const env = getOptionalRequestContext()?.env as Record<string, string> | undefined;
@@ -64,7 +60,8 @@ export async function verifyAdminPassword(username: string, password: string): P
 export async function createAdminSession(remember = false): Promise<string> {
   const signingKey = secret('ADMIN_SESSION_SECRET');
   if (signingKey.length < 32) throw new Error('ADMIN_SESSION_SECRET must be at least 32 characters');
-  const payload = `${Date.now() + sessionDuration(remember) * 1000}:${crypto.randomUUID()}`;
+  const expiry = remember ? REMEMBERED_SESSION : Date.now() + SESSION_SECONDS * 1000;
+  const payload = `${expiry}:${crypto.randomUUID()}`;
   const signature = await hmac(payload, signingKey);
   return `${bytesToBase64(new TextEncoder().encode(payload))}.${bytesToBase64(signature)}`;
 }
@@ -79,8 +76,8 @@ export async function hasAdminSession(request: NextRequest): Promise<boolean> {
   if (parts.length !== 2) return false;
   try {
     const payload = new TextDecoder().decode(base64ToBytes(parts[0]));
-    const expiry = Number(payload.split(':')[0]);
-    if (!Number.isFinite(expiry) || expiry < Date.now()) return false;
+    const expiry = payload.split(':')[0];
+    if (expiry !== REMEMBERED_SESSION && (!Number.isFinite(Number(expiry)) || Number(expiry) < Date.now())) return false;
     const signature = base64ToBytes(parts[1]);
     for (const key of signingKeys) {
       if (equalBytes(await hmac(payload, key), signature)) return true;
@@ -107,7 +104,9 @@ export async function requireAdmin(request: NextRequest, write = false): Promise
 export function setAdminCookie(response: NextResponse, value: string, remember = false): void {
   response.cookies.set(COOKIE_NAME, value, {
     secure: process.env.NODE_ENV !== 'development', httpOnly: true,
-    sameSite: 'strict', path: '/', maxAge: sessionDuration(remember),
+    sameSite: 'strict', path: '/',
+    // 记住登录的令牌不设服务端期限；远期 Cookie 保证浏览器重启后仍可保留。
+    ...(remember ? { expires: new Date('9999-12-31T23:59:59Z') } : { maxAge: SESSION_SECONDS }),
   });
 }
 
