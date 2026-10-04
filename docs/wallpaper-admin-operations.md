@@ -33,7 +33,7 @@ npx wrangler d1 execute phwalls --remote --command "SELECT LOWER(TRIM(title)) AS
 
 完成 Cloudflare 项目迁移后，向 `phwalls` 配置的生产分支推送代码会同时自动部署前后台；合并方案使用当前前后台开发分支 `release/2.0.0`，其他分支仍属于预览。Git 构建命令应设置为 `npm run pages:build`，输出目录为 `.vercel/output/static`。生产与预览环境需要分别核对 D1 绑定与变量，生产 Secret 不会自动复制到预览环境。
 
-手动部署统一执行 `npm run deploy`；`npm run admin:deploy` 保留为该命令的兼容别名，也会更新前后台并执行生产发布后的 IndexNow 提交。部署会影响公开站点，执行前需确认；域名切换前不要将此别名当作独立后台发布命令。旧 `phwalls-admin` 项目在迁移验证结束前保留，以便恢复原后台。
+手动部署统一执行 `npm run deploy`；`npm run admin:deploy` 保留为该命令的兼容别名，也会更新前后台并执行生产发布后的 IndexNow 提交。部署会影响公开站点，执行前需确认。旧 `phwalls-admin` 已在验证统一项目的自动部署成功后按用户要求删除；故障回退使用 `phwalls` 的历史完整部署，见项目合并说明。
 
 公开站点是否显示后台保存的数据由 `WALLPAPER_DATA_SOURCE` 控制；合并后的目标配置为 `d1`。生产切换前先按本文末尾的流程核对数据库与公开站点，不能仅依据合并部署命令认定线上已启用数据库。
 

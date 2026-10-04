@@ -352,7 +352,7 @@ export default function DeviceWallpaperGrid({
           <span className="font-medium text-gray-600">{deviceData.name}</span>
         </nav>
 
-        <section className="mb-10">
+        <section className="mb-10 overflow-visible">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
           <p className="mt-4 max-w-3xl text-xl leading-relaxed text-gray-600">{pageDescription}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">

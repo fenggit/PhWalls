@@ -4,14 +4,14 @@
 
 目标：保留 Pages 项目 `phwalls`，同时服务 `phwalls.com`、`www.phwalls.com` 和后台域名 `a.phwalls.com`。继续使用既有 D1 数据库 `phwalls`，不移动数据库或 R2 文件。后台登录、同源写入校验、域名限制与 `noindex` 保持有效。
 
-2026-10-04 已完成生产合并：`a.phwalls.com`、`phwalls.com` 和 `www.phwalls.com` 均在 `phwalls` 项目中处于 active，后台 CNAME 已由 `phwalls-admin.pages.dev` 改为 `phwalls.pages.dev`，代理设置保留。旧 `phwalls-admin` 项目已解除自定义域名，项目与历史部署保留供回退。
+2026-10-04 已完成生产合并：`a.phwalls.com`、`phwalls.com` 和 `www.phwalls.com` 均在 `phwalls` 项目中处于 active，后台 CNAME 已由 `phwalls-admin.pages.dev` 改为 `phwalls.pages.dev`，代理设置保留。验证 Git 提交 `4a5a288` 的自动生产部署成功后，按用户明确要求删除旧 `phwalls-admin` 项目及其历史部署；D1、R2 和统一项目保持不变。
 
 用户已将 Git 生产分支调整为 `release/2.0.0` 并确认线上迁移。合并时的生产部署为 `23ee2d41-dd2e-43a5-a4e3-326d78b96555`，部署分支为 `release/2.0.0`，Git 生产自动部署保持启用，构建命令已设为 `npm run pages:build`。该次发布使用已验证的本地工作区构建；当前应用改动、部署别名及 `wrangler.toml` 中的后台域名变量随后统一提交到该分支，由 Git 推送触发后续自动部署。
 
 | 项目 | 迁移前配置 | 已完成配置 |
 | --- | --- | --- |
 | `phwalls` | GitHub 自动部署；生产分支 `master`；公开站点域名 | 统一前后台；生产分支 `release/2.0.0`；增加 `a.phwalls.com` |
-| `phwalls-admin` | Direct Upload；生产分支 `release/2.0.0`；`a.phwalls.com` | 解除后台域名，保留项目和旧部署作为回退来源 |
+| `phwalls-admin` | Direct Upload；生产分支 `release/2.0.0`；`a.phwalls.com` | 验证统一项目成功后已删除 |
 | 构建命令 | `npx @cloudflare/next-on-pages@1` | `npm run pages:build`，确保先生成首页索引 |
 | D1 | `phwalls-admin` 生产已绑定 `DB`；`phwalls` 预览有 `DB`，生产未列出此绑定 | `phwalls` 生产绑定现有数据库 `70bf042e-a064-4019-a245-0fbf934f1cb0`，绑定名 `DB` |
 
@@ -53,8 +53,8 @@ npm run deploy
 
 ## 回退
 
-后台故障时，将 `a.phwalls.com` 从 `phwalls` 解除，重新绑定旧 `phwalls-admin`，恢复 CNAME 为 `phwalls-admin.pages.dev`；旧后台部署与密钥留在原项目。
+旧 `phwalls-admin` 已删除，其部署与项目密钥不能再用于直接回退。统一项目故障时，优先在 Pages 控制台回滚 `phwalls` 到已验证的完整前后台版本，例如合并时的部署 `23ee2d41-dd2e-43a5-a4e3-326d78b96555`，保留三个域名及 D1 绑定，并检查代码与当前数据库结构的兼容性。
 
-公开站点故障时，恢复 `phwalls` 的生产分支 `master` 和迁移前运行配置，并在 Pages 控制台回滚到原生产部署 `542617c0-c3d9-4a1a-8a03-32d958309338`。恢复配置时保留 Secret 原值，不可把 API 快照中的空 Secret 值写回。若只回退公开数据源，设为 `json` 后重新构建部署。
+合并前的公开站点版本不包含后台，不能作为统一前后台的完整回退目标。若只回退公开数据源，设为 `json` 后使用仍包含后台的代码重新构建部署。恢复配置时保留 Secret 原值，不可把 API 快照中的空 Secret 值写回。
 
-迁移验证完成前不删除 `phwalls-admin`、D1、R2 或历史迁移文件。
+若将来需要恢复独立后台，应重新创建 Pages 项目、部署兼容代码并配置密钥与 D1，再迁移后台域名。不要删除 D1、R2 或历史迁移文件。
