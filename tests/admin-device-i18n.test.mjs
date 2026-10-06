@@ -16,6 +16,7 @@ function fixture(legacyDescription = false, stubs = {}) {
   const sqlite = new DatabaseSync(':memory:');
   sqlite.exec('PRAGMA foreign_keys = ON');
   sqlite.exec(readFileSync(`${root}migrations/0001_wallpaper_admin.sql`, 'utf8'));
+  sqlite.exec(readFileSync(`${root}migrations/0006_wallpaper_deletion_state.sql`, 'utf8'));
   sqlite.exec(readFileSync(migration, 'utf8'));
   sqlite.prepare(`INSERT INTO w_devices (id, brand_name, device_name, device_slug, device_category,
     create_date, updated_date) VALUES (?, 'test', ?, ?, 'phone', 1, 1)`)
@@ -349,6 +350,58 @@ test('admin directory searches literal wildcard characters and reflects saved ed
   } finally { sqlite.close(); }
 });
 
+test('missing descriptions include absent translations and partial content only for devices with available wallpapers', async () => {
+  const { service, sqlite } = fixture();
+  try {
+    sqlite.exec(`INSERT INTO w_wallpapers (id,device_id,name,mime_type,origin_key,file_format,media_type,category,status,create_date,updated_date)
+      VALUES ('wall-1','device-1','Image','image/png','test/origin/a.png','png','static','phone','published',1,1),
+      ('wall-2','device-1','Image 2','image/png','test/origin/b.png','png','static','phone','draft',1,1)`);
+    await service.saveAdminDeviceI18n({ device_id: 'device-1', language: 'en', description: 'English fallback' });
+    await service.saveAdminDeviceI18n({ device_id: 'device-1', language: 'zh', display_name: '设备一', seo_title: '设备一壁纸' });
+    const missing = await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing'));
+    assert.equal(missing.total, 4);
+    assert.deepEqual(Array.from(missing.rows, (row) => row.language).sort(), ['ja', 'vi', 'zh', 'zh-hant']);
+    assert.ok(missing.rows.every((row) => row.device_id === 'device-1' && row.wallpaper_count === 2));
+    assert.equal(missing.rows.find((row) => row.language === 'zh').display_name, '设备一');
+    assert.ok(missing.rows.every((row) => typeof row.id === 'string' && row.id.length));
+    assert.deepEqual(JSON.parse(JSON.stringify(missing.missingBrands)), [{ brand_name: 'test', device_count: 1, missing_count: 4 }]);
+    const zh = await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&language=zh&search=设备一'));
+    assert.equal(zh.total, 1);
+    assert.equal(zh.missingBrands[0].missing_count, 1);
+    assert.equal((await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&brand=other'))).total, 0);
+    await service.saveAdminDeviceI18n({ device_id: 'device-1', language: 'zh', description: '中文描述' });
+    assert.equal((await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&language=zh'))).total, 0);
+    sqlite.exec("UPDATE w_wallpapers SET deletion_state = 'pending'");
+    assert.equal((await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing'))).total, 0);
+    await assert.rejects(() => service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&language=fr')));
+  } finally { sqlite.close(); }
+});
+
+test('missing description brand totals cover all pages without counting each wallpaper as a device', async () => {
+  const { service, sqlite } = fixture();
+  try {
+    const device = sqlite.prepare(`INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,create_date,updated_date)
+      VALUES (?, ?, ?, ?, 'phone', 1, 1)`);
+    const wallpaper = sqlite.prepare(`INSERT INTO w_wallpapers (id,device_id,name,mime_type,origin_key,file_format,media_type,category,create_date,updated_date)
+      VALUES (?,?,'Image','image/png','test/origin/a.png','png','static','phone',1,1)`);
+    for (let index = 0; index < 12; index++) {
+      device.run(`missing-${index}`, index < 6 ? 'test' : 'other', `Model ${index}`, `model-${index}`);
+      wallpaper.run(`wall-${index}`, `missing-${index}`);
+    }
+    const first = await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing'));
+    const second = await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&page=1'));
+    assert.equal(first.total, 60);
+    assert.equal(first.rows.length, 50);
+    assert.equal(second.rows.length, 10);
+    assert.ok(second.rows.every((row) => !first.rows.some((other) => other.id === row.id)));
+    assert.deepEqual(JSON.parse(JSON.stringify(first.missingBrands)), [
+      { brand_name: 'other', device_count: 6, missing_count: 30 },
+      { brand_name: 'test', device_count: 6, missing_count: 30 },
+    ]);
+    assert.equal((await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&page=999'))).page, 1);
+  } finally { sqlite.close(); }
+});
+
 test('translation table exposes persisted names, titles, descriptions and a language-specific edit action', () => {
   const { sqlite, load } = fixture();
   try {
@@ -368,6 +421,24 @@ test('translation table exposes persisted names, titles, descriptions and a lang
       rows: [], brands: [], onEdit() {},
     }));
     assert.ok(empty.includes('没有符合条件的多语言记录'));
+  } finally { sqlite.close(); }
+});
+
+test('missing description table offers editing for an unsaved language without a fake update date', () => {
+  const { sqlite, load } = fixture();
+  try {
+    const React = require('react');
+    const { renderToStaticMarkup } = require('react-dom/server');
+    const { AdminDeviceI18nTable } = load(`${root}src/app/manager/AdminDeviceI18nPanel.tsx`);
+    const html = renderToStaticMarkup(React.createElement(AdminDeviceI18nTable, {
+      rows: [{ id: 'device-1:ja', device_id: 'device-1', device_name: 'Device One', brand_name: 'test',
+        language: 'ja', display_name: null, seo_title: null, description: null, create_date: 0, updated_date: 0, wallpaper_count: 2 }],
+      brands: [{ slug: 'test', title: '测试品牌' }], missing: true, onEdit() {},
+    }));
+    assert.ok(html.includes('2 张壁纸'));
+    assert.ok(html.includes('尚未保存'));
+    assert.ok(!html.includes('1970'));
+    assert.match(html, /aria-label="补充 Device One 的日语描述"/);
   } finally { sqlite.close(); }
 });
 

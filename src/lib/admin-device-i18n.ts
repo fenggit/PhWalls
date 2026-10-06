@@ -1,5 +1,8 @@
 import { getWallpaperDb, type DeviceI18nListRow, type DeviceI18nRow } from '@/lib/wallpaper-db';
-import { isLanguage } from '@/lib/language';
+import { isLanguage, SUPPORTED_LANGUAGES } from '@/lib/language';
+
+export type AdminDeviceI18nDirectoryRow = DeviceI18nListRow & { wallpaper_count?: number };
+export type MissingDescriptionBrand = { brand_name: string; device_count: number; missing_count: number };
 
 function deviceId(value: unknown): string {
   if (typeof value !== 'string' || !value.trim() || value.length > 80) throw new Error('设备 ID 无效');
@@ -34,10 +37,14 @@ export async function listAdminDeviceI18n(rawDeviceId: unknown): Promise<DeviceI
 }
 
 export async function listAdminDeviceI18nDirectory(filters: URLSearchParams): Promise<{
-  rows: DeviceI18nListRow[]; total: number; page: number; pageSize: number;
+  rows: AdminDeviceI18nDirectoryRow[]; total: number; page: number; pageSize: number;
+  missingBrands: MissingDescriptionBrand[];
 }> {
-  const clauses: string[] = [];
-  const values: string[] = [];
+  const view = filters.get('view');
+  if (view && view !== 'saved' && view !== 'missing') throw new Error('列表类型无效');
+  const missing = view === 'missing';
+  const clauses: string[] = missing ? ["NULLIF(TRIM(i.description), '') IS NULL"] : [];
+  const values: string[] = missing ? [JSON.stringify(SUPPORTED_LANGUAGES)] : [];
   const brand = filters.get('brand');
   if (brand) {
     if (brand.length > 80) throw new Error('品牌无效');
@@ -46,7 +53,7 @@ export async function listAdminDeviceI18nDirectory(filters: URLSearchParams): Pr
   const language = filters.get('language');
   if (language) {
     if (!isLanguage(language)) throw new Error('语言无效');
-    clauses.push('i.language = ?'); values.push(language);
+    clauses.push(`${missing ? 'l.value' : 'i.language'} = ?`); values.push(language);
   }
   const search = filters.get('search')?.trim();
   if (search) {
@@ -57,7 +64,13 @@ export async function listAdminDeviceI18nDirectory(filters: URLSearchParams): Pr
     values.push(pattern, pattern, pattern, pattern, pattern);
   }
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-  const from = `FROM w_device_i18n i JOIN w_devices d ON d.id = i.device_id ${where}`;
+  const from = missing
+    ? `FROM w_devices d
+       JOIN (SELECT device_id, COUNT(*) AS wallpaper_count FROM w_wallpapers
+         WHERE deletion_state = 'none' GROUP BY device_id) w ON w.device_id = d.id
+       CROSS JOIN json_each(?) l
+       LEFT JOIN w_device_i18n i ON i.device_id = d.id AND i.language = l.value ${where}`
+    : `FROM w_device_i18n i JOIN w_devices d ON d.id = i.device_id ${where}`;
   const db = getWallpaperDb();
   const count = await db.prepare(`SELECT COUNT(*) AS total ${from}`).bind(...values).first<{ total: number }>();
   const total = count?.total || 0;
@@ -65,10 +78,19 @@ export async function listAdminDeviceI18nDirectory(filters: URLSearchParams): Pr
   const requested = Number(filters.get('page'));
   const lastPage = Math.max(0, Math.ceil(total / pageSize) - 1);
   const page = Number.isSafeInteger(requested) && requested >= 0 ? Math.min(requested, lastPage) : 0;
-  const { results } = await db.prepare(`SELECT i.*, d.device_name, d.brand_name ${from}
-    ORDER BY i.updated_date DESC, d.device_name, i.language, i.id LIMIT ? OFFSET ?`)
-    .bind(...values, pageSize, page * pageSize).all<DeviceI18nListRow>();
-  return { rows: results, total, page, pageSize };
+  const fields = missing
+    ? `COALESCE(i.id, d.id || ':' || l.value) AS id, d.id AS device_id, l.value AS language,
+       i.display_name, i.seo_title, i.description, COALESCE(i.create_date, 0) AS create_date,
+       COALESCE(i.updated_date, 0) AS updated_date, w.wallpaper_count, d.device_name, d.brand_name`
+    : 'i.*, d.device_name, d.brand_name';
+  const order = missing ? 'd.brand_name, d.device_name, d.id, l.value' : 'i.updated_date DESC, d.device_name, i.language, i.id';
+  const { results } = await db.prepare(`SELECT ${fields} ${from} ORDER BY ${order} LIMIT ? OFFSET ?`)
+    .bind(...values, pageSize, page * pageSize).all<AdminDeviceI18nDirectoryRow>();
+  const missingBrands = missing ? (await db.prepare(`SELECT d.brand_name,
+    COUNT(DISTINCT d.id) AS device_count, COUNT(*) AS missing_count ${from}
+    GROUP BY d.brand_name ORDER BY missing_count DESC, d.brand_name`)
+    .bind(...values).all<MissingDescriptionBrand>()).results : [];
+  return { rows: results, total, page, pageSize, missingBrands };
 }
 
 // POST replaces the selected language's three fields; omitted/blank values clear a field.
