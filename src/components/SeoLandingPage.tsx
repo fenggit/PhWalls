@@ -167,7 +167,7 @@ export default function SeoLandingPage({
           <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
         </section>
 
-        <section>
+        <section className="overflow-visible">
           <div className={`grid ${gridClass} gap-6`}>
             {visibleCards.map((card, index) => {
               const gradient = gradientPalette[index % gradientPalette.length];
