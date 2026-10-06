@@ -57,5 +57,5 @@ export async function loadDesktopWallpaperCollection(
   slug: string
 ): Promise<WallpaperCollection | null> {
   const collections = await loadDesktopWallpaperCollections(category);
-  return collections.find((collection) => slugifyWallpaperName(collection.name) === slug) || null;
+  return collections.find((collection) => (collection.slug || slugifyWallpaperName(collection.name)) === slug) || null;
 }

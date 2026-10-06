@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
 import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
+import { getPublishedWallpaperKeys } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 const SIGNING_CONCURRENCY = 8;
@@ -29,7 +30,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const normalizedKeys = Array.from(
+    if (keys.length > 100) {
+      return NextResponse.json({ error: 'At most 100 keys are allowed', urls: {} },
+        { status: 400, headers: { 'Cache-Control': 'no-store' } });
+    }
+
+    const candidates = Array.from(
       new Set(
         keys
           .filter((key: unknown): key is string => typeof key === 'string')
@@ -37,6 +43,8 @@ export async function POST(request: NextRequest) {
           .filter((key): key is string => Boolean(key))
       )
     );
+    const published = await getPublishedWallpaperKeys(candidates);
+    const normalizedKeys = candidates.filter((key) => published.has(key));
 
     if (normalizedKeys.length === 0) {
       return NextResponse.json(
@@ -57,7 +65,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'R2 credentials not configured',
-          message: 'Please set R2_ACCESS_KEY_ID_PROD and R2_SECRET_ACCESS_KEY_PROD environment variables',
           urls: {}
         },
         { status: 500 }
@@ -69,7 +76,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'R2 bucket or endpoint not configured',
-          message: 'Please set R2_BUCKET_NAME_PROD and R2_ENDPOINT_PROD environment variables',
           urls: {}
         },
         { status: 500 }
@@ -117,15 +123,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 如果有错误，返回错误信息
+    // 详细错误只记录在服务端，公开响应不返回 R2 地址或签名异常。
+    if (errors.length) console.error('Batch wallpaper signing failed:', errors);
     if (errors.length > 0 && Object.keys(results).length === 0) {
       return NextResponse.json(
         { 
           error: 'Failed to generate any URLs',
-          errors: errors,
           urls: results
         },
-        { status: 500 }
+        { status: 500, headers: { 'Cache-Control': 'no-store' } }
       );
     }
     
@@ -133,7 +139,7 @@ export async function POST(request: NextRequest) {
     if (errors.length > 0) {
       return NextResponse.json({ 
         urls: results,
-        warnings: errors,
+        failedCount: errors.length,
         partial: true
       });
     }
@@ -144,10 +150,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Failed to generate batch private URLs',
-        details: error instanceof Error ? error.message : 'Unknown error',
         urls: {}
       },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }

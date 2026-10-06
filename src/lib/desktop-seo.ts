@@ -1,3 +1,4 @@
+import { applyCollectionSeo } from '@/lib/collection-seo';
 import { LanguageCode, type Language } from '@/types';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { getI18nTexts } from '@/lib/i18n';
@@ -7,6 +8,9 @@ export { getLocalizedDesktopHomeSeoCopy as getDesktopHomeSeoCopy } from '@/lib/c
 
 type DesktopDetailSeoCopyInput = {
   collectionName: string;
+  displayName?: string;
+  seoTitle?: string | null;
+  description?: string | null;
   categoryLabel: string;
   count: number;
 };
@@ -59,11 +63,11 @@ export function getDesktopCategoryLabel(language: Language): string {
   }
 }
 
-export function buildDesktopDetailSeoCopy(
+function buildGeneratedDesktopDetailSeoCopy(
   language: Language,
   input: DesktopDetailSeoCopyInput
 ): DesktopDetailSeoCopy {
-  const collectionName = formatWallpaperDisplayName(input.collectionName);
+  const collectionName = input.displayName || formatWallpaperDisplayName(input.collectionName);
   const categoryLabel = formatWallpaperDisplayName(input.categoryLabel);
   const desktopCategoryLabel = getDesktopCategoryLabel(language);
 
@@ -120,4 +124,8 @@ export function buildDesktopDetailSeoCopy(
         categoryLabel: desktopCategoryLabel,
       };
   }
+}
+
+export function buildDesktopDetailSeoCopy(language: Language, input: DesktopDetailSeoCopyInput): DesktopDetailSeoCopy {
+  return applyCollectionSeo(buildGeneratedDesktopDetailSeoCopy(language, input), input);
 }

@@ -12,11 +12,15 @@ export type WallpaperAsset = {
 };
 
 export type WallpaperCollection = {
+  deviceId?: string;
   name: string;
+  slug?: string;
+  seoTitle?: string | null;
+  description?: string | null;
   date: string;
   item: WallpaperAsset[];
-  // 首页轻量索引专用：集合内壁纸总数。
-  // 完整数据（品牌页 / 桌面页）不带此字段，按 item.length 计算即可。
+  // 首页与品牌页轻量索引：集合内壁纸总数。
+  // 完整数据不带此字段，按 item.length 计算即可。
   count?: number;
 };
 
@@ -89,7 +93,7 @@ export async function loadWallpaperCollection(
   slug: string
 ): Promise<WallpaperCollection | null> {
   const collections = await loadWallpaperCollections(category);
-  return collections.find((collection) => slugifyWallpaperName(collection.name) === slug) || null;
+  return collections.find((collection) => (collection.slug || slugifyWallpaperName(collection.name)) === slug) || null;
 }
 
 export function parseWallpaperDate(value: string): Date | null {

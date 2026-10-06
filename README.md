@@ -108,9 +108,8 @@ src/
 │       ├── AdBanner.tsx       # 横幅广告
 │       └── AdVerticalBanner.tsx  # 垂直广告
 ├── lib/                        # 工具库
-│   ├── admin/                  # 管理后台工具
-│   │   ├── auth.ts            # 认证工具
-│   │   └── middleware.ts      # 中间件
+│   ├── admin-auth.ts           # 后台认证与会话
+│   ├── admin-data.ts           # 后台设备与壁纸管理
 │   ├── config/                 # 配置
 │   │   └── environments.ts    # 环境配置
 │   ├── services/               # 服务层
@@ -141,15 +140,16 @@ npm install
 复制环境变量示例文件：
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 编辑 `.env.local` 文件，配置以下必需变量：
 
 ```env
-# 后台管理登录凭据
+# 后台管理凭据（密码哈希通过 npm run admin:hash-password 生成）
 ADMIN_USERNAME=admin
-ADMIN_PASSWORD=your_secure_password
+ADMIN_PASSWORD_HASH=PBKDF2_SHA256\$210000\$base64_salt\$base64_hash
+ADMIN_SESSION_SECRET=replace_with_at_least_32_random_characters
 
 # Cloudflare R2 配置
 R2_ACCESS_KEY_ID_PROD=your_r2_access_key_id
@@ -158,7 +158,6 @@ R2_BUCKET_NAME_PROD=your_r2_bucket_name
 R2_ENDPOINT_PROD=https://your-account-id.r2.cloudflarestorage.com
 
 # 功能开关（可选）
-NEXT_PUBLIC_ENABLE_ADMIN_LINK=true
 NEXT_PUBLIC_ENABLE_ADS=true
 ```
 
@@ -168,7 +167,7 @@ NEXT_PUBLIC_ENABLE_ADS=true
 npm run dev
 ```
 
-访问 [http://localhost:3000](http://localhost:3000) 查看网站。
+访问 [http://localhost:3100](http://localhost:3100) 查看网站。
 
 ### 4. 构建生产版本
 
@@ -186,7 +185,8 @@ npm start
 | 变量名 | 说明 | 示例 |
 |--------|------|------|
 | `ADMIN_USERNAME` | 管理员用户名 | `admin` |
-| `ADMIN_PASSWORD` | 管理员密码 | `your_secure_password` |
+| `ADMIN_PASSWORD_HASH` | 管理员密码哈希 | 通过 `npm run admin:hash-password` 生成 |
+| `ADMIN_SESSION_SECRET` | 会话签名密钥，至少 32 字符 | 随机生成 |
 | `R2_ACCESS_KEY_ID_PROD` | R2 Access Key ID | `your_r2_access_key_id` |
 | `R2_SECRET_ACCESS_KEY_PROD` | R2 Secret Access Key | `your_r2_secret_access_key` |
 | `R2_BUCKET_NAME_PROD` | R2 存储桶名称 | `phwalls` |
@@ -197,8 +197,9 @@ npm start
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
 | `STORAGE_PROVIDER_PROD` | 存储提供商 | `r2` |
-| `NEXT_PUBLIC_ENABLE_ADMIN_LINK` | 是否在导航栏显示管理员入口 | `false` |
 | `NEXT_PUBLIC_ENABLE_ADS` | 是否启用广告 | `false` |
+| `WALLPAPER_DATA_SOURCE` | 公开壁纸数据源：`json` 或 `d1` | `json` |
+| `ADMIN_HOST` | 线上后台专用域名 | `a.phwalls.com` |
 
 #### 代码默认值（无需配置）
 
@@ -252,12 +253,7 @@ npm start
 
 ### 功能开关配置
 
-#### 导航栏行为控制
-
-- `NEXT_PUBLIC_ENABLE_ADMIN_LINK`: 控制导航栏 PhWalls 链接的行为
-  - `true`: 点击 PhWalls 跳转到后台管理页面 (`/user`)
-  - `false` 或未设置: 点击 PhWalls 平滑滚动到页面顶部
-- 这个功能开关允许您根据部署环境灵活控制用户访问后台的权限
+后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/manager` 与 `/api/admin`，本地开发允许通过 `localhost:3100/manager` 访问。前后台 Pages 项目合并方案见[合并说明](docs/cloudflare-pages-consolidation.md)；合并完成后 `a.phwalls.com` 与 `phwalls.com` 共用 `phwalls` 项目，统一部署命令为 `npm run deploy`，`npm run admin:deploy` 为兼容别名。
 
 ## 功能模块
 
@@ -344,29 +340,17 @@ https://phwalls.com/{设备名称}
 
 #### 功能特性
 
-- ✅ 管理员身份验证（JWT）
-- ✅ 文件上传（单个/批量）
-- ✅ 文件下载和预览
-- ✅ 文件信息显示（大小、类型、时间）
-- ✅ 文件路径复制
-- ✅ 文件删除
-- ✅ 私有空间文件访问控制
-- ✅ 文件管理器（支持文件夹浏览）
+- 管理员账号与签名会话登录
+- 在后台新增品牌，并将新品牌用于设备与壁纸管理
+- 按品牌、设备、分类和状态筛选管理 D1 壁纸数据
+- 新建设备、编辑设备与壁纸，并管理草稿、发布和下架状态
+- 原图与预览图配对上传到 R2；只选品牌时可由文件夹名称自动建立设备或系统草稿
 
 #### 访问方式
 
-1. 访问登录页面：`http://localhost:3000/user/login`
-2. 使用配置的用户名和密码登录
-3. 登录成功后自动跳转到管理页面
-
-#### 文件管理
-
-- 支持单个和批量文件上传
-- 支持文件夹浏览和导航
-- 支持文件预览和下载
-- 支持文件删除
-- 支持私有 URL 刷新
-- 文件使用相对路径存储
+1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/manager`。
+2. 使用 `ADMIN_USERNAME` 与生成哈希时输入的原密码登录。
+3. 正式后台部署并绑定专用域名后访问 `https://a.phwalls.com/manager`。
 
 ### Cloudflare R2 存储
 
@@ -546,18 +530,23 @@ const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
 ### 认证相关
 
 ```
-POST /api/auth/login      # 管理员登录
-POST /api/auth/logout     # 管理员登出
-GET  /api/auth/me         # 获取当前用户信息
+POST /api/admin/login       # 管理员登录
+POST /api/admin/logout      # 管理员登出
+GET  /api/admin/session     # 查询登录状态
 ```
 
-### 文件管理 API
+### 后台管理 API
 
 ```
-GET  /api/files?path={path}                    # 获取文件列表
-POST /api/files/upload                        # 上传文件
-POST /api/files/delete                        # 删除文件
-POST /api/files/url                           # 生成文件访问 URL（私有空间）
+GET/POST /api/admin/brands                     # 品牌列表与新增品牌
+GET/POST/PATCH /api/admin/devices              # 设备列表、新建与编辑
+GET/POST/PATCH/DELETE /api/admin/wallpapers    # 壁纸列表、新建、编辑及删除记录和 R2 文件
+POST /api/admin/upload                        # 上传授权与入库
+```
+
+### 文件访问 API
+
+```
 GET  /api/files/private-url?key={key}         # 生成私有 URL
 POST /api/files/download-url                   # 生成下载 URL
 POST /api/files/batch-private-urls             # 批量生成私有 URL
@@ -697,7 +686,7 @@ wrangler r2 bucket cors put phwalls --rules ./cors.json
 
 3. **配置环境变量**
    ```bash
-   cp .env.local.example .env.local
+   cp .env.example .env.local
    # 编辑 .env.local 文件
    ```
 
@@ -707,8 +696,8 @@ wrangler r2 bucket cors put phwalls --rules ./cors.json
    ```
 
 5. **访问应用**
-   - 前端：http://localhost:3000
-   - 管理后台：http://localhost:3000/user/login
+   - 前端：http://localhost:3100
+   - 管理后台：http://localhost:3100/manager
 
 ### 构建和部署
 
@@ -738,7 +727,7 @@ npm start
 ### 1. 密码和密钥安全
 
 - 使用强密码，包含大小写字母、数字和特殊字符
-- 密码长度至少12位
+- 密码长度至少8位
 - JWT 密钥长度至少32位（如果配置环境变量）
 - 生产环境中建议配置 `JWT_SECRET` 环境变量，使用强随机字符串
 - 定期更换密码和密钥

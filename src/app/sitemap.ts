@@ -9,6 +9,7 @@ import {
   isDesktopWallpaperCategory,
 } from '@/lib/desktop-wallpapers'
 import { getAllHomeCollections } from '@/lib/home-index'
+import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db'
 import {
   buildWallpaperDetailPath,
   parseWallpaperDate,
@@ -40,9 +41,15 @@ function latestDate(...dates: Array<Date | null | undefined>): Date | undefined 
 }
 
 // Sitemap 页面：输出站点静态页面和壁纸详情页索引。
-export default function sitemap(): MetadataRoute.Sitemap {
-  const allCollections = getAllHomeCollections()
-  const allDesktopCollections = getAllDesktopWallpaperCollections()
+export const runtime = 'edge'
+export const dynamic = 'force-dynamic'
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const allCollections = await getAllHomeCollections()
+  const allDesktopCollections = isWallpaperDbEnabled()
+    ? Object.entries(await loadDbIndex(getDesktopTabData().map((tab) => tab.type)))
+        .flatMap(([category, list]) => list.map((collection) => ({ category, collection })))
+    : getAllDesktopWallpaperCollections()
   const latestCollectionDate =
     [...allCollections, ...allDesktopCollections]
       .map(({ collection }) => parseWallpaperDate(collection.date))
@@ -104,7 +111,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   })
 
   const detailRoutes: MetadataRoute.Sitemap = allCollections.map(({ category, collection }) => {
-    const absolutePath = `${SITE_URL}${buildWallpaperDetailPath(category, collection.name)}`
+    const absolutePath = `${SITE_URL}${buildWallpaperDetailPath(category, collection.slug || collection.name)}`
     return {
       url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
       alternates: buildLanguageAlternates(absolutePath),
@@ -117,7 +124,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   })
 
   const desktopDetailRoutes: MetadataRoute.Sitemap = allDesktopCollections.map(({ category, collection }) => {
-    const absolutePath = `${SITE_URL}${buildDesktopWallpaperDetailPath(category, collection.name)}`
+    const absolutePath = `${SITE_URL}${buildDesktopWallpaperDetailPath(category, collection.slug || collection.name)}`
     return {
       url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
       alternates: buildLanguageAlternates(absolutePath),

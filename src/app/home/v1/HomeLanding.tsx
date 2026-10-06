@@ -18,6 +18,7 @@ import type { I18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
 
 type CollectionCard = {
+  deviceId?: string;
   category: string;
   name: string;
   href: string;
@@ -59,8 +60,8 @@ function PhoneCard({
   headingLevel?: 3 | 4;
   className?: string;
 }) {
-  const displayName = localizeWallpaperCollectionName(language, item.name);
-  const title = buildWallpaperListTitle(displayName, texts.wallpapersTitleSuffix);
+  const displayName = item.deviceId ? item.name : localizeWallpaperCollectionName(language, item.name);
+  const title = buildWallpaperListTitle(displayName, texts.wallpapersTitleSuffix, Boolean(item.deviceId));
 
   return (
     <Link
@@ -223,11 +224,11 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
               </Link>
             </div>
             <div className="grid gap-3 sm:grid-cols-3 sm:gap-5">
-              {desktop.map((item) => (
+              {desktop.slice(0, 6).map((item, index) => (
                 <Link
                   key={`${item.category}:${item.name}`}
                   href={withLanguagePath(item.href, language)}
-                  className="group min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-blue-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  className={`group min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-blue-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${index >= 2 ? 'hidden sm:block' : ''}`}
                 >
                   <div className="relative aspect-video overflow-hidden bg-gray-100">
                     {item.imageUrl && (

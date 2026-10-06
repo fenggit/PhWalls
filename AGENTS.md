@@ -45,6 +45,8 @@ npm run deploy       # 部署到 Cloudflare Pages
 
 代理在本地验证改动时，请运行 `npm run lint` 与 `npm run build`。开发服务器（`npm run dev`）属于长时间运行进程，不要在自动化流程中阻塞执行，需由用户手动启动。
 
+开发构建产物位于 `.next-dev/`，生产构建产物位于 `.next/`，两者分别忽略，避免验证生产构建时覆盖运行中的开发模块。不要在开发服务器运行时删除 `.next-dev/`。
+
 ## 项目结构
 
 ```
@@ -78,7 +80,6 @@ src/
 /api/files/download-url           # 生成下载 URL
 /api/files/download               # 服务端代理原图下载（返回 attachment）
 /api/files/batch-private-urls     # 批量生成私有 URL
-/api/public/wallpapers            # 公开壁纸列表
 /api/public/wallpaper-image       # 公开壁纸图片
 /api/public/wallpaper-download    # 公开壁纸下载
 /api/public/tabs                  # 分类标签

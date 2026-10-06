@@ -51,7 +51,7 @@ export const localizeWallpaperCollectionName = (
     || displayName.replace(/^Smartisan\b/i, '锤子');
 };
 
-export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string): string => {
+export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string, preserveName = false): string => {
   const suffix = formatWallpaperDisplayName(String(wallpapersSuffix || 'Wallpapers').trim());
   const suffixPatterns = [
     /\s*wallpapers\s*$/i,
@@ -60,7 +60,7 @@ export const buildWallpaperListTitle = (title: string, wallpapersSuffix: string)
 
   const baseTitle = suffixPatterns.reduce(
     (acc, pattern) => acc.replace(pattern, '').trim(),
-    formatWallpaperDisplayName(String(title || '').trim()),
+    preserveName ? String(title || '').trim() : formatWallpaperDisplayName(String(title || '').trim()),
   );
 
   if (!baseTitle) {

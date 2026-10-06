@@ -4,10 +4,10 @@ import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
 import {
   buildWallpaperDetailPath,
   isWallpaperCategory,
-  loadWallpaperCollection,
   parseWallpaperDate,
   type WallpaperAsset,
 } from '@/lib/wallpaper-data';
+import { loadWallpaperCollection } from '@/lib/wallpaper-data-server';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { SITE_URL, getCategoryLabelForLanguage } from '@/lib/seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
@@ -76,18 +76,18 @@ function detectDeviceGroup(item: {
 
 export async function generateMetadata({ params }: WallpaperDetailPageProps): Promise<Metadata> {
   const { category, slug } = await params;
-  const language = await resolveMetadataLanguage();
 
   if (!isWallpaperCategory(category)) {
     return {};
   }
 
-  const collection = await loadWallpaperCollection(category, slug);
+  const language = await resolveMetadataLanguage();
+  const collection = await loadWallpaperCollection(category, slug, language);
   if (!collection) {
     return {};
   }
 
-  const detailPath = buildWallpaperDetailPath(category, collection.name);
+  const detailPath = buildWallpaperDetailPath(category, collection.slug || collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const { title, description } = buildWallpaperCollectionSeoCopy(language, collection, categoryLabel);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
@@ -133,14 +133,14 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     notFound();
   }
 
-  const collection = await loadWallpaperCollection(category, slug);
+  const language = await resolveMetadataLanguage();
+  const collection = await loadWallpaperCollection(category, slug, language);
 
   if (!collection) {
     notFound();
   }
 
-  const language = await resolveMetadataLanguage();
-  const detailPath = buildWallpaperDetailPath(category, collection.name);
+  const detailPath = buildWallpaperDetailPath(category, collection.slug || collection.name);
   const categoryLabel = getCategoryLabelForLanguage(language, category);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const seoCopy = buildWallpaperCollectionSeoCopy(language, collection, categoryLabel);
@@ -190,7 +190,7 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
         name: seoCopy.breadcrumbCategory,
         item: categoryLandingUrl,
       },
-      { '@type': 'ListItem', position: 3, name: seoCopy.seoName, item: canonicalUrl },
+      { '@type': 'ListItem', position: 3, name: collection.name, item: canonicalUrl },
     ],
   };
 
@@ -272,11 +272,11 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema).replace(/</g, '\\u003c') }}
       />
       <DeviceWallpaperGrid
         category={category}

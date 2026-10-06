@@ -3,7 +3,6 @@ import Home from '@/app/home/v1/Home';
 import {
   getDesktopTabData,
   getDesktopWallpaperCollections,
-  getAllDesktopWallpaperCollections,
 } from '@/lib/desktop-wallpapers';
 import { getDesktopHomeSeoCopy } from '@/lib/desktop-seo';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
@@ -12,6 +11,7 @@ import { resolveMetadataLanguage } from '@/lib/metadata';
 import { SITE_URL } from '@/lib/seo';
 import { headers } from 'next/headers';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
+import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 
@@ -23,7 +23,7 @@ type WallpaperEntry = {
   }>;
 };
 
-function buildInitialDesktopImageUrls() {
+function buildInitialDesktopImageUrls(collections: Record<string, import('@/lib/wallpaper-data').WallpaperCollection[]>) {
   const map: Record<string, string> = {};
   const addEntry = (entry: WallpaperEntry, categorySlug: string) => {
     const firstImage = entry.item?.[0];
@@ -34,14 +34,14 @@ function buildInitialDesktopImageUrls() {
     }
   };
 
-  getAllDesktopWallpaperCollections().forEach(({ category, collection }) => {
-    addEntry(collection as WallpaperEntry, category);
-  });
+  Object.entries(collections).forEach(([category, list]) =>
+    list.forEach((collection) => addEntry(collection as WallpaperEntry, category)));
 
   return map;
 }
 
-function buildDesktopCollectionsByCategory() {
+async function buildDesktopCollectionsByCategory(language: import('@/types').Language) {
+  if (isWallpaperDbEnabled()) return loadDbIndex(getDesktopTabData().map((tab) => tab.type), language);
   return Object.fromEntries(
     getDesktopTabData().map((tab) => [tab.type, getDesktopWallpaperCollections(tab.type)])
   );
@@ -82,14 +82,15 @@ export default async function DesktopPage() {
   const isMobileRequest = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
   const language = await resolveMetadataLanguage();
   const seoCopy = getDesktopHomeSeoCopy(language);
+  const collections = await buildDesktopCollectionsByCategory(language);
 
   return (
     <Home
       contentTabs={getDesktopTabData()}
       navigationTabs={getDesktopTabData()}
-      initialImageUrls={buildInitialDesktopImageUrls()}
+      initialImageUrls={buildInitialDesktopImageUrls(collections)}
       isMobilePriority={isMobileRequest}
-      contentCollectionsByCategory={buildDesktopCollectionsByCategory()}
+      contentCollectionsByCategory={collections}
       detailPathPrefix="/desktop/wallpapers"
       categoryPathPrefix="/desktop"
       forceDesktopCards

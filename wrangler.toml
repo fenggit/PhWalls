@@ -2,3 +2,11 @@ name = "phwalls"
 compatibility_date = "2025-01-27"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
+
+[vars]
+ADMIN_HOST = "a.phwalls.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "phwalls"
+database_id = "70bf042e-a064-4019-a245-0fbf934f1cb0"

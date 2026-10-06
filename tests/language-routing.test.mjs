@@ -113,3 +113,44 @@ test('显式语言路径的规范域名跳转仍使用永久重定向', () => {
   assert.equal(response.status, 308);
   assert.equal(response.headers.get('location'), 'https://phwalls.com/zh');
 });
+
+test('后台根路径进入 manager 并保留栏目参数', () => {
+  const response = middleware(new NextRequest('https://a.phwalls.com/?tab=upload'));
+  assert.equal(response.headers.get('location'), 'https://a.phwalls.com/manager?tab=upload');
+});
+
+test('manager 与管理 API 在后台域名直接放行', () => {
+  for (const path of ['/manager?tab=wallpapers', '/api/admin/session']) {
+    const response = middleware(new NextRequest(`https://a.phwalls.com${path}`));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('x-middleware-next'), '1');
+    assert.equal(response.headers.get('location'), null);
+  }
+});
+
+test('旧后台与带语言前缀的后台地址跳转 manager 并保留栏目', () => {
+  for (const path of ['/admin', '/zh/admin', '/en/manager']) {
+    const response = middleware(new NextRequest(`https://a.phwalls.com${path}?tab=i18n`));
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get('location'), 'https://a.phwalls.com/manager?tab=i18n');
+  }
+});
+
+test('公开域名不提供后台页面或 API', () => {
+  for (const path of ['/admin', '/manager', '/zh/manager', '/en/admin', '/api/admin/session']) {
+    assert.equal(middleware(new NextRequest(`https://phwalls.com${path}`)).status, 404);
+  }
+});
+
+test('后台域名仍拒绝公开页面', () => {
+  assert.equal(middleware(new NextRequest('https://a.phwalls.com/zh/about')).status, 404);
+});
+
+test('开发环境允许 localhost 访问 manager', () => {
+  const previous = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
+  try {
+    const response = middleware(new NextRequest('http://localhost:3100/manager?tab=brands'));
+    assert.equal(response.headers.get('x-middleware-next'), '1');
+  } finally { process.env.NODE_ENV = previous; }
+});

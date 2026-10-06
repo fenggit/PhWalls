@@ -5,8 +5,8 @@ import {
   buildDesktopWallpaperDetailPath,
   getDesktopWallpaperCategoryLabel,
   isDesktopWallpaperCategory,
-  loadDesktopWallpaperCollection,
 } from '@/lib/desktop-data';
+import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildDesktopDetailSeoCopy, getDesktopCategoryLabel } from '@/lib/desktop-seo';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
@@ -31,19 +31,22 @@ export async function generateMetadata({ params }: DesktopWallpaperDetailPagePro
     return {};
   }
 
-  const collection = await loadDesktopWallpaperCollection(category, slug);
+  const language = await resolveMetadataLanguage();
+  const collection = await loadDesktopWallpaperCollection(category, slug, language);
   if (!collection) {
     return {};
   }
 
-  const language = await resolveMetadataLanguage();
   const categoryLabel = getDesktopWallpaperCategoryLabel(category);
   const seoCopy = buildDesktopDetailSeoCopy(language, {
     collectionName: collection.name,
+    displayName: collection.deviceId ? collection.name : undefined,
     categoryLabel,
     count: collection.item.length,
+    seoTitle: collection.seoTitle,
+    description: collection.description,
   });
-  const detailPath = buildDesktopWallpaperDetailPath(category, collection.name);
+  const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const primaryImagePath = collection.item[0]?.compressPath || collection.item[0]?.originPath;
   const primaryImageUrl = primaryImagePath
@@ -83,20 +86,23 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
     notFound();
   }
 
-  const collection = await loadDesktopWallpaperCollection(category, slug);
+  const language = await resolveMetadataLanguage();
+  const collection = await loadDesktopWallpaperCollection(category, slug, language);
   if (!collection) {
     notFound();
   }
 
-  const language = await resolveMetadataLanguage();
-  const detailPath = buildDesktopWallpaperDetailPath(category, collection.name);
+  const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
   const categoryLabel = getDesktopWallpaperCategoryLabel(category);
   const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
   const seoCopy = buildDesktopDetailSeoCopy(language, {
     collectionName: collection.name,
+    displayName: collection.deviceId ? collection.name : undefined,
     categoryLabel,
     count: collection.item.length,
+    seoTitle: collection.seoTitle,
+    description: collection.description,
   });
   const categoryLandingPath = `/desktop/${category}`;
   const categoryLandingUrl = withLanguageUrl(`${SITE_URL}${categoryLandingPath}`, language);
@@ -131,6 +137,7 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
     name: seoCopy.galleryName,
     description: seoCopy.galleryDescription,
     url: canonicalUrl,
+    inLanguage: language,
     numberOfItems: collection.item.length,
     ...(publishedDate ? { datePublished: publishedDate } : {}),
     associatedMedia: collection.item.map((item, index) => {
@@ -152,7 +159,7 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: withLanguageUrl(SITE_URL, language) },
       { '@type': 'ListItem', position: 2, name: seoCopy.categoryLabel, item: categoryLandingUrl },
-      { '@type': 'ListItem', position: 3, name: formatWallpaperDisplayName(collection.name), item: canonicalUrl },
+      { '@type': 'ListItem', position: 3, name: collection.name, item: canonicalUrl },
     ],
   };
 
@@ -160,11 +167,11 @@ export default async function DesktopWallpaperDetailPage({ params }: DesktopWall
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema).replace(/</g, '\\u003c') }}
       />
       <DeviceWallpaperGrid
         category={category}

@@ -3,13 +3,14 @@ import { getI18nTexts } from '@/lib/i18n';
 import { getBrandCategoryBySlug } from '@/lib/brands';
 import { getAboutBrandCopy, getBrandTitlesFromTabs } from '@/lib/brand-copy';
 import { getCategoryLabelForLanguage, getCategorySeoCopy } from '@/lib/seo';
-import { isWallpaperCategory, loadWallpaperCollection } from '@/lib/wallpaper-data';
+import { isWallpaperCategory } from '@/lib/wallpaper-data';
+import { loadWallpaperCollection } from '@/lib/wallpaper-data-server';
 import { buildWallpaperCollectionSeoCopy } from '@/lib/wallpaper-seo';
 import {
   getDesktopWallpaperCategoryLabel,
   isDesktopWallpaperCategory,
-  loadDesktopWallpaperCollection,
 } from '@/lib/desktop-data';
+import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
 import {
   buildDesktopDetailSeoCopy,
   getDesktopCategorySeoCopy,
@@ -44,7 +45,7 @@ export async function resolveRouteDescription(path: string, language: Language):
   if (segments.length === 3 && segments[0] === 'wallpapers') {
     const [, category, slug] = segments;
     if (!isWallpaperCategory(category)) return null;
-    const collection = await loadWallpaperCollection(category, slug);
+    const collection = await loadWallpaperCollection(category, slug, language);
     return collection
       ? buildWallpaperCollectionSeoCopy(language, collection, getCategoryLabelForLanguage(language, category)).description
       : null;
@@ -58,12 +59,15 @@ export async function resolveRouteDescription(path: string, language: Language):
     if (segments.length === 4 && segments[1] === 'wallpapers') {
       const [, , category, slug] = segments;
       if (!isDesktopWallpaperCategory(category)) return null;
-      const collection = await loadDesktopWallpaperCollection(category, slug);
+      const collection = await loadDesktopWallpaperCollection(category, slug, language);
       return collection
         ? buildDesktopDetailSeoCopy(language, {
             collectionName: collection.name,
+            displayName: collection.deviceId ? collection.name : undefined,
             categoryLabel: getDesktopWallpaperCategoryLabel(category),
             count: collection.item.length,
+            seoTitle: collection.seoTitle,
+            description: collection.description,
           }).description
         : null;
     }

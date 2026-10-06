@@ -108,6 +108,31 @@ function normalizeLegacyWallpaperPath(pathname: string): string {
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const hostname = request.nextUrl.hostname.toLowerCase();
+  const adminHost = (process.env.ADMIN_HOST || 'a.phwalls.com').toLowerCase();
+  const localAdmin = process.env.NODE_ENV === 'development' && hostname === 'localhost';
+  const localizedAdmin = pathname.match(/^\/(?:en|zh|ja|vi|zh-hant)(\/(?:admin|manager)(?:\/.*)?)$/);
+  const adminPage = /^\/(?:admin|manager)(?:\/|$)/.test(pathname);
+  const adminApi = /^\/api\/admin(?:\/|$)/.test(pathname);
+  if (localizedAdmin || adminPage || adminApi) {
+    if (hostname !== adminHost && !localAdmin) return new NextResponse(null, { status: 404 });
+    if (localizedAdmin || /^\/admin(?:\/|$)/.test(pathname)) {
+      const target = request.nextUrl.clone();
+      target.pathname = (localizedAdmin?.[1] || pathname).replace(/^\/admin(?=\/|$)/, '/manager');
+      return NextResponse.redirect(target, 308);
+    }
+    return NextResponse.next();
+  }
+  if (hostname === adminHost && !localAdmin) {
+    if (pathname === '/') {
+      const target = request.nextUrl.clone();
+      target.pathname = '/manager';
+      return NextResponse.redirect(target);
+    }
+    if (!pathname.startsWith('/_next') && !pathname.match(/\.[a-z0-9]+$/i)) {
+      return new NextResponse(null, { status: 404 });
+    }
+  }
   const pathLanguage = getLanguageFromPath(pathname);
   const strippedPath = pathLanguage ? stripLanguagePrefix(pathname).path : pathname;
   const normalizedPath = normalizeLegacyWallpaperPath(normalizePublicPath(strippedPath));

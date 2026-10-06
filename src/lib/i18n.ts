@@ -318,6 +318,13 @@ export interface I18nTexts {
   brandCategorySeoTitleTemplate: string;
   brandCategorySeoDescriptionTemplate: string;
   brandCategorySeoSubtitleTemplate: string;
+  loadMoreCollections: string;
+  collectionProgressTemplate: string;
+  seriesNavigationLabel: string;
+  seriesAllLabel: string;
+  seriesMoreLabel: string;
+  seriesOtherLabel: string;
+  seriesResultsTemplate: string;
   desktopCategoryTitleTemplate: string;
   desktopCategorySeoTitleTemplate: string;
   desktopCategorySeoDescriptionTemplate: string;
@@ -696,6 +703,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     brandCategorySeoTitleTemplate: '{brand}内置壁纸 - 原图免费下载',
     brandCategorySeoDescriptionTemplate: '浏览{brand}内置壁纸合集，预览图片并免费下载无水印原图。',
     brandCategorySeoSubtitleTemplate: '共收录 {count} 个{brand}壁纸合集。',
+    loadMoreCollections: '加载更多',
+    collectionProgressTemplate: '已展示 {shown} / {total} 个合集',
+    seriesNavigationLabel: '按系列浏览',
+    seriesAllLabel: '全部',
+    seriesMoreLabel: '更多系列',
+    seriesOtherLabel: '其他',
+    seriesResultsTemplate: '{series} · {count} 个合集',
     desktopCategorySeoTitleTemplate: '{category}壁纸 - 原图免费下载',
     desktopCategoryTitleTemplate: '{category}壁纸',
     desktopCategorySeoDescriptionTemplate: '浏览{category}壁纸合集，预览背景图片并免费下载无水印原图。',
@@ -1072,6 +1086,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     brandCategorySeoTitleTemplate: '{brand} Stock Wallpapers - Free Download',
     brandCategorySeoDescriptionTemplate: 'Browse {brand} stock wallpaper collections, preview images and download the originals for free.',
     brandCategorySeoSubtitleTemplate: '{count} {brand} wallpaper collections.',
+    loadMoreCollections: 'Load more',
+    collectionProgressTemplate: 'Showing {shown} of {total} collections',
+    seriesNavigationLabel: 'Browse by series',
+    seriesAllLabel: 'All',
+    seriesMoreLabel: 'More series',
+    seriesOtherLabel: 'Other',
+    seriesResultsTemplate: '{series} · {count} collections',
     desktopCategorySeoTitleTemplate: '{category} Wallpapers - Free Download',
     desktopCategoryTitleTemplate: '{category} Wallpapers',
     desktopCategorySeoDescriptionTemplate: 'Browse {category} wallpaper collections, preview backgrounds and download original images for free.',
@@ -1448,6 +1469,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     brandCategorySeoTitleTemplate: '{brand} 標準壁紙を無料ダウンロード',
     brandCategorySeoDescriptionTemplate: '{brand} の標準壁紙を収録。画像をプレビューして、元の解像度で無料ダウンロードできます。',
     brandCategorySeoSubtitleTemplate: '{brand} の壁紙コレクションを {count} 件収録。',
+    loadMoreCollections: 'もっと見る',
+    collectionProgressTemplate: '{total} 件中 {shown} 件を表示',
+    seriesNavigationLabel: 'シリーズ別に閲覧',
+    seriesAllLabel: 'すべて',
+    seriesMoreLabel: 'その他のシリーズ',
+    seriesOtherLabel: 'その他',
+    seriesResultsTemplate: '{series} · {count} 件のコレクション',
     desktopCategorySeoTitleTemplate: '{category} 壁紙を無料ダウンロード',
     desktopCategoryTitleTemplate: '{category} 壁紙',
     desktopCategorySeoDescriptionTemplate: '{category} の壁紙コレクションを収録。画像をプレビューして、元の解像度で無料ダウンロードできます。',
@@ -1797,6 +1825,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     brandCategorySeoTitleTemplate: 'Hình nền gốc {brand} - Tải miễn phí',
     brandCategorySeoDescriptionTemplate: 'Khám phá bộ sưu tập hình nền gốc {brand}. Xem trước và tải ảnh miễn phí ở độ phân giải gốc.',
     brandCategorySeoSubtitleTemplate: '{count} bộ hình nền {brand}.',
+    loadMoreCollections: 'Xem thêm',
+    collectionProgressTemplate: 'Đang hiển thị {shown} / {total} bộ hình nền',
+    seriesNavigationLabel: 'Duyệt theo dòng máy',
+    seriesAllLabel: 'Tất cả',
+    seriesMoreLabel: 'Dòng máy khác',
+    seriesOtherLabel: 'Khác',
+    seriesResultsTemplate: '{series} · {count} bộ hình nền',
     desktopCategorySeoTitleTemplate: 'Hình nền {category} - Tải miễn phí',
     desktopCategoryTitleTemplate: 'Hình nền {category}',
     desktopCategorySeoDescriptionTemplate: 'Khám phá bộ sưu tập hình nền {category}. Xem trước và tải ảnh miễn phí ở độ phân giải gốc.',
@@ -2173,6 +2208,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     brandCategorySeoTitleTemplate: '{brand} 內建桌布 - 原圖免費下載',
     brandCategorySeoDescriptionTemplate: '瀏覽{brand}內建桌布合集，預覽圖片並免費下載無浮水印原圖。',
     brandCategorySeoSubtitleTemplate: '共收錄 {count} 個{brand}桌布合集。',
+    loadMoreCollections: '載入更多',
+    collectionProgressTemplate: '已顯示 {shown} / {total} 個合集',
+    seriesNavigationLabel: '依系列瀏覽',
+    seriesAllLabel: '全部',
+    seriesMoreLabel: '更多系列',
+    seriesOtherLabel: '其他',
+    seriesResultsTemplate: '{series} · {count} 個合集',
     desktopCategorySeoTitleTemplate: '{category} 桌布 - 原圖免費下載',
     desktopCategoryTitleTemplate: '{category} 桌布',
     desktopCategorySeoDescriptionTemplate: '瀏覽{category}桌布合集，預覽背景圖片並免費下載無浮水印原圖。',
