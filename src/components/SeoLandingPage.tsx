@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -17,15 +17,6 @@ import { buildWallpaperDetailPath, slugifyWallpaperName, type WallpaperCategory 
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
 
-type LandingWallpaperItem = {
-  name: string;
-  type: string;
-  size: string;
-  originPath: string;
-  compressPath: string;
-  tag: string;
-};
-
 type LandingCard = {
   deviceId?: string;
   name: string;
@@ -33,7 +24,6 @@ type LandingCard = {
   date: string;
   count: number;
   imageKey: string | null;
-  wallpapers: LandingWallpaperItem[];
 };
 
 type SeoLandingPageProps = {
@@ -48,6 +38,7 @@ type SeoLandingPageProps = {
   cardAspect: string;
   gridClass: string;
   cards: LandingCard[];
+  pageSize?: number;
   activeCategoryTypeOverride?: string;
 };
 
@@ -83,10 +74,14 @@ export default function SeoLandingPage({
   cardAspect,
   gridClass,
   cards,
+  pageSize,
   activeCategoryTypeOverride,
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const pathname = usePathname();
+  const [pageCount, setPageCount] = useState(1);
+  const visibleCards = pageSize ? cards.slice(0, pageCount * pageSize) : cards;
+  const hasMore = visibleCards.length < cards.length;
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
@@ -174,7 +169,7 @@ export default function SeoLandingPage({
 
         <section>
           <div className={`grid ${gridClass} gap-6`}>
-            {cards.map((card, index) => {
+            {visibleCards.map((card, index) => {
               const gradient = gradientPalette[index % gradientPalette.length];
               const detailHref = detailPathPrefix
                 ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`,currentLang)
@@ -183,7 +178,7 @@ export default function SeoLandingPage({
               const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix, Boolean(card.deviceId));
               return (
                 <article key={card.name} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
-                  <Link href={detailHref} className="block w-full text-left" aria-label={cardTitle}>
+                  <Link href={detailHref} prefetch={pageSize ? false : undefined} className="block w-full text-left" aria-label={cardTitle}>
                     <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-lg">
                       <div className={`${cardAspect} overflow-hidden`}>
                         {card.imageKey ? (
@@ -210,7 +205,7 @@ export default function SeoLandingPage({
 
                   <div className="mt-3">
                     <h2 className="text-sm sm:text-base leading-tight font-semibold text-gray-900">
-                      <Link href={detailHref} className="hover:text-blue-600">
+                      <Link href={detailHref} prefetch={pageSize ? false : undefined} className="hover:text-blue-600">
                         {cardTitle}
                       </Link>
                     </h2>
@@ -220,6 +215,24 @@ export default function SeoLandingPage({
               );
             })}
           </div>
+          {pageSize && cards.length > 0 && (
+            <div className="mt-10 flex flex-col items-center gap-4">
+              <p role="status" className="text-sm text-gray-500">
+                {texts.collectionProgressTemplate
+                  .replace('{shown}', String(visibleCards.length))
+                  .replace('{total}', String(cards.length))}
+              </p>
+              {hasMore && (
+                <button
+                  type="button"
+                  onClick={() => setPageCount((previous) => previous + 1)}
+                  className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
+                >
+                  {texts.loadMoreCollections}
+                </button>
+              )}
+            </div>
+          )}
         </section>
       </main>
 

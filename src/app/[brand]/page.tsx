@@ -6,7 +6,7 @@ import { sortByDateDesc } from '@/lib/data';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getCategorySeoCopy, SITE_URL } from '@/lib/seo';
-import { loadWallpaperCollections } from '@/lib/wallpaper-data-server';
+import { loadWallpaperCollectionIndex } from '@/lib/wallpaper-data-server';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
@@ -63,19 +63,19 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
   }
 
   const language = await resolveMetadataLanguage();
-  const cards = sortByDateDesc(await loadWallpaperCollections(brandInfo.slug, language)).map((collection) => ({
+  const cards = sortByDateDesc(await loadWallpaperCollectionIndex(brandInfo.slug, language)).map((collection) => ({
     deviceId: collection.deviceId,
     name: collection.name,
     slug: collection.slug,
     date: collection.date,
-    count: collection.item?.length || 0,
+    count: collection.count ?? collection.item.length,
     imageKey: collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || null,
-    wallpapers: collection.item || [],
   }));
   const seoCopy = getCategorySeoCopy(language, brandInfo.slug, cards.length);
 
   return (
     <SeoLandingPage
+      key={brandInfo.slug}
       breadcrumbLabel={seoCopy.title}
       categoryKey={brandInfo.slug}
       categoryPath={buildBrandPath(brandInfo.type)}
@@ -86,6 +86,7 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
       cardAspect="aspect-[9/16]"
       gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
       cards={cards}
+      pageSize={10}
     />
   );
 }
