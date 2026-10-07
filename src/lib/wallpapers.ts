@@ -1,3 +1,17 @@
+import blacksharkData from '@/data/black-shark.json';
+import fairphoneData from '@/data/fairphone.json';
+import hmdData from '@/data/hmd.json';
+import htcData from '@/data/htc.json';
+import lgData from '@/data/lg.json';
+import lavaData from '@/data/lava.json';
+import lenovoData from '@/data/lenovo.json';
+import meizuData from '@/data/meizu.json';
+import micromaxData from '@/data/micromax.json';
+import nioData from '@/data/nio.json';
+import nubiaData from '@/data/nubia.json';
+import redmagicData from '@/data/redmagic.json';
+import sharpData from '@/data/sharp.json';
+import zteData from '@/data/zte.json';
 import androidData from '@/data/android.json';
 import asusRogPhoneData from '@/data/asus rog phone.json';
 import googlePixelData from '@/data/google pixel.json';
@@ -48,6 +62,20 @@ export {
 
 // 以下全量数据访问供首页聚合、sitemap、公开 API 等确需全部数据的场景使用。
 const dataSources: Record<string, WallpaperCollection[]> = {
+  'black-shark': blacksharkData as WallpaperCollection[],
+  'fairphone': fairphoneData as WallpaperCollection[],
+  'hmd': hmdData as WallpaperCollection[],
+  'htc': htcData as WallpaperCollection[],
+  'lg': lgData as WallpaperCollection[],
+  'lava': lavaData as WallpaperCollection[],
+  'lenovo': lenovoData as WallpaperCollection[],
+  'meizu': meizuData as WallpaperCollection[],
+  'micromax': micromaxData as WallpaperCollection[],
+  'nio': nioData as WallpaperCollection[],
+  'nubia': nubiaData as WallpaperCollection[],
+  'redmagic': redmagicData as WallpaperCollection[],
+  'sharp': sharpData as WallpaperCollection[],
+  'zte': zteData as WallpaperCollection[],
   android: androidData as WallpaperCollection[],
   'asus-rog-phone': asusRogPhoneData as WallpaperCollection[],
   'google-pixel': googlePixelData as WallpaperCollection[],

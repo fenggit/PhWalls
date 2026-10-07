@@ -34,6 +34,20 @@ export type WallpaperCollectionEntry = {
 // 这样品牌页 / 详情页等 Edge Function 冷启动时只解析所需的单个品牌数据，
 // 而不是全部 2.5MB JSON，显著降低单请求 CPU 时间。
 const brandLoaders: Record<string, () => Promise<WallpaperCollection[]>> = {
+  'black-shark': () => import('@/data/black-shark.json').then((m) => m.default as WallpaperCollection[]),
+  'fairphone': () => import('@/data/fairphone.json').then((m) => m.default as WallpaperCollection[]),
+  'hmd': () => import('@/data/hmd.json').then((m) => m.default as WallpaperCollection[]),
+  'htc': () => import('@/data/htc.json').then((m) => m.default as WallpaperCollection[]),
+  'lg': () => import('@/data/lg.json').then((m) => m.default as WallpaperCollection[]),
+  'lava': () => import('@/data/lava.json').then((m) => m.default as WallpaperCollection[]),
+  'lenovo': () => import('@/data/lenovo.json').then((m) => m.default as WallpaperCollection[]),
+  'meizu': () => import('@/data/meizu.json').then((m) => m.default as WallpaperCollection[]),
+  'micromax': () => import('@/data/micromax.json').then((m) => m.default as WallpaperCollection[]),
+  'nio': () => import('@/data/nio.json').then((m) => m.default as WallpaperCollection[]),
+  'nubia': () => import('@/data/nubia.json').then((m) => m.default as WallpaperCollection[]),
+  'redmagic': () => import('@/data/redmagic.json').then((m) => m.default as WallpaperCollection[]),
+  'sharp': () => import('@/data/sharp.json').then((m) => m.default as WallpaperCollection[]),
+  'zte': () => import('@/data/zte.json').then((m) => m.default as WallpaperCollection[]),
   android: () => import('@/data/android.json').then((m) => m.default as WallpaperCollection[]),
   'asus-rog-phone': () => import('@/data/asus rog phone.json').then((m) => m.default as WallpaperCollection[]),
   'google-pixel': () => import('@/data/google pixel.json').then((m) => m.default as WallpaperCollection[]),

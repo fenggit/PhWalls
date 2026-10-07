@@ -103,5 +103,61 @@
     {
         "title": "锤子",
         "type": "smartisan"
+    },
+    {
+        "title": "黑鲨",
+        "type": "black-shark"
+    },
+    {
+        "title": "Fairphone",
+        "type": "fairphone"
+    },
+    {
+        "title": "HMD",
+        "type": "hmd"
+    },
+    {
+        "title": "HTC",
+        "type": "htc"
+    },
+    {
+        "title": "LG",
+        "type": "lg"
+    },
+    {
+        "title": "Lava",
+        "type": "lava"
+    },
+    {
+        "title": "联想",
+        "type": "lenovo"
+    },
+    {
+        "title": "魅族",
+        "type": "meizu"
+    },
+    {
+        "title": "Micromax",
+        "type": "micromax"
+    },
+    {
+        "title": "蔚来",
+        "type": "nio"
+    },
+    {
+        "title": "努比亚",
+        "type": "nubia"
+    },
+    {
+        "title": "红魔",
+        "type": "redmagic"
+    },
+    {
+        "title": "夏普",
+        "type": "sharp"
+    },
+    {
+        "title": "中兴",
+        "type": "zte"
     }
 ]

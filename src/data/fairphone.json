@@ -1,0 +1,180 @@
+[
+  {
+    "name": "Fairphone 6",
+    "date": "2025/06/25",
+    "item": [
+      {
+        "name": "fairphone-6-black-brown-photo",
+        "type": "image/webp",
+        "size": "2.26 MB",
+        "originPath": "Fairphone/Fairphone 6/origin/fairphone-6-black-brown-photo.webp",
+        "compressPath": "Fairphone/Fairphone 6/compress/fairphone-6-black-brown-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Fairphone 4",
+    "date": "2021/09/30",
+    "item": [
+      {
+        "name": "fairphone-4-black-brown-gradient",
+        "type": "image/png",
+        "size": "192.46 KB",
+        "originPath": "Fairphone/Fairphone 4/origin/fairphone-4-black-brown-gradient.png",
+        "compressPath": "Fairphone/Fairphone 4/compress/fairphone-4-black-brown-gradient.webp"
+      },
+      {
+        "name": "fairphone-4-black-silver-abstract",
+        "type": "image/png",
+        "size": "246.25 KB",
+        "originPath": "Fairphone/Fairphone 4/origin/fairphone-4-black-silver-abstract.png",
+        "compressPath": "Fairphone/Fairphone 4/compress/fairphone-4-black-silver-abstract.webp"
+      },
+      {
+        "name": "fairphone-4-cyan-blue-gradient",
+        "type": "image/png",
+        "size": "204.9 KB",
+        "originPath": "Fairphone/Fairphone 4/origin/fairphone-4-cyan-blue-gradient.png",
+        "compressPath": "Fairphone/Fairphone 4/compress/fairphone-4-cyan-blue-gradient.webp"
+      },
+      {
+        "name": "fairphone-4-gray-green-gradient",
+        "type": "image/png",
+        "size": "100.8 KB",
+        "originPath": "Fairphone/Fairphone 4/origin/fairphone-4-gray-green-gradient.png",
+        "compressPath": "Fairphone/Fairphone 4/compress/fairphone-4-gray-green-gradient.webp"
+      },
+      {
+        "name": "fairphone-4-mint-cyan-gradient",
+        "type": "image/jpeg",
+        "size": "68.98 KB",
+        "originPath": "Fairphone/Fairphone 4/origin/fairphone-4-mint-cyan-gradient.jpeg",
+        "compressPath": "Fairphone/Fairphone 4/compress/fairphone-4-mint-cyan-gradient.webp"
+      },
+      {
+        "name": "fairphone-4-red-brown-gradient",
+        "type": "image/jpeg",
+        "size": "104.58 KB",
+        "originPath": "Fairphone/Fairphone 4/origin/fairphone-4-red-brown-gradient.jpeg",
+        "compressPath": "Fairphone/Fairphone 4/compress/fairphone-4-red-brown-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Fairphone 3",
+    "date": "2019/08/27",
+    "item": [
+      {
+        "name": "fairphone-3-black-green-abstract",
+        "type": "image/png",
+        "size": "3.51 MB",
+        "originPath": "Fairphone/Fairphone 3/origin/fairphone-3-black-green-abstract.png",
+        "compressPath": "Fairphone/Fairphone 3/compress/fairphone-3-black-green-abstract.webp"
+      },
+      {
+        "name": "fairphone-3-blue-cyan-abstract",
+        "type": "image/png",
+        "size": "3.47 MB",
+        "originPath": "Fairphone/Fairphone 3/origin/fairphone-3-blue-cyan-abstract.png",
+        "compressPath": "Fairphone/Fairphone 3/compress/fairphone-3-blue-cyan-abstract.webp"
+      },
+      {
+        "name": "fairphone-3-brown-black-gradient",
+        "type": "image/png",
+        "size": "3.83 MB",
+        "originPath": "Fairphone/Fairphone 3/origin/fairphone-3-brown-black-gradient.png",
+        "compressPath": "Fairphone/Fairphone 3/compress/fairphone-3-brown-black-gradient.webp"
+      },
+      {
+        "name": "fairphone-3-orange-gold-pattern",
+        "type": "image/png",
+        "size": "3.9 MB",
+        "originPath": "Fairphone/Fairphone 3/origin/fairphone-3-orange-gold-pattern.png",
+        "compressPath": "Fairphone/Fairphone 3/compress/fairphone-3-orange-gold-pattern.webp"
+      }
+    ]
+  },
+  {
+    "name": "Fairphone 2",
+    "date": "2015/06/17",
+    "item": [
+      {
+        "name": "fairphone-2-black-brown-gradient-dark",
+        "type": "image/jpeg",
+        "size": "1.15 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-black-brown-gradient-dark.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-black-brown-gradient-dark.webp"
+      },
+      {
+        "name": "fairphone-2-black-brown-pattern",
+        "type": "image/jpeg",
+        "size": "673.64 KB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-black-brown-pattern.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-black-brown-pattern.webp"
+      },
+      {
+        "name": "fairphone-2-black-gradient-dark",
+        "type": "image/jpeg",
+        "size": "909.29 KB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-black-gradient-dark.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-black-gradient-dark.webp"
+      },
+      {
+        "name": "fairphone-2-blue-black-gradient",
+        "type": "image/jpeg",
+        "size": "1.35 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-blue-black-gradient.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-blue-black-gradient.webp"
+      },
+      {
+        "name": "fairphone-2-blue-cyan-photo",
+        "type": "image/jpeg",
+        "size": "1.45 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-blue-cyan-photo.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-blue-cyan-photo.webp"
+      },
+      {
+        "name": "fairphone-2-brown-black-photo",
+        "type": "image/jpeg",
+        "size": "2.1 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-brown-black-photo.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-brown-black-photo.webp"
+      },
+      {
+        "name": "fairphone-2-brown-gray-gradient-dark",
+        "type": "image/jpeg",
+        "size": "1.66 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-brown-gray-gradient-dark.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-brown-gray-gradient-dark.webp"
+      },
+      {
+        "name": "fairphone-2-cyan-gradient",
+        "type": "image/png",
+        "size": "165.09 KB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-cyan-gradient.png",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-cyan-gradient.webp"
+      },
+      {
+        "name": "fairphone-2-gray-silver-pattern",
+        "type": "image/jpeg",
+        "size": "1.75 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-gray-silver-pattern.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-gray-silver-pattern.webp"
+      },
+      {
+        "name": "fairphone-2-mint-black-photo",
+        "type": "image/jpeg",
+        "size": "2.03 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-mint-black-photo.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-mint-black-photo.webp"
+      },
+      {
+        "name": "fairphone-2-red-brown-gradient",
+        "type": "image/jpeg",
+        "size": "1.61 MB",
+        "originPath": "Fairphone/Fairphone 2/origin/fairphone-2-red-brown-gradient.jpg",
+        "compressPath": "Fairphone/Fairphone 2/compress/fairphone-2-red-brown-gradient.webp"
+      }
+    ]
+  }
+]

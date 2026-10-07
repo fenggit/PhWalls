@@ -103,5 +103,61 @@
   {
     "title": "Smartisan",
     "type": "smartisan"
+  },
+  {
+    "title": "Black Shark",
+    "type": "black-shark"
+  },
+  {
+    "title": "Fairphone",
+    "type": "fairphone"
+  },
+  {
+    "title": "HMD",
+    "type": "hmd"
+  },
+  {
+    "title": "HTC",
+    "type": "htc"
+  },
+  {
+    "title": "LG",
+    "type": "lg"
+  },
+  {
+    "title": "Lava",
+    "type": "lava"
+  },
+  {
+    "title": "Lenovo",
+    "type": "lenovo"
+  },
+  {
+    "title": "Meizu",
+    "type": "meizu"
+  },
+  {
+    "title": "Micromax",
+    "type": "micromax"
+  },
+  {
+    "title": "NIO",
+    "type": "nio"
+  },
+  {
+    "title": "nubia",
+    "type": "nubia"
+  },
+  {
+    "title": "REDMAGIC",
+    "type": "redmagic"
+  },
+  {
+    "title": "シャープ",
+    "type": "sharp"
+  },
+  {
+    "title": "ZTE",
+    "type": "zte"
   }
 ]

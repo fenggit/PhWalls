@@ -17,6 +17,20 @@ const dataDir = join(scriptDir, '..', 'src', 'data');
 
 // 与 src/lib/wallpaper-data.ts 的 brandLoaders 保持一致。
 const brandFiles = {
+  'black-shark': 'black-shark.json',
+  'fairphone': 'fairphone.json',
+  'hmd': 'hmd.json',
+  'htc': 'htc.json',
+  'lg': 'lg.json',
+  'lava': 'lava.json',
+  'lenovo': 'lenovo.json',
+  'meizu': 'meizu.json',
+  'micromax': 'micromax.json',
+  'nio': 'nio.json',
+  'nubia': 'nubia.json',
+  'redmagic': 'redmagic.json',
+  'sharp': 'sharp.json',
+  'zte': 'zte.json',
   android: 'android.json',
   'asus-rog-phone': 'asus rog phone.json',
   'google-pixel': 'google pixel.json',
@@ -56,7 +70,7 @@ const addSearchEntries = (slug, collections, desktop) => {
       date: collection.date || '',
       count: items.length,
       desktop,
-      keywords: items.map((item) => item.name || '').join(' '),
+      keywords: items.map((item) => [item.name, item.tag].filter(Boolean).join(' ')).join(' '),
     });
   }
 };

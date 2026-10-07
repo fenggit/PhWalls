@@ -596,5 +596,274 @@
       "vi": "Ubuntu",
       "zh-hant": "Ubuntu"
     }
+  },
+  "black-shark": {
+    "prefixes": [
+      "Black Shark"
+    ],
+    "titles": {
+      "en": "Black Shark",
+      "zh": "黑鲨",
+      "ja": "Black Shark",
+      "vi": "Black Shark",
+      "zh-hant": "黑鯊"
+    },
+    "names": {
+      "en": "Black Shark",
+      "zh": "黑鲨",
+      "ja": "Black Shark",
+      "vi": "Black Shark",
+      "zh-hant": "黑鯊"
+    }
+  },
+  "fairphone": {
+    "prefixes": [
+      "Fairphone"
+    ],
+    "titles": {
+      "en": "Fairphone",
+      "zh": "Fairphone",
+      "ja": "Fairphone",
+      "vi": "Fairphone",
+      "zh-hant": "Fairphone"
+    },
+    "names": {
+      "en": "Fairphone",
+      "zh": "Fairphone",
+      "ja": "Fairphone",
+      "vi": "Fairphone",
+      "zh-hant": "Fairphone"
+    }
+  },
+  "hmd": {
+    "prefixes": [
+      "HMD"
+    ],
+    "titles": {
+      "en": "HMD",
+      "zh": "HMD",
+      "ja": "HMD",
+      "vi": "HMD",
+      "zh-hant": "HMD"
+    },
+    "names": {
+      "en": "HMD",
+      "zh": "HMD",
+      "ja": "HMD",
+      "vi": "HMD",
+      "zh-hant": "HMD"
+    }
+  },
+  "htc": {
+    "prefixes": [
+      "HTC"
+    ],
+    "titles": {
+      "en": "HTC",
+      "zh": "HTC",
+      "ja": "HTC",
+      "vi": "HTC",
+      "zh-hant": "HTC"
+    },
+    "names": {
+      "en": "HTC",
+      "zh": "HTC",
+      "ja": "HTC",
+      "vi": "HTC",
+      "zh-hant": "HTC"
+    }
+  },
+  "lg": {
+    "prefixes": [
+      "LG"
+    ],
+    "titles": {
+      "en": "LG",
+      "zh": "LG",
+      "ja": "LG",
+      "vi": "LG",
+      "zh-hant": "LG"
+    },
+    "names": {
+      "en": "LG",
+      "zh": "LG",
+      "ja": "LG",
+      "vi": "LG",
+      "zh-hant": "LG"
+    }
+  },
+  "lava": {
+    "prefixes": [
+      "Lava"
+    ],
+    "titles": {
+      "en": "Lava",
+      "zh": "Lava",
+      "ja": "Lava",
+      "vi": "Lava",
+      "zh-hant": "Lava"
+    },
+    "names": {
+      "en": "Lava",
+      "zh": "Lava",
+      "ja": "Lava",
+      "vi": "Lava",
+      "zh-hant": "Lava"
+    }
+  },
+  "lenovo": {
+    "prefixes": [
+      "Lenovo"
+    ],
+    "titles": {
+      "en": "Lenovo",
+      "zh": "联想",
+      "ja": "Lenovo",
+      "vi": "Lenovo",
+      "zh-hant": "聯想"
+    },
+    "names": {
+      "en": "Lenovo",
+      "zh": "联想",
+      "ja": "Lenovo",
+      "vi": "Lenovo",
+      "zh-hant": "聯想"
+    }
+  },
+  "meizu": {
+    "prefixes": [
+      "Meizu"
+    ],
+    "titles": {
+      "en": "Meizu",
+      "zh": "魅族",
+      "ja": "Meizu",
+      "vi": "Meizu",
+      "zh-hant": "魅族"
+    },
+    "names": {
+      "en": "Meizu",
+      "zh": "魅族",
+      "ja": "Meizu",
+      "vi": "Meizu",
+      "zh-hant": "魅族"
+    }
+  },
+  "micromax": {
+    "prefixes": [
+      "Micromax"
+    ],
+    "titles": {
+      "en": "Micromax",
+      "zh": "Micromax",
+      "ja": "Micromax",
+      "vi": "Micromax",
+      "zh-hant": "Micromax"
+    },
+    "names": {
+      "en": "Micromax",
+      "zh": "Micromax",
+      "ja": "Micromax",
+      "vi": "Micromax",
+      "zh-hant": "Micromax"
+    }
+  },
+  "nio": {
+    "prefixes": [
+      "Nio"
+    ],
+    "titles": {
+      "en": "NIO",
+      "zh": "蔚来",
+      "ja": "NIO",
+      "vi": "NIO",
+      "zh-hant": "蔚來"
+    },
+    "names": {
+      "en": "NIO",
+      "zh": "蔚来",
+      "ja": "NIO",
+      "vi": "NIO",
+      "zh-hant": "蔚來"
+    }
+  },
+  "nubia": {
+    "prefixes": [
+      "Nubia"
+    ],
+    "titles": {
+      "en": "nubia",
+      "zh": "努比亚",
+      "ja": "nubia",
+      "vi": "nubia",
+      "zh-hant": "努比亞"
+    },
+    "names": {
+      "en": "nubia",
+      "zh": "努比亚",
+      "ja": "nubia",
+      "vi": "nubia",
+      "zh-hant": "努比亞"
+    }
+  },
+  "redmagic": {
+    "prefixes": [
+      "Nubia RedMagic",
+      "Nubia Red Magic",
+      "RedMagic",
+      "REDMAGIC"
+    ],
+    "titles": {
+      "en": "REDMAGIC",
+      "zh": "红魔",
+      "ja": "REDMAGIC",
+      "vi": "REDMAGIC",
+      "zh-hant": "紅魔"
+    },
+    "names": {
+      "en": "REDMAGIC",
+      "zh": "红魔",
+      "ja": "REDMAGIC",
+      "vi": "REDMAGIC",
+      "zh-hant": "紅魔"
+    }
+  },
+  "sharp": {
+    "prefixes": [
+      "Sharp"
+    ],
+    "titles": {
+      "en": "SHARP",
+      "zh": "夏普",
+      "ja": "シャープ",
+      "vi": "SHARP",
+      "zh-hant": "夏普"
+    },
+    "names": {
+      "en": "SHARP",
+      "zh": "夏普",
+      "ja": "シャープ",
+      "vi": "SHARP",
+      "zh-hant": "夏普"
+    }
+  },
+  "zte": {
+    "prefixes": [
+      "ZTE"
+    ],
+    "titles": {
+      "en": "ZTE",
+      "zh": "中兴",
+      "ja": "ZTE",
+      "vi": "ZTE",
+      "zh-hant": "中興"
+    },
+    "names": {
+      "en": "ZTE",
+      "zh": "中兴",
+      "ja": "ZTE",
+      "vi": "ZTE",
+      "zh-hant": "中興"
+    }
   }
 }
