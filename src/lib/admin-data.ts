@@ -5,6 +5,8 @@ import { isUniqueConstraintError, normalizeAdminDisplay, normalizeAdminName } fr
 import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
 import { hasStaticWallpaperReference } from '@/lib/admin-static-assets';
 import { normalizeAdminReleaseDate } from '@/lib/admin-release-date';
+import { AdminDeviceNameConflictError, checkAdminDeviceNames, type AdminDeviceNameCandidate, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
+import { getI18nTexts } from '@/lib/i18n';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
 const statuses = new Set<RecordStatus>(['draft', 'published', 'unpublished']);
@@ -62,11 +64,22 @@ export async function listAdminDevices(filters: URLSearchParams): Promise<Device
     if (value) { clauses.push(`${column} = ?`); values.push(value); }
   }
   const name = filters.get('name');
-  if (name) { clauses.push('name_key = ?'); values.push(normalizeAdminName(assertText(name, '设备名称'))); }
+  const nameKey = name ? normalizeAdminName(assertText(name, '设备名称')) : null;
   const popular = filters.get('popular');
   if (popular === '0' || popular === '1') { clauses.push('is_popular_brand = ?'); values.push(popular); }
-  const sql = `SELECT * FROM w_devices ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY updated_date DESC, device_name LIMIT 1500`;
-  return (await getWallpaperDb().prepare(sql).bind(...values).all<DeviceRow>()).results;
+  // Legacy imports may have no name_key. Normalize actual names before applying the list limit.
+  const sql = `SELECT * FROM w_devices ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY updated_date DESC, device_name ${nameKey ? '' : 'LIMIT 1500'}`;
+  const { results } = await getWallpaperDb().prepare(sql).bind(...values).all<DeviceRow>();
+  return nameKey ? results.filter((device) => normalizeAdminName(device.device_name) === nameKey).slice(0, 1500) : results;
+}
+
+export async function checkAdminDeviceName(brand: unknown, name: unknown): Promise<AdminDeviceNameCheck> {
+  const brandSlug = slugifyWallpaperName(assertText(brand, '品牌', 80));
+  const deviceName = normalizeAdminDisplay(assertText(name, '设备名称'));
+  const { results } = await getWallpaperDb().prepare(
+    'SELECT id, device_name, device_slug FROM w_devices WHERE brand_name = ? ORDER BY device_name'
+  ).bind(brandSlug).all<AdminDeviceNameCandidate>();
+  return checkAdminDeviceNames(deviceName, results);
 }
 
 export async function createAdminDevice(input: Record<string, unknown>): Promise<DeviceRow> {
@@ -84,12 +97,14 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   const id = crypto.randomUUID();
   const db = getWallpaperDb();
   const { results: existing } = await db.prepare(
-    'SELECT device_name, device_slug, is_popular_brand FROM w_devices WHERE brand_name = ?'
-  ).bind(brand).all<Pick<DeviceRow, 'device_name' | 'device_slug' | 'is_popular_brand'>>();
-  if (existing.some((device) => normalizeAdminName(device.device_name) === nameKey)) {
-    throw new Error('该品牌下设备或系统名称已存在');
+    'SELECT id, device_name, device_slug, is_popular_brand FROM w_devices WHERE brand_name = ? ORDER BY device_name'
+  ).bind(brand).all<AdminDeviceNameCandidate & Pick<DeviceRow, 'is_popular_brand'>>();
+  const check = checkAdminDeviceNames(name, existing);
+  if (check.kind === 'duplicate' || check.kind === 'slug') throw new AdminDeviceNameConflictError(check);
+  if (check.kind === 'similar') {
+    const confirmed = new Set(Array.isArray(input.confirmed_similar_ids) ? input.confirmed_similar_ids : []);
+    if (check.matches.some((device) => !confirmed.has(device.id))) throw new AdminDeviceNameConflictError(check);
   }
-  if (existing.some((device) => device.device_slug === slug)) throw new Error('该品牌下设备或系统 URL 标识已存在');
   try {
     await db.prepare(
       `INSERT INTO w_devices (id,brand_name,device_name,name_key,device_slug,device_category,brand_logo,device_splash_url,
@@ -99,7 +114,7 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
       typeof input.device_splash_url === 'string' ? input.device_splash_url || null : null,
       existing[0]?.is_popular_brand ?? 0, releaseDate, now, now).run();
   } catch (error) {
-    if (isUniqueConstraintError(error)) throw new Error('该品牌下设备或系统已存在');
+    if (isUniqueConstraintError(error)) throw new AdminDeviceNameConflictError({ kind: 'duplicate', matches: [] }, getI18nTexts('zh').adminNameDuplicateRetry);
     throw error;
   }
   return (await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>())!;

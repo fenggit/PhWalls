@@ -3,6 +3,17 @@ import type { Language } from '@/types';
 export type { Language } from '@/types';
 
 export interface I18nTexts {
+  // 后台设备与系统名称校验
+  adminNameChecking: string;
+  adminNameCheckUnavailable: string;
+  adminNameDuplicateHint: string;
+  adminNameSlugHint: string;
+  adminNameSimilarHint: string;
+  adminNameDuplicateError: string;
+  adminNameSlugError: string;
+  adminNameSimilarError: string;
+  adminNameConfirmCreate: string;
+  adminNameDuplicateRetry: string;
   // 通用文本
   siteName: string;
   heroTitle: string;
@@ -395,6 +406,16 @@ export interface I18nTexts {
 
 export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
+    adminNameChecking: '正在检查名称…',
+    adminNameCheckUnavailable: '名称检查暂不可用，创建时会再次校验。',
+    adminNameDuplicateHint: '同名设备或系统已存在（忽略大小写），无法重复创建，请选择已有条目。',
+    adminNameSlugHint: '名称生成的 URL 与已有条目冲突，请选择已有条目或修改名称。',
+    adminNameSimilarHint: '发现相似名称，请核对；创建时需要确认。',
+    adminNameDuplicateError: '该品牌下设备或系统名称已存在（忽略大小写），请使用已有条目：',
+    adminNameSlugError: '该品牌下设备或系统 URL 标识已存在：',
+    adminNameSimilarError: '该品牌下已有相似设备或系统，请确认后再创建：',
+    adminNameConfirmCreate: '确认“{name}”是另一个设备或系统，仍要创建吗？',
+    adminNameDuplicateRetry: '该品牌下设备或系统已存在，请刷新后选择已有条目',
     siteName: 'PhWalls',
     heroTitle: '手机与电脑内置壁纸',
     heroSeoTitle: '手机与电脑内置壁纸 - 原图免费下载',
@@ -778,6 +799,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '当前尺寸'
   },
   en: {
+    adminNameChecking: 'Checking the name…',
+    adminNameCheckUnavailable: 'Name checking is unavailable. The name will be checked again when creating.',
+    adminNameDuplicateHint: 'A device or system with this name already exists, ignoring case. Select the existing entry.',
+    adminNameSlugHint: 'This name produces a URL used by an existing entry. Select that entry or change the name.',
+    adminNameSimilarHint: 'Similar names found. Review them; confirmation is required to create this entry.',
+    adminNameDuplicateError: 'A device or system with this name already exists in this brand, ignoring case. Use the existing entry:',
+    adminNameSlugError: 'A device or system in this brand already uses this URL:',
+    adminNameSimilarError: 'Similar devices or systems exist in this brand. Confirm before creating:',
+    adminNameConfirmCreate: 'Is “{name}” a different device or system that you still want to create?',
+    adminNameDuplicateRetry: 'This device or system already exists in this brand. Refresh and select the existing entry.',
     siteName: 'PhWalls',
     heroTitle: 'Stock Wallpapers for Phones & Desktops',
     heroSeoTitle: 'Stock Phone & Desktop Wallpapers - Free Download',
@@ -1161,6 +1192,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Current Size'
   },
   ja: {
+    adminNameChecking: '名前を確認中…',
+    adminNameCheckUnavailable: '名前の確認ができません。作成時に再確認します。',
+    adminNameDuplicateHint: '大文字・小文字を区別せず、同じ名前の端末またはシステムが存在します。既存の項目を選択してください。',
+    adminNameSlugHint: 'この名前の URL は既存の項目と重複します。既存の項目を選択するか、名前を変更してください。',
+    adminNameSimilarHint: '類似する名前があります。内容を確認してください。作成時に確認が必要です。',
+    adminNameDuplicateError: 'このブランドには同じ名前の端末またはシステムが既に存在します（大文字・小文字は区別しません）。既存の項目を使用してください：',
+    adminNameSlugError: 'このブランドでは端末またはシステムの URL が既に使用されています：',
+    adminNameSimilarError: 'このブランドには類似する端末またはシステムがあります。作成前に確認してください：',
+    adminNameConfirmCreate: '「{name}」が別の端末またはシステムであることを確認し、作成しますか？',
+    adminNameDuplicateRetry: 'このブランドには既に存在します。更新して既存の項目を選択してください。',
     siteName: 'PhWalls',
     heroTitle: 'スマホ・PCの標準壁紙',
     heroSeoTitle: 'スマホ・PCの標準壁紙を無料ダウンロード',
@@ -1544,6 +1585,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '現在のサイズ'
   },
   vi: {
+    adminNameChecking: 'Đang kiểm tra tên…',
+    adminNameCheckUnavailable: 'Chưa thể kiểm tra tên. Tên sẽ được kiểm tra lại khi tạo.',
+    adminNameDuplicateHint: 'Đã có thiết bị hoặc hệ thống cùng tên, không phân biệt chữ hoa và chữ thường. Hãy chọn mục hiện có.',
+    adminNameSlugHint: 'Tên này tạo URL trùng với mục hiện có. Hãy chọn mục đó hoặc đổi tên.',
+    adminNameSimilarHint: 'Tìm thấy tên tương tự. Hãy kiểm tra; cần xác nhận trước khi tạo.',
+    adminNameDuplicateError: 'Thương hiệu này đã có thiết bị hoặc hệ thống cùng tên, không phân biệt chữ hoa và chữ thường. Hãy dùng mục hiện có:',
+    adminNameSlugError: 'Thiết bị hoặc hệ thống trong thương hiệu này đã dùng URL này:',
+    adminNameSimilarError: 'Thương hiệu này đã có thiết bị hoặc hệ thống tương tự. Hãy xác nhận trước khi tạo:',
+    adminNameConfirmCreate: 'Bạn xác nhận “{name}” là thiết bị hoặc hệ thống khác và vẫn muốn tạo?',
+    adminNameDuplicateRetry: 'Thiết bị hoặc hệ thống này đã có trong thương hiệu. Hãy tải lại và chọn mục hiện có.',
     siteName: 'PhWalls',
     heroTitle: 'Hình nền gốc cho điện thoại và máy tính',
     heroSeoTitle: 'Hình nền gốc điện thoại và máy tính - Tải miễn phí',
@@ -1900,6 +1951,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Kích thước hiện tại'
   },
   'zh-hant': {
+    adminNameChecking: '正在檢查名稱…',
+    adminNameCheckUnavailable: '名稱檢查暫不可用，建立時會再次校驗。',
+    adminNameDuplicateHint: '同名裝置或系統已存在（忽略大小寫），無法重複建立，請選擇已有項目。',
+    adminNameSlugHint: '名稱產生的 URL 與已有項目衝突，請選擇已有項目或修改名稱。',
+    adminNameSimilarHint: '發現相似名稱，請核對；建立時需要確認。',
+    adminNameDuplicateError: '該品牌下裝置或系統名稱已存在（忽略大小寫），請使用已有項目：',
+    adminNameSlugError: '該品牌下裝置或系統 URL 識別碼已存在：',
+    adminNameSimilarError: '該品牌下已有相似裝置或系統，請確認後再建立：',
+    adminNameConfirmCreate: '確認「{name}」是另一個裝置或系統，仍要建立嗎？',
+    adminNameDuplicateRetry: '該品牌下裝置或系統已存在，請重新整理後選擇已有項目',
     siteName: 'PhWalls',
     heroTitle: '手機與電腦內建桌布',
     heroSeoTitle: '手機與電腦內建桌布 - 原圖免費下載',
