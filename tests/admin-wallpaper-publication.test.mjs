@@ -239,3 +239,127 @@ test('device creation and editing store Chinese release dates in canonical numer
     assert.equal(sqlite.prepare('SELECT release_date FROM w_devices WHERE id = ?').get(created.id).release_date, '2024/02/29');
   } finally { sqlite.close(); }
 });
+
+const newDevice = (name, extra = {}) => ({
+  brand_name: 'test', device_name: name, device_category: 'phone', release_date: '2026/10/07', ...extra,
+});
+
+test('folder lookup matches legacy names without name_key using Unicode and case normalization', async () => {
+  const { sqlite, service } = fixture();
+  try {
+    sqlite.exec("UPDATE w_devices SET device_name = 'Ｄｅｖｉｃｅ   Ｏｎｅ', name_key = NULL");
+    const rows = await service.listAdminDevices(new URLSearchParams({ brand: 'test', name: 'device one' }));
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].id, 'device-1');
+  } finally { sqlite.close(); }
+});
+
+test('creation refuses case-insensitive duplicates across categories and statuses even when confirmed', async () => {
+  const { sqlite, service, load } = fixture();
+  try {
+    sqlite.exec("UPDATE w_devices SET name_key = NULL, status = 'unpublished'");
+    await assert.rejects(() => service.createAdminDevice(newDevice('  DEVICE ONE ', {
+      device_category: 'os', confirmed_similar_ids: ['device-1'],
+    })), /已存在/);
+    const route = load(`${root}src/app/api/admin/devices/route.ts`);
+    const response = await route.POST({ json: async () => newDevice('device one') });
+    assert.equal(response.status, 409);
+    const body = await response.json();
+    assert.equal(body.conflict.kind, 'duplicate');
+    assert.equal(body.conflict.matches[0].id, 'device-1');
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 1);
+  } finally { sqlite.close(); }
+});
+
+test('similar names require confirmation before creation and return the existing names', async () => {
+  const { sqlite, service, load } = fixture();
+  try {
+    const route = load(`${root}src/app/api/admin/devices/route.ts`);
+    const response = await route.POST({ json: async () => newDevice('Device On') });
+    assert.equal(response.status, 409);
+    const body = await response.json();
+    assert.equal(body.conflict.kind, 'similar');
+    assert.equal(body.conflict.matches[0].device_name, 'Device One');
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 1);
+    const created = await service.createAdminDevice(newDevice('Device On', { confirmed_similar_ids: ['device-1'] }));
+    assert.equal(created.device_name, 'Device On');
+  } finally { sqlite.close(); }
+});
+
+test('confirmation cannot bypass a newly added similar record or a URL collision', async () => {
+  const { sqlite, service } = fixture();
+  try {
+    await assert.rejects(() => service.createAdminDevice(newDevice('Device On', { confirmed_similar_ids: ['wrong-id'] })), /相似/);
+    await assert.rejects(() => service.createAdminDevice(newDevice('Device-One', { confirmed_similar_ids: ['device-1'] })), /URL/);
+    sqlite.exec(`INSERT INTO w_devices (id, brand_name, device_name, device_slug, device_category, create_date, updated_date)
+      VALUES ('device-2', 'test', 'Device Only', 'device-only', 'os', 1, 1)`);
+    await assert.rejects(() => service.createAdminDevice(newDevice('Device On', { confirmed_similar_ids: ['device-1'] })), /相似/);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 2);
+  } finally { sqlite.close(); }
+});
+
+test('name lookups and checks find older records beyond the device list limit', async () => {
+  const { sqlite, service } = fixture();
+  try {
+    const insert = sqlite.prepare(`INSERT INTO w_devices (id, brand_name, device_name, device_slug, device_category, create_date, updated_date)
+      VALUES (?, 'test', ?, ?, 'phone', 2, 2)`);
+    sqlite.exec('BEGIN');
+    for (let index = 0; index < 1501; index++) insert.run(`extra-${index}`, `Unrelated ${index}`, `unrelated-${index}`);
+    sqlite.exec('COMMIT');
+    sqlite.exec('UPDATE w_devices SET name_key = NULL');
+    const matches = await service.listAdminDevices(new URLSearchParams({ brand: 'test', name: 'DEVICE ONE' }));
+    assert.equal(matches.length, 1);
+    assert.equal(matches[0].id, 'device-1');
+    const check = await service.checkAdminDeviceName('test', 'Device On');
+    assert.equal(check.kind, 'similar');
+    assert.equal(check.matches[0].id, 'device-1');
+  } finally { sqlite.close(); }
+});
+
+test('name checks warn for spacing, punctuation, typos, adjacent versions and model suffixes', async () => {
+  const { sqlite, load } = fixture();
+  try {
+    sqlite.exec("UPDATE w_devices SET device_name = 'Pixel 10', name_key = NULL, device_slug = 'pixel-10'");
+    const route = load(`${root}src/app/api/admin/devices/route.ts`);
+    for (const name of ['Pixel10', 'Pixel_10', 'Pixle 10', 'Pixel 11', 'Pixel 10 Pro']) {
+      const response = await route.GET({ nextUrl: new URL(`https://example.test/api/admin/devices?${new URLSearchParams({ brand: 'test', check_name: name })}`) });
+      assert.equal(response.status, 200);
+      const { data } = await response.json();
+      assert.equal(data.kind, name === 'Pixel_10' ? 'slug' : 'similar', name);
+      assert.equal(data.matches[0].id, 'device-1');
+    }
+  } finally { sqlite.close(); }
+});
+
+test('unrelated names and names in another brand can be created without confirmation', async () => {
+  const { sqlite, service } = fixture();
+  try {
+    sqlite.exec("INSERT INTO w_brands (slug,title,title_key,kind,create_date,updated_date) VALUES ('other','Other','other','mobile',1,1)");
+    assert.equal((await service.createAdminDevice(newDevice('Completely Different'))).device_name, 'Completely Different');
+    assert.equal((await service.createAdminDevice(newDevice('DEVICE ONE', { brand_name: 'other' }))).brand_name, 'other');
+  } finally { sqlite.close(); }
+});
+
+test('canceling the similarity prompt creates nothing; accepting creates the requested name', async () => {
+  const { sqlite, service, load } = fixture();
+  try {
+    const { createWithAdminNameConfirmation } = load(`${root}src/lib/admin-device-name.ts`);
+    let prompts = 0;
+    const canceled = await createWithAdminNameConfirmation(newDevice('Device On'), service.createAdminDevice, (message) => {
+      prompts++;
+      assert.match(message, /Device One/);
+      assert.match(message, /Device On/);
+      return false;
+    });
+    assert.equal(canceled, null);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 1);
+    const created = await createWithAdminNameConfirmation(newDevice('Device On'), service.createAdminDevice, () => {
+      prompts++;
+      return true;
+    });
+    assert.equal(created.device_name, 'Device On');
+    assert.equal(prompts, 2);
+    await assert.rejects(() => createWithAdminNameConfirmation(newDevice('DEVICE ONE'), service.createAdminDevice,
+      () => assert.fail('Duplicates must not offer confirmation')), /已存在/);
+  } finally { sqlite.close(); }
+});

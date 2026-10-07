@@ -14,6 +14,7 @@ import { getI18nTexts } from '@/lib/i18n';
 import { buildWallpaperListTitle } from '@/lib/data';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
+import { AdminDeviceNameConflictError, createWithAdminNameConfirmation, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
@@ -29,10 +30,46 @@ async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> 
       : method === 'GET' ? {} : { 'x-phwalls-admin': '1' },
     body: body ? JSON.stringify(body) : undefined,
   });
-  const result = await response.json().catch(() => null) as { error?: string } | null;
-  if (!response.ok) throw new Error(result?.error || `服务暂不可用 (${response.status})`);
+  const result = await response.json().catch(() => null) as { error?: string; conflict?: AdminDeviceNameCheck } | null;
+  if (!response.ok) {
+    if (response.status === 409 && result?.conflict) throw new AdminDeviceNameConflictError(result.conflict, result.error);
+    throw new Error(result?.error || `服务暂不可用 (${response.status})`);
+  }
   if (!result) throw new Error('服务返回了无法识别的数据');
   return result as T;
+}
+
+async function createDevice(input: Record<string, unknown>): Promise<DeviceRow | null> {
+  const result = await createWithAdminNameConfirmation(input,
+    (body) => api<{ data: DeviceRow }>('devices', 'POST', body), (message) => window.confirm(message));
+  return result?.data || null;
+}
+
+function DeviceNameFeedback({ brand, name }: { brand: string; name: string }) {
+  const texts = getI18nTexts('zh');
+  const [feedback, setFeedback] = useState<{ brand: string; name: string; check?: AdminDeviceNameCheck; error?: string } | null>(null);
+  useEffect(() => {
+    if (!brand || !name.trim()) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void api<{ data: AdminDeviceNameCheck }>(`devices?${new URLSearchParams({ brand, check_name: name })}`)
+        .then(({ data }) => { if (!cancelled) setFeedback({ brand, name, check: data }); })
+        .catch(() => { if (!cancelled) setFeedback({ brand, name, error: texts.adminNameCheckUnavailable }); });
+    }, 350);
+    return () => { cancelled = true; window.clearTimeout(timer); };
+  }, [brand, name, texts.adminNameCheckUnavailable]);
+  if (!brand || !name.trim()) return null;
+  const current = feedback?.brand === brand && feedback.name === name ? feedback : null;
+  if (!current) return <p role="status" className="mt-2 text-xs text-[#66746b]">{texts.adminNameChecking}</p>;
+  if (current.error) return <p role="status" className="mt-2 text-xs text-amber-800">{current.error}</p>;
+  const check = current.check;
+  if (!check || check.kind === 'available') return null;
+  const blocked = check.kind !== 'similar';
+  return <div role={blocked ? 'alert' : 'status'} className={`mt-2 text-xs leading-5 ${blocked ? 'text-red-700' : 'text-amber-800'}`}>
+    <p>{check.kind === 'duplicate' ? texts.adminNameDuplicateHint
+      : check.kind === 'slug' ? texts.adminNameSlugHint : texts.adminNameSimilarHint}</p>
+    <ul className="mt-1 list-inside list-disc">{check.matches.map((device) => <li key={device.id}>{device.device_name}</li>)}</ul>
+  </div>;
 }
 
 const inputClass = 'h-10 w-full min-w-0 rounded-md border border-[#d8dfdb] bg-white px-3 text-sm text-[#25332d] outline-none transition-colors placeholder:text-[#87918b] hover:border-[#adbcb3] focus-visible:border-[#247560] focus-visible:ring-2 focus-visible:ring-[#dcefe5]';
@@ -439,6 +476,7 @@ export default function AdminConsole() {
   }, [editingDevice?.id]);
 
   const run = async (operation: () => Promise<void>) => {
+    if (busy) return;
     setBusy(true); setError('');
     try { await operation(); await reload(); }
     catch (cause) { setError(cause instanceof Error ? cause.message : '操作失败'); }
@@ -546,15 +584,15 @@ export default function AdminConsole() {
   const createUploadDevice = async (event: React.FormEvent, folderName?: string) => {
     event.preventDefault();
     await run(async () => {
-      const existing = folderName ? await findFolderDevice(folderName) : undefined;
-      if (!existing && !newUploadDate.trim()) throw new Error('请填写新设备的发布日期');
-      const data = existing || (await api<{ data: DeviceRow }>('devices', 'POST', {
+      if (!newUploadDate.trim()) throw new Error('请填写新设备的发布日期');
+      const data = await createDevice({
         brand_name: uploadBrand,
         device_name: folderName ? normalizeAdminDisplay(folderName) : newUploadDeviceName,
         device_category: newUploadCategory,
         release_date: newUploadDate,
-      })).data;
-      if (!existing) createdUploadDevices.current.add(data.id);
+      });
+      if (!data) return;
+      createdUploadDevices.current.add(data.id);
       setUploadDevices((current) => [data, ...current.filter((device) => device.id !== data.id)]);
       setUploadDevice(data.id);
       if (folderName) setUploadFolderState('matched');
@@ -893,10 +931,11 @@ export default function AdminConsole() {
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
           {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
-            <label className="text-sm">名称
+            <div className="text-sm"><label>名称
               <input className={`${inputClass} mt-1`} required maxLength={200} value={newUploadDeviceName}
-                onChange={(event) => setNewUploadDeviceName(event.target.value)} placeholder="设备或系统名称" />
-            </label>
+                onChange={(event) => setNewUploadDeviceName(event.target.value)} placeholder="设备或系统名称" /></label>
+              <DeviceNameFeedback brand={uploadBrand} name={newUploadDeviceName} />
+            </div>
             <label className="text-sm">类型
               <select className={`${inputClass} mt-1`} value={newUploadCategory}
                 onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
@@ -930,6 +969,7 @@ export default function AdminConsole() {
             {inferredExistingDevice && <div role="status" className="flex items-start gap-2 text-sm text-[#247560]"><Check size={18} className="mt-0.5 shrink-0" /><div>已选中设备：<span className="font-semibold">{inferredExistingDevice.device_name}</span><div className="mt-1 text-xs text-[#66746b]">{categoryLabels[inferredExistingDevice.device_category]} · {inferredExistingDevice.release_date || '无发布日期'}</div></div></div>}
             {uploadFolderState === 'missing' && <form onSubmit={(event) => createUploadDevice(event, uploadFolderName)}>
               <p role="status" className="mb-3 text-sm text-amber-800">当前品牌下未找到设备“{normalizeAdminDisplay(uploadFolderName)}”，请先创建设备再上传。</p>
+              <DeviceNameFeedback brand={uploadBrand} name={uploadFolderName} />
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
                 <label className="text-sm">类型<select className={`${inputClass} mt-1`} disabled={busy} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
                   {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop).map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
@@ -1032,9 +1072,11 @@ export default function AdminConsole() {
 
       {editingDevice && <AdminDialog title={editingDevice.id ? '编辑设备' : '新建设备'} onClose={() => setEditingDevice(null)}>
         <form onSubmit={(event) => { event.preventDefault(); void run(async () => {
-          await api('devices', editingDevice.id ? 'PATCH' : 'POST', { ...editingDevice,
-            ...(editingDevice.id && editingDevice.status === 'published' ? { publish_drafts: publishDeviceDrafts } : {}),
-          });
+          if (editingDevice.id) {
+            await api('devices', 'PATCH', { ...editingDevice,
+              ...(editingDevice.status === 'published' ? { publish_drafts: publishDeviceDrafts } : {}),
+            });
+          } else if (!await createDevice({ ...editingDevice })) return;
           setEditingDevice(null);
         }); }} className={modalClass}>
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">{editingDevice.id ? '编辑设备' : '新建设备'}</h2>
@@ -1043,7 +1085,9 @@ export default function AdminConsole() {
             <label className="text-sm">品牌<select disabled={!!editingDevice.id} required className={`${inputClass} mt-1`} value={editingDevice.brand_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_name: event.target.value, device_category: defaultDeviceCategory(event.target.value, brands) })}>
               <option value="">选择品牌</option><BrandOptions brands={brands} />
             </select></label>
-            <label className="text-sm">设备名称<input required className={`${inputClass} mt-1`} value={editingDevice.device_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_name: event.target.value })} /></label>
+            <div className="text-sm"><label>设备名称<input required maxLength={200} className={`${inputClass} mt-1`} value={editingDevice.device_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_name: event.target.value })} /></label>
+              {!editingDevice.id && <DeviceNameFeedback brand={editingDevice.brand_name || ''} name={editingDevice.device_name || ''} />}
+            </div>
             <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.filter((value) => (value === 'desktop') === editingDeviceIsDesktop)
               .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
             <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（必填）'}<input className={`${inputClass} mt-1`} required={!editingDevice.id} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="2021/09/22 或 2021年9月22日" /></label>
