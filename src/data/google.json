@@ -1,0 +1,3375 @@
+[
+  {
+    "name": "Google 04 Community Lens",
+    "date": "2021/10/19",
+    "item": [
+      {
+        "name": "google-04-community-lens-black-brown-abstract",
+        "type": "image/png",
+        "size": "2.5 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-brown-abstract.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-brown-abstract.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-brown-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.23 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-brown-gradient-alt-a.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-brown-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-brown-gradient",
+        "type": "image/png",
+        "size": "1.41 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-brown-gradient.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-brown-gradient.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-brown-photo",
+        "type": "image/png",
+        "size": "2.8 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-brown-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-brown-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-gray-abstract",
+        "type": "image/png",
+        "size": "2.68 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-gray-abstract.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-gray-abstract.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-gray-gradient",
+        "type": "image/png",
+        "size": "741.32 KB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-gray-gradient.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-gray-gradient.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-green-gradient",
+        "type": "image/png",
+        "size": "3.1 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-green-gradient.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-green-gradient.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-pink-photo",
+        "type": "image/png",
+        "size": "2.7 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-pink-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-pink-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-silver-photo",
+        "type": "image/png",
+        "size": "1.6 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-silver-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-silver-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-teal-gradient",
+        "type": "image/png",
+        "size": "3.19 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-teal-gradient.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-teal-gradient.webp"
+      },
+      {
+        "name": "google-04-community-lens-black-white-photo",
+        "type": "image/png",
+        "size": "3.27 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-black-white-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-black-white-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-brown-black-photo",
+        "type": "image/png",
+        "size": "3.73 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-brown-black-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-brown-black-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-gray-black-abstract",
+        "type": "image/png",
+        "size": "2.66 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-gray-black-abstract.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-gray-black-abstract.webp"
+      },
+      {
+        "name": "google-04-community-lens-gray-brown-abstract",
+        "type": "image/png",
+        "size": "2.99 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-gray-brown-abstract.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-gray-brown-abstract.webp"
+      },
+      {
+        "name": "google-04-community-lens-gray-brown-photo",
+        "type": "image/png",
+        "size": "2.19 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-gray-brown-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-gray-brown-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-purple-black-photo",
+        "type": "image/png",
+        "size": "2.8 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-purple-black-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-purple-black-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-silver-gray-photo",
+        "type": "image/png",
+        "size": "3.77 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-silver-gray-photo.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-silver-gray-photo.webp"
+      },
+      {
+        "name": "google-04-community-lens-white-black-abstract",
+        "type": "image/png",
+        "size": "1.69 MB",
+        "originPath": "Google/Google 04 Community Lens/origin/google-04-community-lens-white-black-abstract.png",
+        "compressPath": "Google/Google 04 Community Lens/compress/google-04-community-lens-white-black-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 03 Motif",
+    "date": "2021/10/08",
+    "item": [
+      {
+        "name": "google-03-motif-beige-gold-abstract",
+        "type": "image/png",
+        "size": "285.79 KB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-beige-gold-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-beige-gold-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-beige-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.18 MB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-beige-gray-abstract-alt-a.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-beige-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-03-motif-beige-gray-abstract",
+        "type": "image/png",
+        "size": "1.75 MB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-beige-gray-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-beige-gray-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-beige-yellow-abstract",
+        "type": "image/png",
+        "size": "76.07 KB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-beige-yellow-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-beige-yellow-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-black-gray-abstract",
+        "type": "image/png",
+        "size": "1.26 MB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-black-gray-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-black-gray-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-black-yellow-abstract",
+        "type": "image/png",
+        "size": "1.81 MB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-black-yellow-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-black-yellow-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-brown-beige-abstract",
+        "type": "image/png",
+        "size": "493.84 KB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-brown-beige-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-brown-beige-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-brown-yellow-gradient",
+        "type": "image/png",
+        "size": "227.55 KB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-brown-yellow-gradient.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-brown-yellow-gradient.webp"
+      },
+      {
+        "name": "google-03-motif-rose-white-abstract",
+        "type": "image/png",
+        "size": "1.82 MB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-rose-white-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-rose-white-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-silver-beige-abstract",
+        "type": "image/png",
+        "size": "326.35 KB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-silver-beige-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-silver-beige-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-white-rose-abstract",
+        "type": "image/png",
+        "size": "1.11 MB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-white-rose-abstract.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-white-rose-abstract.webp"
+      },
+      {
+        "name": "google-03-motif-white-silver-gradient",
+        "type": "image/png",
+        "size": "1022.62 KB",
+        "originPath": "Google/Google 03 Motif/origin/google-03-motif-white-silver-gradient.png",
+        "compressPath": "Google/Google 03 Motif/compress/google-03-motif-white-silver-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 01 Bloom",
+    "date": "2021/09/19",
+    "item": [
+      {
+        "name": "google-01-bloom-beige-gold-pattern",
+        "type": "image/png",
+        "size": "2.4 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-beige-gold-pattern.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-beige-gold-pattern.webp"
+      },
+      {
+        "name": "google-01-bloom-beige-orange-pattern",
+        "type": "image/png",
+        "size": "1.92 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-beige-orange-pattern.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-beige-orange-pattern.webp"
+      },
+      {
+        "name": "google-01-bloom-beige-silver-gradient",
+        "type": "image/png",
+        "size": "1.38 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-beige-silver-gradient.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-beige-silver-gradient.webp"
+      },
+      {
+        "name": "google-01-bloom-black-brown-abstract-alt-a",
+        "type": "image/png",
+        "size": "1.12 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-black-brown-abstract-alt-a.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-01-bloom-black-brown-abstract",
+        "type": "image/png",
+        "size": "2.1 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-black-brown-abstract.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-black-brown-abstract.webp"
+      },
+      {
+        "name": "google-01-bloom-black-brown-pattern",
+        "type": "image/png",
+        "size": "1.9 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-black-brown-pattern.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-black-brown-pattern.webp"
+      },
+      {
+        "name": "google-01-bloom-black-gold-pattern",
+        "type": "image/png",
+        "size": "2.07 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-black-gold-pattern.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-black-gold-pattern.webp"
+      },
+      {
+        "name": "google-01-bloom-black-red-abstract",
+        "type": "image/png",
+        "size": "1.92 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-black-red-abstract.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-black-red-abstract.webp"
+      },
+      {
+        "name": "google-01-bloom-black-silver-gradient",
+        "type": "image/png",
+        "size": "1.3 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-black-silver-gradient.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-black-silver-gradient.webp"
+      },
+      {
+        "name": "google-01-bloom-brown-black-abstract",
+        "type": "image/png",
+        "size": "2.13 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-brown-black-abstract.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-brown-black-abstract.webp"
+      },
+      {
+        "name": "google-01-bloom-brown-gray-abstract",
+        "type": "image/png",
+        "size": "1.15 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-brown-gray-abstract.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-brown-gray-abstract.webp"
+      },
+      {
+        "name": "google-01-bloom-rose-red-abstract",
+        "type": "image/png",
+        "size": "2.12 MB",
+        "originPath": "Google/Google 01 Bloom/origin/google-01-bloom-rose-red-abstract.png",
+        "compressPath": "Google/Google 01 Bloom/compress/google-01-bloom-rose-red-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 05 Curated Culture",
+    "date": "2021/02/01",
+    "item": [
+      {
+        "name": "google-05-curated-culture-beige-rose-abstract",
+        "type": "image/png",
+        "size": "261.39 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-beige-rose-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-beige-rose-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-brown-photo",
+        "type": "image/png",
+        "size": "815.17 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-brown-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-brown-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-green-photo",
+        "type": "image/png",
+        "size": "1.55 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-green-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-green-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-orange-pattern",
+        "type": "image/png",
+        "size": "393.99 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-orange-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-orange-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-red-photo",
+        "type": "image/png",
+        "size": "1.51 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-red-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-red-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-rose-abstract",
+        "type": "image/png",
+        "size": "329.35 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-rose-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-rose-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-teal-abstract",
+        "type": "image/png",
+        "size": "1.6 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-teal-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-teal-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-teal-photo-alt-a",
+        "type": "image/png",
+        "size": "2.77 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-teal-photo-alt-a.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-teal-photo-alt-a.webp"
+      },
+      {
+        "name": "google-05-curated-culture-black-teal-photo",
+        "type": "image/png",
+        "size": "2.11 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-black-teal-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-black-teal-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-blue-rose-pattern",
+        "type": "image/png",
+        "size": "423 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-blue-rose-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-blue-rose-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-brown-gold-photo",
+        "type": "image/png",
+        "size": "1.07 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-brown-gold-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-brown-gold-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-brown-mint-abstract",
+        "type": "image/png",
+        "size": "4.38 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-brown-mint-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-brown-mint-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-cyan-mint-pattern",
+        "type": "image/png",
+        "size": "560.2 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-cyan-mint-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-cyan-mint-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-gold-black-pattern",
+        "type": "image/png",
+        "size": "580.59 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-gold-black-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-gold-black-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-gold-mint-abstract",
+        "type": "image/png",
+        "size": "624.51 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-gold-mint-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-gold-mint-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-green-gray-pattern",
+        "type": "image/png",
+        "size": "545.19 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-green-gray-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-green-gray-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-mint-green-abstract",
+        "type": "image/png",
+        "size": "791.06 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-mint-green-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-mint-green-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-mint-rose-pattern",
+        "type": "image/png",
+        "size": "3.58 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-mint-rose-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-mint-rose-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-pink-black-pattern",
+        "type": "image/png",
+        "size": "276.92 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-pink-black-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-pink-black-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-pink-orange-abstract",
+        "type": "image/png",
+        "size": "4.32 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-pink-orange-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-pink-orange-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-purple-black-abstract",
+        "type": "image/png",
+        "size": "236.62 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-purple-black-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-purple-black-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-purple-pink-photo",
+        "type": "image/png",
+        "size": "1.53 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-purple-pink-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-purple-pink-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-purple-rose-abstract",
+        "type": "image/png",
+        "size": "446.08 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-purple-rose-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-purple-rose-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-purple-rose-photo-alt-a",
+        "type": "image/png",
+        "size": "563.57 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-purple-rose-photo-alt-a.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-purple-rose-photo-alt-a.webp"
+      },
+      {
+        "name": "google-05-curated-culture-purple-rose-photo",
+        "type": "image/png",
+        "size": "446.14 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-purple-rose-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-purple-rose-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-red-mint-abstract",
+        "type": "image/png",
+        "size": "4.32 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-red-mint-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-red-mint-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-rose-brown-photo",
+        "type": "image/png",
+        "size": "2.13 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-rose-brown-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-rose-brown-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-rose-silver-photo-alt-a",
+        "type": "image/png",
+        "size": "3.72 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-rose-silver-photo-alt-a.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-rose-silver-photo-alt-a.webp"
+      },
+      {
+        "name": "google-05-curated-culture-rose-silver-photo",
+        "type": "image/png",
+        "size": "3.65 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-rose-silver-photo.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-rose-silver-photo.webp"
+      },
+      {
+        "name": "google-05-curated-culture-rose-white-pattern",
+        "type": "image/png",
+        "size": "591.42 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-rose-white-pattern.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-rose-white-pattern.webp"
+      },
+      {
+        "name": "google-05-curated-culture-white-beige-abstract",
+        "type": "image/png",
+        "size": "1.31 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-white-beige-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-white-beige-abstract.webp"
+      },
+      {
+        "name": "google-05-curated-culture-yellow-beige-abstract-alt-a",
+        "type": "image/png",
+        "size": "1.54 MB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-yellow-beige-abstract-alt-a.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-yellow-beige-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-05-curated-culture-yellow-beige-abstract",
+        "type": "image/png",
+        "size": "632.43 KB",
+        "originPath": "Google/Google 05 Curated Culture/origin/google-05-curated-culture-yellow-beige-abstract.png",
+        "compressPath": "Google/Google 05 Curated Culture/compress/google-05-curated-culture-yellow-beige-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 07 Google Arts and Culture",
+    "date": "2020/10/08",
+    "item": [
+      {
+        "name": "google-07-google-arts-and-culture-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "4.25 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "2 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-black-brown-photo",
+        "type": "image/png",
+        "size": "3.29 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-black-brown-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-black-brown-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-black-gray-photo",
+        "type": "image/png",
+        "size": "3.38 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-black-gray-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-black-gray-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-brown-beige-photo",
+        "type": "image/png",
+        "size": "2.79 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-brown-beige-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-brown-beige-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-brown-black-photo-alt-a",
+        "type": "image/png",
+        "size": "3.29 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-brown-black-photo-alt-a.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-brown-black-photo-alt-a.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-brown-black-photo-alt-b",
+        "type": "image/png",
+        "size": "5.33 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-brown-black-photo-alt-b.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-brown-black-photo-alt-b.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-brown-black-photo-alt-c",
+        "type": "image/png",
+        "size": "3.98 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-brown-black-photo-alt-c.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-brown-black-photo-alt-c.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-brown-black-photo",
+        "type": "image/png",
+        "size": "3.05 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-brown-black-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-brown-black-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-brown-gray-photo",
+        "type": "image/png",
+        "size": "2.19 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-brown-gray-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-brown-gray-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-gray-beige-photo",
+        "type": "image/png",
+        "size": "4.19 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-gray-beige-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-gray-beige-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-gray-black-abstract",
+        "type": "image/png",
+        "size": "3.32 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-gray-black-abstract.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-gray-black-abstract.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-gray-brown-photo",
+        "type": "image/png",
+        "size": "3.26 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-gray-brown-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-gray-brown-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-gray-silver-abstract",
+        "type": "image/png",
+        "size": "4.57 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-gray-silver-abstract.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-gray-silver-abstract.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-gray-silver-photo",
+        "type": "image/png",
+        "size": "4.57 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-gray-silver-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-gray-silver-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-green-gray-photo",
+        "type": "image/png",
+        "size": "2.93 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-green-gray-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-green-gray-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-silver-gray-photo",
+        "type": "image/png",
+        "size": "4.28 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-silver-gray-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-silver-gray-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-silver-white-photo",
+        "type": "image/png",
+        "size": "2.21 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-silver-white-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-silver-white-photo.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-white-black-abstract",
+        "type": "image/png",
+        "size": "1.45 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-white-black-abstract.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-white-black-abstract.webp"
+      },
+      {
+        "name": "google-07-google-arts-and-culture-white-brown-photo",
+        "type": "image/png",
+        "size": "2.47 MB",
+        "originPath": "Google/Google 07 Google Arts and Culture/origin/google-07-google-arts-and-culture-white-brown-photo.png",
+        "compressPath": "Google/Google 07 Google Arts and Culture/compress/google-07-google-arts-and-culture-white-brown-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 12 Art",
+    "date": "2017/05/06",
+    "item": [
+      {
+        "name": "google-12-art-beige-black-gradient",
+        "type": "image/png",
+        "size": "1.16 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-beige-black-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-beige-black-gradient.webp"
+      },
+      {
+        "name": "google-12-art-beige-gray-abstract",
+        "type": "image/png",
+        "size": "3.61 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-beige-gray-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-beige-gray-abstract.webp"
+      },
+      {
+        "name": "google-12-art-beige-mint-gradient",
+        "type": "image/png",
+        "size": "1.26 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-beige-mint-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-beige-mint-gradient.webp"
+      },
+      {
+        "name": "google-12-art-beige-rose-gradient",
+        "type": "image/png",
+        "size": "1.4 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-beige-rose-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-beige-rose-gradient.webp"
+      },
+      {
+        "name": "google-12-art-beige-silver-gradient",
+        "type": "image/png",
+        "size": "1.63 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-beige-silver-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-beige-silver-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-abstract",
+        "type": "image/png",
+        "size": "605.11 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-beige-abstract",
+        "type": "image/png",
+        "size": "1.5 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-beige-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-beige-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-blue-gradient",
+        "type": "image/png",
+        "size": "1.14 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-blue-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-blue-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.64 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-abstract-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-abstract",
+        "type": "image/png",
+        "size": "3.5 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-gradient",
+        "type": "image/png",
+        "size": "2.2 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-pattern-alt-a",
+        "type": "image/png",
+        "size": "901.39 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-pattern-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-pattern-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-pattern",
+        "type": "image/png",
+        "size": "1.17 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-pattern.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "3.23 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-brown-photo",
+        "type": "image/png",
+        "size": "3.83 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-brown-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-brown-photo.webp"
+      },
+      {
+        "name": "google-12-art-black-gold-gradient",
+        "type": "image/png",
+        "size": "3.22 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gold-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gold-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-gradient",
+        "type": "image/png",
+        "size": "144.3 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "3.04 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-abstract-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-abstract-alt-b",
+        "type": "image/png",
+        "size": "3.43 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-abstract-alt-b.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-abstract-alt-b.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-abstract",
+        "type": "image/png",
+        "size": "1.07 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.72 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-gradient-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-gradient",
+        "type": "image/png",
+        "size": "1.71 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-pattern-alt-a",
+        "type": "image/png",
+        "size": "918.5 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-pattern-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-pattern-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-pattern",
+        "type": "image/png",
+        "size": "2.2 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-pattern.webp"
+      },
+      {
+        "name": "google-12-art-black-gray-photo",
+        "type": "image/png",
+        "size": "3.43 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-gray-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-gray-photo.webp"
+      },
+      {
+        "name": "google-12-art-black-green-gradient",
+        "type": "image/png",
+        "size": "1.03 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-green-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-green-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-green-photo",
+        "type": "image/png",
+        "size": "1.56 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-green-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-green-photo.webp"
+      },
+      {
+        "name": "google-12-art-black-red-photo",
+        "type": "image/png",
+        "size": "154.42 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-red-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-red-photo.webp"
+      },
+      {
+        "name": "google-12-art-black-rose-abstract",
+        "type": "image/png",
+        "size": "3.14 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-rose-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-rose-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-rose-gradient",
+        "type": "image/png",
+        "size": "777.37 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-rose-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-rose-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-rose-photo",
+        "type": "image/png",
+        "size": "3.73 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-rose-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-rose-photo.webp"
+      },
+      {
+        "name": "google-12-art-black-silver-abstract",
+        "type": "image/png",
+        "size": "3.63 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-silver-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-silver-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-silver-gradient-alt-a",
+        "type": "image/png",
+        "size": "1 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-silver-gradient-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-silver-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-silver-gradient",
+        "type": "image/png",
+        "size": "1 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-silver-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-silver-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-silver-photo",
+        "type": "image/png",
+        "size": "4.19 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-silver-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-silver-photo.webp"
+      },
+      {
+        "name": "google-12-art-black-teal-abstract",
+        "type": "image/png",
+        "size": "2.11 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-teal-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-teal-abstract.webp"
+      },
+      {
+        "name": "google-12-art-black-teal-gradient",
+        "type": "image/png",
+        "size": "976.7 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-teal-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-teal-gradient.webp"
+      },
+      {
+        "name": "google-12-art-black-teal-photo-alt-a",
+        "type": "image/png",
+        "size": "2.72 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-teal-photo-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-teal-photo-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-black-teal-photo-alt-b",
+        "type": "image/png",
+        "size": "4.52 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-teal-photo-alt-b.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-teal-photo-alt-b.webp"
+      },
+      {
+        "name": "google-12-art-black-teal-photo",
+        "type": "image/png",
+        "size": "3 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-black-teal-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-black-teal-photo.webp"
+      },
+      {
+        "name": "google-12-art-blue-gray-photo",
+        "type": "image/png",
+        "size": "3.05 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-blue-gray-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-blue-gray-photo.webp"
+      },
+      {
+        "name": "google-12-art-blue-purple-photo",
+        "type": "image/png",
+        "size": "3.87 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-blue-purple-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-blue-purple-photo.webp"
+      },
+      {
+        "name": "google-12-art-brown-black-abstract",
+        "type": "image/png",
+        "size": "1.18 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-black-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-black-abstract.webp"
+      },
+      {
+        "name": "google-12-art-brown-black-gradient",
+        "type": "image/png",
+        "size": "2.71 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-black-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-black-gradient.webp"
+      },
+      {
+        "name": "google-12-art-brown-gray-abstract",
+        "type": "image/png",
+        "size": "269.97 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-gray-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-gray-abstract.webp"
+      },
+      {
+        "name": "google-12-art-brown-rose-abstract",
+        "type": "image/png",
+        "size": "821.61 KB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-rose-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-rose-abstract.webp"
+      },
+      {
+        "name": "google-12-art-brown-rose-pattern",
+        "type": "image/png",
+        "size": "1.35 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-rose-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-rose-pattern.webp"
+      },
+      {
+        "name": "google-12-art-brown-rose-photo",
+        "type": "image/png",
+        "size": "2.41 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-rose-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-rose-photo.webp"
+      },
+      {
+        "name": "google-12-art-brown-white-abstract",
+        "type": "image/png",
+        "size": "3.23 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-brown-white-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-brown-white-abstract.webp"
+      },
+      {
+        "name": "google-12-art-gold-silver-gradient",
+        "type": "image/png",
+        "size": "1.94 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-gold-silver-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-gold-silver-gradient.webp"
+      },
+      {
+        "name": "google-12-art-gray-silver-photo",
+        "type": "image/png",
+        "size": "2.7 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-gray-silver-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-gray-silver-photo.webp"
+      },
+      {
+        "name": "google-12-art-green-yellow-photo",
+        "type": "image/png",
+        "size": "3.89 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-green-yellow-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-green-yellow-photo.webp"
+      },
+      {
+        "name": "google-12-art-red-black-pattern",
+        "type": "image/png",
+        "size": "1.45 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-red-black-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-red-black-pattern.webp"
+      },
+      {
+        "name": "google-12-art-red-silver-gradient",
+        "type": "image/png",
+        "size": "1.99 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-red-silver-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-red-silver-gradient.webp"
+      },
+      {
+        "name": "google-12-art-rose-beige-gradient",
+        "type": "image/png",
+        "size": "1.22 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-rose-beige-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-rose-beige-gradient.webp"
+      },
+      {
+        "name": "google-12-art-rose-gray-photo",
+        "type": "image/png",
+        "size": "3.27 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-rose-gray-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-rose-gray-photo.webp"
+      },
+      {
+        "name": "google-12-art-rose-purple-abstract",
+        "type": "image/png",
+        "size": "3.92 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-rose-purple-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-rose-purple-abstract.webp"
+      },
+      {
+        "name": "google-12-art-silver-beige-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.71 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-beige-gradient-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-beige-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-silver-beige-gradient-alt-b",
+        "type": "image/png",
+        "size": "1.47 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-beige-gradient-alt-b.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-beige-gradient-alt-b.webp"
+      },
+      {
+        "name": "google-12-art-silver-beige-gradient",
+        "type": "image/png",
+        "size": "1.19 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-beige-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-beige-gradient.webp"
+      },
+      {
+        "name": "google-12-art-silver-brown-gradient",
+        "type": "image/png",
+        "size": "1.72 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-brown-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-brown-gradient.webp"
+      },
+      {
+        "name": "google-12-art-silver-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "3.67 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-12-art-silver-brown-photo",
+        "type": "image/png",
+        "size": "3 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-brown-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-brown-photo.webp"
+      },
+      {
+        "name": "google-12-art-silver-rose-gradient",
+        "type": "image/png",
+        "size": "1.59 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-silver-rose-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-silver-rose-gradient.webp"
+      },
+      {
+        "name": "google-12-art-teal-beige-gradient",
+        "type": "image/png",
+        "size": "4.29 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-teal-beige-gradient.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-teal-beige-gradient.webp"
+      },
+      {
+        "name": "google-12-art-teal-yellow-pattern",
+        "type": "image/png",
+        "size": "4.06 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-teal-yellow-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-teal-yellow-pattern.webp"
+      },
+      {
+        "name": "google-12-art-teal-yellow-photo",
+        "type": "image/png",
+        "size": "2.53 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-teal-yellow-photo.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-teal-yellow-photo.webp"
+      },
+      {
+        "name": "google-12-art-white-mint-pattern",
+        "type": "image/png",
+        "size": "1.86 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-white-mint-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-white-mint-pattern.webp"
+      },
+      {
+        "name": "google-12-art-white-rose-pattern",
+        "type": "image/png",
+        "size": "1.64 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-white-rose-pattern.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-white-rose-pattern.webp"
+      },
+      {
+        "name": "google-12-art-white-silver-abstract",
+        "type": "image/png",
+        "size": "2.75 MB",
+        "originPath": "Google/Google 12 Art/origin/google-12-art-white-silver-abstract.png",
+        "compressPath": "Google/Google 12 Art/compress/google-12-art-white-silver-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 14 Solid colors",
+    "date": "2017/05/06",
+    "item": [
+      {
+        "name": "google-14-solid-colors-beige-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.12 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-beige-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-beige-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-beige-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-beige-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-beige-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-black-gradient",
+        "type": "image/png",
+        "size": "6.44 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-black-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-black-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-blue-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-blue-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-blue-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-brown-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-brown-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-brown-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-cyan-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-cyan-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-cyan-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-cyan-gradient-alt-b",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-cyan-gradient-alt-b.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-cyan-gradient-alt-b.webp"
+      },
+      {
+        "name": "google-14-solid-colors-cyan-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-cyan-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-cyan-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-gold-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-gold-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-gold-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-gray-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-gray-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-gray-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-green-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-green-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-green-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-orange-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-orange-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-orange-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-orange-gradient-alt-b",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-orange-gradient-alt-b.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-orange-gradient-alt-b.webp"
+      },
+      {
+        "name": "google-14-solid-colors-orange-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-orange-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-orange-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-pink-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-pink-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-pink-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-purple-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-purple-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-purple-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-purple-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-purple-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-purple-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-red-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-red-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-red-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-red-gradient",
+        "type": "image/png",
+        "size": "10.12 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-red-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-red-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-silver-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-silver-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-silver-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-silver-gradient",
+        "type": "image/png",
+        "size": "10.12 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-silver-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-silver-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-teal-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-teal-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-teal-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-white-gradient",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-white-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-white-gradient.webp"
+      },
+      {
+        "name": "google-14-solid-colors-yellow-gradient-alt-a",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-yellow-gradient-alt-a.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-yellow-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-14-solid-colors-yellow-gradient-alt-b",
+        "type": "image/png",
+        "size": "10.11 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-yellow-gradient-alt-b.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-yellow-gradient-alt-b.webp"
+      },
+      {
+        "name": "google-14-solid-colors-yellow-gradient",
+        "type": "image/png",
+        "size": "10.12 KB",
+        "originPath": "Google/Google 14 Solid colors/origin/google-14-solid-colors-yellow-gradient.png",
+        "compressPath": "Google/Google 14 Solid colors/compress/google-14-solid-colors-yellow-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 06 For Fun",
+    "date": "2020",
+    "item": [
+      {
+        "name": "google-06-for-fun-beige-black-abstract",
+        "type": "image/jpeg",
+        "size": "114.12 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-beige-black-abstract.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-beige-black-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-beige-green-abstract",
+        "type": "image/png",
+        "size": "1.14 MB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-beige-green-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-beige-green-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-beige-silver-abstract",
+        "type": "image/png",
+        "size": "1.13 MB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-beige-silver-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-beige-silver-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-blue-beige-pattern",
+        "type": "image/jpeg",
+        "size": "153.95 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-blue-beige-pattern.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-blue-beige-pattern.webp"
+      },
+      {
+        "name": "google-06-for-fun-blue-gold-abstract",
+        "type": "image/jpeg",
+        "size": "205.57 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-blue-gold-abstract.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-blue-gold-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-blue-purple-abstract",
+        "type": "image/png",
+        "size": "1.33 MB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-blue-purple-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-blue-purple-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-blue-red-abstract",
+        "type": "image/jpeg",
+        "size": "80.93 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-blue-red-abstract.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-blue-red-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-blue-rose-pattern",
+        "type": "image/jpeg",
+        "size": "241.85 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-blue-rose-pattern.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-blue-rose-pattern.webp"
+      },
+      {
+        "name": "google-06-for-fun-cyan-beige-abstract",
+        "type": "image/png",
+        "size": "1.16 MB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-cyan-beige-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-cyan-beige-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-gold-rose-abstract",
+        "type": "image/png",
+        "size": "492.49 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-gold-rose-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-gold-rose-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-gray-beige-abstract",
+        "type": "image/png",
+        "size": "602.07 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-gray-beige-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-gray-beige-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-gray-silver-abstract",
+        "type": "image/png",
+        "size": "769.93 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-gray-silver-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-gray-silver-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-orange-gray-pattern",
+        "type": "image/jpeg",
+        "size": "158.08 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-orange-gray-pattern.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-orange-gray-pattern.webp"
+      },
+      {
+        "name": "google-06-for-fun-pink-cyan-abstract",
+        "type": "image/jpeg",
+        "size": "244.25 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-pink-cyan-abstract.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-pink-cyan-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-purple-beige-abstract",
+        "type": "image/png",
+        "size": "1.17 MB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-purple-beige-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-purple-beige-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-red-brown-abstract",
+        "type": "image/png",
+        "size": "465.23 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-red-brown-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-red-brown-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-rose-brown-abstract",
+        "type": "image/png",
+        "size": "640.02 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-rose-brown-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-rose-brown-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-rose-gray-photo",
+        "type": "image/jpeg",
+        "size": "356.64 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-rose-gray-photo.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-rose-gray-photo.webp"
+      },
+      {
+        "name": "google-06-for-fun-teal-orange-abstract",
+        "type": "image/jpeg",
+        "size": "82.78 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-teal-orange-abstract.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-teal-orange-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-teal-red-photo",
+        "type": "image/jpeg",
+        "size": "400.3 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-teal-red-photo.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-teal-red-photo.webp"
+      },
+      {
+        "name": "google-06-for-fun-teal-silver-abstract",
+        "type": "image/jpeg",
+        "size": "201.44 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-teal-silver-abstract.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-teal-silver-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-white-gray-photo",
+        "type": "image/jpeg",
+        "size": "233.17 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-white-gray-photo.jpeg",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-white-gray-photo.webp"
+      },
+      {
+        "name": "google-06-for-fun-white-rose-abstract",
+        "type": "image/png",
+        "size": "717.01 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-white-rose-abstract.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-white-rose-abstract.webp"
+      },
+      {
+        "name": "google-06-for-fun-white-silver-gradient",
+        "type": "image/png",
+        "size": "979.52 KB",
+        "originPath": "Google/Google 06 For Fun/origin/google-06-for-fun-white-silver-gradient.png",
+        "compressPath": "Google/Google 06 For Fun/compress/google-06-for-fun-white-silver-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 08 Landscapes pt 1",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-08-landscapes-pt-1-beige-black-abstract",
+        "type": "image/png",
+        "size": "2.05 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-beige-black-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-beige-black-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-beige-brown-abstract",
+        "type": "image/png",
+        "size": "1.69 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-beige-brown-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-beige-brown-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-beige-silver-gradient",
+        "type": "image/png",
+        "size": "1.49 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-beige-silver-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-beige-silver-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-beige-white-gradient-alt-a",
+        "type": "image/png",
+        "size": "1.39 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-beige-white-gradient-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-beige-white-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-beige-white-gradient",
+        "type": "image/png",
+        "size": "1.14 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-beige-white-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-beige-white-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-brown-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.26 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-brown-abstract-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-brown-abstract-alt-b",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-brown-abstract-alt-b.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-brown-abstract-alt-b.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-brown-abstract",
+        "type": "image/png",
+        "size": "1.7 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-brown-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-brown-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "2.98 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "3.11 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-brown-photo",
+        "type": "image/png",
+        "size": "2.38 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-cyan-photo-alt-a",
+        "type": "image/png",
+        "size": "2.66 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-cyan-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-cyan-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-cyan-photo",
+        "type": "image/png",
+        "size": "4.58 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-cyan-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-cyan-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-gray-gradient",
+        "type": "image/png",
+        "size": "1.33 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-gray-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-gray-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-gray-photo",
+        "type": "image/png",
+        "size": "2.85 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-gray-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-gray-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-silver-photo",
+        "type": "image/png",
+        "size": "2.15 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-silver-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-silver-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-black-white-gradient",
+        "type": "image/png",
+        "size": "850.7 KB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-black-white-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-black-white-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-beige-gradient",
+        "type": "image/png",
+        "size": "1.52 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-beige-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-beige-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-black-photo-alt-a",
+        "type": "image/png",
+        "size": "4.45 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-black-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-black-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-black-photo-alt-b",
+        "type": "image/png",
+        "size": "4.6 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-black-photo-alt-b.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-black-photo-alt-b.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-black-photo-alt-c",
+        "type": "image/png",
+        "size": "4.17 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-black-photo-alt-c.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-black-photo-alt-c.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-black-photo",
+        "type": "image/png",
+        "size": "2.48 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-black-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.02 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-gray-abstract-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-brown-gray-abstract",
+        "type": "image/png",
+        "size": "2.77 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-brown-gray-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-brown-gray-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gold-brown-photo",
+        "type": "image/png",
+        "size": "4.01 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gold-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gold-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-brown-abstract",
+        "type": "image/png",
+        "size": "3.04 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-brown-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-brown-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-brown-gradient",
+        "type": "image/png",
+        "size": "1.96 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-brown-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-brown-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "4.13 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-brown-photo",
+        "type": "image/png",
+        "size": "5.17 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-green-gradient",
+        "type": "image/png",
+        "size": "873.31 KB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-green-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-green-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-rose-photo-alt-a",
+        "type": "image/png",
+        "size": "3.8 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-rose-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-rose-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-rose-photo",
+        "type": "image/png",
+        "size": "3.05 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-rose-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-rose-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-gray-silver-abstract",
+        "type": "image/png",
+        "size": "1.37 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-gray-silver-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-gray-silver-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-green-mint-photo",
+        "type": "image/png",
+        "size": "3.56 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-green-mint-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-green-mint-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-mint-black-photo",
+        "type": "image/png",
+        "size": "2.22 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-mint-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-mint-black-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-orange-brown-photo",
+        "type": "image/png",
+        "size": "3.73 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-orange-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-orange-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-silver-beige-abstract",
+        "type": "image/png",
+        "size": "1.74 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-silver-beige-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-silver-beige-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-silver-brown-photo",
+        "type": "image/png",
+        "size": "4.86 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-silver-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-silver-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-silver-gray-gradient",
+        "type": "image/png",
+        "size": "2.19 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-silver-gray-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-silver-gray-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-white-beige-gradient",
+        "type": "image/png",
+        "size": "793 KB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-white-beige-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-white-beige-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-white-brown-photo",
+        "type": "image/png",
+        "size": "1.64 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-white-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-white-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-white-cyan-abstract",
+        "type": "image/png",
+        "size": "1.28 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-white-cyan-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-white-cyan-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-1-white-silver-pattern",
+        "type": "image/png",
+        "size": "2.06 MB",
+        "originPath": "Google/Google 08 Landscapes pt 1/origin/google-08-landscapes-pt-1-white-silver-pattern.png",
+        "compressPath": "Google/Google 08 Landscapes pt 1/compress/google-08-landscapes-pt-1-white-silver-pattern.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 08 Landscapes pt 2",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-08-landscapes-pt-2-beige-black-photo",
+        "type": "image/png",
+        "size": "5.38 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-beige-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-beige-black-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "5.26 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "5.87 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-brown-photo-alt-c",
+        "type": "image/png",
+        "size": "3.32 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-brown-photo-alt-c.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-brown-photo-alt-c.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-brown-photo",
+        "type": "image/png",
+        "size": "4.19 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-brown-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-brown-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-cyan-abstract",
+        "type": "image/png",
+        "size": "2.69 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-cyan-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-cyan-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "3.88 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-gray-photo-alt-b",
+        "type": "image/png",
+        "size": "3.88 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-gray-photo-alt-b.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-gray-photo-alt-b.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-gray-photo-alt-c",
+        "type": "image/png",
+        "size": "5.17 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-gray-photo-alt-c.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-gray-photo-alt-c.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-gray-photo-alt-d",
+        "type": "image/png",
+        "size": "6.23 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-gray-photo-alt-d.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-gray-photo-alt-d.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-gray-photo",
+        "type": "image/png",
+        "size": "3.33 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-gray-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-gray-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-green-photo",
+        "type": "image/png",
+        "size": "5.49 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-green-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-green-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-purple-abstract",
+        "type": "image/png",
+        "size": "3.67 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-purple-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-purple-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-teal-abstract",
+        "type": "image/png",
+        "size": "4.2 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-teal-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-teal-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-teal-photo",
+        "type": "image/png",
+        "size": "6.14 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-teal-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-teal-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-black-white-photo",
+        "type": "image/png",
+        "size": "3.89 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-black-white-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-black-white-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-blue-black-abstract",
+        "type": "image/png",
+        "size": "1.05 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-blue-black-abstract.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-blue-black-abstract.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-black-photo-alt-a",
+        "type": "image/png",
+        "size": "4.43 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-black-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-black-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-black-photo",
+        "type": "image/png",
+        "size": "4.99 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-black-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-gold-photo",
+        "type": "image/png",
+        "size": "4.97 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-gold-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-gold-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "4.34 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-gray-photo",
+        "type": "image/png",
+        "size": "4.11 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-gray-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-gray-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-red-photo",
+        "type": "image/png",
+        "size": "4.5 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-red-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-red-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-brown-teal-photo",
+        "type": "image/png",
+        "size": "4.5 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-brown-teal-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-brown-teal-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-gray-black-photo",
+        "type": "image/png",
+        "size": "3.82 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-gray-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-gray-black-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-orange-cyan-photo",
+        "type": "image/png",
+        "size": "3.71 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-orange-cyan-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-orange-cyan-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-red-brown-gradient",
+        "type": "image/png",
+        "size": "4.11 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-red-brown-gradient.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-red-brown-gradient.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-red-gold-photo",
+        "type": "image/png",
+        "size": "6.27 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-red-gold-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-red-gold-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-silver-black-photo",
+        "type": "image/png",
+        "size": "4.34 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-silver-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-silver-black-photo.webp"
+      },
+      {
+        "name": "google-08-landscapes-pt-2-teal-black-photo",
+        "type": "image/png",
+        "size": "2.51 MB",
+        "originPath": "Google/Google 08 Landscapes pt 2/origin/google-08-landscapes-pt-2-teal-black-photo.png",
+        "compressPath": "Google/Google 08 Landscapes pt 2/compress/google-08-landscapes-pt-2-teal-black-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 09 Textures",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-09-textures-beige-rose-photo",
+        "type": "image/png",
+        "size": "1.85 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-beige-rose-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-beige-rose-photo.webp"
+      },
+      {
+        "name": "google-09-textures-black-abstract",
+        "type": "image/png",
+        "size": "2.15 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-abstract.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-abstract.webp"
+      },
+      {
+        "name": "google-09-textures-black-blue-photo",
+        "type": "image/png",
+        "size": "3.21 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-blue-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-blue-photo.webp"
+      },
+      {
+        "name": "google-09-textures-black-brown-pattern",
+        "type": "image/png",
+        "size": "2.08 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-brown-pattern.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-brown-pattern.webp"
+      },
+      {
+        "name": "google-09-textures-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "1.98 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-09-textures-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "2.28 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-09-textures-black-brown-photo-alt-c",
+        "type": "image/png",
+        "size": "2.86 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-brown-photo-alt-c.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-brown-photo-alt-c.webp"
+      },
+      {
+        "name": "google-09-textures-black-brown-photo-alt-d",
+        "type": "image/png",
+        "size": "2.46 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-brown-photo-alt-d.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-brown-photo-alt-d.webp"
+      },
+      {
+        "name": "google-09-textures-black-brown-photo",
+        "type": "image/png",
+        "size": "2.69 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-brown-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-brown-photo.webp"
+      },
+      {
+        "name": "google-09-textures-black-gray-pattern",
+        "type": "image/png",
+        "size": "2.09 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-gray-pattern.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-gray-pattern.webp"
+      },
+      {
+        "name": "google-09-textures-black-purple-photo",
+        "type": "image/png",
+        "size": "4.51 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-purple-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-purple-photo.webp"
+      },
+      {
+        "name": "google-09-textures-black-teal-photo-alt-a",
+        "type": "image/png",
+        "size": "5.82 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-teal-photo-alt-a.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-teal-photo-alt-a.webp"
+      },
+      {
+        "name": "google-09-textures-black-teal-photo-alt-b",
+        "type": "image/png",
+        "size": "3.8 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-teal-photo-alt-b.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-teal-photo-alt-b.webp"
+      },
+      {
+        "name": "google-09-textures-black-teal-photo-alt-c",
+        "type": "image/png",
+        "size": "5.14 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-teal-photo-alt-c.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-teal-photo-alt-c.webp"
+      },
+      {
+        "name": "google-09-textures-black-teal-photo",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-teal-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-teal-photo.webp"
+      },
+      {
+        "name": "google-09-textures-black-white-gradient",
+        "type": "image/png",
+        "size": "438.63 KB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-black-white-gradient.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-black-white-gradient.webp"
+      },
+      {
+        "name": "google-09-textures-blue-cyan-photo",
+        "type": "image/png",
+        "size": "2.62 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-blue-cyan-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-blue-cyan-photo.webp"
+      },
+      {
+        "name": "google-09-textures-blue-teal-photo",
+        "type": "image/png",
+        "size": "3.89 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-blue-teal-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-blue-teal-photo.webp"
+      },
+      {
+        "name": "google-09-textures-brown-black-pattern",
+        "type": "image/png",
+        "size": "3.81 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-brown-black-pattern.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-brown-black-pattern.webp"
+      },
+      {
+        "name": "google-09-textures-brown-gray-photo",
+        "type": "image/png",
+        "size": "3.47 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-brown-gray-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-brown-gray-photo.webp"
+      },
+      {
+        "name": "google-09-textures-brown-green-photo",
+        "type": "image/png",
+        "size": "3.06 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-brown-green-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-brown-green-photo.webp"
+      },
+      {
+        "name": "google-09-textures-brown-mint-abstract",
+        "type": "image/png",
+        "size": "868.28 KB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-brown-mint-abstract.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-brown-mint-abstract.webp"
+      },
+      {
+        "name": "google-09-textures-brown-orange-photo",
+        "type": "image/png",
+        "size": "3.3 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-brown-orange-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-brown-orange-photo.webp"
+      },
+      {
+        "name": "google-09-textures-gold-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "5.95 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-gold-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-gold-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-09-textures-gold-brown-photo",
+        "type": "image/png",
+        "size": "2 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-gold-brown-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-gold-brown-photo.webp"
+      },
+      {
+        "name": "google-09-textures-gray-brown-pattern",
+        "type": "image/png",
+        "size": "3.35 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-gray-brown-pattern.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-gray-brown-pattern.webp"
+      },
+      {
+        "name": "google-09-textures-gray-silver-photo-alt-a",
+        "type": "image/png",
+        "size": "3.78 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-gray-silver-photo-alt-a.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-gray-silver-photo-alt-a.webp"
+      },
+      {
+        "name": "google-09-textures-gray-silver-photo",
+        "type": "image/png",
+        "size": "2.82 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-gray-silver-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-gray-silver-photo.webp"
+      },
+      {
+        "name": "google-09-textures-green-black-photo",
+        "type": "image/png",
+        "size": "5.27 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-green-black-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-green-black-photo.webp"
+      },
+      {
+        "name": "google-09-textures-green-pattern",
+        "type": "image/png",
+        "size": "4.56 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-green-pattern.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-green-pattern.webp"
+      },
+      {
+        "name": "google-09-textures-green-teal-photo",
+        "type": "image/png",
+        "size": "3.77 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-green-teal-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-green-teal-photo.webp"
+      },
+      {
+        "name": "google-09-textures-mint-teal-photo",
+        "type": "image/png",
+        "size": "4.12 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-mint-teal-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-mint-teal-photo.webp"
+      },
+      {
+        "name": "google-09-textures-orange-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "3.18 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-orange-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-orange-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-09-textures-orange-brown-photo",
+        "type": "image/png",
+        "size": "2.41 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-orange-brown-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-orange-brown-photo.webp"
+      },
+      {
+        "name": "google-09-textures-orange-yellow-gradient",
+        "type": "image/png",
+        "size": "3.63 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-orange-yellow-gradient.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-orange-yellow-gradient.webp"
+      },
+      {
+        "name": "google-09-textures-silver-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "3.81 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-silver-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-silver-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-09-textures-silver-gray-photo",
+        "type": "image/png",
+        "size": "3.87 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-silver-gray-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-silver-gray-photo.webp"
+      },
+      {
+        "name": "google-09-textures-teal-brown-photo",
+        "type": "image/png",
+        "size": "1.86 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-teal-brown-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-teal-brown-photo.webp"
+      },
+      {
+        "name": "google-09-textures-teal-green-photo",
+        "type": "image/png",
+        "size": "4.8 MB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-teal-green-photo.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-teal-green-photo.webp"
+      },
+      {
+        "name": "google-09-textures-teal-rose-gradient",
+        "type": "image/png",
+        "size": "928.87 KB",
+        "originPath": "Google/Google 09 Textures/origin/google-09-textures-teal-rose-gradient.png",
+        "compressPath": "Google/Google 09 Textures/compress/google-09-textures-teal-rose-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 10 Life",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-10-life-black-blue-photo",
+        "type": "image/png",
+        "size": "2.91 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-blue-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-blue-photo.webp"
+      },
+      {
+        "name": "google-10-life-black-brown-pattern-alt-a",
+        "type": "image/png",
+        "size": "2.07 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-brown-pattern-alt-a.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-brown-pattern-alt-a.webp"
+      },
+      {
+        "name": "google-10-life-black-brown-pattern",
+        "type": "image/png",
+        "size": "1.44 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-brown-pattern.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-brown-pattern.webp"
+      },
+      {
+        "name": "google-10-life-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "2.99 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-10-life-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "3.63 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-10-life-black-brown-photo-alt-c",
+        "type": "image/png",
+        "size": "3.94 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-brown-photo-alt-c.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-brown-photo-alt-c.webp"
+      },
+      {
+        "name": "google-10-life-black-brown-photo",
+        "type": "image/png",
+        "size": "3.26 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-brown-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-brown-photo.webp"
+      },
+      {
+        "name": "google-10-life-black-green-photo-alt-a",
+        "type": "image/png",
+        "size": "4.76 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-green-photo-alt-a.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-green-photo-alt-a.webp"
+      },
+      {
+        "name": "google-10-life-black-green-photo-alt-b",
+        "type": "image/png",
+        "size": "2.8 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-green-photo-alt-b.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-green-photo-alt-b.webp"
+      },
+      {
+        "name": "google-10-life-black-green-photo",
+        "type": "image/png",
+        "size": "1.98 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-green-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-green-photo.webp"
+      },
+      {
+        "name": "google-10-life-black-orange-photo",
+        "type": "image/png",
+        "size": "3.04 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-orange-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-orange-photo.webp"
+      },
+      {
+        "name": "google-10-life-black-red-abstract",
+        "type": "image/png",
+        "size": "3.36 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-red-abstract.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-red-abstract.webp"
+      },
+      {
+        "name": "google-10-life-black-red-photo",
+        "type": "image/png",
+        "size": "5.1 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-red-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-red-photo.webp"
+      },
+      {
+        "name": "google-10-life-black-teal-abstract",
+        "type": "image/png",
+        "size": "1.37 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-teal-abstract.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-teal-abstract.webp"
+      },
+      {
+        "name": "google-10-life-black-yellow-pattern",
+        "type": "image/png",
+        "size": "2.36 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-black-yellow-pattern.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-black-yellow-pattern.webp"
+      },
+      {
+        "name": "google-10-life-blue-gold-photo",
+        "type": "image/png",
+        "size": "2.51 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-blue-gold-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-blue-gold-photo.webp"
+      },
+      {
+        "name": "google-10-life-blue-purple-photo",
+        "type": "image/png",
+        "size": "3.26 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-blue-purple-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-blue-purple-photo.webp"
+      },
+      {
+        "name": "google-10-life-brown-black-photo",
+        "type": "image/png",
+        "size": "2.8 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-brown-black-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-brown-black-photo.webp"
+      },
+      {
+        "name": "google-10-life-brown-orange-photo-alt-a",
+        "type": "image/png",
+        "size": "2.38 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-brown-orange-photo-alt-a.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-brown-orange-photo-alt-a.webp"
+      },
+      {
+        "name": "google-10-life-brown-orange-photo",
+        "type": "image/png",
+        "size": "3.55 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-brown-orange-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-brown-orange-photo.webp"
+      },
+      {
+        "name": "google-10-life-brown-red-photo",
+        "type": "image/png",
+        "size": "1.84 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-brown-red-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-brown-red-photo.webp"
+      },
+      {
+        "name": "google-10-life-gray-orange-photo",
+        "type": "image/png",
+        "size": "2.76 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-gray-orange-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-gray-orange-photo.webp"
+      },
+      {
+        "name": "google-10-life-gray-white-photo",
+        "type": "image/png",
+        "size": "1.63 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-gray-white-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-gray-white-photo.webp"
+      },
+      {
+        "name": "google-10-life-green-purple-photo",
+        "type": "image/png",
+        "size": "3.66 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-green-purple-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-green-purple-photo.webp"
+      },
+      {
+        "name": "google-10-life-orange-red-photo",
+        "type": "image/png",
+        "size": "2.62 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-orange-red-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-orange-red-photo.webp"
+      },
+      {
+        "name": "google-10-life-red-beige-photo",
+        "type": "image/png",
+        "size": "4.54 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-red-beige-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-red-beige-photo.webp"
+      },
+      {
+        "name": "google-10-life-red-brown-photo",
+        "type": "image/png",
+        "size": "5.94 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-red-brown-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-red-brown-photo.webp"
+      },
+      {
+        "name": "google-10-life-red-orange-photo",
+        "type": "image/png",
+        "size": "3.46 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-red-orange-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-red-orange-photo.webp"
+      },
+      {
+        "name": "google-10-life-silver-beige-abstract",
+        "type": "image/png",
+        "size": "730.99 KB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-silver-beige-abstract.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-silver-beige-abstract.webp"
+      },
+      {
+        "name": "google-10-life-silver-brown-photo",
+        "type": "image/png",
+        "size": "2.88 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-silver-brown-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-silver-brown-photo.webp"
+      },
+      {
+        "name": "google-10-life-silver-cyan-abstract",
+        "type": "image/png",
+        "size": "2.4 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-silver-cyan-abstract.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-silver-cyan-abstract.webp"
+      },
+      {
+        "name": "google-10-life-silver-gray-photo",
+        "type": "image/png",
+        "size": "3.49 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-silver-gray-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-silver-gray-photo.webp"
+      },
+      {
+        "name": "google-10-life-silver-white-gradient",
+        "type": "image/png",
+        "size": "482.5 KB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-silver-white-gradient.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-silver-white-gradient.webp"
+      },
+      {
+        "name": "google-10-life-teal-black-photo",
+        "type": "image/png",
+        "size": "2.93 MB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-teal-black-photo.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-teal-black-photo.webp"
+      },
+      {
+        "name": "google-10-life-white-beige-gradient-alt-a",
+        "type": "image/png",
+        "size": "394.71 KB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-white-beige-gradient-alt-a.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-white-beige-gradient-alt-a.webp"
+      },
+      {
+        "name": "google-10-life-white-beige-gradient",
+        "type": "image/png",
+        "size": "458.5 KB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-white-beige-gradient.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-white-beige-gradient.webp"
+      },
+      {
+        "name": "google-10-life-white-gray-gradient",
+        "type": "image/png",
+        "size": "632.58 KB",
+        "originPath": "Google/Google 10 Life/origin/google-10-life-white-gray-gradient.png",
+        "compressPath": "Google/Google 10 Life/compress/google-10-life-white-gray-gradient.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 11 Earth pt 1",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-11-earth-pt-1-beige-gray-photo",
+        "type": "image/png",
+        "size": "5.8 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-beige-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-beige-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-brown-abstract",
+        "type": "image/png",
+        "size": "2.62 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-brown-abstract.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-brown-abstract.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-brown-gradient",
+        "type": "image/png",
+        "size": "912.72 KB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-brown-gradient.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-brown-gradient.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "3.32 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "3.48 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-brown-photo",
+        "type": "image/png",
+        "size": "2.38 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-brown-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-brown-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-gradient",
+        "type": "image/png",
+        "size": "290.08 KB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-gradient.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-gradient.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-gray-gradient",
+        "type": "image/png",
+        "size": "265.04 KB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-gray-gradient.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-gray-gradient.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "2.99 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-gray-photo-alt-b",
+        "type": "image/png",
+        "size": "3.48 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-gray-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-gray-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-gray-photo",
+        "type": "image/png",
+        "size": "5.54 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-mint-photo",
+        "type": "image/png",
+        "size": "2.18 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-mint-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-mint-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-silver-photo-alt-a",
+        "type": "image/png",
+        "size": "2.9 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-silver-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-silver-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-silver-photo-alt-b",
+        "type": "image/png",
+        "size": "3.64 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-silver-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-silver-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-silver-photo",
+        "type": "image/png",
+        "size": "2.33 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-silver-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-silver-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-black-teal-photo",
+        "type": "image/png",
+        "size": "3.35 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-black-teal-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-black-teal-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-black-gradient",
+        "type": "image/png",
+        "size": "3.96 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-black-gradient.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-black-gradient.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-black-photo",
+        "type": "image/png",
+        "size": "5.94 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-black-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-black-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "4.58 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-gray-photo-alt-b",
+        "type": "image/png",
+        "size": "4.59 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-gray-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-gray-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-gray-photo",
+        "type": "image/png",
+        "size": "4.32 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-silver-photo-alt-a",
+        "type": "image/png",
+        "size": "5.84 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-silver-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-silver-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-silver-photo-alt-b",
+        "type": "image/png",
+        "size": "4.41 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-silver-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-silver-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-silver-photo-alt-c",
+        "type": "image/png",
+        "size": "4.67 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-silver-photo-alt-c.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-silver-photo-alt-c.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-brown-silver-photo",
+        "type": "image/png",
+        "size": "2.8 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-brown-silver-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-brown-silver-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-gold-green-photo",
+        "type": "image/png",
+        "size": "3.25 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-gold-green-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-gold-green-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-gray-black-photo",
+        "type": "image/png",
+        "size": "4.34 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-gray-black-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-gray-black-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-gray-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "4.78 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-gray-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-gray-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-gray-brown-photo",
+        "type": "image/png",
+        "size": "1.46 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-gray-brown-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-gray-brown-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-gray-silver-abstract",
+        "type": "image/png",
+        "size": "3.05 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-gray-silver-abstract.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-gray-silver-abstract.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-green-black-photo",
+        "type": "image/png",
+        "size": "6.42 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-green-black-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-green-black-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-rose-gray-photo",
+        "type": "image/png",
+        "size": "3.16 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-rose-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-rose-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-rose-mint-photo",
+        "type": "image/png",
+        "size": "4.95 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-rose-mint-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-rose-mint-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-1-silver-gray-photo",
+        "type": "image/png",
+        "size": "6.95 MB",
+        "originPath": "Google/Google 11 Earth pt 1/origin/google-11-earth-pt-1-silver-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 1/compress/google-11-earth-pt-1-silver-gray-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 11 Earth pt 2",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-11-earth-pt-2-beige-black-photo",
+        "type": "image/png",
+        "size": "4.11 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-beige-black-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-beige-black-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-beige-gold-abstract",
+        "type": "image/png",
+        "size": "4.08 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-beige-gold-abstract.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-beige-gold-abstract.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-black-gray-photo",
+        "type": "image/png",
+        "size": "4.26 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-black-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-black-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-black-green-abstract",
+        "type": "image/png",
+        "size": "5.28 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-black-green-abstract.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-black-green-abstract.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-black-silver-photo",
+        "type": "image/png",
+        "size": "5 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-black-silver-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-black-silver-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-black-yellow-photo",
+        "type": "image/png",
+        "size": "4.54 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-black-yellow-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-black-yellow-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-black-photo-alt-a",
+        "type": "image/png",
+        "size": "6.96 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-black-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-black-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-black-photo-alt-b",
+        "type": "image/png",
+        "size": "5.52 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-black-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-black-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-black-photo-alt-c",
+        "type": "image/png",
+        "size": "5.52 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-black-photo-alt-c.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-black-photo-alt-c.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-black-photo",
+        "type": "image/png",
+        "size": "5.76 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-black-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-black-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-gray-abstract",
+        "type": "image/png",
+        "size": "4.97 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-gray-abstract.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-gray-abstract.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "4.05 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-gray-photo",
+        "type": "image/png",
+        "size": "3.72 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-brown-rose-photo",
+        "type": "image/png",
+        "size": "4.89 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-brown-rose-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-brown-rose-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-cyan-blue-abstract",
+        "type": "image/png",
+        "size": "3.34 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-cyan-blue-abstract.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-cyan-blue-abstract.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "4.24 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "4.03 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-brown-photo",
+        "type": "image/png",
+        "size": "4.91 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-brown-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-brown-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-mint-photo",
+        "type": "image/png",
+        "size": "6.72 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-mint-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-mint-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-silver-photo-alt-a",
+        "type": "image/png",
+        "size": "6.78 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-silver-photo-alt-a.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-silver-photo-alt-a.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-silver-photo",
+        "type": "image/png",
+        "size": "5.54 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-silver-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-silver-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-gray-yellow-photo",
+        "type": "image/png",
+        "size": "3.57 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-gray-yellow-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-gray-yellow-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-rose-silver-photo",
+        "type": "image/png",
+        "size": "4.82 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-rose-silver-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-rose-silver-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-silver-brown-photo",
+        "type": "image/png",
+        "size": "5.1 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-silver-brown-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-silver-brown-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-silver-gray-photo",
+        "type": "image/png",
+        "size": "4.89 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-silver-gray-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-silver-gray-photo.webp"
+      },
+      {
+        "name": "google-11-earth-pt-2-teal-black-photo",
+        "type": "image/png",
+        "size": "7.02 MB",
+        "originPath": "Google/Google 11 Earth pt 2/origin/google-11-earth-pt-2-teal-black-photo.png",
+        "compressPath": "Google/Google 11 Earth pt 2/compress/google-11-earth-pt-2-teal-black-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "Google 13 Cityscapes",
+    "date": "2016",
+    "item": [
+      {
+        "name": "google-13-cityscapes-black-blue-photo",
+        "type": "image/png",
+        "size": "3.98 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-blue-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-blue-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-abstract-alt-a",
+        "type": "image/png",
+        "size": "2.5 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-abstract-alt-a.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-abstract-alt-b",
+        "type": "image/png",
+        "size": "2.29 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-abstract-alt-b.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-abstract-alt-b.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-abstract",
+        "type": "image/png",
+        "size": "1.84 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-abstract.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-abstract.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-gradient",
+        "type": "image/png",
+        "size": "1.01 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-gradient.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-gradient.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-a",
+        "type": "image/png",
+        "size": "4.21 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-a.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-a.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-b",
+        "type": "image/png",
+        "size": "4.87 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-b.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-b.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-c",
+        "type": "image/png",
+        "size": "3.76 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-c.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-c.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-d",
+        "type": "image/png",
+        "size": "5.28 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-d.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-d.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-e",
+        "type": "image/png",
+        "size": "2.58 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-e.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-e.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-f",
+        "type": "image/png",
+        "size": "2.03 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-f.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-f.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo-alt-g",
+        "type": "image/png",
+        "size": "2.4 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo-alt-g.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo-alt-g.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-brown-photo",
+        "type": "image/png",
+        "size": "3.64 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-brown-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-brown-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-cyan-abstract",
+        "type": "image/png",
+        "size": "2.43 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-cyan-abstract.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-cyan-abstract.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-abstract-alt-a",
+        "type": "image/png",
+        "size": "1.41 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-abstract-alt-a.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-abstract",
+        "type": "image/png",
+        "size": "4.56 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-abstract.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-abstract.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-pattern",
+        "type": "image/png",
+        "size": "3.25 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-pattern.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-pattern.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-a",
+        "type": "image/png",
+        "size": "2.25 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-a.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-a.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-b",
+        "type": "image/png",
+        "size": "4.11 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-b.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-b.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-c",
+        "type": "image/png",
+        "size": "3.97 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-c.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-c.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-d",
+        "type": "image/png",
+        "size": "4.47 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-d.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-d.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-e",
+        "type": "image/png",
+        "size": "2.27 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-e.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-e.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-f",
+        "type": "image/png",
+        "size": "1.76 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-f.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-f.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-g",
+        "type": "image/png",
+        "size": "2.43 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-g.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-g.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-h",
+        "type": "image/png",
+        "size": "2.03 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-h.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-h.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo-alt-i",
+        "type": "image/png",
+        "size": "3.93 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo-alt-i.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo-alt-i.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-gray-photo",
+        "type": "image/png",
+        "size": "1.96 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-gray-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-gray-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-green-photo",
+        "type": "image/png",
+        "size": "2.5 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-green-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-green-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-rose-photo",
+        "type": "image/png",
+        "size": "1.94 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-rose-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-rose-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-teal-abstract-alt-a",
+        "type": "image/png",
+        "size": "1.54 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-teal-abstract-alt-a.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-teal-abstract-alt-a.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-teal-abstract",
+        "type": "image/png",
+        "size": "1.08 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-teal-abstract.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-teal-abstract.webp"
+      },
+      {
+        "name": "google-13-cityscapes-black-white-pattern",
+        "type": "image/png",
+        "size": "1.41 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-black-white-pattern.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-black-white-pattern.webp"
+      },
+      {
+        "name": "google-13-cityscapes-blue-black-abstract",
+        "type": "image/png",
+        "size": "1.94 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-blue-black-abstract.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-blue-black-abstract.webp"
+      },
+      {
+        "name": "google-13-cityscapes-brown-black-abstract",
+        "type": "image/png",
+        "size": "2.36 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-brown-black-abstract.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-brown-black-abstract.webp"
+      },
+      {
+        "name": "google-13-cityscapes-brown-black-pattern",
+        "type": "image/png",
+        "size": "3.49 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-brown-black-pattern.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-brown-black-pattern.webp"
+      },
+      {
+        "name": "google-13-cityscapes-brown-black-photo-alt-a",
+        "type": "image/png",
+        "size": "1.86 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-brown-black-photo-alt-a.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-brown-black-photo-alt-a.webp"
+      },
+      {
+        "name": "google-13-cityscapes-brown-black-photo",
+        "type": "image/png",
+        "size": "3.94 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-brown-black-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-brown-black-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-brown-red-photo",
+        "type": "image/png",
+        "size": "2.53 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-brown-red-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-brown-red-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-brown-silver-photo",
+        "type": "image/png",
+        "size": "2.37 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-brown-silver-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-brown-silver-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-gray-beige-photo",
+        "type": "image/png",
+        "size": "2.92 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-gray-beige-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-gray-beige-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-gray-black-pattern",
+        "type": "image/png",
+        "size": "2.14 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-gray-black-pattern.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-gray-black-pattern.webp"
+      },
+      {
+        "name": "google-13-cityscapes-gray-black-photo",
+        "type": "image/png",
+        "size": "3.2 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-gray-black-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-gray-black-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-rose-brown-photo",
+        "type": "image/png",
+        "size": "3.23 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-rose-brown-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-rose-brown-photo.webp"
+      },
+      {
+        "name": "google-13-cityscapes-white-black-photo",
+        "type": "image/png",
+        "size": "2.59 MB",
+        "originPath": "Google/Google 13 Cityscapes/origin/google-13-cityscapes-white-black-photo.png",
+        "compressPath": "Google/Google 13 Cityscapes/compress/google-13-cityscapes-white-black-photo.webp"
+      }
+    ]
+  }
+]

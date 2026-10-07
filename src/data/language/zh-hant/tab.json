@@ -29,6 +29,10 @@
     "type": "google-pixel"
   },
   {
+    "title": "Google",
+    "type": "google"
+  },
+  {
     "title": "Android",
     "type": "android"
   },

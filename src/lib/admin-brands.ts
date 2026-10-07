@@ -18,7 +18,7 @@ const builtinBrands: AdminBrand[] = [
 export async function listAdminBrands(): Promise<AdminBrand[]> {
   const { results } = await getWallpaperDb().prepare('SELECT slug, title, kind FROM w_brands ORDER BY create_date, title')
     .all<StoredBrand>();
-  return [...builtinBrands, ...results.map((brand) => ({
+  return [...builtinBrands, ...results.filter((brand) => !builtinBrands.some((builtin) => builtin.slug === brand.slug)).map((brand) => ({
     slug: brand.slug, title: brand.title, kind: brand.kind, source: 'custom' as const,
   }))];
 }

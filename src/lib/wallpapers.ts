@@ -1,6 +1,7 @@
 import androidData from '@/data/android.json';
 import asusRogPhoneData from '@/data/asus rog phone.json';
 import googlePixelData from '@/data/google pixel.json';
+import googleData from '@/data/google.json';
 import harmonyosData from '@/data/harmonyos.json';
 import honorData from '@/data/honor.json';
 import huaweiData from '@/data/huawei.json';
@@ -50,6 +51,7 @@ const dataSources: Record<string, WallpaperCollection[]> = {
   android: androidData as WallpaperCollection[],
   'asus-rog-phone': asusRogPhoneData as WallpaperCollection[],
   'google-pixel': googlePixelData as WallpaperCollection[],
+  google: googleData as WallpaperCollection[],
   harmonyos: harmonyosData as WallpaperCollection[],
   honor: honorData as WallpaperCollection[],
   huawei: huaweiData as WallpaperCollection[],
