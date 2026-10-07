@@ -1,0 +1,184 @@
+[
+  {
+    "name": "HMD Fusion",
+    "date": "2024/09/05",
+    "item": [
+      {
+        "name": "hmd-fusion-black-brown-abstract-alt-a",
+        "type": "image/png",
+        "size": "3.6 MB",
+        "originPath": "HMD/HMD Fusion/origin/hmd-fusion-black-brown-abstract-alt-a.png",
+        "compressPath": "HMD/HMD Fusion/compress/hmd-fusion-black-brown-abstract-alt-a.webp"
+      },
+      {
+        "name": "hmd-fusion-black-brown-abstract",
+        "type": "image/png",
+        "size": "3.06 MB",
+        "originPath": "HMD/HMD Fusion/origin/hmd-fusion-black-brown-abstract.png",
+        "compressPath": "HMD/HMD Fusion/compress/hmd-fusion-black-brown-abstract.webp"
+      },
+      {
+        "name": "hmd-fusion-black-brown-gradient",
+        "type": "image/png",
+        "size": "3.05 MB",
+        "originPath": "HMD/HMD Fusion/origin/hmd-fusion-black-brown-gradient.png",
+        "compressPath": "HMD/HMD Fusion/compress/hmd-fusion-black-brown-gradient.webp"
+      },
+      {
+        "name": "hmd-fusion-brown-black-photo",
+        "type": "image/png",
+        "size": "3.51 MB",
+        "originPath": "HMD/HMD Fusion/origin/hmd-fusion-brown-black-photo.png",
+        "compressPath": "HMD/HMD Fusion/compress/hmd-fusion-brown-black-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "HMD Skyline",
+    "date": "2024/07/18",
+    "item": [
+      {
+        "name": "hmd-skyline-beige-pink-abstract",
+        "type": "image/png",
+        "size": "3.5 MB",
+        "originPath": "HMD/HMD Skyline/origin/hmd-skyline-beige-pink-abstract.png",
+        "compressPath": "HMD/HMD Skyline/compress/hmd-skyline-beige-pink-abstract.webp"
+      },
+      {
+        "name": "hmd-skyline-black-blue-abstract",
+        "type": "image/png",
+        "size": "4.62 MB",
+        "originPath": "HMD/HMD Skyline/origin/hmd-skyline-black-blue-abstract.png",
+        "compressPath": "HMD/HMD Skyline/compress/hmd-skyline-black-blue-abstract.webp"
+      },
+      {
+        "name": "hmd-skyline-black-green-abstract",
+        "type": "image/jpeg",
+        "size": "323.8 KB",
+        "originPath": "HMD/HMD Skyline/origin/hmd-skyline-black-green-abstract.jpg",
+        "compressPath": "HMD/HMD Skyline/compress/hmd-skyline-black-green-abstract.webp"
+      },
+      {
+        "name": "hmd-skyline-teal-mint-photo",
+        "type": "image/png",
+        "size": "3.84 MB",
+        "originPath": "HMD/HMD Skyline/origin/hmd-skyline-teal-mint-photo.png",
+        "compressPath": "HMD/HMD Skyline/compress/hmd-skyline-teal-mint-photo.webp"
+      },
+      {
+        "name": "hmd-skyline-yellow-brown-abstract",
+        "type": "image/jpeg",
+        "size": "329.57 KB",
+        "originPath": "HMD/HMD Skyline/origin/hmd-skyline-yellow-brown-abstract.jpg",
+        "compressPath": "HMD/HMD Skyline/compress/hmd-skyline-yellow-brown-abstract.webp"
+      }
+    ]
+  },
+  {
+    "name": "HMD XR21",
+    "date": "2024/05/15",
+    "item": [
+      {
+        "name": "hmd-xr21-silver-black-photo",
+        "type": "image/png",
+        "size": "1.46 MB",
+        "originPath": "HMD/HMD XR21/origin/hmd-xr21-silver-black-photo.png",
+        "compressPath": "HMD/HMD XR21/compress/hmd-xr21-silver-black-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "HMD Pulse Pro",
+    "date": "2024/04/24",
+    "item": [
+      {
+        "name": "hmd-pulse-pro-black-green-photo",
+        "type": "image/png",
+        "size": "1.66 MB",
+        "originPath": "HMD/HMD Pulse Pro/origin/hmd-pulse-pro-black-green-photo.png",
+        "compressPath": "HMD/HMD Pulse Pro/compress/hmd-pulse-pro-black-green-photo.webp"
+      },
+      {
+        "name": "hmd-pulse-pro-black-purple-photo",
+        "type": "image/png",
+        "size": "1.78 MB",
+        "originPath": "HMD/HMD Pulse Pro/origin/hmd-pulse-pro-black-purple-photo.png",
+        "compressPath": "HMD/HMD Pulse Pro/compress/hmd-pulse-pro-black-purple-photo.webp"
+      },
+      {
+        "name": "hmd-pulse-pro-gray-silver-photo",
+        "type": "image/png",
+        "size": "2.19 MB",
+        "originPath": "HMD/HMD Pulse Pro/origin/hmd-pulse-pro-gray-silver-photo.png",
+        "compressPath": "HMD/HMD Pulse Pro/compress/hmd-pulse-pro-gray-silver-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "HMD Pulse Plus",
+    "date": "2024/04/24",
+    "item": [
+      {
+        "name": "hmd-pulse-plus-mint-black-photo",
+        "type": "image/png",
+        "size": "1.39 MB",
+        "originPath": "HMD/HMD Pulse Plus/origin/hmd-pulse-plus-mint-black-photo.png",
+        "compressPath": "HMD/HMD Pulse Plus/compress/hmd-pulse-plus-mint-black-photo.webp"
+      },
+      {
+        "name": "hmd-pulse-plus-silver-teal-photo",
+        "type": "image/png",
+        "size": "1.42 MB",
+        "originPath": "HMD/HMD Pulse Plus/origin/hmd-pulse-plus-silver-teal-photo.png",
+        "compressPath": "HMD/HMD Pulse Plus/compress/hmd-pulse-plus-silver-teal-photo.webp"
+      },
+      {
+        "name": "hmd-pulse-plus-yellow-orange-photo",
+        "type": "image/png",
+        "size": "1.54 MB",
+        "originPath": "HMD/HMD Pulse Plus/origin/hmd-pulse-plus-yellow-orange-photo.png",
+        "compressPath": "HMD/HMD Pulse Plus/compress/hmd-pulse-plus-yellow-orange-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "HMD Pulse",
+    "date": "2024/04/24",
+    "item": [
+      {
+        "name": "hmd-pulse-brown-beige-photo",
+        "type": "image/png",
+        "size": "1.68 MB",
+        "originPath": "HMD/HMD Pulse/origin/hmd-pulse-brown-beige-photo.png",
+        "compressPath": "HMD/HMD Pulse/compress/hmd-pulse-brown-beige-photo.webp"
+      },
+      {
+        "name": "hmd-pulse-rose-brown-photo",
+        "type": "image/png",
+        "size": "2.1 MB",
+        "originPath": "HMD/HMD Pulse/origin/hmd-pulse-rose-brown-photo.png",
+        "compressPath": "HMD/HMD Pulse/compress/hmd-pulse-rose-brown-photo.webp"
+      },
+      {
+        "name": "hmd-pulse-teal-cyan-photo",
+        "type": "image/png",
+        "size": "1.74 MB",
+        "originPath": "HMD/HMD Pulse/origin/hmd-pulse-teal-cyan-photo.png",
+        "compressPath": "HMD/HMD Pulse/compress/hmd-pulse-teal-cyan-photo.webp"
+      }
+    ]
+  },
+  {
+    "name": "HMD Vibe",
+    "date": "2024/04",
+    "item": [
+      {
+        "name": "hmd-vibe-purple-gray-abstract",
+        "type": "image/png",
+        "size": "802.6 KB",
+        "originPath": "HMD/HMD Vibe/origin/hmd-vibe-purple-gray-abstract.png",
+        "compressPath": "HMD/HMD Vibe/compress/hmd-vibe-purple-gray-abstract.webp"
+      }
+    ]
+  }
+]
