@@ -57,6 +57,10 @@
         "type": "google-pixel"
     },
     {
+        "title": "Google",
+        "type": "google"
+    },
+    {
         "title": "真我",
         "type": "realme"
     },

@@ -37,6 +37,7 @@ const brandLoaders: Record<string, () => Promise<WallpaperCollection[]>> = {
   android: () => import('@/data/android.json').then((m) => m.default as WallpaperCollection[]),
   'asus-rog-phone': () => import('@/data/asus rog phone.json').then((m) => m.default as WallpaperCollection[]),
   'google-pixel': () => import('@/data/google pixel.json').then((m) => m.default as WallpaperCollection[]),
+  google: () => import('@/data/google.json').then((m) => m.default as WallpaperCollection[]),
   harmonyos: () => import('@/data/harmonyos.json').then((m) => m.default as WallpaperCollection[]),
   honor: () => import('@/data/honor.json').then((m) => m.default as WallpaperCollection[]),
   huawei: () => import('@/data/huawei.json').then((m) => m.default as WallpaperCollection[]),

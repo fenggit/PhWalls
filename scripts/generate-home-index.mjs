@@ -20,6 +20,7 @@ const brandFiles = {
   android: 'android.json',
   'asus-rog-phone': 'asus rog phone.json',
   'google-pixel': 'google pixel.json',
+  google: 'google.json',
   harmonyos: 'harmonyos.json',
   honor: 'honor.json',
   huawei: 'huawei.json',

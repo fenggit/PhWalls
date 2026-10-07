@@ -14,6 +14,7 @@ const HOME_CATEGORY_PRIORITY = [
   'vivo',
   'realme',
   'google-pixel',
+  'google',
   'nothing',
   'asus-rog-phone',
   'oneplus',
