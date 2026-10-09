@@ -12,6 +12,7 @@ import {
   Info,
   Menu,
   Monitor,
+  Play,
   Search,
   Share2,
   Smartphone,
@@ -21,6 +22,7 @@ import { usePathname } from 'next/navigation';
 import { useShare } from '@/components/ShareProvider';
 import { getTabData } from '@/lib/data';
 import { getDesktopTabData } from '@/lib/desktop-data';
+import { getLiveTabData } from '@/lib/live-data';
 import { filterHomeTabs } from '@/lib/home-priority';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
@@ -36,10 +38,10 @@ export interface HeaderProps {
   activeCategoryTypeOverride?: string;
 }
 
-type PrimaryMenu = 'phone' | 'desktop';
+type PrimaryMenu = 'phone' | 'desktop' | 'live';
 
 type PrimaryNavigationItem = {
-  id: 'phone' | 'apple' | 'desktop';
+  id: 'phone' | 'apple' | 'desktop' | 'live';
   label: string;
   href: string;
   external?: boolean;
@@ -200,6 +202,7 @@ export default function Header({
   const primaryTriggerRefs = useRef<Record<PrimaryMenu, HTMLButtonElement | null>>({
     phone: null,
     desktop: null,
+    live: null,
   });
   const primaryMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusPrimaryPanelRef = useRef(false);
@@ -259,11 +262,15 @@ export default function Header({
     () => getDesktopTabData().filter((tab) => !tab.link?.trim()),
     []
   );
+  const liveTabs = useMemo(() => getLiveTabData(currentLang), [currentLang]);
 
   const getActiveTypeFromPath = useCallback((currentPath: string): string => {
     const normalizedPath = stripLanguagePrefix(currentPath).path;
     if (normalizedPath === '/') return 'all';
     if (normalizedPath === '/desktop') return 'desktop';
+    if (normalizedPath === '/live') return 'live';
+    const liveCategoryMatch = normalizedPath.match(/^\/live\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
+    if (liveCategoryMatch?.[1]) return normalizeCategoryType(liveCategoryMatch[1]);
     const desktopCategoryMatch = normalizedPath.match(/^\/desktop\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
     if (desktopCategoryMatch?.[1]) {
       try {
@@ -293,7 +300,8 @@ export default function Header({
 
   const [activeCategoryType, setActiveCategoryType] = useState(() => resolveActiveType(pathname));
   const pathWithoutLanguage = stripLanguagePrefix(pathname).path;
-  const activeSection: PrimaryMenu = pathWithoutLanguage.startsWith('/desktop') ? 'desktop' : 'phone';
+  const activeSection: PrimaryMenu = pathWithoutLanguage.startsWith('/live') ? 'live'
+    : pathWithoutLanguage.startsWith('/desktop') ? 'desktop' : 'phone';
   const appleHref = appleTab?.link?.trim() || 'https://applewalls.com';
   const mobilePopularPhoneTabs = useMemo<TabInfo[]>(
     () => [
@@ -329,6 +337,10 @@ export default function Header({
         href: withLanguagePath('/desktop', currentLang),
         menu: 'desktop',
       },
+      {
+        id: 'live', label: texts.liveWallpapersNavLabel,
+        href: withLanguagePath('/live', currentLang), menu: 'live',
+      },
     ],
     [
       appleHref,
@@ -336,6 +348,7 @@ export default function Header({
       texts.appleWallpapersNavLabel,
       texts.desktopWallpapersNavLabel,
       texts.phoneWallpapersNavLabel,
+      texts.liveWallpapersNavLabel,
     ]
   );
 
@@ -597,7 +610,8 @@ export default function Header({
     const href = isExternal
       ? tab.link!.trim()
       : withLanguagePath(
-          section === 'desktop' ? `/desktop/${normalizedType}` : buildBrandPath(tab.type),
+          section === 'live' ? `/live/${normalizedType}`
+            : section === 'desktop' ? `/desktop/${normalizedType}` : buildBrandPath(tab.type),
           currentLang
         );
     const className = mobile
@@ -690,7 +704,7 @@ export default function Header({
                   );
                 }
 
-                const menuTabs = item.menu === 'desktop' ? desktopTabs : phoneTabs;
+                const menuTabs = item.menu === 'live' ? liveTabs : item.menu === 'desktop' ? desktopTabs : phoneTabs;
                 const isOpen = openPrimaryMenu === item.menu;
                 return (
                   <div
@@ -768,6 +782,7 @@ export default function Header({
                             <span className="text-base font-semibold tracking-tight text-gray-950">{item.label}</span>
                             {item.menu === 'phone'
                               ? <Smartphone className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                              : item.menu === 'live' ? <Play className="h-5 w-5 text-gray-500" aria-hidden="true" />
                               : <Monitor className="h-5 w-5 text-gray-500" aria-hidden="true" />}
                           </div>
                           {item.menu === 'phone' ? (
@@ -791,7 +806,7 @@ export default function Header({
                             </div>
                           ) : (
                             <div className="grid grid-cols-2 gap-2">
-                              {menuTabs.map((tab) => renderCategoryLink(tab, 'desktop'))}
+                              {menuTabs.map((tab) => renderCategoryLink(tab, item.menu || 'desktop'))}
                             </div>
                           )}
                           <Link
@@ -1000,7 +1015,7 @@ export default function Header({
             </div>
 
             <div className="shrink-0 px-4 pt-4">
-              <div className="grid grid-cols-2 rounded-lg bg-gray-100 p-1" role="tablist" aria-label={texts.mainNavigationLabel}>
+              <div className="grid grid-cols-3 rounded-lg bg-gray-100 p-1" role="tablist" aria-label={texts.mainNavigationLabel}>
                 <button
                   type="button"
                   role="tab"
@@ -1031,6 +1046,11 @@ export default function Header({
                   <Monitor className="h-4 w-4" aria-hidden="true" />
                   {texts.desktopNavShortLabel}
                 </button>
+                <button type="button" role="tab" aria-selected={mobileNavigationSection === 'live'}
+                  aria-controls="mobile-live-panel" onClick={() => setMobileNavigationSection('live')}
+                  className={`flex min-h-10 items-center justify-center gap-2 rounded-md px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${mobileNavigationSection === 'live' ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
+                  <Play className="h-4 w-4" aria-hidden="true" />{texts.liveNavShortLabel}
+                </button>
               </div>
             </div>
 
@@ -1051,9 +1071,14 @@ export default function Header({
                   </div>
                 </section>
               ) : (
-                <section id="mobile-desktop-panel" role="tabpanel" aria-label={texts.desktopNavShortLabel}>
+                <section id={`mobile-${mobileNavigationSection}-panel`} role="tabpanel"
+                  aria-label={mobileNavigationSection === 'live' ? texts.liveNavShortLabel : texts.desktopNavShortLabel}>
+                  {mobileNavigationSection === 'live' && <Link href={withLanguagePath('/live', currentLang)} onClick={closeMenus}
+                    className="mb-3 flex min-h-10 items-center justify-between rounded-md bg-gray-50 px-3 text-sm font-medium text-gray-900">
+                    {texts.liveWallpapersNavLabel}<ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>}
                   <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-                    {desktopTabs.map((tab) => renderCategoryLink(tab, 'desktop', true))}
+                    {(mobileNavigationSection === 'live' ? liveTabs : desktopTabs).map((tab) => renderCategoryLink(tab, mobileNavigationSection, true))}
                   </div>
                 </section>
               )}

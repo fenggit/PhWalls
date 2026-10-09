@@ -47,6 +47,7 @@ interface DeviceWallpaperGridProps {
   categoryLabelOverride?: string;
   categoryLandingPathOverride?: string;
   activeCategoryTypeOverride?: string;
+  wallpaperGroupLabelOverride?: string;
 }
 
 type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
@@ -60,6 +61,7 @@ export default function DeviceWallpaperGrid({
   categoryLabelOverride,
   categoryLandingPathOverride,
   activeCategoryTypeOverride,
+  wallpaperGroupLabelOverride,
 }: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const displayDeviceName = displayName || deviceData.name;
@@ -353,8 +355,8 @@ export default function DeviceWallpaperGrid({
         </nav>
 
         <section className="mb-10 overflow-visible">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
-          <p className="mt-4 max-w-3xl text-xl leading-relaxed text-gray-600">{pageDescription}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
+          <p className="mt-4 max-w-3xl text-sm sm:text-base leading-relaxed text-gray-600">{pageDescription}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
             <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-gray-200">
               {deviceData.item.length} {texts.wallpapers}
@@ -373,7 +375,7 @@ export default function DeviceWallpaperGrid({
             <section key={group.kind}>
               <div className="mb-6 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-gray-900">{group.title}</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-gray-900">{wallpaperGroupLabelOverride || group.title}</h2>
                   <p className="mt-1 text-xs sm:text-sm text-gray-500">{group.items.length} {texts.wallpapers}</p>
                 </div>
               </div>

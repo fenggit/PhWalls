@@ -11,6 +11,46 @@ const ts = require('typescript');
 const root = fileURLToPath(new URL('../', import.meta.url));
 const { NextRequest } = require('next/server');
 
+test('live queries count and select only published dynamic media, with independent cache keys', async (t) => {
+  const f = fixture(); t.after(() => f.sqlite.close());
+  f.add('mixed', 'samsung'); f.add('static-only', 'samsung');
+  f.sqlite.exec(`INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,media_type,category,status,create_date,updated_date)
+    VALUES ('live','mixed','motion','video/mp4',2048,'live/Samsung/Mixed/origin/motion.mp4','live/Samsung/Mixed/compress/motion.webp','mp4','dynamic','phone','published',2,2),
+    ('draft-live','mixed','draft','video/mp4',2048,'live/Samsung/Mixed/origin/draft.mp4','live/Samsung/Mixed/compress/draft.webp','mp4','dynamic','phone','draft',3,3);`);
+  const all = await f.service.loadDbIndex(['samsung']);
+  assert.equal(all.samsung.length, 2);
+  const live = await f.service.loadDbIndex(['samsung'], 'en', 'dynamic');
+  assert.equal(live.samsung.length, 1);
+  assert.equal(live.samsung[0].count, 1);
+  assert.equal(live.samsung[0].item[0].type, 'video/mp4');
+  assert.equal((await f.service.loadDbCollections('samsung', 'en', 'dynamic')).length, 1);
+  assert.equal((await f.service.loadDbCollection('samsung', 'device-mixed', 'en', 'dynamic')).item.length, 1);
+  assert.equal(await f.service.loadDbCollection('samsung', 'device-static-only', 'en', 'dynamic'), null);
+});
+
+test('live JSON fallback localizes all five languages and keeps unpublished videos private', async (t) => {
+  const f = fixture({ dataSource: 'json' }); t.after(() => f.sqlite.close());
+  const live = f.load(`${root}src/lib/live-data-server.ts`);
+  const seo = f.load(`${root}src/lib/live-seo.ts`);
+  for (const [language, expectedPrefix] of [['en','Samsung'], ['zh','三星'], ['ja','サムスン'], ['vi','Samsung'], ['zh-hant','三星']]) {
+    const collection = await live.loadLiveCollection('samsung', 'samsung-galaxy-s25', language);
+    assert.ok(collection.name.startsWith(expectedPrefix));
+    assert.equal(collection.item.length, 5);
+    const copy = seo.getLiveSeoCopy(language, { category: 'samsung', name: collection.name, count: collection.item.length });
+    assert.ok(copy.description.includes('MP4'));
+    assert.ok(!copy.description.includes('{'));
+    const metadata = seo.buildLiveMetadata(language, '/live/wallpapers/samsung/samsung-galaxy-s25', copy);
+    assert.equal(new Set(Object.values(metadata.alternates.languages)).size, 5);
+    assert.ok(await f.service.isPublishedWallpaperKey(collection.item[0].originPath, true));
+  }
+  assert.equal(await live.loadLiveCollection('samsung', 'samsung-thom-browne'), null);
+  const draft = JSON.parse(readFileSync(`${root}src/data/livewalls/catalog.json`, 'utf8'))
+    .find((entry) => entry.collection.name === 'Samsung Thom Browne');
+  assert.equal(draft.status, 'draft');
+  assert.equal(await f.service.isPublishedWallpaperKey(draft.collection.item[0].originPath, true), false);
+  assert.equal(f.calls.length, 0);
+});
+
 function fixture({ production = false, dataSource = 'd1', failingDb = false, sameRequest = false, r2Failure = true, language = 'zh' } = {}) {
   const sqlite = new DatabaseSync(':memory:');
   for (const name of ['0001_wallpaper_admin', '0008_device_descriptions', '0009_device_description_name', '0010_device_i18n', '0011_public_wallpaper_query_indexes']) {
@@ -63,6 +103,7 @@ function fixture({ production = false, dataSource = 'd1', failingDb = false, sam
       console: { error: (...args) => logs.push(args), warn: (...args) => logs.push(args) },
       require(specifier) {
         if (specifier === 'server-only') return {};
+        if (specifier === '@/components/LiveWallpaperCollectionCard') return load(`${root}src/components/LiveWallpaperCollectionCard.tsx`);
         if (['@/components/Header', '@/components/Footer', '@/components/ShareRegistration'].includes(specifier)) return { default: () => null, __esModule: true };
         if (specifier === 'next/navigation') return { usePathname: () => `/${language}/desktop` };
         if (specifier === 'next/link') return { __esModule: true, default: ({ href, children, prefetch, ...props }) => require('react').createElement('a', { ...props, href }, children) };

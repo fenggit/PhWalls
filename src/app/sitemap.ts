@@ -10,6 +10,8 @@ import {
 } from '@/lib/desktop-wallpapers'
 import { getAllHomeCollections } from '@/lib/home-index'
 import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db'
+import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data'
+import { loadLiveIndex } from '@/lib/live-data-server'
 import {
   buildWallpaperDetailPath,
   parseWallpaperDate,
@@ -46,6 +48,8 @@ export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const allCollections = await getAllHomeCollections()
+  const liveIndex = await loadLiveIndex()
+  const liveUpdatedAt = new Date('2026-10-07T00:00:00+08:00')
   const allDesktopCollections = isWallpaperDbEnabled()
     ? Object.entries(await loadDbIndex(getDesktopTabData().map((tab) => tab.type)))
         .flatMap(([category, list]) => list.map((collection) => ({ category, collection })))
@@ -64,6 +68,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }> = [
     { path: '/', changeFrequency: 'weekly', priority: 1.0 },
     { path: '/desktop', changeFrequency: 'weekly', priority: 0.95 },
+    { path: '/live', changeFrequency: 'weekly', priority: 0.95, lastModified: liveUpdatedAt },
+    ...getLiveTabData().filter((tab) => liveIndex[tab.type]?.length).map((tab) => ({
+      path: `/live/${tab.type}`, changeFrequency: 'weekly' as const, priority: 0.85, lastModified: liveUpdatedAt,
+    })),
     { path: '/about', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/design', changeFrequency: 'weekly', priority: 0.9 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.4 },
@@ -137,7 +145,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   })
 
   // hreflang 替代链接不能代替各语言页面自身的 <url><loc> 条目。
-  return [...routes, ...detailRoutes, ...desktopDetailRoutes].flatMap((route) =>
+  const liveDetailRoutes: MetadataRoute.Sitemap = Object.entries(liveIndex).flatMap(([category, list]) => list.map((collection) => {
+    const absolutePath = `${SITE_URL}${buildLiveWallpaperDetailPath(category, collection.slug || collection.name)}`;
+    return { url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE), alternates: buildLanguageAlternates(absolutePath),
+      lastModified: liveUpdatedAt, changeFrequency: 'monthly' as const, priority: 0.8 };
+  }));
+  return [...routes, ...detailRoutes, ...desktopDetailRoutes, ...liveDetailRoutes].flatMap((route) =>
     SUPPORTED_LANGUAGES.map((language) => ({
       ...route,
       url: withLanguageUrl(route.url, language),

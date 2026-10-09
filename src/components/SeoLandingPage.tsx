@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageProvider';
 import ShareRegistration from '@/components/ShareRegistration';
+import LiveWallpaperCollectionCard from '@/components/LiveWallpaperCollectionCard';
 import {
   buildWallpaperListTitle,
   localizeWallpaperCollectionName,
@@ -40,6 +41,7 @@ type SeoLandingPageProps = {
   cards: LandingCard[];
   pageSize?: number;
   activeCategoryTypeOverride?: string;
+  collectionCardVariant?: 'default' | 'live';
 };
 
 const gradientPalette = [
@@ -76,6 +78,7 @@ export default function SeoLandingPage({
   cards,
   pageSize,
   activeCategoryTypeOverride,
+  collectionCardVariant = 'default',
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const pathname = usePathname();
@@ -162,8 +165,8 @@ export default function SeoLandingPage({
         </nav>
 
         <section className="mb-10">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
-          <p className="mt-4 max-w-3xl text-xl leading-relaxed text-gray-600">{description}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
+          <p className="mt-4 max-w-3xl text-sm sm:text-base leading-relaxed text-gray-600">{description}</p>
           <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
         </section>
 
@@ -175,7 +178,13 @@ export default function SeoLandingPage({
                 ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`,currentLang)
                 : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
               const cardDisplayName = card.deviceId ? card.name : localizeWallpaperCollectionName(currentLang, card.name);
-              const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+              const cardTitle = buildWallpaperListTitle(cardDisplayName,
+                collectionCardVariant === 'live' ? texts.liveWallpapersNavLabel : texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+              if (collectionCardVariant === 'live') {
+                return <LiveWallpaperCollectionCard key={card.name} href={detailHref} title={cardTitle}
+                  date={card.date} count={card.count} imageUrl={card.imageKey ? buildCardImageUrl(card.imageKey) : null}
+                  eager={index < 4} priority={index < 2} />;
+              }
               return (
                 <article key={card.name} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
                   <Link href={detailHref} prefetch={pageSize ? false : undefined} className="block w-full text-left" aria-label={cardTitle}>

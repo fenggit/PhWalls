@@ -154,6 +154,13 @@ export interface I18nTexts {
   downloadFailed: string;
   downloadWallpaper: string;
   imageLoadFailed: string;
+  videoLoadFailed: string;
+  videoLoading: string;
+  retryVideo: string;
+  videoEnterImmersive: string;
+  videoExitImmersive: string;
+  previousWallpaper: string;
+  nextWallpaper: string;
   imageLoading: string;
   zoomIn: string;
   zoomOut: string;
@@ -301,6 +308,16 @@ export interface I18nTexts {
   phoneWallpapersNavLabel: string;
   appleWallpapersNavLabel: string;
   desktopWallpapersNavLabel: string;
+  liveWallpapersNavLabel: string;
+  liveNavShortLabel: string;
+  liveHeroTitle: string;
+  liveHeroDescription: string;
+  liveCategoryTitleTemplate: string;
+  liveCategoryDescriptionTemplate: string;
+  liveDetailTitleTemplate: string;
+  liveDetailDescriptionTemplate: string;
+  liveCollectionCountTemplate: string;
+  liveCompatibilityNote: string;
   popularBrandsNavLabel: string;
   moreBrandsNavLabel: string;
   phoneNavShortLabel: string;
@@ -549,6 +566,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: '下载中...',
     downloadFailed: '下载失败，请重试',
     imageLoadFailed: '图片加载失败',
+    videoLoadFailed: '视频加载失败，请重试。',
+    videoLoading: '视频加载中…',
+    retryVideo: '重新加载视频',
+    videoEnterImmersive: '点击画面隐藏工具栏，按 H 切换',
+    videoExitImmersive: '点击画面显示工具栏，按 H 切换',
+    previousWallpaper: '上一张壁纸',
+    nextWallpaper: '下一张壁纸',
     imageLoading: '加载中...',
     zoomIn: '放大',
     zoomOut: '缩小',
@@ -696,6 +720,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     phoneWallpapersNavLabel: '手机壁纸',
     appleWallpapersNavLabel: 'Apple 壁纸',
     desktopWallpapersNavLabel: '桌面壁纸',
+    liveWallpapersNavLabel: '动态壁纸',
+    liveNavShortLabel: '动态',
+    liveHeroTitle: '动态壁纸与视频壁纸',
+    liveHeroDescription: '浏览三星、小米、华为、OPPO、vivo、OnePlus 与更多品牌的动态壁纸。按机型查看合集，播放视频预览，免费下载原始 MP4 文件。',
+    liveCategoryTitleTemplate: '{brand}动态壁纸免费下载',
+    liveCategoryDescriptionTemplate: '探索{brand}动态壁纸和视频壁纸合集，按设备浏览，在线播放预览，免费下载原始 MP4 视频。',
+    liveDetailTitleTemplate: '{name}动态壁纸 - MP4 视频下载',
+    liveDetailDescriptionTemplate: '下载{name}的 {count} 段动态壁纸，先查看封面并播放视频预览，再免费下载原始 MP4 文件，保留原始分辨率。',
+    liveCollectionCountTemplate: '共 {count} 个动态壁纸合集。',
+    liveCompatibilityNote: '下载文件为 MP4 视频。设为动态桌面或锁屏需要设备或壁纸应用支持，具体效果取决于系统与应用；网页预览经过压缩，下载文件保留原始画质。',
     popularBrandsNavLabel: '热门品牌',
     moreBrandsNavLabel: '更多品牌',
     phoneNavShortLabel: '手机',
@@ -942,6 +976,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: 'Downloading...',
     downloadFailed: 'Download failed, please try again',
     imageLoadFailed: 'Image load failed',
+    videoLoadFailed: 'Video could not be loaded. Please try again.',
+    videoLoading: 'Loading video…',
+    retryVideo: 'Reload video',
+    videoEnterImmersive: 'Click the video to hide the interface, or press H',
+    videoExitImmersive: 'Click the video to show the interface, or press H',
+    previousWallpaper: 'Previous wallpaper',
+    nextWallpaper: 'Next wallpaper',
     imageLoading: 'Loading...',
     zoomIn: 'Zoom In',
     zoomOut: 'Zoom Out',
@@ -1089,6 +1130,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     phoneWallpapersNavLabel: 'Phone wallpapers',
     appleWallpapersNavLabel: 'Apple wallpapers',
     desktopWallpapersNavLabel: 'Desktop wallpapers',
+    liveWallpapersNavLabel: 'Live wallpapers',
+    liveNavShortLabel: 'Live',
+    liveHeroTitle: 'Live Wallpapers & Video Wallpapers',
+    liveHeroDescription: 'Browse live wallpaper collections from Samsung, Xiaomi, Huawei, OPPO, vivo, OnePlus and more. Explore by device, play video previews and download original MP4 files for free.',
+    liveCategoryTitleTemplate: '{brand} Live Wallpapers - Free Download',
+    liveCategoryDescriptionTemplate: 'Explore {brand} live and video wallpaper collections by device. Play previews online and download original MP4 videos for free.',
+    liveDetailTitleTemplate: '{name} Live Wallpapers - MP4 Video Download',
+    liveDetailDescriptionTemplate: 'Download {count} live wallpapers for {name}. Browse covers, play video previews and get the original MP4 files for free at their original resolution.',
+    liveCollectionCountTemplate: '{count} live wallpaper collections.',
+    liveCompatibilityNote: 'Downloads are MP4 videos. Applying them as a live background or lock screen requires a compatible device or wallpaper app. Support varies by system and app. Web previews are compressed; downloads retain the original quality.',
     popularBrandsNavLabel: 'Popular brands',
     moreBrandsNavLabel: 'More brands',
     phoneNavShortLabel: 'Phone',
@@ -1335,6 +1386,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: 'ダウンロード中...',
     downloadFailed: 'ダウンロードに失敗しました。再試行してください',
     imageLoadFailed: '画像の読み込みに失敗しました',
+    videoLoadFailed: '動画を読み込めませんでした。もう一度お試しください。',
+    videoLoading: '動画を読み込み中…',
+    retryVideo: '動画を再読み込み',
+    videoEnterImmersive: '動画をクリックして操作パネルを非表示、Hキーで切替',
+    videoExitImmersive: '動画をクリックして操作パネルを表示、Hキーで切替',
+    previousWallpaper: '前の壁紙',
+    nextWallpaper: '次の壁紙',
     imageLoading: '読み込み中...',
     zoomIn: 'ズームイン',
     zoomOut: 'ズームアウト',
@@ -1482,6 +1540,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     phoneWallpapersNavLabel: 'スマホ壁紙',
     appleWallpapersNavLabel: 'Apple 壁紙',
     desktopWallpapersNavLabel: 'デスクトップ壁紙',
+    liveWallpapersNavLabel: 'ライブ壁紙',
+    liveNavShortLabel: 'ライブ',
+    liveHeroTitle: 'ライブ壁紙・動画壁紙',
+    liveHeroDescription: 'Samsung、Xiaomi、Huawei、OPPO、vivo、OnePlusなどのライブ壁紙を機種別に掲載。動画プレビューを再生して、オリジナルのMP4ファイルを無料ダウンロードできます。',
+    liveCategoryTitleTemplate: '{brand}のライブ壁紙を無料ダウンロード',
+    liveCategoryDescriptionTemplate: '{brand}のライブ壁紙・動画壁紙を機種別に探せます。動画プレビューを再生して、オリジナルのMP4を無料でダウンロード。',
+    liveDetailTitleTemplate: '{name}のライブ壁紙・MP4動画ダウンロード',
+    liveDetailDescriptionTemplate: '{name}のライブ壁紙を{count}本収録。カバー画像と動画プレビューを確認して、元の解像度のMP4ファイルを無料ダウンロードできます。',
+    liveCollectionCountTemplate: 'ライブ壁紙コレクションを{count}件収録。',
+    liveCompatibilityNote: 'ダウンロード形式はMP4動画です。ライブ背景やロック画面への設定には対応端末または壁紙アプリが必要です。対応状況はOSとアプリによって異なります。プレビューは圧縮されていますが、ダウンロードは元の画質を保持します。',
     popularBrandsNavLabel: '人気ブランド',
     moreBrandsNavLabel: 'その他のブランド',
     phoneNavShortLabel: 'スマホ',
@@ -1718,6 +1786,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: 'Đang tải xuống...',
     downloadFailed: 'Tải xuống thất bại, vui lòng thử lại',
     imageLoadFailed: 'Tải hình ảnh thất bại',
+    videoLoadFailed: 'Không thể tải video. Vui lòng thử lại.',
+    videoLoading: 'Đang tải video…',
+    retryVideo: 'Tải lại video',
+    videoEnterImmersive: 'Nhấp video để ẩn giao diện hoặc nhấn H',
+    videoExitImmersive: 'Nhấp video để hiện giao diện hoặc nhấn H',
+    previousWallpaper: 'Hình nền trước',
+    nextWallpaper: 'Hình nền tiếp theo',
     imageLoading: 'Đang tải...',
     zoomIn: 'Phóng to',
     zoomOut: 'Thu nhỏ',
@@ -1848,6 +1923,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     phoneWallpapersNavLabel: 'Điện thoại',
     appleWallpapersNavLabel: 'Apple',
     desktopWallpapersNavLabel: 'Máy tính',
+    liveWallpapersNavLabel: 'Hình nền động',
+    liveNavShortLabel: 'Động',
+    liveHeroTitle: 'Hình nền động và hình nền video',
+    liveHeroDescription: 'Khám phá hình nền động của Samsung, Xiaomi, Huawei, OPPO, vivo, OnePlus và nhiều hãng khác. Duyệt theo thiết bị, xem trước video và tải miễn phí tệp MP4 gốc.',
+    liveCategoryTitleTemplate: 'Hình nền động {brand} - Tải miễn phí',
+    liveCategoryDescriptionTemplate: 'Khám phá bộ sưu tập hình nền động và video {brand} theo thiết bị. Xem trước trực tuyến và tải miễn phí video MP4 gốc.',
+    liveDetailTitleTemplate: 'Hình nền động {name} - Tải video MP4',
+    liveDetailDescriptionTemplate: 'Tải {count} hình nền động cho {name}. Xem ảnh bìa và video xem trước, rồi tải miễn phí tệp MP4 gốc với độ phân giải ban đầu.',
+    liveCollectionCountTemplate: '{count} bộ sưu tập hình nền động.',
+    liveCompatibilityNote: 'Tệp tải về là video MP4. Để đặt làm hình nền động hoặc màn hình khóa, cần thiết bị hoặc ứng dụng hình nền tương thích. Khả năng hỗ trợ tùy hệ thống và ứng dụng. Video xem trước được nén; tệp tải về giữ chất lượng gốc.',
     popularBrandsNavLabel: 'Thương hiệu phổ biến',
     moreBrandsNavLabel: 'Thương hiệu khác',
     phoneNavShortLabel: 'Điện thoại',
@@ -2094,6 +2179,13 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: '下載中...',
     downloadFailed: '下載失敗，請重試',
     imageLoadFailed: '圖片載入失敗',
+    videoLoadFailed: '影片載入失敗，請重試。',
+    videoLoading: '影片載入中…',
+    retryVideo: '重新載入影片',
+    videoEnterImmersive: '點擊畫面隱藏工具列，按 H 切換',
+    videoExitImmersive: '點擊畫面顯示工具列，按 H 切換',
+    previousWallpaper: '上一張桌布',
+    nextWallpaper: '下一張桌布',
     imageLoading: '載入中...',
     zoomIn: '放大',
     zoomOut: '縮小',
@@ -2241,6 +2333,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     phoneWallpapersNavLabel: '手機壁紙',
     appleWallpapersNavLabel: 'Apple 壁紙',
     desktopWallpapersNavLabel: '桌面壁紙',
+    liveWallpapersNavLabel: '動態桌布',
+    liveNavShortLabel: '動態',
+    liveHeroTitle: '動態桌布與影片桌布',
+    liveHeroDescription: '瀏覽三星、小米、華為、OPPO、vivo、OnePlus 等品牌的動態桌布。依機型探索合集，播放影片預覽，免費下載原始 MP4 檔案。',
+    liveCategoryTitleTemplate: '{brand}動態桌布免費下載',
+    liveCategoryDescriptionTemplate: '探索{brand}動態桌布與影片桌布合集，依裝置瀏覽，線上播放預覽，免費下載原始 MP4 影片。',
+    liveDetailTitleTemplate: '{name}動態桌布 - MP4 影片下載',
+    liveDetailDescriptionTemplate: '下載{name}的 {count} 段動態桌布，先查看封面並播放影片預覽，再免費下載保留原始解析度的 MP4 檔案。',
+    liveCollectionCountTemplate: '共 {count} 個動態桌布合集。',
+    liveCompatibilityNote: '下載檔案為 MP4 影片。設為動態背景或鎖定畫面需要裝置或桌布應用程式支援，實際效果依系統與應用程式而定。網頁預覽經過壓縮，下載檔案保留原始畫質。',
     popularBrandsNavLabel: '熱門品牌',
     moreBrandsNavLabel: '更多品牌',
     phoneNavShortLabel: '手機',

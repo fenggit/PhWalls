@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
+import LiveWallpaperCollectionCard from '@/components/LiveWallpaperCollectionCard';
 
 import { Language, TabInfo } from '@/types';
 import {
@@ -47,6 +48,8 @@ type HomeProps = {
   forceDesktopCards?: boolean;
   heroTitle?: string;
   heroDescription?: string;
+  wallpaperTitleSuffix?: string;
+  collectionCardVariant?: 'default' | 'live';
 };
 
 const getHomeGridColumns = (
@@ -91,6 +94,8 @@ export default function Home({
   activeCategoryTypeOverride,
   heroTitle,
   heroDescription,
+  wallpaperTitleSuffix,
+  collectionCardVariant = 'default',
 }: HomeProps) {
   // 使用LanguageProvider
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
@@ -398,7 +403,7 @@ export default function Home({
           const categoryType = normalizeCategoryType(category.type);
           const categoryAnchorId = getCategoryAnchorId(category.type);
           
-          const h2Title = buildWallpaperListTitle(category.title, texts.wallpapersTitleSuffix);
+          const h2Title = buildWallpaperListTitle(category.title, wallpaperTitleSuffix || texts.wallpapersTitleSuffix);
 
           // 获取显示数据
           const displayData = categoryDataMap[categoryType] || [];
@@ -552,10 +557,19 @@ export default function Home({
                         )
                       : null;
                     const itemDisplayName = item.deviceId ? item.name : localizeWallpaperCollectionName(currentLang, item.name);
-                    const itemTitle = buildWallpaperListTitle(itemDisplayName, texts.wallpapersTitleSuffix, Boolean(item.deviceId));
+                    const itemTitle = buildWallpaperListTitle(itemDisplayName, wallpaperTitleSuffix || texts.wallpapersTitleSuffix, Boolean(item.deviceId));
                     // 首屏首个分类的前几张作为 LCP 候选，固定 eager + high，避免依赖不可靠的 UA 嗅探
                     const isAboveFold = index === 0 && listIndex < 4;
                     const isLcpCandidate = index === 0 && listIndex < 2;
+
+                    if (collectionCardVariant === 'live' && detailHref) {
+                      return <div key={itemKey} id={itemId} className="scroll-mt-24">
+                        <LiveWallpaperCollectionCard href={detailHref} title={itemTitle} date={item.date}
+                          count={itemCount} imageUrl={imageUrls[cardImageKey]} headingLevel="h3"
+                          eager={isAboveFold} priority={isLcpCandidate}
+                          onImageLoad={() => handleImageLoad(cardImageKey)} />
+                      </div>;
+                    }
 
                     return (
                       <div 

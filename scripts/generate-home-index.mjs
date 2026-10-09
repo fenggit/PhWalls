@@ -60,7 +60,7 @@ const brandFiles = {
 const index = {};
 const searchIndex = [];
 
-const addSearchEntries = (slug, collections, desktop) => {
+const addSearchEntries = (slug, collections, desktop, live = false) => {
   for (const collection of collections) {
     const items = Array.isArray(collection.item) ? collection.item : [];
     if (!collection.name || items.length === 0) continue;
@@ -70,10 +70,16 @@ const addSearchEntries = (slug, collections, desktop) => {
       date: collection.date || '',
       count: items.length,
       desktop,
+      ...(live ? { live: true, slug: collection.slug } : {}),
       keywords: items.map((item) => [item.name, item.tag].filter(Boolean).join(' ')).join(' '),
     });
   }
 };
+
+const liveCatalog = JSON.parse(await readFile(join(dataDir, 'livewalls', 'catalog.json'), 'utf8'));
+for (const entry of liveCatalog.filter((entry) => entry.status === 'published')) {
+  addSearchEntries(entry.category, [entry.collection], false, true);
+}
 
 for (const [slug, file] of Object.entries(brandFiles)) {
   const raw = await readFile(join(dataDir, file), 'utf8');
