@@ -3,7 +3,8 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { assertText, createAdminWallpaper } from '@/lib/admin-data';
 import { getWallpaperDb, type DeviceRow } from '@/lib/wallpaper-db';
 import { createR2UploadUrl, createUploadGrant, headR2Object, verifyUploadGrant } from '@/lib/r2-upload';
-import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
+import { assertAdminUploadMime, deviceR2Prefix } from '@/lib/admin-upload-path';
+import { getAdminUploadStorage, resolveAdminUploadStorage } from '@/lib/admin-upload-storage';
 import { parseWallpaperMedia } from '@/lib/wallpaper-media';
 
 export const runtime = 'edge';
@@ -12,6 +13,23 @@ const mimeExtensions: Record<string, string> = {
   'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
   'image/avif': 'avif', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm',
 };
+
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+  try {
+    const deviceId = assertText(request.nextUrl.searchParams.get('device_id'), '设备 ID', 80);
+    const media = parseWallpaperMedia(request.nextUrl.searchParams.get('media_type'));
+    const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
+    if (!device) throw new Error('设备不存在');
+    const { prefix, directories, source } = await getAdminUploadStorage(device, media);
+    const data = { prefix, directories, source };
+    return NextResponse.json({ data }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : '目录加载失败' },
+      { status: 400, headers: { 'Cache-Control': 'no-store' } });
+  }
+}
 
 export async function POST(request: NextRequest) {
   const denied = await requireAdmin(request, true);
@@ -32,11 +50,12 @@ export async function POST(request: NextRequest) {
       const media = parseWallpaperMedia(input.media_type);
       const size = Number(input.size_bytes);
       const video = mime.startsWith('video/');
-      if (!extension || video !== (role === 'origin' && media === 'dynamic')) throw new Error('文件类型与角色不匹配');
+      assertAdminUploadMime(mime, role, media);
+      if (!extension) throw new Error('文件类型无效');
       if (!Number.isSafeInteger(size) || size < 1 || size > (video ? 200 : 50) * 1024 * 1024) {
         throw new Error('文件大小超出限制');
       }
-      const target = input.r2_prefix === undefined ? deviceR2Prefix(device, media) : normalizeAdminR2Prefix(input.r2_prefix);
+      const target = await resolveAdminUploadStorage(device, media, input);
       const key = `${target}/${role}/${crypto.randomUUID()}.${extension}`;
       return NextResponse.json({ key, url: await createR2UploadUrl(key, mime),
         token: await createUploadGrant(key, size, mime, { deviceId, role, prefix: target }) }, { headers: { 'Cache-Control': 'no-store' } });
@@ -45,6 +64,10 @@ export async function POST(request: NextRequest) {
     if (action === 'complete') {
       const origin = await verifyUploadGrant(assertText(input.origin_token, '原图授权', 6000));
       const preview = await verifyUploadGrant(assertText(input.preview_token, '预览授权', 6000));
+      const media = origin.mimeType.startsWith('video/') ? 'dynamic' : 'static';
+      if (input.media_type !== undefined && parseWallpaperMedia(input.media_type) !== media) throw new Error('上传文件与所选壁纸类型不匹配');
+      assertAdminUploadMime(origin.mimeType, 'origin', media);
+      assertAdminUploadMime(preview.mimeType, 'compress', media);
       const originBase = origin.prefix ?? base;
       const previewBase = preview.prefix ?? base;
       if (originBase !== previewBase || (origin.deviceId !== undefined && origin.deviceId !== deviceId) ||
@@ -65,7 +88,7 @@ export async function POST(request: NextRequest) {
         compress_key: preview.key,
         mime_type: origin.mimeType,
         size_bytes: origin.size,
-        media_type: origin.mimeType.startsWith('video/') ? 'dynamic' : 'static',
+        media_type: media,
         category: input.category || device.device_category,
         theme: input.theme || 'normal',
         tags: input.tags || [],
