@@ -12,15 +12,18 @@ import {
   Info,
   Menu,
   Monitor,
+  RectangleVertical,
   Search,
   Share2,
   Smartphone,
+  Waves,
   X,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useShare } from '@/components/ShareProvider';
 import { getTabData } from '@/lib/data';
 import { getDesktopTabData } from '@/lib/desktop-data';
+import { getLiveTabData } from '@/lib/live-data';
 import { filterHomeTabs } from '@/lib/home-priority';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
@@ -36,10 +39,10 @@ export interface HeaderProps {
   activeCategoryTypeOverride?: string;
 }
 
-type PrimaryMenu = 'phone' | 'desktop';
+type PrimaryMenu = 'phone' | 'desktop' | 'live';
 
 type PrimaryNavigationItem = {
-  id: 'phone' | 'apple' | 'desktop';
+  id: 'phone' | 'apple' | 'desktop' | 'live';
   label: string;
   href: string;
   external?: boolean;
@@ -101,6 +104,7 @@ const PHONE_NAVIGATION_ORDER = [
   'android',
 ] as const;
 const POPULAR_PHONE_TYPES: ReadonlySet<string> = new Set(PHONE_NAVIGATION_ORDER.slice(0, 8));
+const POPULAR_LIVE_TYPES = ['samsung', 'xiaomi', 'huawei', 'sony', 'oppo'];
 
 const BRAND_ICON_PATHS: Record<string, string> = {
   apple: '/brand-icons/apple.svg',
@@ -179,6 +183,18 @@ function BrandIcon({ type, desktop = false }: { type: string; desktop?: boolean 
   );
 }
 
+function LiveWallpaperIcon({ className }: { className: string }) {
+  return (
+    <span className={`relative inline-flex shrink-0 ${className}`} aria-hidden="true">
+      <RectangleVertical className="h-full w-full" strokeWidth={1.8} />
+      <Waves
+        className="absolute left-1/2 top-1/2 h-[40%] w-[40%] -translate-x-1/2 -translate-y-1/2"
+        strokeWidth={3}
+      />
+    </span>
+  );
+}
+
 export default function Header({
   currentLang,
   onLanguageChange,
@@ -200,6 +216,7 @@ export default function Header({
   const primaryTriggerRefs = useRef<Record<PrimaryMenu, HTMLButtonElement | null>>({
     phone: null,
     desktop: null,
+    live: null,
   });
   const primaryMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusPrimaryPanelRef = useRef(false);
@@ -259,11 +276,23 @@ export default function Header({
     () => getDesktopTabData().filter((tab) => !tab.link?.trim()),
     []
   );
+  const liveTabs = useMemo(() => getLiveTabData(currentLang), [currentLang]);
+  const popularLiveTabs = useMemo(
+    () => POPULAR_LIVE_TYPES.flatMap((type) => liveTabs.filter((tab) => tab.type === type)),
+    [liveTabs]
+  );
+  const moreLiveTabs = useMemo(
+    () => liveTabs.filter((tab) => !POPULAR_LIVE_TYPES.includes(tab.type)),
+    [liveTabs]
+  );
 
   const getActiveTypeFromPath = useCallback((currentPath: string): string => {
     const normalizedPath = stripLanguagePrefix(currentPath).path;
     if (normalizedPath === '/') return 'all';
     if (normalizedPath === '/desktop') return 'desktop';
+    if (normalizedPath === '/live') return 'live';
+    const liveCategoryMatch = normalizedPath.match(/^\/live\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
+    if (liveCategoryMatch?.[1]) return normalizeCategoryType(liveCategoryMatch[1]);
     const desktopCategoryMatch = normalizedPath.match(/^\/desktop\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
     if (desktopCategoryMatch?.[1]) {
       try {
@@ -293,7 +322,8 @@ export default function Header({
 
   const [activeCategoryType, setActiveCategoryType] = useState(() => resolveActiveType(pathname));
   const pathWithoutLanguage = stripLanguagePrefix(pathname).path;
-  const activeSection: PrimaryMenu = pathWithoutLanguage.startsWith('/desktop') ? 'desktop' : 'phone';
+  const activeSection: PrimaryMenu = pathWithoutLanguage.startsWith('/live') ? 'live'
+    : pathWithoutLanguage.startsWith('/desktop') ? 'desktop' : 'phone';
   const appleHref = appleTab?.link?.trim() || 'https://applewalls.com';
   const mobilePopularPhoneTabs = useMemo<TabInfo[]>(
     () => [
@@ -329,6 +359,10 @@ export default function Header({
         href: withLanguagePath('/desktop', currentLang),
         menu: 'desktop',
       },
+      {
+        id: 'live', label: texts.liveWallpapersNavLabel,
+        href: withLanguagePath('/live', currentLang), menu: 'live',
+      },
     ],
     [
       appleHref,
@@ -336,6 +370,7 @@ export default function Header({
       texts.appleWallpapersNavLabel,
       texts.desktopWallpapersNavLabel,
       texts.phoneWallpapersNavLabel,
+      texts.liveWallpapersNavLabel,
     ]
   );
 
@@ -597,7 +632,8 @@ export default function Header({
     const href = isExternal
       ? tab.link!.trim()
       : withLanguagePath(
-          section === 'desktop' ? `/desktop/${normalizedType}` : buildBrandPath(tab.type),
+          section === 'live' ? `/live/${normalizedType}`
+            : section === 'desktop' ? `/desktop/${normalizedType}` : buildBrandPath(tab.type),
           currentLang
         );
     const className = mobile
@@ -631,6 +667,27 @@ export default function Header({
         <BrandIcon type={tab.type} desktop={!mobile} />
         <span className={mobile ? 'min-w-0 truncate' : 'min-w-0 flex-1 whitespace-normal leading-5'}>{tab.title}</span>
       </Link>
+    );
+  };
+
+  const renderBrandGroups = (section: 'phone' | 'live', mobile = false) => {
+    const popularTabs = section === 'live' ? popularLiveTabs : mobile ? mobilePopularPhoneTabs : popularPhoneTabs;
+    const moreTabs = section === 'live' ? moreLiveTabs : morePhoneTabs;
+    const headingPrefix = `${mobile ? 'mobile' : 'desktop'}-${section}`;
+    const gridClass = mobile ? 'grid grid-cols-2 gap-1' : 'grid grid-cols-3 gap-x-3 gap-y-1';
+    const headingClass = mobile ? 'mb-1 px-2 text-xs font-semibold text-gray-500' : 'mb-2 px-2 text-[13px] font-semibold text-gray-600';
+
+    return (
+      <div>
+        <section aria-labelledby={`${headingPrefix}-popular-brands`}>
+          <h3 id={`${headingPrefix}-popular-brands`} className={headingClass}>{texts.popularBrandsNavLabel}</h3>
+          <div className={gridClass}>{popularTabs.map((tab) => renderCategoryLink(tab, section, mobile))}</div>
+        </section>
+        <section className={mobile ? 'mt-3 border-t border-gray-100 pt-3' : 'mt-4 border-t border-gray-100 pt-4'} aria-labelledby={`${headingPrefix}-more-brands`}>
+          <h3 id={`${headingPrefix}-more-brands`} className={headingClass}>{texts.moreBrandsNavLabel}</h3>
+          <div className={gridClass}>{moreTabs.map((tab) => renderCategoryLink(tab, section, mobile))}</div>
+        </section>
+      </div>
     );
   };
 
@@ -690,7 +747,7 @@ export default function Header({
                   );
                 }
 
-                const menuTabs = item.menu === 'desktop' ? desktopTabs : phoneTabs;
+                const menuTabs = item.menu === 'live' ? liveTabs : item.menu === 'desktop' ? desktopTabs : phoneTabs;
                 const isOpen = openPrimaryMenu === item.menu;
                 return (
                   <div
@@ -714,35 +771,54 @@ export default function Header({
                       }, 240);
                     }}
                   >
-                    <button
-                      ref={(element) => {
-                        if (item.menu) primaryTriggerRefs.current[item.menu] = element;
-                      }}
-                      type="button"
-                      onClick={() => {
-                        clearPrimaryMenuTimer();
-                        if (isOpen) setOpenPrimaryMenu(null);
-                        else if (item.menu) openMenu(item.menu);
-                      }}
-                      onKeyDown={(event) => {
-                        if (event.key === 'ArrowDown' && item.menu) {
-                          event.preventDefault();
-                          openMenu(item.menu, true);
-                        }
-                      }}
-                      className={`${primaryItemClass(isActive || isOpen)} gap-2`}
-                      id={`primary-trigger-${item.menu}`}
-                      aria-label={item.label}
-                      aria-expanded={isOpen}
-                      aria-controls={`primary-menu-${item.menu}`}
-                      aria-haspopup="true"
+                    <div
+                      className={`inline-flex h-10 items-center whitespace-nowrap rounded-full text-[15px] font-semibold transition-colors duration-200 ${
+                        isActive || isOpen ? 'bg-gray-100 text-gray-950' : 'text-gray-700 hover:bg-gray-200 hover:text-gray-950'
+                      }`}
                     >
-                      <span>{item.label}</span>
-                      <ChevronDown
-                        className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                        aria-hidden="true"
-                      />
-                    </button>
+                      <Link
+                        href={item.href}
+                        onClick={closeMenus}
+                        onKeyDown={(event) => {
+                          if (event.key === 'ArrowDown' && item.menu) {
+                            event.preventDefault();
+                            openMenu(item.menu, true);
+                          }
+                        }}
+                        className="inline-flex h-full items-center rounded-full pl-4 pr-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        aria-current={isActive ? 'page' : undefined}
+                      >
+                        {item.label}
+                      </Link>
+                      <button
+                        ref={(element) => {
+                          if (item.menu) primaryTriggerRefs.current[item.menu] = element;
+                        }}
+                        type="button"
+                        onClick={() => {
+                          clearPrimaryMenuTimer();
+                          if (isOpen) setOpenPrimaryMenu(null);
+                          else if (item.menu) openMenu(item.menu);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === 'ArrowDown' && item.menu) {
+                            event.preventDefault();
+                            openMenu(item.menu, true);
+                          }
+                        }}
+                        className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        id={`primary-trigger-${item.menu}`}
+                        aria-label={item.label}
+                        aria-expanded={isOpen}
+                        aria-controls={`primary-menu-${item.menu}`}
+                        aria-haspopup="true"
+                      >
+                        <ChevronDown
+                          className={`h-4 w-4 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
 
                     {isOpen && (
                       <div
@@ -760,48 +836,31 @@ export default function Header({
                           links[next].focus();
                         }}
                         className={`absolute left-1/2 top-full max-w-[calc(100vw-3rem)] -translate-x-1/2 pt-2 ${
-                          item.menu === 'phone' ? 'w-[44rem]' : 'w-[32rem]'
+                          item.menu === 'desktop' ? 'w-[32rem]' : 'w-[44rem]'
                         }`}
                       >
                         <div className="nav-menu-enter max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_16px_48px_-12px_rgba(15,23,42,0.18)]">
-                          <div className="mb-4 flex items-center justify-between px-2">
-                            <span className="text-base font-semibold tracking-tight text-gray-950">{item.label}</span>
-                            {item.menu === 'phone'
-                              ? <Smartphone className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                              : <Monitor className="h-5 w-5 text-gray-500" aria-hidden="true" />}
-                          </div>
-                          {item.menu === 'phone' ? (
-                            <div>
-                              <section aria-labelledby="desktop-popular-brands">
-                                <h3 id="desktop-popular-brands" className="mb-2 px-2 text-[13px] font-semibold text-gray-600">
-                                  {texts.popularBrandsNavLabel}
-                                </h3>
-                                <div className="grid grid-cols-3 gap-x-3 gap-y-1">
-                                  {popularPhoneTabs.map((tab) => renderCategoryLink(tab, 'phone'))}
-                                </div>
-                              </section>
-                              <section className="mt-4 border-t border-gray-100 pt-4" aria-labelledby="desktop-more-brands">
-                                <h3 id="desktop-more-brands" className="mb-2 px-2 text-[13px] font-semibold text-gray-600">
-                                  {texts.moreBrandsNavLabel}
-                                </h3>
-                                <div className="grid grid-cols-3 gap-x-3 gap-y-1">
-                                  {morePhoneTabs.map((tab) => renderCategoryLink(tab, 'phone'))}
-                                </div>
-                              </section>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-2 gap-2">
-                              {menuTabs.map((tab) => renderCategoryLink(tab, 'desktop'))}
-                            </div>
-                          )}
                           <Link
                             href={item.href}
                             onClick={closeMenus}
-                            className="mt-5 flex items-center justify-between rounded-lg border-t border-gray-100 px-2 pt-4 text-xs font-medium text-gray-500 transition-colors hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            className="group mb-4 flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-gray-950 transition-colors hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                           >
-                            {item.label}
-                            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                            <span className="flex items-center gap-2.5">
+                              {item.menu === 'phone'
+                                ? <Smartphone className="h-5 w-5 shrink-0" aria-hidden="true" />
+                                : item.menu === 'live' ? <LiveWallpaperIcon className="h-5 w-5" />
+                                : <Monitor className="h-5 w-5 shrink-0" aria-hidden="true" />}
+                              <span className="text-base font-semibold tracking-tight">{item.label}</span>
+                            </span>
+                            <ArrowUpRight className="h-4 w-4 shrink-0 text-gray-500 transition-colors group-hover:text-blue-700" aria-hidden="true" />
                           </Link>
+                          {item.menu === 'phone' || item.menu === 'live' ? (
+                            renderBrandGroups(item.menu)
+                          ) : (
+                            <div className="grid grid-cols-2 gap-2">
+                              {menuTabs.map((tab) => renderCategoryLink(tab, item.menu || 'desktop'))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -1000,7 +1059,7 @@ export default function Header({
             </div>
 
             <div className="shrink-0 px-4 pt-4">
-              <div className="grid grid-cols-2 rounded-lg bg-gray-100 p-1" role="tablist" aria-label={texts.mainNavigationLabel}>
+              <div className="grid grid-cols-3 rounded-lg bg-gray-100 p-1" role="tablist" aria-label={texts.mainNavigationLabel}>
                 <button
                   type="button"
                   role="tab"
@@ -1031,27 +1090,27 @@ export default function Header({
                   <Monitor className="h-4 w-4" aria-hidden="true" />
                   {texts.desktopNavShortLabel}
                 </button>
+                <button type="button" role="tab" aria-selected={mobileNavigationSection === 'live'}
+                  aria-controls="mobile-live-panel" onClick={() => setMobileNavigationSection('live')}
+                  className={`flex min-h-10 items-center justify-center gap-2 rounded-md px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${mobileNavigationSection === 'live' ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
+                  <LiveWallpaperIcon className="h-4 w-4" />{texts.liveNavShortLabel}
+                </button>
               </div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-4">
-              {mobileNavigationSection === 'phone' ? (
-                <section id="mobile-phone-panel" role="tabpanel" aria-label={texts.phoneNavShortLabel}>
-                  <h3 className="mb-1 px-2 text-xs font-semibold text-gray-500">
-                    {texts.popularBrandsNavLabel}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-1">
-                    {mobilePopularPhoneTabs.map((tab) => renderCategoryLink(tab, 'phone', true))}
-                  </div>
-                  <h3 className="mb-1 mt-3 border-t border-gray-100 px-2 pt-3 text-xs font-semibold text-gray-500">
-                    {texts.moreBrandsNavLabel}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-1">
-                    {morePhoneTabs.map((tab) => renderCategoryLink(tab, 'phone', true))}
-                  </div>
+              {mobileNavigationSection === 'phone' || mobileNavigationSection === 'live' ? (
+                <section id={`mobile-${mobileNavigationSection}-panel`} role="tabpanel"
+                  aria-label={mobileNavigationSection === 'live' ? texts.liveNavShortLabel : texts.phoneNavShortLabel}>
+                  {mobileNavigationSection === 'live' && <Link href={withLanguagePath('/live', currentLang)} onClick={closeMenus}
+                    className="mb-3 flex min-h-10 items-center justify-between rounded-md bg-gray-50 px-3 text-sm font-medium text-gray-900">
+                    {texts.liveWallpapersNavLabel}<ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>}
+                  {renderBrandGroups(mobileNavigationSection, true)}
                 </section>
               ) : (
-                <section id="mobile-desktop-panel" role="tabpanel" aria-label={texts.desktopNavShortLabel}>
+                <section id={`mobile-${mobileNavigationSection}-panel`} role="tabpanel"
+                  aria-label={texts.desktopNavShortLabel}>
                   <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
                     {desktopTabs.map((tab) => renderCategoryLink(tab, 'desktop', true))}
                   </div>

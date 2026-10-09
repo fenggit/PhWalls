@@ -5,11 +5,11 @@ import { ChevronLeft, ChevronRight, Pencil, Search, X } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '@/lib/language';
 import { getDeviceBrandLabel } from '@/lib/device-brand-label';
 import type { Language } from '@/types';
-import type { DeviceRow } from '@/lib/wallpaper-db';
+import type { DeviceRow, WallpaperMediaType } from '@/lib/wallpaper-db';
 import type { AdminDeviceI18nDirectoryRow, MissingDescriptionBrand } from '@/lib/admin-device-i18n';
 
 type Brand = { slug: string; title: string };
-type EditTranslation = (device: Pick<DeviceRow, 'id' | 'device_name'>, language: Language) => void;
+type EditTranslation = (device: Pick<DeviceRow, 'id' | 'device_name'>, language: Language, media: WallpaperMediaType) => void;
 type Directory = { data: AdminDeviceI18nDirectoryRow[]; meta: { total: number; page: number; pageSize: number; missingBrands: MissingDescriptionBrand[] } };
 const languageLabels: Record<Language, string> = {
   en: '英语', zh: '简体中文', ja: '日语', vi: '越南语', 'zh-hant': '繁体中文',
@@ -30,6 +30,7 @@ export function AdminDeviceI18nTable({ rows, brands, onEdit, loading = false, mi
         : !rows.length ? <tr><td colSpan={7} className="px-5 py-12 text-center text-[#66746b]">{missing ? '没有符合条件的缺失描述' : '没有符合条件的多语言记录'}</td></tr>
         : rows.map((row) => <tr key={row.id} className="border-b border-[#ebefeb] align-top last:border-b-0 hover:bg-[#f8faf8]">
           <td className="w-48 px-4 py-4"><div className="font-medium text-gray-950">{row.device_name}</div>
+            <div className="mt-1 text-xs font-medium text-[#247560]">{row.media_type === 'dynamic' ? '动态壁纸 · Live' : '静态壁纸'}</div>
             <div className="mt-1 text-xs text-[#758278]">{getDeviceBrandLabel(row.brand_name, row.language,
               brands.find((brand) => brand.slug === row.brand_name)?.title || row.brand_name)}</div>
             {missing && <div className="mt-1 text-xs text-[#758278]">{row.wallpaper_count} 张壁纸</div>}</td>
@@ -41,7 +42,7 @@ export function AdminDeviceI18nTable({ rows, brands, onEdit, loading = false, mi
             {new Date(row.updated_date).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false })}</time> : '尚未保存'}</td>
           <td className="w-28 whitespace-nowrap px-4 py-3"><button className={buttonClass} aria-label={missing
             ? `补充 ${row.device_name} 的${languageLabels[row.language]}描述` : `编辑 ${row.device_name} 的${languageLabels[row.language]}内容`}
-            onClick={() => onEdit({ id: row.device_id, device_name: row.device_name }, row.language)}><Pencil size={14} className="shrink-0" />{missing ? '补充描述' : '编辑'}</button></td>
+            onClick={() => onEdit({ id: row.device_id, device_name: row.device_name }, row.language, row.media_type || 'static')}><Pencil size={14} className="shrink-0" />{missing ? '补充描述' : '编辑'}</button></td>
         </tr>)}
       </tbody>
     </table>
@@ -54,6 +55,7 @@ export default function AdminDeviceI18nPanel({ brands, refreshKey, onEdit }: {
   const [brand, setBrand] = useState('');
   const [view, setView] = useState<'saved' | 'missing'>('saved');
   const [language, setLanguage] = useState('');
+  const [media, setMedia] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
@@ -70,7 +72,7 @@ export default function AdminDeviceI18nPanel({ brands, refreshKey, onEdit }: {
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true); setError(''); setDirectory(null);
-    const query = new URLSearchParams({ view, brand, language, search, page: String(page) });
+    const query = new URLSearchParams({ view, brand, language, media, search, page: String(page) });
     void (async () => {
       try {
         const response = await fetch(`/api/admin/device-i18n?${query}`, {
@@ -84,9 +86,9 @@ export default function AdminDeviceI18nPanel({ brands, refreshKey, onEdit }: {
       } finally { if (!controller.signal.aborted) setLoading(false); }
     })();
     return () => controller.abort();
-  }, [view, brand, language, search, page, refreshKey, attempt]);
+  }, [view, brand, language, media, search, page, refreshKey, attempt]);
 
-  const reset = () => { setBrand(''); setLanguage(''); setSearchInput(''); setSearch(''); setPage(0); };
+  const reset = () => { setBrand(''); setLanguage(''); setMedia(''); setSearchInput(''); setSearch(''); setPage(0); };
   const total = directory?.meta.total || 0;
   const activePage = directory?.meta.page ?? page;
   const pageSize = directory?.meta.pageSize || 50;
@@ -101,22 +103,24 @@ export default function AdminDeviceI18nPanel({ brands, refreshKey, onEdit }: {
       </div>
       <div className="flex flex-wrap items-center gap-3"><div className="relative min-w-64 flex-1"><Search className="pointer-events-none absolute left-3 top-3 text-[#758278]" size={16} />
         <input className={`${inputClass} pl-9`} aria-label="搜索多语言内容" placeholder="搜索设备名、SEO 标题或描述" maxLength={200} value={searchInput} onChange={(event) => setSearchInput(event.target.value)} /></div>
-        {(brand || language || searchInput) && <button className={buttonClass} onClick={reset}><X size={15} />清除筛选</button>}</div>
-      <div className="grid gap-3 sm:grid-cols-2"><select className={inputClass} aria-label="多语言品牌筛选" value={brand} onChange={(event) => { setBrand(event.target.value); setPage(0); }}>
+        {(brand || language || media || searchInput) && <button className={buttonClass} onClick={reset}><X size={15} />清除筛选</button>}</div>
+      <div className="grid gap-3 sm:grid-cols-3"><select className={inputClass} aria-label="多语言品牌筛选" value={brand} onChange={(event) => { setBrand(event.target.value); setPage(0); }}>
         <option value="">全部品牌</option>{brands.map((item) => <option key={item.slug} value={item.slug}>{item.title}</option>)}</select>
         <select className={inputClass} aria-label="语言筛选" value={language} onChange={(event) => { setLanguage(event.target.value); setPage(0); }}>
-          <option value="">全部语言</option>{SUPPORTED_LANGUAGES.map((value) => <option key={value} value={value}>{languageLabels[value]}</option>)}</select></div>
+          <option value="">全部语言</option>{SUPPORTED_LANGUAGES.map((value) => <option key={value} value={value}>{languageLabels[value]}</option>)}</select>
+        <select className={inputClass} aria-label="多语言壁纸类型筛选" value={media} onChange={(event) => { setMedia(event.target.value); setPage(0); }}>
+          <option value="">全部壁纸类型</option><option value="static">静态壁纸</option><option value="dynamic">动态壁纸 · Live</option></select></div>
       <p className="text-xs leading-5 text-[#66746b]">{view === 'missing'
-        ? '列出有壁纸但未填写对应语言描述的设备，包含尚未创建的语言记录。统计包含草稿及下架壁纸，排除待删除壁纸；英文回退不算已填写。'
-        : '展示已保存的各语言内容。点击“编辑”查看完整描述或修改；新增语言可从设备目录的“多语言”入口填写。'}</p>
+        ? '按设备和静态／动态类型分别列出缺失描述，包含尚未创建的语言记录。统计包含草稿及下架壁纸，排除待删除壁纸；英文回退不算已填写。'
+        : '同一设备的静态和动态壁纸分别保存五语言内容。点击“编辑”修改对应合集；新增语言可从设备目录的“多语言”入口填写。'}</p>
     </div>
     {view === 'missing' && !loading && !error && <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4">
       <h3 className="text-sm font-semibold text-[#25332d]">有壁纸但缺少描述的品牌</h3>
-      <p className="mt-1 text-xs text-[#66746b]">按当前筛选统计全部结果，每个设备每种缺失语言计一条。</p>
+      <p className="mt-1 text-xs text-[#66746b]">按当前筛选统计全部结果，每个设备的静态／动态合集每种缺失语言计一条。</p>
       {directory?.meta.missingBrands.length ? <div className="mt-3 flex flex-wrap gap-2">
         {directory.meta.missingBrands.map((item) => <button key={item.brand_name} className={buttonClass}
           onClick={() => { setBrand(item.brand_name); setPage(0); }}>
-          {brands.find((entry) => entry.slug === item.brand_name)?.title || item.brand_name} · {item.device_count} 个设备 · {item.missing_count} 条缺失
+          {brands.find((entry) => entry.slug === item.brand_name)?.title || item.brand_name} · {item.device_count} 个合集 · {item.missing_count} 条缺失
         </button>)}
       </div> : <p className="mt-3 text-sm text-[#66746b]">当前筛选下，有壁纸的设备均已填写描述。</p>}
     </div>}

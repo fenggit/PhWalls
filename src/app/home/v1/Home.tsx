@@ -1,11 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
 import { Fragment, useState, useEffect, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
+import LiveWallpaperCollectionCard from '@/components/LiveWallpaperCollectionCard';
+import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
+import { buildLiveWallpaperDetailPath } from '@/lib/live-data';
+import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
+import { buildWallpaperCollectionKey, getWallpaperCollectionMedia } from '@/lib/wallpaper-media';
 
 import { Language, TabInfo } from '@/types';
 import {
@@ -47,6 +54,10 @@ type HomeProps = {
   forceDesktopCards?: boolean;
   heroTitle?: string;
   heroDescription?: string;
+  wallpaperTitleSuffix?: string;
+  collectionCardVariant?: 'default' | 'live';
+  previewRows?: number;
+  categoryDirectoryTabs?: TabInfo[];
 };
 
 const getHomeGridColumns = (
@@ -91,6 +102,10 @@ export default function Home({
   activeCategoryTypeOverride,
   heroTitle,
   heroDescription,
+  wallpaperTitleSuffix,
+  collectionCardVariant = 'default',
+  previewRows = 2,
+  categoryDirectoryTabs = [],
 }: HomeProps) {
   // 使用LanguageProvider
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
@@ -198,10 +213,10 @@ export default function Home({
       const keyToCardMap: Record<string, string[]> = {};
 
       Object.entries(categoryDataMap).forEach(([categoryType, list]) => {
-        const visibleCount = getHomeGridColumns(categoryType, viewportWidth, forceDesktopCards) * 2;
+        const visibleCount = getHomeGridColumns(categoryType, viewportWidth, forceDesktopCards) * previewRows;
 
         list.slice(0, visibleCount).forEach((collection) => {
-          const cardImageKey = `${categoryType}::${collection.name}`;
+          const cardImageKey = buildWallpaperCollectionKey(categoryType, collection);
           if (initialImageUrls[cardImageKey]) {
             return;
           }
@@ -275,6 +290,7 @@ export default function Home({
     categoryDataMap,
     forceDesktopCards,
     initialImageUrls,
+    previewRows,
     resolveImageUrls,
     viewportWidth,
   ]);
@@ -328,7 +344,7 @@ export default function Home({
       .flatMap((category) => {
         const categoryType = normalizeCategoryType(category.type);
         return (categoryDataMap[categoryType] || []).slice(0, 2).map((collection) => {
-          return imageUrls[`${categoryType}::${collection.name}`] || collection.item?.[0]?.compressPath || '';
+          return imageUrls[buildWallpaperCollectionKey(categoryType, collection)] || collection.item?.[0]?.compressPath || '';
         });
       })
       .filter(Boolean)
@@ -398,7 +414,7 @@ export default function Home({
           const categoryType = normalizeCategoryType(category.type);
           const categoryAnchorId = getCategoryAnchorId(category.type);
           
-          const h2Title = buildWallpaperListTitle(category.title, texts.wallpapersTitleSuffix);
+          const h2Title = buildWallpaperListTitle(category.title, wallpaperTitleSuffix || texts.wallpapersTitleSuffix);
 
           // 获取显示数据
           const displayData = categoryDataMap[categoryType] || [];
@@ -484,8 +500,7 @@ export default function Home({
           })();
 
           const totalItems = Array.isArray(displayData) ? displayData.length : 0;
-          const previewRowsCount = 2;
-          const previewItemsCount = getColumnsForCategory(categoryType) * previewRowsCount;
+          const previewItemsCount = getColumnsForCategory(categoryType) * previewRows;
           const shouldShowViewAll = totalItems > previewItemsCount;
           const listData = shouldShowViewAll
             ? displayData.slice(0, previewItemsCount)
@@ -529,33 +544,48 @@ export default function Home({
                     };
 
                     const firstImage = getFirstImage();
+                    const isLive = collectionCardVariant === 'live' || getWallpaperCollectionMedia(item) === 'dynamic';
                     // 集合内壁纸总数：首页轻量数据用 count，完整数据回退到 item.length
                     const itemCount = item.count ?? (item.item?.length || 0);
                     // 使用稳定的 key，确保服务器端和客户端一致
                     // 使用 categoryType 和 item.name 组合，确保唯一性和稳定性
-                    const itemKey = `${categoryType}-${item.name}`;
-                    const itemId = `${categoryType}-${item.name}`;
-                    const cardImageKey = `${categoryType}::${item.name}`;
+                    const itemKey = buildWallpaperCollectionKey(categoryType, item);
+                    const itemId = `${categoryType}-${item.slug || item.name}-${isLive ? 'dynamic' : 'static'}`;
+                    const cardImageKey = itemKey;
 
                     const detailCategory = getDetailCategory(categoryType);
                     const detailHref = detailCategory
                       ? withLanguagePath(
-                          detailPathPrefix
+                          detailPathPrefix === '/desktop/wallpapers'
+                            ? buildDesktopWallpaperDetailPath(detailCategory, item.slug || item.name, isLive ? 'dynamic' : 'static')
+                            : detailPathPrefix
                             ? `${detailPathPrefix}/${detailCategory}/${(item.slug || item.name)
                                 .toLowerCase()
                                 .trim()
                                 .replace(/&/g, ' and ')
                                 .replace(/[^a-z0-9]+/g, '-')
                                 .replace(/^-+|-+$/g, '')}`
-                            : buildWallpaperDetailPath(detailCategory, item.slug || item.name),
+                            : isLive
+                              ? buildLiveWallpaperDetailPath(detailCategory, item.slug || item.name)
+                              : buildWallpaperDetailPath(detailCategory, item.slug || item.name),
                           currentLang
                         )
                       : null;
                     const itemDisplayName = item.deviceId ? item.name : localizeWallpaperCollectionName(currentLang, item.name);
-                    const itemTitle = buildWallpaperListTitle(itemDisplayName, texts.wallpapersTitleSuffix, Boolean(item.deviceId));
+                    const itemTitle = buildWallpaperListTitle(itemDisplayName,
+                      isLive ? texts.liveWallpapersNavLabel : wallpaperTitleSuffix || texts.wallpapersTitleSuffix, Boolean(item.deviceId));
                     // 首屏首个分类的前几张作为 LCP 候选，固定 eager + high，避免依赖不可靠的 UA 嗅探
                     const isAboveFold = index === 0 && listIndex < 4;
                     const isLcpCandidate = index === 0 && listIndex < 2;
+
+                    if (collectionCardVariant === 'live' && detailHref) {
+                      return <div key={itemKey} id={itemId} className="scroll-mt-24">
+                        <LiveWallpaperCollectionCard href={detailHref} title={itemTitle} date={item.date}
+                          count={itemCount} imageUrl={imageUrls[cardImageKey]} headingLevel="h3"
+                          eager={isAboveFold} priority={isLcpCandidate}
+                          onImageLoad={() => handleImageLoad(cardImageKey)} />
+                      </div>;
+                    }
 
                     return (
                       <div 
@@ -633,7 +663,7 @@ export default function Home({
                                 </div>
                               </div>
                             )}
-                            
+                            {isLive && <WallpaperPlayIndicator />}
                           </div>
 
                           {/* 产品信息 */}
@@ -697,7 +727,7 @@ export default function Home({
                             </div>
                           )}
 
-                          {itemCount > 0 && detailHref && (
+                          {!isLive && itemCount > 0 && detailHref && (
                             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/20">
                               <Link
                                 href={detailHref}
@@ -735,6 +765,31 @@ export default function Home({
           );
         })}
 
+
+        {categoryDirectoryTabs.length > 0 && categoryPathPrefix && (
+          <section aria-labelledby="home-other-live-brands" className="px-4 pb-9 sm:px-6 sm:pb-11 lg:px-8">
+            <div className="mx-auto max-w-7xl border-t border-gray-200 pt-9 sm:pt-11">
+              <h2 id="home-other-live-brands" className="mb-5 text-xl font-semibold text-gray-900 sm:text-2xl">
+                {texts.liveOtherBrandsTitle}
+              </h2>
+              <nav aria-label={texts.liveOtherBrandsTitle} className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
+                {categoryDirectoryTabs.map((brand) => {
+                  const slug = normalizeCategoryType(brand.type);
+                  return (
+                    <Link key={slug} href={withLanguagePath(`${categoryPathPrefix}/${slug}`, currentLang)} prefetch={false}
+                      className="group flex min-h-14 min-w-0 items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                      <span className="flex h-8 w-9 shrink-0 items-center justify-center">
+                        <Image src={`/brand-icons/${slug}.svg`} alt="" width={32} height={28} className="object-contain" />
+                      </span>
+                      <span className="min-w-0 text-sm font-semibold leading-5 text-gray-800 group-hover:text-blue-800">{brand.title}</span>
+                      <ArrowRight className="ml-auto hidden h-4 w-4 shrink-0 text-gray-400 sm:block" aria-hidden="true" />
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </section>
+        )}
 
         {/* 空状态处理 */}
         {tabData.length === 0 && (

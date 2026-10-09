@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Monitor, Search, Smartphone, X } from 'lucide-react';
+import { ArrowRight, Monitor, Play, Search, Smartphone, X } from 'lucide-react';
 import { getTabData, localizeWallpaperCollectionName } from '@/lib/data';
 import { getDesktopTabData, buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
+import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data';
+import { getDeviceDisplayName } from '@/lib/device-brand-label';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { buildWallpaperDetailPath } from '@/lib/wallpaper-data';
 import { withLanguagePath } from '@/lib/language';
@@ -17,6 +19,8 @@ type SearchEntry = {
   date: string;
   count: number;
   desktop: boolean;
+  live?: boolean;
+  slug?: string;
   keywords: string;
 };
 
@@ -25,6 +29,7 @@ type SearchResult = {
   title: string;
   category: string;
   desktop: boolean;
+  live?: boolean;
   score: number;
   date: string;
 };
@@ -93,9 +98,10 @@ export default function SearchDialog({ language, onClose }: { language: Language
     [language]
   );
   const desktopTabs = useMemo(() => getDesktopTabData().filter((tab) => !tab.link), []);
+  const liveTabs = useMemo(() => getLiveTabData(language), [language]);
   const categoryLabels = useMemo(() => new Map(
-    [...phoneTabs, ...desktopTabs].map((tab) => [normalizeCategoryType(tab.type), tab.title])
-  ), [phoneTabs, desktopTabs]);
+    [...phoneTabs, ...desktopTabs, ...liveTabs].map((tab) => [normalizeCategoryType(tab.type), tab.title])
+  ), [phoneTabs, desktopTabs, liveTabs]);
 
   const results = useMemo(() => {
     const terms = normalizeSearchText(query).split(' ').filter(Boolean);
@@ -125,10 +131,16 @@ export default function SearchDialog({ language, onClose }: { language: Language
         date: '',
       });
     }
+    for (const tab of liveTabs) {
+      if (!matches(`${tab.title} ${tab.type} ${texts.liveWallpapersNavLabel} live wallpaper`)) continue;
+      found.push({ href: withLanguagePath(`/live/${tab.type}`, language), title: tab.title,
+        category: texts.liveWallpapersNavLabel, desktop: false, live: true, score: 100, date: '' });
+    }
     for (const entry of entries) {
       const label = categoryLabels.get(entry.category) || entry.category;
-      const localizedName = localizeWallpaperCollectionName(language, entry.name);
-      if (!matches(`${label} ${entry.category} ${entry.name} ${localizedName} ${entry.keywords}`)) continue;
+      const localizedName = entry.live ? getDeviceDisplayName(entry.category, entry.name, language)
+        : localizeWallpaperCollectionName(language, entry.name);
+      if (!matches(`${label} ${entry.category} ${entry.name} ${localizedName} ${entry.keywords} ${entry.live ? texts.liveWallpapersNavLabel + ' live wallpaper video MP4' : ''}`)) continue;
       const normalizedName = normalizeSearchText(entry.name);
       const normalizedQuery = normalizeSearchText(query);
       const score = normalizedName === normalizedQuery || normalizedName.endsWith(` ${normalizedQuery}`)
@@ -136,22 +148,23 @@ export default function SearchDialog({ language, onClose }: { language: Language
         : normalizedName.startsWith(normalizedQuery) ? 80 : 60;
       found.push({
         href: withLanguagePath(
-          entry.desktop
-            ? buildDesktopWallpaperDetailPath(entry.category, entry.name)
+          entry.desktop ? buildDesktopWallpaperDetailPath(entry.category, entry.slug || entry.name, entry.live ? 'dynamic' : 'static') : entry.live
+            ? buildLiveWallpaperDetailPath(entry.category, entry.slug || entry.name)
             : buildWallpaperDetailPath(entry.category, entry.name),
           language
         ),
         title: localizedName,
-        category: label,
+        category: entry.live ? `${label} · ${texts.liveNavShortLabel}` : label,
         desktop: entry.desktop,
+        live: entry.live,
         score,
         date: entry.date,
       });
     }
     return found.sort((a, b) => b.score - a.score || b.date.localeCompare(a.date)).slice(0, 40);
-  }, [query, entries, phoneTabs, desktopTabs, categoryLabels, language, texts.phoneNavShortLabel, texts.desktopNavShortLabel]);
+  }, [query, entries, phoneTabs, desktopTabs, liveTabs, categoryLabels, language, texts.phoneNavShortLabel, texts.desktopNavShortLabel, texts.liveWallpapersNavLabel, texts.liveNavShortLabel]);
 
-  const visibleResults = query.trim() ? results : phoneTabs.slice(0, 6).map((tab) => ({
+  const visibleResults: SearchResult[] = query.trim() ? results : phoneTabs.slice(0, 6).map((tab) => ({
     href: withLanguagePath(buildBrandPath(tab.type), language),
     title: tab.title,
     category: texts.phoneNavShortLabel,
@@ -193,7 +206,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
           {loadState === 'ready' && query.trim() && visibleResults.length === 0 && <p className="px-3 py-6 text-sm text-gray-600">{texts.noSearchResults}</p>}
           {visibleResults.map((result) => (
             <Link key={result.href} href={result.href} onClick={onClose} className="group flex min-h-14 items-center gap-3 rounded-md px-3 py-2 text-gray-900 hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600">
-              {result.desktop ? <Monitor className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" /> : <Smartphone className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" />}
+              {result.live ? <Play className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" /> : result.desktop ? <Monitor className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" /> : <Smartphone className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" />}
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{result.title}</span>
                 <span className="block truncate text-xs text-gray-500">{result.category}</span>

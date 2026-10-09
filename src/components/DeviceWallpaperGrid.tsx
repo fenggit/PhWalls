@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
+import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
 import { useLanguage } from '@/components/LanguageProvider';
 import { Language } from '@/types';
 import Header from '@/components/Header';
@@ -47,6 +48,7 @@ interface DeviceWallpaperGridProps {
   categoryLabelOverride?: string;
   categoryLandingPathOverride?: string;
   activeCategoryTypeOverride?: string;
+  wallpaperGroupLabelOverride?: string;
 }
 
 type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
@@ -60,6 +62,7 @@ export default function DeviceWallpaperGrid({
   categoryLabelOverride,
   categoryLandingPathOverride,
   activeCategoryTypeOverride,
+  wallpaperGroupLabelOverride,
 }: DeviceWallpaperGridProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const displayDeviceName = displayName || deviceData.name;
@@ -75,6 +78,8 @@ export default function DeviceWallpaperGrid({
   const [previewIndex, setPreviewIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const sharedWallpaper = useSearchParams().get('wallpaper');
+  const openedShareRef = useRef('');
 
   useEffect(() => {
     setMounted(true);
@@ -205,6 +210,16 @@ export default function DeviceWallpaperGrid({
     setPreviewIndex(index);
     setIsPreviewOpen(true);
   }, [deviceData, displayDeviceName, pathname]);
+
+  useEffect(() => {
+    if (!sharedWallpaper) { openedShareRef.current = ''; return; }
+    const target = `${pathname}::${sharedWallpaper}`;
+    if (openedShareRef.current === target) return;
+    const index = deviceData.item.findIndex((item) => item.name === sharedWallpaper);
+    if (index < 0) return;
+    openedShareRef.current = target;
+    openPreview(index);
+  }, [deviceData.item, openPreview, pathname, sharedWallpaper]);
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
@@ -353,8 +368,8 @@ export default function DeviceWallpaperGrid({
         </nav>
 
         <section className="mb-10 overflow-visible">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
-          <p className="mt-4 max-w-3xl text-xl leading-relaxed text-gray-600">{pageDescription}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
+          <p className="mt-4 max-w-3xl text-sm sm:text-base leading-relaxed text-gray-600">{pageDescription}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
             <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-gray-200">
               {deviceData.item.length} {texts.wallpapers}
@@ -373,7 +388,7 @@ export default function DeviceWallpaperGrid({
             <section key={group.kind}>
               <div className="mb-6 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-gray-900">{group.title}</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-gray-900">{wallpaperGroupLabelOverride || group.title}</h2>
                   <p className="mt-1 text-xs sm:text-sm text-gray-500">{group.items.length} {texts.wallpapers}</p>
                 </div>
               </div>
@@ -383,6 +398,7 @@ export default function DeviceWallpaperGrid({
                   const imageKey = `${deviceData.name}-${index}`;
                   const imageUrl = imageUrls[imageKey];
                   const isPriorityImage = groupIndex === 0 && itemIndex < 2;
+                  const isVideo = item.type.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath);
 
                   return (
                     <article key={imageKey} className="group w-full">
@@ -420,7 +436,7 @@ export default function DeviceWallpaperGrid({
                             ) : null}
                           </div>
 
-                          <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          {isVideo ? <WallpaperPlayIndicator /> : <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="translate-y-2 transform transition-transform duration-300 group-hover:translate-y-0">
                                 <div className="rounded-full bg-white/95 p-3 shadow-2xl backdrop-blur-sm">
@@ -431,7 +447,7 @@ export default function DeviceWallpaperGrid({
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          </div>}
 
                           <span className="absolute bottom-3 right-3 inline-flex items-center rounded-xl bg-black/45 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
                             {(item.type.split('/')[1] || item.type).toUpperCase()}

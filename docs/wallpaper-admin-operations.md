@@ -97,6 +97,10 @@ R2 存储桶需要允许 `https://a.phwalls.com` 和本地 `http://localhost:310
 
 ### SEO 文案补全
 
+动态合集与静态合集共用标准设备 ID，但使用独立内容。`0012_collection_media_scope.sql` 新增 `w_live_device_i18n` 保存动态五语言文案；原 `w_device_i18n` 继续保存静态文案，兼容已部署版本。`w_collection_i18n` 视图提供带 `media_type` 的统一读取。后台多语言目录可按静态／动态筛选；编辑窗口须确认壁纸类型，保存、删除和语言回退只作用于选定类型。壁纸名称及主封面唯一性同时区分媒体类型；默认动态上传目录为 `live/<brand>/<device-slug>`，已有素材目录不迁移，自定义目录保留原路径的大小写和空格。
+
+动态文案补全工具：`node scripts/backfill-live-device-seo.mjs --snapshot <D1导出.sql> --out <输出前缀>`。工具核对 Live catalog 中的品牌与稳定 slug，从快照读取实际动态素材数量与格式，生成英、简中、日、越、繁中名称、SEO 标题及描述。仅补充缺失字段，保留已有动态人工编辑，重复导入幂等；不写静态文案表、不改变发布状态或 R2 key。线上写入前先导出备份，预演迁移与 SQL，并逐字段比对静态内容及素材记录；写入后检查 131 个合集的 655 条完整语言记录与外键。数据库迁移和文案写入完成后，部署本次代码才会在后台及动态页面使用新内容。
+
 2026-10-02 的调研、库存快照、五语言文案与入库 SQL 保存在 `docs/research/device-seo-2026-10-02/`。英文、简中、日语、越南语及台港共用繁中按当地壁纸用语分别撰写，设备/版本/特别版名称保留；数量、文件格式、统一尺寸与明暗版本依据线上库存，设计词取自素材名称，不添加未核实的 4K、官方来源或屏幕适配承诺。
 
 `node scripts/backfill-device-seo.mjs` 根据该次快照生成 `device-seo-records.json` 与 `device-seo-backfill.sql`；这是针对该快照的运维工具，新增设备或素材发生变动时先重新核验库存和来源，再生成文案。SQL 仅新增缺失的 `(device_id, language)` 记录，不覆盖后台已有编辑，不修改设备名、URL 或壁纸文件。远程导入前备份 D1；导入后检查总数、五语言覆盖、外键和样例。相关验证：`node --test tests/device-seo-backfill.test.mjs`。

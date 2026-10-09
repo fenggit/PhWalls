@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import SeoLandingPage from '@/components/SeoLandingPage';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { sortByDateDesc } from '@/lib/data';
+import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getCategorySeoCopy, SITE_URL } from '@/lib/seo';
@@ -69,6 +70,7 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
     slug: collection.slug,
     date: collection.date,
     count: collection.count ?? collection.item.length,
+    isLive: getWallpaperCollectionMedia(collection) === 'dynamic',
     imageKey: collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || null,
   }));
   const seoCopy = getCategorySeoCopy(language, brandInfo.slug, cards.length);

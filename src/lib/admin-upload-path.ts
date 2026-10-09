@@ -1,6 +1,7 @@
-import type { DeviceRow } from '@/lib/wallpaper-db';
+import type { DeviceRow, WallpaperMediaType } from '@/lib/wallpaper-db';
 
-export function deviceR2Prefix(device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>): string {
+export function deviceR2Prefix(device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>, media: WallpaperMediaType = 'static'): string {
+  if (media === 'dynamic') return `live/${device.brand_name}/${device.device_slug}`;
   return device.device_category === 'desktop'
     ? `desktopwalls/${device.brand_name}/${device.device_slug}`
     : `${device.brand_name}/${device.device_slug}`;

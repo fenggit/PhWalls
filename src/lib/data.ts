@@ -23,6 +23,9 @@ const escapeRegExp = (value: string): string => {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
+export const isVideoWallpaper = (item?: { type?: string; originPath?: string }): boolean =>
+  Boolean(item && (item.type?.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath || '')));
+
 export const formatWallpaperDisplayName = (value: string): string => {
   const raw = String(value || '').trim();
   if (!raw) {

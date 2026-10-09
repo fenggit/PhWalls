@@ -17,6 +17,7 @@ function fixture(legacyDescription = false, stubs = {}) {
   sqlite.exec('PRAGMA foreign_keys = ON');
   sqlite.exec(readFileSync(`${root}migrations/0001_wallpaper_admin.sql`, 'utf8'));
   sqlite.exec(readFileSync(`${root}migrations/0006_wallpaper_deletion_state.sql`, 'utf8'));
+  sqlite.exec(readFileSync(`${root}migrations/0007_deleted_wallpaper_files.sql`, 'utf8'));
   sqlite.exec(readFileSync(migration, 'utf8'));
   sqlite.prepare(`INSERT INTO w_devices (id, brand_name, device_name, device_slug, device_category,
     create_date, updated_date) VALUES (?, 'test', ?, ?, 'phone', 1, 1)`)
@@ -32,6 +33,8 @@ function fixture(legacyDescription = false, stubs = {}) {
   if (existsSync(nameMigration)) sqlite.exec(readFileSync(nameMigration, 'utf8'));
   if (legacyDescription) sqlite.exec("UPDATE w_device_desc SET name = 'Existing authored SEO title' WHERE id = 'legacy-desc'");
   sqlite.exec(readFileSync(`${root}migrations/0010_device_i18n.sql`, 'utf8'));
+  const mediaMigration = `${root}migrations/0012_collection_media_scope.sql`;
+  if (existsSync(mediaMigration)) sqlite.exec(readFileSync(mediaMigration, 'utf8'));
   const db = {
     prepare(sql) {
       const statement = sqlite.prepare(sql);
@@ -43,6 +46,17 @@ function fixture(legacyDescription = false, stubs = {}) {
         async run() { return { meta: statement.run(...values) }; },
       };
     },
+  };
+  const queryPlans = [];
+  const prepare = db.prepare.bind(db);
+  db.prepare = (sql) => {
+    const statement = prepare(sql);
+    const bind = statement.bind.bind(statement);
+    statement.bind = (...args) => {
+      if (sql.includes('FROM w_devices d')) queryPlans.push(sqlite.prepare(`EXPLAIN QUERY PLAN ${sql}`).all(...args));
+      return bind(...args);
+    };
+    return statement;
   };
   const env = { DB: db, WALLPAPER_DATA_SOURCE: 'd1', ADMIN_SESSION_SECRET: 'test-only-session-secret-with-32-characters' };
   const cache = new Map();
@@ -62,15 +76,85 @@ function fixture(legacyDescription = false, stubs = {}) {
         if (specifier === '@cloudflare/next-on-pages') return { getOptionalRequestContext: () => ({ env }) };
         if (specifier.endsWith('.json') && specifier.startsWith('@/')) return JSON.parse(readFileSync(`${root}src/${specifier.slice(2)}`, 'utf8'));
         if (specifier.startsWith('@/')) {
-          return load(`${root}src/${specifier === '@/types' ? 'types/index' : specifier.slice(2)}.ts`);
+          const target = `${root}src/${specifier === '@/types' ? 'types/index' : specifier.slice(2)}`;
+          return load(existsSync(`${target}.ts`) ? `${target}.ts` : `${target}.tsx`);
         }
         return require(specifier);
       },
     }, { filename: path });
     return module.exports;
   }
-  return { sqlite, load, service: load(`${root}src/lib/admin-device-i18n.ts`) };
+  return { sqlite, load, queryPlans, service: load(`${root}src/lib/admin-device-i18n.ts`) };
 }
+
+test('public translation lookups use indexes without materializing all translations', async () => {
+  const { sqlite, load, queryPlans } = fixture();
+  try {
+    sqlite.exec(`UPDATE w_devices SET status='published';
+      INSERT INTO w_wallpapers (id,device_id,name,mime_type,origin_key,file_format,media_type,category,status,create_date,updated_date)
+      VALUES ('image','device-1','image','image/png','test/origin/a.png','png','static','phone','published',1,1)`);
+    const db = load(`${root}src/lib/wallpaper-db.ts`);
+    await db.loadDbCollection('test', 'device-one', 'zh', 'static');
+    await db.loadDbCollection('test', 'device-one', 'zh', 'dynamic');
+    await db.loadDbIndex(['test'], 'zh');
+    assert.ok(queryPlans.length >= 3);
+    assert.ok(queryPlans.flat().every(step => !/MATERIALIZE w_collection_i18n|SCAN w_device_i18n|SCAN w_live_device_i18n/.test(step.detail)),
+      'a single lookup must not scan all translation rows');
+  } finally { sqlite.close(); }
+});
+
+test('static and live translations save, read, fall back and delete independently for the same device', async () => {
+  const { service, sqlite, load } = fixture();
+  try {
+    for (const media of ['static', 'dynamic']) {
+      for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+        await service.saveAdminDeviceI18n({ device_id: 'device-1', media_type: media, language,
+          display_name: `${media} ${language}`, seo_title: `${media} title ${language}`, description: `${media} description ${language}` });
+      }
+    }
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_collection_i18n').get().count, 10);
+    assert.ok((await service.listAdminDeviceI18n('device-1', 'dynamic')).every(row => row.media_type === 'dynamic'));
+    sqlite.exec(`UPDATE w_devices SET status = 'published';
+      INSERT INTO w_wallpapers (id,device_id,name,mime_type,origin_key,file_format,media_type,category,status,create_date,updated_date)
+      VALUES ('static','device-1','still','image/png','test/Device One/origin/a.png','png','static','phone','published',1,1),
+        ('dynamic','device-1','movie','video/mp4','Live/test/Device One/origin/a.mp4','mp4','dynamic','phone','published',1,1)`);
+    const db = load(`${root}src/lib/wallpaper-db.ts`);
+    assert.equal((await db.loadDbCollection('test', 'device-one', 'zh', 'static')).seoTitle, 'static title zh');
+    assert.equal((await db.loadDbCollection('test', 'device-one', 'zh', 'dynamic')).seoTitle, 'dynamic title zh');
+    assert.equal((await db.loadDbCollections('test', 'ja', 'dynamic'))[0].description, 'dynamic description ja');
+    const mixed = (await db.loadDbIndex(['test'], 'vi')).test;
+    assert.deepEqual(Array.from(mixed, row => row.description).sort(), ['dynamic description vi', 'static description vi']);
+    await service.deleteAdminDeviceI18n({ device_id: 'device-1', language: 'zh', media_type: 'dynamic' });
+    assert.equal((await db.loadDbCollection('test', 'device-one', 'zh', 'dynamic')).description, 'dynamic description en');
+    assert.equal((await db.loadDbCollection('test', 'device-one', 'zh', 'static')).description, 'static description zh');
+    await service.deleteAdminDeviceI18n({ device_id: 'device-1', language: 'en', media_type: 'dynamic' });
+    const live = await db.loadDbCollection('test', 'device-one', 'zh', 'dynamic');
+    assert.equal(live.description, null, 'live must never fall back to static copy');
+    assert.equal(live.name, 'Device One');
+    await assert.rejects(() => service.saveAdminDeviceI18n({ device_id: 'device-1', language: 'zh', media_type: 'video', description: 'bad' }));
+  } finally { sqlite.close(); }
+});
+
+test('missing descriptions count static and Live collections separately, including unsaved live languages', async () => {
+  const { service, sqlite } = fixture();
+  try {
+    sqlite.exec(`INSERT INTO w_wallpapers (id,device_id,name,mime_type,origin_key,file_format,media_type,category,create_date,updated_date)
+      VALUES ('static','device-1','still','image/png','test/origin/a.png','png','static','phone',1,1),
+        ('live','device-1','movie','video/mp4','Live/test/origin/a.mp4','mp4','dynamic','phone',1,1)`);
+    for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+      await service.saveAdminDeviceI18n({ device_id: 'device-1', language, description: 'Static description' });
+    }
+    const missing = await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing'));
+    assert.equal(missing.total, 5);
+    assert.ok(missing.rows.every(row => row.media_type === 'dynamic' && row.wallpaper_count === 1));
+    assert.equal((await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&media=static'))).total, 0);
+    await service.saveAdminDeviceI18n({ device_id: 'device-1', language: 'zh', media_type: 'dynamic', description: 'Live description' });
+    const saved = await service.listAdminDeviceI18nDirectory(new URLSearchParams('media=dynamic'));
+    assert.equal(saved.total, 1);
+    assert.equal(saved.rows[0].description, 'Live description');
+    assert.equal((await service.listAdminDeviceI18nDirectory(new URLSearchParams('view=missing&media=dynamic'))).total, 4);
+  } finally { sqlite.close(); }
+});
 
 test('saves five languages independently and keeps record identity on update', async () => {
   const { service, sqlite } = fixture();
@@ -236,7 +320,7 @@ test('detail HTML uses the exact authored title and description with the device 
   const { renderToStaticMarkup } = require('react-dom/server');
   let texts;
   const { sqlite, load } = fixture(false, {
-    'next/navigation': { usePathname: () => '/zh/wallpapers/xiaomi/device-one' },
+    'next/navigation': { usePathname: () => '/zh/wallpapers/xiaomi/device-one', useSearchParams: () => new URLSearchParams() },
     '@/components/LanguageProvider': { useLanguage: () => ({ language: 'zh', setLanguage() {}, texts }) },
     '@/components/Header': () => null,
     '@/components/Footer': () => null,

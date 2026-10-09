@@ -5,8 +5,9 @@ import {
  isDesktopWallpaperCategory,
  getDesktopWallpaperCategoryLabel,
 } from "@/lib/desktop-data";
-import { loadDesktopWallpaperCollections } from '@/lib/desktop-data-server';
+import { loadDesktopWallpaperCollectionIndex } from '@/lib/desktop-data-server';
 import { sortByDateDesc } from "@/lib/data";
+import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from "@/lib/language";
 import { resolveMetadataLanguage } from "@/lib/metadata";
 import { getDesktopCategorySeoCopy } from "@/lib/desktop-seo";
@@ -46,15 +47,15 @@ export default async function DesktopCategoryPage({ params }: DesktopCategoryPag
  if (!isDesktopWallpaperCategory(category)) notFound();
  const label = getDesktopWallpaperCategoryLabel(category);
   const language = await resolveMetadataLanguage();
- const collections = sortByDateDesc(await loadDesktopWallpaperCollections(category, language));
+ const collections = sortByDateDesc(await loadDesktopWallpaperCollectionIndex(category, language));
  const cards = collections.map((c) => ({
   deviceId: c.deviceId,
   name: c.name,
   slug: c.slug,
   date: c.date,
-  count: c.item?.length || 0,
+  count: c.count ?? c.item?.length ?? 0,
   imageKey: c.item?.[0]?.compressPath || c.item?.[0]?.originPath || null,
-  wallpapers: c.item || [],
+  isLive: getWallpaperCollectionMedia(c) === 'dynamic',
  }));
  const seoCopy = getDesktopCategorySeoCopy(language, category, label, cards.length);
  return (

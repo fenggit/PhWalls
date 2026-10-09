@@ -7,6 +7,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/components/LanguageProvider';
 import ShareRegistration from '@/components/ShareRegistration';
+import LiveWallpaperCollectionCard from '@/components/LiveWallpaperCollectionCard';
+import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
+import { buildLiveWallpaperDetailPath } from '@/lib/live-data';
+import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
 import {
   buildWallpaperListTitle,
   localizeWallpaperCollectionName,
@@ -24,6 +28,7 @@ type LandingCard = {
   date: string;
   count: number;
   imageKey: string | null;
+  isLive?: boolean;
 };
 
 type SeoLandingPageProps = {
@@ -40,6 +45,7 @@ type SeoLandingPageProps = {
   cards: LandingCard[];
   pageSize?: number;
   activeCategoryTypeOverride?: string;
+  collectionCardVariant?: 'default' | 'live';
 };
 
 const gradientPalette = [
@@ -76,6 +82,7 @@ export default function SeoLandingPage({
   cards,
   pageSize,
   activeCategoryTypeOverride,
+  collectionCardVariant = 'default',
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const pathname = usePathname();
@@ -162,8 +169,8 @@ export default function SeoLandingPage({
         </nav>
 
         <section className="mb-10">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
-          <p className="mt-4 max-w-3xl text-xl leading-relaxed text-gray-600">{description}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
+          <p className="mt-4 max-w-3xl text-sm sm:text-base leading-relaxed text-gray-600">{description}</p>
           <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
         </section>
 
@@ -171,13 +178,24 @@ export default function SeoLandingPage({
           <div className={`grid ${gridClass} gap-6`}>
             {visibleCards.map((card, index) => {
               const gradient = gradientPalette[index % gradientPalette.length];
-              const detailHref = detailPathPrefix
+              const isLive = collectionCardVariant === 'live' || Boolean(card.isLive);
+              const detailHref = detailPathPrefix === '/desktop/wallpapers'
+                ? withLanguagePath(buildDesktopWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name, isLive ? 'dynamic' : 'static'), currentLang)
+                : detailPathPrefix
                 ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`,currentLang)
-                : withLanguagePath(buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
+                : withLanguagePath(isLive
+                  ? buildLiveWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name)
+                  : buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
               const cardDisplayName = card.deviceId ? card.name : localizeWallpaperCollectionName(currentLang, card.name);
-              const cardTitle = buildWallpaperListTitle(cardDisplayName, texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+              const cardTitle = buildWallpaperListTitle(cardDisplayName,
+                isLive ? texts.liveWallpapersNavLabel : texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+              if (collectionCardVariant === 'live') {
+                return <LiveWallpaperCollectionCard key={`${card.name}:dynamic`} href={detailHref} title={cardTitle}
+                  date={card.date} count={card.count} imageUrl={card.imageKey ? buildCardImageUrl(card.imageKey) : null}
+                  eager={index < 4} priority={index < 2} />;
+              }
               return (
-                <article key={card.name} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
+                <article key={`${card.name}:${isLive ? 'dynamic' : 'static'}`} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
                   <Link href={detailHref} prefetch={pageSize ? false : undefined} className="block w-full text-left" aria-label={cardTitle}>
                     <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-lg">
                       <div className={`${cardAspect} overflow-hidden`}>
@@ -194,6 +212,7 @@ export default function SeoLandingPage({
                           <div className={`h-full w-full bg-gradient-to-br ${gradient}`} />
                         )}
                       </div>
+                      {isLive && <WallpaperPlayIndicator />}
                       <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-xl bg-black/45 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
                         <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path d="M3 3.75A1.75 1.75 0 0 1 4.75 2h10.5A1.75 1.75 0 0 1 17 3.75v9.5A1.75 1.75 0 0 1 15.25 15H4.75A1.75 1.75 0 0 1 3 13.25v-9.5Zm1.5.25v8h11V4h-11Zm1.25 9.5a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Zm1.5-5.5a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Zm-1 3.5h6.5l-1.8-2.4a.75.75 0 0 0-1.2 0l-1.05 1.4-.7-.95a.75.75 0 0 0-1.2 0L6.25 11.5Z" />

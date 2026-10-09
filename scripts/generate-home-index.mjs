@@ -59,27 +59,50 @@ const brandFiles = {
 
 const index = {};
 const searchIndex = [];
+const searchEntryKeys = new Set();
+const collectionSlug = (collection) => collection.slug || collection.name.toLowerCase().trim()
+  .replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-const addSearchEntries = (slug, collections, desktop) => {
-  for (const collection of collections) {
+const isVideo = (item) => item.type?.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath || '');
+const splitMedia = (collection) => {
+  const items = Array.isArray(collection.item) ? collection.item : [];
+  if (items.length === 0) return [{ ...collection, item: [] }];
+  return [false, true].flatMap((video) => {
+    const item = items.filter((asset) => Boolean(isVideo(asset)) === video);
+    return item.length ? [{ ...collection, item }] : [];
+  });
+};
+
+const addSearchEntries = (slug, collections, desktop, live = false) => {
+  for (const collection of collections.flatMap(splitMedia)) {
     const items = Array.isArray(collection.item) ? collection.item : [];
     if (!collection.name || items.length === 0) continue;
+    const dynamic = live || isVideo(items[0]);
+    const entryKey = `${desktop}:${slug}:${collectionSlug(collection)}:${Boolean(dynamic)}`;
+    if (searchEntryKeys.has(entryKey)) continue;
+    searchEntryKeys.add(entryKey);
     searchIndex.push({
       category: slug,
       name: collection.name,
       date: collection.date || '',
       count: items.length,
       desktop,
+      ...(dynamic ? { live: true, slug: collectionSlug(collection) } : {}),
       keywords: items.map((item) => [item.name, item.tag].filter(Boolean).join(' ')).join(' '),
     });
   }
 };
 
+const liveCatalog = JSON.parse(await readFile(join(dataDir, 'livewalls', 'catalog.json'), 'utf8'));
+for (const entry of liveCatalog.filter((entry) => entry.status === 'published')) {
+  addSearchEntries(entry.category, [entry.collection], false, true);
+}
+
 for (const [slug, file] of Object.entries(brandFiles)) {
   const raw = await readFile(join(dataDir, file), 'utf8');
   const collections = JSON.parse(raw);
   addSearchEntries(slug, Array.isArray(collections) ? collections : [], false);
-  index[slug] = (Array.isArray(collections) ? collections : []).map((collection) => {
+  index[slug] = (Array.isArray(collections) ? collections : []).flatMap(splitMedia).map((collection) => {
     const items = Array.isArray(collection.item) ? collection.item : [];
     return {
       name: collection.name,
@@ -113,6 +136,7 @@ for (const [slug, file] of Object.entries(desktopFiles)) {
     )
     .sort((left, right) => Date.parse(right.date) - Date.parse(left.date))
     .slice(0, 1)
+    .flatMap(splitMedia)
     .map((collection) => ({
       name: collection.name,
       date: collection.date,

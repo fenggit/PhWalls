@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       const { rows, ...meta } = await listAdminDeviceI18nDirectory(request.nextUrl.searchParams);
       return NextResponse.json({ data: rows, meta }, { headers: { 'Cache-Control': 'no-store' } });
     }
-    const data = await listAdminDeviceI18n(request.nextUrl.searchParams.get('device_id'));
+    const data = await listAdminDeviceI18n(request.nextUrl.searchParams.get('device_id'), request.nextUrl.searchParams.get('media'));
     return NextResponse.json({ data }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return failure(error);

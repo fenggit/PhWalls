@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, RefreshCw, MoreHorizontal } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { trackAnalyticsEvent } from '@/lib/analytics';
+import VideoWallpaperPlayer from '@/components/VideoWallpaperPlayer';
+import WallpaperActionsSheet from '@/components/WallpaperActionsSheet';
+import { createLongPress } from '@/lib/long-press';
 
 interface WallpaperItem {
   name: string;
@@ -41,13 +44,44 @@ export default function WallpaperPreviewDownload({
   const [imageError, setImageError] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isDownloading, setIsDownloading] = useState(false);
+  const downloadInProgressRef = useRef(false);
   const [preloadedUrls, setPreloadedUrls] = useState<Record<string, string>>({});
   const [isPreloading, setIsPreloading] = useState(false);
+  const [videoRefreshToken, setVideoRefreshToken] = useState(0);
+  const [isVideoImmersive, setIsVideoImmersive] = useState(false);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const suppressMediaClickRef = useRef(false);
+  const longPress = useMemo(() => createLongPress(() => {
+    suppressMediaClickRef.current = true;
+    setIsActionsOpen(true);
+  }), []);
   const preloadedUrlsRef = useRef<Record<string, string>>({});
 
   const currentWallpaper = wallpapers[currentIndex];
   const displayCategoryName = formatWallpaperDisplayName(categoryName);
   const displayWallpaperName = currentWallpaper ? formatWallpaperDisplayName(currentWallpaper.name) : '';
+  const isVideo = Boolean(currentWallpaper && (currentWallpaper.type.startsWith('video/') || /\.(mp4|webm)$/i.test(currentWallpaper.originPath)));
+  const videoUrl = isVideo ? `/api/files/preview?key=${encodeURIComponent(currentWallpaper.originPath)}` : '';
+  const showPreviewChrome = !isVideo || !isVideoImmersive;
+  const closeActions = useCallback(() => setIsActionsOpen(false), []);
+  const shareUrl = useMemo(() => {
+    if (!isOpen || !currentWallpaper || typeof window === 'undefined') return '';
+    const url = new URL(window.location.href);
+    url.searchParams.set('wallpaper', currentWallpaper.name);
+    url.hash = '';
+    return url.toString();
+  }, [isOpen, currentWallpaper]);
+
+  useEffect(() => {
+    setIsActionsOpen(false);
+    suppressMediaClickRef.current = false;
+    longPress.cancel();
+    return longPress.cancel;
+  }, [isOpen, currentIndex, longPress]);
+
+  useEffect(() => {
+    if (!isOpen) setIsVideoImmersive(false);
+  }, [isOpen]);
 
   const handleClose = useCallback(() => {
     onClose();
@@ -235,13 +269,36 @@ export default function WallpaperPreviewDownload({
 
   // 实际执行下载
   const downloadWallpaper = useCallback(async () => {
-    if (!currentWallpaper || isDownloading) return;
+    if (!currentWallpaper || downloadInProgressRef.current) return;
 
+    // Lock synchronously so rapid clicks cannot race React's state update.
+    downloadInProgressRef.current = true;
     setIsDownloading(true);
 
     try {
+      trackAnalyticsEvent('w_wallpaper_download_click', {
+        category_name: categoryName,
+        wallpaper_name: currentWallpaper.name,
+        file_type: currentWallpaper.type,
+        file_size: currentWallpaper.size,
+      });
       // 使用服务器端代理下载，避免CORS问题
       const downloadUrl = `/api/files/download?key=${encodeURIComponent(currentWallpaper.originPath)}`;
+
+      if (isVideo) {
+        // Let the browser stream large MP4 downloads without buffering the file in mobile memory.
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = currentWallpaper.originPath.split('/').pop() || 'wallpaper.mp4';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        trackAnalyticsEvent('w_wallpaper_download_started', { category_name: categoryName, wallpaper_name: currentWallpaper.name, file_type: currentWallpaper.type });
+        // Browser-managed downloads have no completion event. Keep startup feedback visible
+        // and block repeated clicks without buffering large videos in memory.
+        await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+        return;
+      }
 
       // 使用fetch获取文件
       const fileResponse = await fetch(downloadUrl);
@@ -301,12 +358,13 @@ export default function WallpaperPreviewDownload({
       });
       alert(texts.downloadFailed + '\n\n' + texts.errorDetails + ': ' + (error instanceof Error ? error.message : texts.unknownError));
     } finally {
+      downloadInProgressRef.current = false;
       setIsDownloading(false);
     }
   }, [
     categoryName,
     currentWallpaper,
-    isDownloading,
+    isVideo,
     texts.downloadFailed,
     texts.errorDetails,
     texts.unknownError,
@@ -317,18 +375,12 @@ export default function WallpaperPreviewDownload({
     e.preventDefault();
     e.stopPropagation();
 
-    if (!currentWallpaper || isDownloading || !currentImageUrl || isLoading) {
+    if (!currentWallpaper || isDownloading || (!isVideo && (!currentImageUrl || isLoading))) {
       return;
     }
 
-    trackAnalyticsEvent('w_wallpaper_download_click', {
-      category_name: categoryName,
-      wallpaper_name: currentWallpaper.name,
-      file_type: currentWallpaper.type,
-      file_size: currentWallpaper.size,
-    });
-    downloadWallpaper();
-  }, [categoryName, currentWallpaper, currentImageUrl, downloadWallpaper, isDownloading, isLoading]);
+    void downloadWallpaper();
+  }, [currentWallpaper, currentImageUrl, downloadWallpaper, isDownloading, isLoading, isVideo]);
 
   // 缩放功能
   const handleZoomIn = useCallback(() => {
@@ -369,6 +421,11 @@ export default function WallpaperPreviewDownload({
       wallpaper_name: currentWallpaper.name,
     });
 
+    if (isVideo) {
+      setVideoRefreshToken(value => value + 1);
+      return;
+    }
+
     const displayPath = currentWallpaper.compressPath || currentWallpaper.originPath;
 
     setIsLoading(true);
@@ -387,12 +444,15 @@ export default function WallpaperPreviewDownload({
     mergePreloadedUrls({ [displayPath]: refreshedUrl });
     setCurrentImageUrl(refreshedUrl);
     setIsLoading(false);
-  }, [categoryName, currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
+  }, [categoryName, currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls, isVideo]);
 
   // 键盘事件处理
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
+      if (isActionsOpen) return;
+      if (e.target instanceof HTMLElement && e.target.closest('video') && !['Escape', 'h', 'H'].includes(e.key)) return;
+      if (e.key === 'Escape' && document.fullscreenElement) return;
       
       switch (e.key) {
         case 'Escape':
@@ -425,12 +485,19 @@ export default function WallpaperPreviewDownload({
           e.preventDefault();
           handleRefreshImage();
           break;
+        case 'h':
+        case 'H':
+          if (isVideo) {
+            e.preventDefault();
+            setIsVideoImmersive(value => !value);
+          }
+          break;
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [goToNext, goToPrevious, handleClose, handleRefreshImage, handleResetZoom, handleZoomIn, handleZoomOut, isOpen]);
+  }, [goToNext, goToPrevious, handleClose, handleRefreshImage, handleResetZoom, handleZoomIn, handleZoomOut, isOpen, isVideo, isActionsOpen]);
 
   // 防止背景滚动
   useEffect(() => {
@@ -448,7 +515,7 @@ export default function WallpaperPreviewDownload({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
+    <div role="dialog" aria-modal="true" aria-label={displayCategoryName} className="fixed inset-0 z-50 bg-black">
       {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 bg-black"
@@ -456,9 +523,9 @@ export default function WallpaperPreviewDownload({
       ></div>
 
       {/* 模态框内容 - Google Photos 风格 */}
-      <div className="relative w-full h-full flex flex-col">
+      <div className={`relative w-full flex flex-col ${isVideo ? 'h-[100dvh]' : 'h-full'}`}>
         {/* 顶部工具栏 - 简洁设计 */}
-        <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/50 to-transparent">
+        {showPreviewChrome && <div className={isVideo ? 'relative z-10 shrink-0 bg-gradient-to-b from-black/50 to-transparent' : 'absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/50 to-transparent'}>
           {/* 移动端简化工具栏 */}
           <div className="md:hidden flex items-center justify-between p-2">
             <div className="flex items-center space-x-2">
@@ -474,9 +541,15 @@ export default function WallpaperPreviewDownload({
             </div>
             
             <div className="flex items-center space-x-1">
+              <button type="button" onClick={() => setIsActionsOpen(true)} aria-label={texts.wallpaperActions} aria-haspopup="dialog"
+                className="rounded-full p-2 text-white transition-colors hover:bg-white/10">
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
               <button
                 onClick={handleDownloadClick}
-                disabled={!currentImageUrl || isLoading || isDownloading}
+                aria-label={texts.downloadWallpaper}
+                aria-busy={isDownloading}
+                disabled={isDownloading || (!isVideo && (!currentImageUrl || isLoading))}
                 className="p-2 hover:bg-white/10 disabled:opacity-30 text-white transition-colors"
               >
                 {isDownloading ? (
@@ -511,8 +584,12 @@ export default function WallpaperPreviewDownload({
             </div>
             
             <div className="flex items-center space-x-2">
+              <button type="button" onClick={() => setIsActionsOpen(true)} aria-label={texts.wallpaperActions} aria-haspopup="dialog"
+                className="rounded-full p-2 text-white transition-colors hover:bg-white/10">
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
               {/* 缩放控件 */}
-              <div className="flex items-center space-x-1 bg-black/30 rounded-full p-1">
+              {!isVideo && <div className="flex items-center space-x-1 bg-black/30 rounded-full p-1">
                 <button
                   onClick={handleZoomOut}
                   disabled={zoomLevel <= 0.5}
@@ -537,21 +614,22 @@ export default function WallpaperPreviewDownload({
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
-              </div>
+              </div>}
               
               {/* 刷新按钮 */}
               <button
                 onClick={handleRefreshImage}
-                disabled={isLoading || isPreloading}
+                disabled={!isVideo && (isLoading || isPreloading)}
                 className="p-2 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white rounded-full transition-colors"
-                title={texts.refreshImage}
+                title={isVideo ? texts.retryVideo : texts.refreshImage}
               >
                 <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
               
               <button
                 onClick={handleDownloadClick}
-                disabled={!currentImageUrl || isLoading || isDownloading}
+                aria-busy={isDownloading}
+                disabled={isDownloading || (!isVideo && (!currentImageUrl || isLoading))}
                 className="flex items-center space-x-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white/80 hover:text-white rounded-full transition-all duration-200 text-xs"
               >
                 {isDownloading ? (
@@ -572,17 +650,57 @@ export default function WallpaperPreviewDownload({
               </button>
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* 主要内容区域 - 全屏图片展示 */}
-        <div className="flex-1 relative flex items-center justify-center p-2 md:p-4 overflow-hidden">
+        <div className={`flex-1 relative flex items-center justify-center overflow-hidden ${isVideo ? 'min-h-0 px-2' : 'p-2 md:p-4'}`}>
           {/* 图片容器 - 根据设备类型决定显示方式 */}
-          <div className={`w-full flex items-center justify-center relative ${
-            categoryName.toLowerCase().includes('iphone') 
+          <div
+            style={{ WebkitTouchCallout: 'none', userSelect: 'none' }}
+            onPointerDownCapture={(event) => {
+              suppressMediaClickRef.current = false;
+              if (!event.isPrimary) { longPress.cancel(); return; }
+              if (event.button !== 0 || !(event.target instanceof HTMLElement)) return;
+              const media = event.target.closest('img, video');
+              if (!media || isActionsOpen) return;
+              // Leave the native video controls available for seeking and fullscreen.
+              if (media instanceof HTMLVideoElement && media.controls && event.clientY > media.getBoundingClientRect().bottom - 64) return;
+              longPress.start(event.pointerId, event.clientX, event.clientY);
+            }}
+            onPointerMoveCapture={(event) => longPress.move(event.pointerId, event.clientX, event.clientY)}
+            onPointerUpCapture={() => longPress.cancel()}
+            onPointerCancelCapture={() => longPress.cancel()}
+            onPointerLeave={() => longPress.cancel()}
+            onClickCapture={(event) => {
+              if (suppressMediaClickRef.current) {
+                event.preventDefault();
+                event.stopPropagation();
+                suppressMediaClickRef.current = false;
+              }
+            }}
+            onContextMenu={(event) => {
+              if (!(event.target instanceof HTMLElement) || !event.target.closest('img, video')) return;
+              event.preventDefault();
+              longPress.cancel();
+              suppressMediaClickRef.current = true;
+              setIsActionsOpen(true);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) {
+                event.preventDefault();
+                setIsActionsOpen(true);
+              }
+            }}
+            className={`w-full flex items-center justify-center relative ${
+            isVideo ? (isVideoImmersive ? 'h-full' : 'h-full max-w-sm max-h-[80dvh] aspect-[9/16]') : categoryName.toLowerCase().includes('iphone')
               ? 'max-w-sm max-h-[80vh] aspect-[9/16]'  // iPhone强制竖屏
               : 'max-w-4xl max-h-[80vh]'  // 其他设备按原方向显示
           }`}>
-            {isLoading ? (
+            {isVideo ? (
+              <VideoWallpaperPlayer key={`${videoUrl}-${videoRefreshToken}`} url={videoUrl} poster={currentImageUrl}
+                label={displayWallpaperName} refreshToken={videoRefreshToken} immersive={isVideoImmersive}
+                onToggleImmersive={() => setIsVideoImmersive(value => !value)} />
+            ) : isLoading ? (
               <div className="flex items-center justify-center">
                 <div className="flex space-x-1.5">
                   <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
@@ -605,6 +723,8 @@ export default function WallpaperPreviewDownload({
               <img
                 src={currentImageUrl}
                 alt={displayWallpaperName}
+                draggable={false}
+                tabIndex={0}
                 className={`transition-all duration-300 ease-out ${
                   categoryName.toLowerCase().includes('iphone')
                     ? 'w-full h-full object-cover'  // iPhone强制填满竖屏容器
@@ -632,11 +752,12 @@ export default function WallpaperPreviewDownload({
             )}
 
             {/* 导航按钮 - Google Photos 风格 */}
-            {wallpapers.length > 1 && (
+            {wallpapers.length > 1 && showPreviewChrome && (
               <>
                 <button
                   onClick={goToPrevious}
                   disabled={currentIndex === 0}
+                  aria-label={texts.previousWallpaper}
                   className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 disabled:opacity-30 disabled:cursor-not-allowed text-white rounded-full transition-all duration-200 backdrop-blur-sm"
                 >
                   <ChevronLeft className="w-6 h-6" />
@@ -644,6 +765,7 @@ export default function WallpaperPreviewDownload({
                 <button
                   onClick={goToNext}
                   disabled={currentIndex === wallpapers.length - 1}
+                  aria-label={texts.nextWallpaper}
                   className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 disabled:opacity-30 disabled:cursor-not-allowed text-white rounded-full transition-all duration-200 backdrop-blur-sm"
                 >
                   <ChevronRight className="w-6 h-6" />
@@ -654,21 +776,23 @@ export default function WallpaperPreviewDownload({
         </div>
 
         {/* 底部信息面板 - Google Photos 风格 */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent">
-          <div className="p-6">
+        {showPreviewChrome && <div className={isVideo ? 'relative z-10 shrink-0 bg-gradient-to-t from-black/80 to-transparent' : 'absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent'}>
+          <div className={isVideo ? 'px-4 py-3 md:px-6' : 'p-6'}>
             {/* 壁纸信息 */}
             <div className="text-white mb-4">
-              <h3 className="text-lg font-medium mb-1">{displayWallpaperName}</h3>
-              <div className="flex items-center space-x-4 text-sm text-white/70">
+              <div className="min-w-0">
+              <h3 className="text-lg font-medium mb-1 truncate" title={displayWallpaperName}>{displayWallpaperName}</h3>
+              <div className="flex items-center space-x-4 text-white/70 text-sm">
                 <span>{currentWallpaper?.size}</span>
                 <span>•</span>
                 <span>{currentWallpaper?.type}</span>
+              </div>
               </div>
             </div>
 
             {/* 缩略图导航 - 水平滚动 */}
             {wallpapers.length > 1 && (
-              <div className="flex space-x-2 overflow-x-auto pb-2">
+              <div className={`flex space-x-2 overflow-x-auto pb-2 ${isVideo ? 'pr-20' : ''}`}>
                 {wallpapers.map((wallpaper, index) => {
                   const thumbnailPath = wallpaper.compressPath || wallpaper.originPath;
                   const thumbnailUrl = preloadedUrls[thumbnailPath];
@@ -677,6 +801,8 @@ export default function WallpaperPreviewDownload({
                     <button
                       key={index}
                       onClick={() => onIndexChange(index)}
+                      aria-label={`${texts.preview} ${formatWallpaperDisplayName(wallpaper.name)}`}
+                      aria-pressed={index === currentIndex}
                       className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                         index === currentIndex
                           ? 'border-white shadow-lg'
@@ -702,17 +828,23 @@ export default function WallpaperPreviewDownload({
               </div>
             )}
           </div>
-        </div>
+        </div>}
 
         {/* 右下角计数器 */}
-        <div className="absolute bottom-4 right-4 z-10">
+        {showPreviewChrome && <div className="pointer-events-none absolute bottom-4 right-4 z-10">
           <div className="bg-black/60 backdrop-blur-sm rounded-full px-4 py-2">
             <span className="text-sm text-white font-medium tracking-wide">
               {currentIndex + 1} / {wallpapers.length}
             </span>
           </div>
-        </div>
+        </div>}
       </div>
+      {isActionsOpen && currentWallpaper && (
+        <WallpaperActionsSheet title={displayWallpaperName} previewImageUrl={currentImageUrl} shareUrl={shareUrl}
+          downloadDisabled={isDownloading || (!isVideo && (!currentImageUrl || isLoading || imageError))}
+          isDownloading={isDownloading}
+          onDownload={handleDownloadClick} onClose={closeActions} />
+      )}
     </div>
   );
 }

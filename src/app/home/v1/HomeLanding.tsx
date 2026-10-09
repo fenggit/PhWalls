@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
+import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
 import { useLanguage } from '@/components/LanguageProvider';
 import { buildWallpaperListTitle, getTabData, localizeWallpaperCollectionName } from '@/lib/data';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
@@ -23,6 +24,7 @@ type CollectionCard = {
   name: string;
   href: string;
   imageUrl: string | null;
+  isLive?: boolean;
 };
 
 type PhoneCollectionCard = CollectionCard & {
@@ -61,7 +63,8 @@ function PhoneCard({
   className?: string;
 }) {
   const displayName = item.deviceId ? item.name : localizeWallpaperCollectionName(language, item.name);
-  const title = buildWallpaperListTitle(displayName, texts.wallpapersTitleSuffix, Boolean(item.deviceId));
+  const title = buildWallpaperListTitle(displayName,
+    item.isLive ? texts.liveWallpapersNavLabel : texts.wallpapersTitleSuffix, Boolean(item.deviceId));
 
   return (
     <Link
@@ -83,6 +86,7 @@ function PhoneCard({
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             />
           )}
+          {item.isLive && <WallpaperPlayIndicator />}
         </div>
         <div className="space-y-1 p-3 text-center">
           <div role="heading" aria-level={headingLevel} className="truncate text-sm font-semibold leading-tight text-gray-900">{title}</div>
@@ -92,9 +96,9 @@ function PhoneCard({
             <span className="font-medium">{item.count} {texts.count}</span>
           </div>
         </div>
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/20 group-hover:opacity-100">
+        {!item.isLive && <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/20 group-hover:opacity-100">
           <span className="rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-gray-900">{texts.preview}</span>
-        </span>
+        </span>}
       </article>
     </Link>
   );
@@ -167,7 +171,7 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {latest.map((item, index) => (
                 <PhoneCard
-                  key={`${item.category}:${item.name}`}
+                  key={`${item.category}:${item.name}:${item.isLive ? 'dynamic' : 'static'}`}
                   item={item}
                   language={language}
                   texts={texts}
@@ -191,7 +195,7 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
                   <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                     {cards.map((item, index) => (
                       <PhoneCard
-                        key={`${item.category}:${item.name}`}
+                        key={`${item.category}:${item.name}:${item.isLive ? 'dynamic' : 'static'}`}
                         item={item}
                         language={language}
                         texts={texts}
@@ -226,7 +230,7 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
             <div className="grid gap-3 sm:grid-cols-3 sm:gap-5">
               {desktop.slice(0, 6).map((item, index) => (
                 <Link
-                  key={`${item.category}:${item.name}`}
+                  key={`${item.category}:${item.name}:${item.isLive ? 'dynamic' : 'static'}`}
                   href={withLanguagePath(item.href, language)}
                   className={`group min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-blue-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${index >= 2 ? 'hidden sm:block' : ''}`}
                 >
@@ -234,8 +238,11 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
                     {item.imageUrl && (
                       <Image src={item.imageUrl} alt={item.name} fill unoptimized sizes="(max-width: 639px) 100vw, 33vw" className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
                     )}
+                    {item.isLive && <WallpaperPlayIndicator />}
                   </div>
-                  <h3 className="px-3 py-3 text-sm font-semibold sm:px-4 sm:text-base">{item.name}</h3>
+                  <h3 className="px-3 py-3 text-sm font-semibold sm:px-4 sm:text-base">
+                    {item.isLive ? buildWallpaperListTitle(item.name, texts.liveWallpapersNavLabel, Boolean(item.deviceId)) : item.name}
+                  </h3>
                 </Link>
               ))}
             </div>

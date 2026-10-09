@@ -11,6 +11,9 @@ import {
   isDesktopWallpaperCategory,
 } from '@/lib/desktop-data';
 import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
+import { isLiveWallpaperCategory } from '@/lib/live-data';
+import { loadLiveCollection } from '@/lib/live-data-server';
+import { getLiveSeoCopy } from '@/lib/live-seo';
 import {
   buildDesktopDetailSeoCopy,
   getDesktopCategorySeoCopy,
@@ -35,6 +38,8 @@ export async function resolveRouteDescription(path: string, language: Language):
         return texts.customWallpaperDescription;
       case 'desktop':
         return getDesktopHomeSeoCopy(language).description;
+      case 'live':
+        return getLiveSeoCopy(language).description;
       default: {
         const brand = getBrandCategoryBySlug(segments[0]);
         return brand ? getCategorySeoCopy(language, brand.slug).description : null;
@@ -56,12 +61,14 @@ export async function resolveRouteDescription(path: string, language: Language):
       const category = segments[1];
       return getDesktopCategorySeoCopy(language, category, getDesktopWallpaperCategoryLabel(category)).description;
     }
-    if (segments.length === 4 && segments[1] === 'wallpapers') {
+    if (segments.length === 4 && ['wallpapers', 'live-wallpapers'].includes(segments[1])) {
       const [, , category, slug] = segments;
       if (!isDesktopWallpaperCategory(category)) return null;
-      const collection = await loadDesktopWallpaperCollection(category, slug, language);
+      const mediaType = segments[1] === 'live-wallpapers' ? 'dynamic' : 'static';
+      const collection = await loadDesktopWallpaperCollection(category, slug, language, mediaType);
       return collection
         ? buildDesktopDetailSeoCopy(language, {
+            mediaType,
             collectionName: collection.name,
             displayName: collection.deviceId ? collection.name : undefined,
             categoryLabel: getDesktopWallpaperCategoryLabel(category),
@@ -70,6 +77,16 @@ export async function resolveRouteDescription(path: string, language: Language):
             description: collection.description,
           }).description
         : null;
+    }
+  }
+
+  if (segments[0] === 'live') {
+    if (segments.length === 2 && isLiveWallpaperCategory(segments[1])) {
+      return getLiveSeoCopy(language, { category: segments[1] }).description;
+    }
+    if (segments.length === 4 && segments[1] === 'wallpapers' && isLiveWallpaperCategory(segments[2])) {
+      const collection = await loadLiveCollection(segments[2], segments[3], language);
+      return collection ? getLiveSeoCopy(language, { category: segments[2], name: collection.name, count: collection.item.length }).description : null;
     }
   }
 

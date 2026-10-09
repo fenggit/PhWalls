@@ -1,6 +1,7 @@
 import desktopTabData from '@/data/desktopwalls/tab.json';
 import type { TabInfo } from '@/types';
 import { slugifyWallpaperName, type WallpaperCollection } from '@/lib/wallpaper-data';
+import type { WallpaperMediaType } from '@/lib/wallpaper-db';
 
 export type DesktopWallpaperCategory = string;
 
@@ -32,8 +33,8 @@ export function isDesktopWallpaperCategory(value: string): value is DesktopWallp
   return Object.prototype.hasOwnProperty.call(desktopBrandLoaders, value);
 }
 
-export function buildDesktopWallpaperDetailPath(category: DesktopWallpaperCategory, name: string): string {
-  return `/desktop/wallpapers/${category}/${slugifyWallpaperName(name)}`;
+export function buildDesktopWallpaperDetailPath(category: DesktopWallpaperCategory, name: string, media: WallpaperMediaType = 'static'): string {
+  return `/desktop/${media === 'dynamic' ? 'live-wallpapers' : 'wallpapers'}/${category}/${slugifyWallpaperName(name)}`;
 }
 
 export function getDesktopWallpaperCategoryLabel(category: DesktopWallpaperCategory): string {

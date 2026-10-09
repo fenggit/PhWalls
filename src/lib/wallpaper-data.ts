@@ -12,6 +12,7 @@ export type WallpaperAsset = {
 };
 
 export type WallpaperCollection = {
+  mediaType?: 'static' | 'dynamic';
   deviceId?: string;
   name: string;
   slug?: string;

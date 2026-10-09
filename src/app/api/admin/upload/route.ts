@@ -4,6 +4,7 @@ import { assertText, createAdminWallpaper } from '@/lib/admin-data';
 import { getWallpaperDb, type DeviceRow } from '@/lib/wallpaper-db';
 import { createR2UploadUrl, createUploadGrant, headR2Object, verifyUploadGrant } from '@/lib/r2-upload';
 import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
+import { parseWallpaperMedia } from '@/lib/wallpaper-media';
 
 export const runtime = 'edge';
 
@@ -28,14 +29,14 @@ export async function POST(request: NextRequest) {
       if (role !== 'origin' && role !== 'compress') throw new Error('文件角色无效');
       const mime = assertText(input.mime_type, '文件类型', 100);
       const extension = mimeExtensions[mime];
-      const media = input.media_type === 'dynamic' ? 'dynamic' : 'static';
+      const media = parseWallpaperMedia(input.media_type);
       const size = Number(input.size_bytes);
       const video = mime.startsWith('video/');
       if (!extension || video !== (role === 'origin' && media === 'dynamic')) throw new Error('文件类型与角色不匹配');
       if (!Number.isSafeInteger(size) || size < 1 || size > (video ? 200 : 50) * 1024 * 1024) {
         throw new Error('文件大小超出限制');
       }
-      const target = input.r2_prefix === undefined ? base : normalizeAdminR2Prefix(input.r2_prefix);
+      const target = input.r2_prefix === undefined ? deviceR2Prefix(device, media) : normalizeAdminR2Prefix(input.r2_prefix);
       const key = `${target}/${role}/${crypto.randomUUID()}.${extension}`;
       return NextResponse.json({ key, url: await createR2UploadUrl(key, mime),
         token: await createUploadGrant(key, size, mime, { deviceId, role, prefix: target }) }, { headers: { 'Cache-Control': 'no-store' } });
