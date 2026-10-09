@@ -11,6 +11,39 @@ const ts = require('typescript');
 const root = fileURLToPath(new URL('../', import.meta.url));
 const { NextRequest } = require('next/server');
 
+test('JSON sitemap contains each localized canonical URL only once', async (t) => {
+  const f = fixture({ dataSource: 'json' }); t.after(() => f.sqlite.close());
+  const sitemap = await f.load(`${root}src/app/sitemap.ts`).default();
+  assert.equal(new Set(sitemap.map(entry => entry.url)).size, sitemap.length);
+});
+
+test('live landing pages and sitemap use the new language-specific canonical paths', async (t) => {
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    const f = fixture({ language }); t.after(() => f.sqlite.close());
+    f.add('s25', 'samsung');
+    f.sqlite.exec(`UPDATE w_wallpapers SET media_type='dynamic',mime_type='video/mp4'`);
+    const home = f.load(`${root}src/app/live-wallpapers/page.tsx`);
+    const category = f.load(`${root}src/app/live-wallpapers/[category]/page.tsx`);
+    assert.equal((await home.generateMetadata()).alternates.canonical, `https://phwalls.com/${language}/live-wallpapers`);
+    assert.equal((await category.generateMetadata({ params: Promise.resolve({ category: 'samsung' }) })).alternates.canonical,
+      `https://phwalls.com/${language}/live-wallpapers/samsung`);
+    const sitemap = await f.load(`${root}src/app/sitemap.ts`).default();
+    assert.ok(sitemap.some(entry => entry.url === `https://phwalls.com/${language}/live-wallpapers`));
+    assert.ok(sitemap.some(entry => entry.url === `https://phwalls.com/${language}/live-wallpapers/samsung`));
+    assert.ok(!sitemap.some(entry => /\/(?:en|zh|ja|vi|zh-hant)\/live(?:\/samsung)?$/.test(entry.url)));
+  }
+});
+
+test('design metadata contains the brand only once in all five languages', async (t) => {
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    const f = fixture({ language }); t.after(() => f.sqlite.close());
+    const metadata = await f.load(`${root}src/app/design/layout.tsx`).generateMetadata();
+    assert.equal((metadata.title.match(/PhWalls/g) || []).length, 1);
+    assert.equal(metadata.openGraph.title, metadata.title);
+    assert.equal(metadata.twitter.title, metadata.title);
+  }
+});
+
 test('live detail metadata and content use the independently authored localized SEO copy', async (t) => {
   const f = fixture(); t.after(() => f.sqlite.close());
   f.add('s25', 'samsung');
@@ -205,8 +238,6 @@ test('desktop live pages have independent canonical URLs, localized copy and vid
     const html = require('react-dom/server').renderToStaticMarkup(element);
     assert.ok(html.includes('VideoObject'));
     assert.ok(!html.includes('ImageGallery'));
-    const description = await f.load(`${root}src/lib/route-description.ts`).resolveRouteDescription('/desktop/live-wallpapers/microsoft-windows/device-windows', language);
-    assert.equal(description, metadata.description);
     const sitemap = await f.load(`${root}src/app/sitemap.ts`).default();
     assert.ok(sitemap.some(entry => entry.url === metadata.alternates.canonical));
     assert.ok(!sitemap.some(entry => entry.url.endsWith('/desktop/wallpapers/microsoft-windows/device-windows')));

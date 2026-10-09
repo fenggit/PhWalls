@@ -10,14 +10,12 @@ import {
   DEFAULT_LANGUAGE,
   getOpenGraphLocaleForLanguage,
   LANGUAGE_HEADER_NAME,
-  REQUEST_PATH_HEADER_NAME,
   isLanguage,
   withLanguageUrl,
 } from '@/lib/language';
 import { headers } from 'next/headers';
 import { getI18nTexts } from '@/lib/i18n';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
-import { resolveRouteDescription } from '@/lib/route-description';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -127,30 +125,11 @@ export default async function RootLayout({
   const headersList = await headers();
   const rawLang = headersList.get(LANGUAGE_HEADER_NAME);
   const currentLanguage = isLanguage(rawLang) ? rawLang : DEFAULT_LANGUAGE;
-  const requestPath = headersList.get(REQUEST_PATH_HEADER_NAME) || '/';
-  const shouldRenderHomeSeoFallback = requestPath === '/';
-  const homeTexts = getI18nTexts(currentLanguage);
-  const homeTitle = `${homeTexts.heroSeoTitle} | ${homeTexts.siteName}`;
-  const homeDescription = homeTexts.heroDescription;
-  const routeDescription = await resolveRouteDescription(requestPath, currentLanguage);
-  const homeCanonicalUrl = withLanguageUrl(SITE_URL, currentLanguage);
+  const homeDescription = getI18nTexts(currentLanguage).heroDescription;
 
   return (
     <html lang={currentLanguage} className="scroll-smooth">
       <head>
-        {routeDescription ? <meta name="description" content={routeDescription} /> : null}
-        {shouldRenderHomeSeoFallback ? (
-          <>
-            <title>{homeTitle}</title>
-            <meta name="robots" content="index, follow" />
-            <meta
-              name="googlebot"
-              content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
-            />
-            <link rel="canonical" href={homeCanonicalUrl} />
-          </>
-        ) : null}
-
         {/* Google Ads */}
         <Script
           id="google-adsense"
