@@ -54,6 +54,9 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
       require(specifier) {
         if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db };
         if (specifier === '@/lib/r2-upload') return {
+          createR2UploadUrl: async (key) => `https://uploads.example/${encodeURIComponent(key)}`,
+          createUploadGrant: async (key) => key,
+          verifyUploadGrant: async (token) => JSON.parse(token),
           headR2Object: async (key) => {
             onHead(key, sqlite);
             return missingFiles.has(key) ? null : { size: 100, mimeType: 'image/webp' };
@@ -61,6 +64,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
         };
         if (specifier === '@/lib/admin-static-assets') return {};
         if (specifier === '@/lib/admin-auth') return { requireAdmin: async () => null };
+        if (specifier === '@/types') return load(`${root}src/types/index.ts`);
         if (specifier.endsWith('.json') && specifier.startsWith('@/')) return JSON.parse(readFileSync(`${root}src/${specifier.slice(2)}`, 'utf8'));
         if (specifier.startsWith('@/')) return load(`${root}src/${specifier.slice(2)}.ts`);
         return require(specifier);
@@ -75,6 +79,76 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
   });
   return { sqlite, service, upload, load };
 }
+
+test('upload authorization reuses the selected media directory and rejects the other media directory', async () => {
+  const { sqlite, upload, load } = fixture();
+  try {
+    await upload('still', { origin_key: 'test/Device One/origin/still.webp', compress_key: 'test/Device One/compress/still.webp' });
+    await upload('live', { media_type: 'dynamic', mime_type: 'video/mp4',
+      origin_key: 'live/Test/Device One/origin/live.mp4', compress_key: 'live/Test/Device One/compress/live.webp' });
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const authorize = (patch = {}) => route.POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
+        media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, ...patch }),
+    }));
+    const response = await authorize();
+    assert.equal(response.status, 200);
+    assert.ok((await response.json()).key.startsWith('live/Test/Device One/origin/'));
+    const cover = await authorize({ role: 'compress', mime_type: 'image/webp' });
+    assert.equal(cover.status, 200);
+    assert.ok((await cover.json()).key.startsWith('live/Test/Device One/compress/'));
+    assert.equal((await authorize({ r2_prefix: 'test/Device One', path_mode: 'custom' })).status, 400);
+    assert.equal((await authorize({ mime_type: 'image/webp' })).status, 400);
+    assert.equal((await authorize({ r2_prefix: 'live/test/device-one', path_mode: 'device' })).status, 400);
+    assert.equal((await authorize({ r2_prefix: 'test/New Device', path_mode: 'custom' })).status, 400);
+    assert.equal((await authorize({ media_type: 'static', mime_type: 'image/webp', r2_prefix: 'live/Other/Device', path_mode: 'custom' })).status, 400);
+    assert.equal((await authorize({ r2_prefix: 'live/Test/New Device', path_mode: 'custom' })).status, 200);
+  } finally { sqlite.close(); }
+});
+
+test('upload directory API separates media, excludes deleting files, and exposes multiple choices', async () => {
+  const { sqlite, upload, load } = fixture();
+  try {
+    await upload('first', { origin_key: 'test/Device One/origin/first.webp', compress_key: 'test/Device One/compress/first.webp' });
+    await upload('second', { origin_key: 'test/Second Directory/origin/second.webp', compress_key: 'test/Second Directory/compress/second.webp' });
+    await upload('deleting', { origin_key: 'test/Deleted Directory/origin/deleting.webp', compress_key: 'test/Deleted Directory/compress/deleting.webp' });
+    sqlite.exec("UPDATE w_wallpapers SET deletion_state = 'pending' WHERE name = 'deleting'");
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const { NextRequest } = require('next/server');
+    const lookup = (media) => route.GET(new NextRequest(`https://example.com/api/admin/upload?device_id=device-1&media_type=${media}`));
+    const response = await lookup('static');
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.deepEqual((await response.json()).data, { prefix: '',
+      directories: ['test/Device One', 'test/Second Directory'], source: 'multiple' });
+    assert.deepEqual((await (await lookup('dynamic')).json()).data,
+      { prefix: 'live/test/device-one', directories: [], source: 'default' });
+    const authorize = (prefix) => route.POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
+        media_type: 'static', mime_type: 'image/webp', size_bytes: 100, path_mode: 'device',
+        ...(prefix ? { r2_prefix: prefix } : {}) }),
+    }));
+    assert.equal((await authorize()).status, 400);
+    const selected = await authorize('test/Second Directory');
+    assert.equal(selected.status, 200);
+    assert.ok((await selected.json()).key.startsWith('test/Second Directory/origin/'));
+    assert.equal((await lookup('invalid')).status, 400);
+  } finally { sqlite.close(); }
+});
+
+test('upload completion rejects a different selected media type before storing a wallpaper', async () => {
+  const { sqlite, load } = fixture();
+  try {
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const response = await route.POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ action: 'complete', device_id: 'device-1', name: 'mismatch', media_type: 'static',
+        origin_token: JSON.stringify({ key: 'live/test/device-one/origin/a.mp4', mimeType: 'video/mp4', size: 100 }),
+        preview_token: JSON.stringify({ key: 'live/test/device-one/compress/a.webp', mimeType: 'image/webp', size: 100 }) }),
+    }));
+    assert.equal(response.status, 400);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 0);
+  } finally { sqlite.close(); }
+});
 
 test('static and Live uploads with the same name have separate primary covers', async () => {
   const { sqlite, upload, service } = fixture();

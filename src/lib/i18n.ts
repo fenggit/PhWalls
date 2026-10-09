@@ -3,6 +3,24 @@ import type { Language } from '@/types';
 export type { Language } from '@/types';
 
 export interface I18nTexts {
+  adminUploadTypeLabel: string;
+  adminUploadStaticLabel: string;
+  adminUploadDynamicLabel: string;
+  adminUploadMediaHint: string;
+  adminUploadAutoDirectory: string;
+  adminUploadLoadingDirectory: string;
+  adminUploadDirectoryFailed: string;
+  adminUploadRetryDirectory: string;
+  adminUploadChooseExisting: string;
+  adminUploadMultipleDirectories: string;
+  adminUploadExistingHint: string;
+  adminUploadDefaultHint: string;
+  adminUploadStaticFilesHelp: string;
+  adminUploadDynamicFilesHelp: string;
+  adminUploadStaticOriginal: string;
+  adminUploadDynamicOriginal: string;
+  adminUploadCover: string;
+  adminUploadMediaMismatch: string;
   // 后台设备与系统名称校验
   adminNameChecking: string;
   adminNameCheckUnavailable: string;
@@ -425,6 +443,24 @@ export interface I18nTexts {
 
 export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
+    adminUploadTypeLabel: "壁纸类型",
+    adminUploadStaticLabel: "静态壁纸",
+    adminUploadDynamicLabel: "动态壁纸",
+    adminUploadMediaHint: "同一设备的静态与动态壁纸分别上传，并沿用各自的存储目录。",
+    adminUploadAutoDirectory: "沿用该类型已有目录",
+    adminUploadLoadingDirectory: "正在读取该类型的存储目录…",
+    adminUploadDirectoryFailed: "目录读取失败，请重试后再上传。",
+    adminUploadRetryDirectory: "重新读取目录",
+    adminUploadChooseExisting: "选择已有目录",
+    adminUploadMultipleDirectories: "该类型已有多个目录，请选择本次上传位置。",
+    adminUploadExistingHint: "将沿用该类型已有的存储目录，保留原始大小写和空格。",
+    adminUploadDefaultHint: "该类型暂无素材，将使用新建的默认目录。",
+    adminUploadStaticFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加静态原图与封面。上传后保存为草稿。",
+    adminUploadDynamicFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加 MP4/WebM 视频与图片封面。视频与封面须同名，上传后保存为草稿。",
+    adminUploadStaticOriginal: "原图文件",
+    adminUploadDynamicOriginal: "视频文件",
+    adminUploadCover: "封面文件",
+    adminUploadMediaMismatch: "文件与所选壁纸类型不匹配，请移除文件或切换类型。",
     adminNameChecking: '正在检查名称…',
     adminNameCheckUnavailable: '名称检查暂不可用，创建时会再次校验。',
     adminNameDuplicateHint: '同名设备或系统已存在（忽略大小写），无法重复创建，请选择已有条目。',
@@ -837,6 +873,24 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '当前尺寸'
   },
   en: {
+    adminUploadTypeLabel: "Wallpaper type",
+    adminUploadStaticLabel: "Static wallpapers",
+    adminUploadDynamicLabel: "Live wallpapers",
+    adminUploadMediaHint: "Upload static and live wallpapers separately for the same device, using their own storage directories.",
+    adminUploadAutoDirectory: "Reuse this type’s directory",
+    adminUploadLoadingDirectory: "Reading storage directories for this type…",
+    adminUploadDirectoryFailed: "Could not read directories. Retry before uploading.",
+    adminUploadRetryDirectory: "Reload directories",
+    adminUploadChooseExisting: "Choose an existing directory",
+    adminUploadMultipleDirectories: "This type has multiple directories. Choose the upload destination.",
+    adminUploadExistingHint: "Reuse this type’s existing directory, preserving capitalization and spaces.",
+    adminUploadDefaultHint: "No files exist for this type. Use a new default directory.",
+    adminUploadStaticFilesHelp: "Choose a folder with origin and compress subfolders, or add original images and covers separately. Uploads are saved as drafts.",
+    adminUploadDynamicFilesHelp: "Choose a folder with origin and compress subfolders, or add MP4/WebM videos and image covers separately. Match videos and covers by filename. Uploads are saved as drafts.",
+    adminUploadStaticOriginal: "Original images",
+    adminUploadDynamicOriginal: "Video files",
+    adminUploadCover: "Cover images",
+    adminUploadMediaMismatch: "Files do not match the selected wallpaper type. Remove them or change the type.",
     adminNameChecking: 'Checking the name…',
     adminNameCheckUnavailable: 'Name checking is unavailable. The name will be checked again when creating.',
     adminNameDuplicateHint: 'A device or system with this name already exists, ignoring case. Select the existing entry.',
@@ -1249,6 +1303,24 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Current Size'
   },
   ja: {
+    adminUploadTypeLabel: "壁紙の種類",
+    adminUploadStaticLabel: "静止画壁紙",
+    adminUploadDynamicLabel: "ライブ壁紙",
+    adminUploadMediaHint: "同じ端末の静止画とライブ壁紙を、それぞれの保存先に分けてアップロードします。",
+    adminUploadAutoDirectory: "この種類の既存フォルダーを使用",
+    adminUploadLoadingDirectory: "この種類の保存先を読み込み中…",
+    adminUploadDirectoryFailed: "保存先を読み込めませんでした。アップロード前に再試行してください。",
+    adminUploadRetryDirectory: "保存先を再読み込み",
+    adminUploadChooseExisting: "既存フォルダーを選択",
+    adminUploadMultipleDirectories: "保存先が複数あります。今回のアップロード先を選択してください。",
+    adminUploadExistingHint: "大文字・小文字と空白を保ち、この種類の既存フォルダーを使用します。",
+    adminUploadDefaultHint: "この種類の素材はまだありません。新しい既定フォルダーを使用します。",
+    adminUploadStaticFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、原画像とカバーを別々に追加します。下書きとして保存されます。",
+    adminUploadDynamicFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、MP4/WebM 動画と画像カバーを追加します。ファイル名を一致させてください。下書きとして保存されます。",
+    adminUploadStaticOriginal: "原画像",
+    adminUploadDynamicOriginal: "動画ファイル",
+    adminUploadCover: "カバー画像",
+    adminUploadMediaMismatch: "選択した壁紙の種類とファイルが一致しません。ファイルを削除するか種類を変更してください。",
     adminNameChecking: '名前を確認中…',
     adminNameCheckUnavailable: '名前の確認ができません。作成時に再確認します。',
     adminNameDuplicateHint: '大文字・小文字を区別せず、同じ名前の端末またはシステムが存在します。既存の項目を選択してください。',
@@ -1661,6 +1733,24 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '現在のサイズ'
   },
   vi: {
+    adminUploadTypeLabel: "Loại hình nền",
+    adminUploadStaticLabel: "Hình nền tĩnh",
+    adminUploadDynamicLabel: "Hình nền động",
+    adminUploadMediaHint: "Tải riêng hình nền tĩnh và động của cùng thiết bị vào thư mục tương ứng.",
+    adminUploadAutoDirectory: "Dùng thư mục hiện có của loại này",
+    adminUploadLoadingDirectory: "Đang đọc thư mục lưu trữ của loại này…",
+    adminUploadDirectoryFailed: "Không thể đọc thư mục. Hãy thử lại trước khi tải lên.",
+    adminUploadRetryDirectory: "Đọc lại thư mục",
+    adminUploadChooseExisting: "Chọn thư mục hiện có",
+    adminUploadMultipleDirectories: "Loại này có nhiều thư mục. Hãy chọn nơi tải lên.",
+    adminUploadExistingHint: "Dùng thư mục hiện có, giữ nguyên chữ hoa, chữ thường và khoảng trắng.",
+    adminUploadDefaultHint: "Loại này chưa có tệp. Dùng thư mục mặc định mới.",
+    adminUploadStaticFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm ảnh gốc và ảnh bìa riêng. Nội dung được lưu dưới dạng bản nháp.",
+    adminUploadDynamicFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm video MP4/WebM và ảnh bìa riêng. Video và ảnh bìa phải cùng tên. Nội dung được lưu dưới dạng bản nháp.",
+    adminUploadStaticOriginal: "Ảnh gốc",
+    adminUploadDynamicOriginal: "Tệp video",
+    adminUploadCover: "Ảnh bìa",
+    adminUploadMediaMismatch: "Tệp không khớp loại hình nền đã chọn. Hãy xóa tệp hoặc đổi loại.",
     adminNameChecking: 'Đang kiểm tra tên…',
     adminNameCheckUnavailable: 'Chưa thể kiểm tra tên. Tên sẽ được kiểm tra lại khi tạo.',
     adminNameDuplicateHint: 'Đã có thiết bị hoặc hệ thống cùng tên, không phân biệt chữ hoa và chữ thường. Hãy chọn mục hiện có.',
@@ -2046,6 +2136,24 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Kích thước hiện tại'
   },
   'zh-hant': {
+    adminUploadTypeLabel: "桌布類型",
+    adminUploadStaticLabel: "靜態桌布",
+    adminUploadDynamicLabel: "動態桌布",
+    adminUploadMediaHint: "同一裝置的靜態與動態桌布分別上傳，並沿用各自的儲存目錄。",
+    adminUploadAutoDirectory: "沿用該類型既有目錄",
+    adminUploadLoadingDirectory: "正在讀取該類型的儲存目錄…",
+    adminUploadDirectoryFailed: "目錄讀取失敗，請重試後再上傳。",
+    adminUploadRetryDirectory: "重新讀取目錄",
+    adminUploadChooseExisting: "選擇既有目錄",
+    adminUploadMultipleDirectories: "該類型已有多個目錄，請選擇本次上傳位置。",
+    adminUploadExistingHint: "將沿用該類型既有的儲存目錄，保留原始大小寫與空格。",
+    adminUploadDefaultHint: "該類型尚無素材，將使用新建的預設目錄。",
+    adminUploadStaticFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增靜態原圖與封面。上傳後儲存為草稿。",
+    adminUploadDynamicFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增 MP4/WebM 影片與圖片封面。影片與封面須同名，上傳後儲存為草稿。",
+    adminUploadStaticOriginal: "原圖檔案",
+    adminUploadDynamicOriginal: "影片檔案",
+    adminUploadCover: "封面檔案",
+    adminUploadMediaMismatch: "檔案與所選桌布類型不符，請移除檔案或切換類型。",
     adminNameChecking: '正在檢查名稱…',
     adminNameCheckUnavailable: '名稱檢查暫不可用，建立時會再次校驗。',
     adminNameDuplicateHint: '同名裝置或系統已存在（忽略大小寫），無法重複建立，請選擇已有項目。',

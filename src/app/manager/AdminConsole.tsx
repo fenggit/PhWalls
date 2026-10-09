@@ -15,7 +15,7 @@ import { buildWallpaperListTitle } from '@/lib/data';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { AdminDeviceNameConflictError, createWithAdminNameConfirmation, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
-import { deviceR2Prefix, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
+import { assertAdminUploadMime, normalizeAdminR2Prefix, type AdminUploadDirectories } from '@/lib/admin-upload-path';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
@@ -350,6 +350,7 @@ function putWithProgress(url: string, file: File, onProgress: (value: number) =>
 }
 
 export default function AdminConsole() {
+  const uploadTexts = getI18nTexts('zh');
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -379,6 +380,12 @@ export default function AdminConsole() {
   const [uploadDevices, setUploadDevices] = useState<DeviceRow[]>([]);
   const [uploadDevicesLoading, setUploadDevicesLoading] = useState(false);
   const [uploadDevice, setUploadDevice] = useState('');
+  const [uploadMedia, setUploadMedia] = useState<WallpaperMediaType>('static');
+  const [uploadDirectory, setUploadDirectory] = useState<{
+    deviceId: string; media: WallpaperMediaType; data?: AdminUploadDirectories; error?: string;
+  } | null>(null);
+  const [uploadDirectoryRevision, setUploadDirectoryRevision] = useState(0);
+  const [uploadExistingPrefix, setUploadExistingPrefix] = useState('');
   const [uploadSearch, setUploadSearch] = useState('');
   const [creatingUploadDevice, setCreatingUploadDevice] = useState(false);
   const [newUploadDeviceName, setNewUploadDeviceName] = useState('');
@@ -473,6 +480,17 @@ export default function AdminConsole() {
       .finally(() => { if (!cancelled) setUploadDevicesLoading(false); });
     return () => { cancelled = true; };
   }, [authenticated, uploadBrand]);
+  useEffect(() => {
+    if (!authenticated || tab !== 'upload' || !uploadDevice) return;
+    let cancelled = false;
+    setUploadExistingPrefix('');
+    setUploadR2Prefix('');
+    setUploadDirectory(null);
+    void api<{ data: AdminUploadDirectories }>(`upload?${new URLSearchParams({ device_id: uploadDevice, media_type: uploadMedia })}`)
+      .then(({ data }) => { if (!cancelled) setUploadDirectory({ deviceId: uploadDevice, media: uploadMedia, data }); })
+      .catch(() => { if (!cancelled) setUploadDirectory({ deviceId: uploadDevice, media: uploadMedia, error: uploadTexts.adminUploadDirectoryFailed }); });
+    return () => { cancelled = true; };
+  }, [authenticated, tab, uploadDevice, uploadMedia, uploadDirectoryRevision, uploadTexts.adminUploadDirectoryFailed]);
   useEffect(() => {
     setPublishDeviceDrafts(true);
     if (!editingDevice?.id) { setDeviceCheck(null); return; }
@@ -645,6 +663,16 @@ export default function AdminConsole() {
       event.target.value = '';
       return;
     }
+    try {
+      for (const file of explicitRole ? files : roleFiles) {
+        const role = explicitRole || (/(^|\/)compress\//i.test(file.webkitRelativePath) ? 'compress' : 'origin');
+        assertAdminUploadMime(fileMime(file), role, uploadMedia);
+      }
+    } catch {
+      setError(uploadTexts.adminUploadMediaMismatch);
+      event.target.value = '';
+      return;
+    }
     if (!explicitRole && folderRoot) {
       setUploadFolderName(folderRoot);
       setCreatingUploadDevice(false);
@@ -700,17 +728,18 @@ export default function AdminConsole() {
     }
     patchUpload(row.id, { state: 'uploading', progress: 0, error: undefined });
     try {
-      const mediaType = fileMime(row.origin).startsWith('video/') ? 'dynamic' : 'static';
+      assertAdminUploadMime(fileMime(row.origin), 'origin', uploadMedia);
+      assertAdminUploadMime(fileMime(row.preview), 'compress', uploadMedia);
       const authorize = async (file: File, role: string) => api<{ url: string; token: string }>('upload', 'POST', {
-        action: 'authorize', device_id: deviceId, role, media_type: mediaType,
+        action: 'authorize', device_id: deviceId, role, media_type: uploadMedia,
         size_bytes: file.size, mime_type: fileMime(file),
-        r2_prefix: uploadPathMode === 'custom' ? r2Prefix : undefined,
+        r2_prefix: r2Prefix, path_mode: uploadPathMode,
       });
       const [origin, preview] = await Promise.all([authorize(row.origin, 'origin'), authorize(row.preview, 'compress')]);
       await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }));
       await putWithProgress(preview.url, row.preview, (progress) => patchUpload(row.id, { progress: 50 + Math.round(progress / 2) }));
       const { data } = await api<{ data: WallpaperRow }>('upload', 'POST', {
-        action: 'complete', device_id: deviceId, name: row.name,
+        action: 'complete', device_id: deviceId, name: row.name, media_type: uploadMedia,
         origin_token: origin.token, preview_token: preview.token,
         theme: row.theme, category: row.category || undefined,
         tags: row.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
@@ -743,14 +772,24 @@ export default function AdminConsole() {
     : null;
   const folderTargetLocked = Boolean(uploadFolderName) && uploadRows.some((row) => row.state !== 'done');
   const selectedUploadDevice = uploadDevices.find((device) => device.id === uploadDevice && device.brand_name === uploadBrand);
-  const pendingUploadMedia = Array.from(new Set(uploadRows.filter((row) => row.state !== 'done' && row.origin)
-    .map((row): WallpaperMediaType => fileMime(row.origin!).startsWith('video/') ? 'dynamic' : 'static')));
-  let uploadStoragePath = selectedUploadDevice ? deviceR2Prefix(selectedUploadDevice, pendingUploadMedia[0] || 'static') : '';
+  const currentUploadDirectory = selectedUploadDevice && uploadDirectory?.deviceId === uploadDevice && uploadDirectory.media === uploadMedia
+    ? uploadDirectory : null;
+  const uploadStorageLoading = Boolean(selectedUploadDevice && !currentUploadDirectory);
+  const uploadStorage = currentUploadDirectory?.data;
+  let uploadStoragePath = uploadStorage
+    ? uploadStorage.directories.includes(uploadExistingPrefix) ? uploadExistingPrefix : uploadStorage.prefix : '';
   let uploadStoragePathError = '';
   if (uploadPathMode === 'custom') {
     try { uploadStoragePath = normalizeAdminR2Prefix(uploadR2Prefix); }
     catch (cause) { uploadStoragePath = ''; uploadStoragePathError = cause instanceof Error ? cause.message : 'R2 目录无效'; }
   }
+  let uploadQueueError = '';
+  try {
+    for (const row of uploadRows.filter((item) => item.state !== 'done')) {
+      if (row.origin) assertAdminUploadMime(fileMime(row.origin), 'origin', uploadMedia);
+      if (row.preview) assertAdminUploadMime(fileMime(row.preview), 'compress', uploadMedia);
+    }
+  } catch { uploadQueueError = uploadTexts.adminUploadMediaMismatch; }
   const editingDeviceIsDesktop = brands.some((brand) => brand.slug === editingDevice?.brand_name && brand.kind === 'desktop');
   const changeFilters = (patch: Partial<typeof filters>) => {
     setDevicePage(0);
@@ -903,6 +942,15 @@ export default function AdminConsole() {
         {tab === 'upload' && <section aria-label="上传工作区">
           <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4 sm:p-5">
           <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">1</span>上传目标</h3>
+          <div className="mb-4">
+            <label className="block max-w-sm text-sm">{uploadTexts.adminUploadTypeLabel}
+              <select className={`${inputClass} mt-1`} aria-label={uploadTexts.adminUploadTypeLabel} disabled={busy} value={uploadMedia}
+                onChange={(event) => { setUploadMedia(event.target.value as WallpaperMediaType); setUploadExistingPrefix(''); setUploadR2Prefix(''); setUploadPathMode('device'); setError(''); }}>
+                <option value="static">{uploadTexts.adminUploadStaticLabel}</option><option value="dynamic">{uploadTexts.adminUploadDynamicLabel}</option>
+              </select>
+            </label>
+            <p className="mt-2 text-xs text-[#66746b]">{uploadTexts.adminUploadMediaHint}</p>
+          </div>
           <div className="mb-4 grid gap-3 md:grid-cols-[minmax(140px,1fr)_minmax(180px,2fr)] xl:grid-cols-[minmax(160px,1fr)_minmax(220px,2fr)_auto] xl:items-end">
             <label className="text-sm">品牌
               <div className="mt-1 flex gap-2"><select className={inputClass} value={uploadBrand} disabled={busy} onChange={(event) => selectUploadBrand(event.target.value)}>
@@ -926,16 +974,28 @@ export default function AdminConsole() {
             </button>
           </div>
           <div className="mb-4 grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)]">
-            <label className="text-sm">R2 存储目录<select className={`${inputClass} mt-1`} aria-label="R2 目录方式" disabled={busy} value={uploadPathMode} onChange={(event) => setUploadPathMode(event.target.value as 'device' | 'custom')}><option value="device">默认设备目录</option><option value="custom">指定 R2 目录</option></select></label>
+            <label className="text-sm">R2 存储目录<select className={`${inputClass} mt-1`} aria-label="R2 目录方式" disabled={busy} value={uploadPathMode} onChange={(event) => setUploadPathMode(event.target.value as 'device' | 'custom')}><option value="device">{uploadTexts.adminUploadAutoDirectory}</option><option value="custom">指定 R2 目录</option></select></label>
             <div className="text-sm"><label htmlFor="r2-upload-path">目录路径</label><div className="mt-1 flex gap-2">
               <input id="r2-upload-path" className={`${inputClass} font-mono text-xs`} aria-describedby="r2-path-help" readOnly
                 value={uploadPathMode === 'custom' ? uploadR2Prefix : uploadStoragePath}
                 placeholder={uploadPathMode === 'custom' ? '请选择 R2 目录' : '选择设备后显示默认目录'} />
-              {uploadPathMode === 'custom' && <button type="button" className={buttonClass} disabled={busy} onClick={() => setChoosingR2Directory(true)}><FolderOpen size={16} />选择目录</button>}
+              {uploadPathMode === 'custom' && <button type="button" className={buttonClass} disabled={busy || uploadStorageLoading || !uploadStorage} onClick={() => setChoosingR2Directory(true)}><FolderOpen size={16} />选择目录</button>}
             </div></div>
           </div>
+          {uploadPathMode === 'device' && uploadStorage?.source === 'multiple' && <label className="mb-3 block text-sm">{uploadTexts.adminUploadChooseExisting}
+            <select className={`${inputClass} mt-1 font-mono text-xs`} aria-label={uploadTexts.adminUploadChooseExisting} disabled={busy}
+              value={uploadStorage.directories.includes(uploadExistingPrefix) ? uploadExistingPrefix : ''} onChange={(event) => setUploadExistingPrefix(event.target.value)}>
+              <option value="">{uploadTexts.adminUploadChooseExisting}</option>
+              {uploadStorage.directories.map((path) => <option key={path} value={path}>{path}</option>)}
+            </select>
+            <span className="mt-1 block text-xs text-amber-800">{uploadTexts.adminUploadMultipleDirectories}</span>
+          </label>}
+          {uploadStorageLoading && <p role="status" className="mb-3 text-xs text-[#66746b]">{uploadTexts.adminUploadLoadingDirectory}</p>}
+          {currentUploadDirectory?.error && <div role="alert" className="mb-3 flex flex-wrap items-center gap-3 text-sm text-red-700">
+            <span>{currentUploadDirectory.error}</span><button className={buttonClass} disabled={busy} onClick={() => setUploadDirectoryRevision((value) => value + 1)}><RefreshCw size={16} />{uploadTexts.adminUploadRetryDirectory}</button>
+          </div>}
           <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError && uploadR2Prefix ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError && uploadR2Prefix ? uploadStoragePathError : (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或点击“选择目录”浏览 R2 已有目录。')}
-            {uploadPathMode === 'device' && selectedUploadDevice && pendingUploadMedia.length > 1 && <span className="block">混合上传分别存储：静态 {deviceR2Prefix(selectedUploadDevice)} · 动态 {deviceR2Prefix(selectedUploadDevice, 'dynamic')}</span>}</p>
+            {uploadPathMode === 'device' && uploadStorage && uploadStorage.source !== 'multiple' && <span className="block">{uploadStorage.source === 'existing' ? uploadTexts.adminUploadExistingHint : uploadTexts.adminUploadDefaultHint}</span>}</p>
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
           {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
@@ -966,10 +1026,10 @@ export default function AdminConsole() {
           </div>
           <div className="mb-5 rounded-lg border border-dashed border-[#bdccbf] bg-[#edf2eb]/60 p-4 sm:p-5">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#dfe9de] text-xs text-[#526950]">2</span>选择文件</h3>
-          <p className="mb-4 text-xs leading-5 text-[#66746b]">选择含 origin 和 compress 子目录的文件夹，或为已选设备分别添加原图与预览图。新设备每个分类的第一张成功上传壁纸默认设为主图，上传后保存为草稿。</p>
+          <p className="mb-4 text-xs leading-5 text-[#66746b]">{uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicFilesHelp : uploadTexts.adminUploadStaticFilesHelp}</p>
           <div className="flex flex-wrap gap-2">
-            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />原图文件<input className="sr-only" type="file" multiple accept="image/*,video/mp4,video/webm" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'origin')} /></label>
-            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />预览文件<input className="sr-only" type="file" multiple accept="image/*" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'compress')} /></label>
+            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicOriginal : uploadTexts.adminUploadStaticOriginal}<input className="sr-only" type="file" multiple accept={uploadMedia === 'dynamic' ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp,image/avif,image/gif'} disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'origin')} /></label>
+            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />{uploadTexts.adminUploadCover}<input className="sr-only" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/gif" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'compress')} /></label>
             <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadBrand || busy || uploadFolderState === 'checking' ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy || uploadFolderState === 'checking'} onChange={(event) => addFiles(event)} /></label>
           </div>
           {uploadFolderName && <div className="mt-4 border-t border-[#d4dfd3] pt-4">
@@ -991,8 +1051,9 @@ export default function AdminConsole() {
           </div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">3</span>上传队列<span className="text-xs font-normal tabular-nums text-[#758278]">{uploadRows.length} 项</span></h3>
-            <button className={primaryClass} disabled={busy || uploadDevicesLoading || !uploadBrand || !uploadDevice || !uploadStoragePath || !!uploadStoragePathError || (!!uploadFolderName && uploadFolderState !== 'matched') || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
+            <button className={primaryClass} disabled={busy || uploadDevicesLoading || uploadStorageLoading || !uploadStorage || !!uploadQueueError || !uploadBrand || !uploadDevice || !uploadStoragePath || !!uploadStoragePathError || (!!uploadFolderName && uploadFolderState !== 'matched') || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
               const pending = uploadRows.filter((item) => item.state !== 'done');
+              if (uploadQueueError) throw new Error(uploadQueueError);
               if (pending.some((row) => !row.origin || !row.preview)) throw new Error('请先配齐每项原图和预览图');
               if (uploadFolderName && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
               const deviceId = await ensureUploadDevice();
@@ -1006,11 +1067,13 @@ export default function AdminConsole() {
               });
             })}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
+          {uploadQueueError && <p role="alert" className="mb-3 text-sm text-red-700">{uploadQueueError}</p>}
           <div className="overflow-hidden rounded-lg border border-[#dfe6df] bg-white">
             {uploadRows.length === 0 && <div className="flex min-h-44 flex-col items-center justify-center gap-3 px-4 text-center text-sm text-[#758278]"><ImagePlus size={28} className="text-[#9aaba0]" /><span>暂无待上传文件</span><span className="text-xs">添加文件后，在这里检查名称、主题与标签</span></div>}
             {uploadRows.map((row) => <div key={row.id} className="grid gap-3 border-b border-[#ebefeb] p-4 last:border-b-0 sm:grid-cols-2 xl:grid-cols-[minmax(160px,1fr)_90px_90px_minmax(120px,1fr)_110px_40px] xl:items-center">
               <div className="min-w-0"><input className={inputClass} aria-label="壁纸名称" value={row.name} onChange={(event) => patchUpload(row.id, { name: event.target.value })} />
-                <div className="mt-1 truncate text-xs text-gray-500">{row.origin?.name || '缺原图'} / {row.preview?.name || '缺预览'}</div></div>
+                <div className="mt-1 truncate text-xs text-gray-500">{row.origin?.name || '缺原图'} / {row.preview?.name || '缺预览'}</div>
+                {row.origin && <div className="mt-1 text-xs font-medium text-[#247560]">{fileMime(row.origin).startsWith('video/') ? uploadTexts.adminUploadDynamicLabel : uploadTexts.adminUploadStaticLabel}</div>}</div>
               <select className={inputClass} aria-label="主题" value={row.theme} onChange={(event) => patchUpload(row.id, { theme: event.target.value })}>
                 {['normal', 'dark', 'light'].map((value) => <option key={value} value={value}>{themeLabels[value]}</option>)}
               </select>
