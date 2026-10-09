@@ -153,6 +153,7 @@ export interface I18nTexts {
   downloading: string;
   downloadFailed: string;
   downloadWallpaper: string;
+  wallpaperActions: string;
   imageLoadFailed: string;
   videoLoadFailed: string;
   videoLoading: string;
@@ -309,6 +310,7 @@ export interface I18nTexts {
   appleWallpapersNavLabel: string;
   desktopWallpapersNavLabel: string;
   liveWallpapersNavLabel: string;
+  liveOtherBrandsTitle: string;
   liveNavShortLabel: string;
   liveHeroTitle: string;
   liveHeroDescription: string;
@@ -563,6 +565,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     
     // 壁纸预览相关
     downloadWallpaper: '下载',
+    wallpaperActions: '壁纸操作',
     downloading: '下载中...',
     downloadFailed: '下载失败，请重试',
     imageLoadFailed: '图片加载失败',
@@ -721,6 +724,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     appleWallpapersNavLabel: 'Apple 壁纸',
     desktopWallpapersNavLabel: '桌面壁纸',
     liveWallpapersNavLabel: '动态壁纸',
+    liveOtherBrandsTitle: '其他动态壁纸品牌',
     liveNavShortLabel: '动态',
     liveHeroTitle: '动态壁纸与视频壁纸',
     liveHeroDescription: '浏览三星、小米、华为、OPPO、vivo、OnePlus 与更多品牌的动态壁纸。按机型查看合集，播放视频预览，免费下载原始 MP4 文件。',
@@ -973,6 +977,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     
     // 壁纸预览相关
     downloadWallpaper: 'Download',
+    wallpaperActions: 'Wallpaper actions',
     downloading: 'Downloading...',
     downloadFailed: 'Download failed, please try again',
     imageLoadFailed: 'Image load failed',
@@ -1131,6 +1136,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     appleWallpapersNavLabel: 'Apple wallpapers',
     desktopWallpapersNavLabel: 'Desktop wallpapers',
     liveWallpapersNavLabel: 'Live wallpapers',
+    liveOtherBrandsTitle: 'More live wallpaper brands',
     liveNavShortLabel: 'Live',
     liveHeroTitle: 'Live Wallpapers & Video Wallpapers',
     liveHeroDescription: 'Browse live wallpaper collections from Samsung, Xiaomi, Huawei, OPPO, vivo, OnePlus and more. Explore by device, play video previews and download original MP4 files for free.',
@@ -1383,6 +1389,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     
     // 壁纸预览相关
     downloadWallpaper: 'ダウンロード',
+    wallpaperActions: '壁紙の操作',
     downloading: 'ダウンロード中...',
     downloadFailed: 'ダウンロードに失敗しました。再試行してください',
     imageLoadFailed: '画像の読み込みに失敗しました',
@@ -1541,6 +1548,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     appleWallpapersNavLabel: 'Apple 壁紙',
     desktopWallpapersNavLabel: 'デスクトップ壁紙',
     liveWallpapersNavLabel: 'ライブ壁紙',
+    liveOtherBrandsTitle: 'その他のライブ壁紙ブランド',
     liveNavShortLabel: 'ライブ',
     liveHeroTitle: 'ライブ壁紙・動画壁紙',
     liveHeroDescription: 'Samsung、Xiaomi、Huawei、OPPO、vivo、OnePlusなどのライブ壁紙を機種別に掲載。動画プレビューを再生して、オリジナルのMP4ファイルを無料ダウンロードできます。',
@@ -1783,6 +1791,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     previewJson: 'Xem trước JSON',
     exportJsonFile: 'Xuất JSON',
     downloadWallpaper: 'Tải xuống',
+    wallpaperActions: 'Thao tác hình nền',
     downloading: 'Đang tải xuống...',
     downloadFailed: 'Tải xuống thất bại, vui lòng thử lại',
     imageLoadFailed: 'Tải hình ảnh thất bại',
@@ -1924,6 +1933,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     appleWallpapersNavLabel: 'Apple',
     desktopWallpapersNavLabel: 'Máy tính',
     liveWallpapersNavLabel: 'Hình nền động',
+    liveOtherBrandsTitle: 'Các hãng hình nền động khác',
     liveNavShortLabel: 'Động',
     liveHeroTitle: 'Hình nền động và hình nền video',
     liveHeroDescription: 'Khám phá hình nền động của Samsung, Xiaomi, Huawei, OPPO, vivo, OnePlus và nhiều hãng khác. Duyệt theo thiết bị, xem trước video và tải miễn phí tệp MP4 gốc.',
@@ -2176,6 +2186,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     
     // 壁纸预览相关
     downloadWallpaper: '下載',
+    wallpaperActions: '桌布操作',
     downloading: '下載中...',
     downloadFailed: '下載失敗，請重試',
     imageLoadFailed: '圖片載入失敗',
@@ -2334,6 +2345,7 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     appleWallpapersNavLabel: 'Apple 壁紙',
     desktopWallpapersNavLabel: '桌面壁紙',
     liveWallpapersNavLabel: '動態桌布',
+    liveOtherBrandsTitle: '其他動態桌布品牌',
     liveNavShortLabel: '動態',
     liveHeroTitle: '動態桌布與影片桌布',
     liveHeroDescription: '瀏覽三星、小米、華為、OPPO、vivo、OnePlus 等品牌的動態桌布。依機型探索合集，播放影片預覽，免費下載原始 MP4 檔案。',

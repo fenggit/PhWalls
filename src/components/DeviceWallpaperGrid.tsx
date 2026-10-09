@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
+import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
 import { useLanguage } from '@/components/LanguageProvider';
 import { Language } from '@/types';
 import Header from '@/components/Header';
@@ -77,6 +78,8 @@ export default function DeviceWallpaperGrid({
   const [previewIndex, setPreviewIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const sharedWallpaper = useSearchParams().get('wallpaper');
+  const openedShareRef = useRef('');
 
   useEffect(() => {
     setMounted(true);
@@ -207,6 +210,16 @@ export default function DeviceWallpaperGrid({
     setPreviewIndex(index);
     setIsPreviewOpen(true);
   }, [deviceData, displayDeviceName, pathname]);
+
+  useEffect(() => {
+    if (!sharedWallpaper) { openedShareRef.current = ''; return; }
+    const target = `${pathname}::${sharedWallpaper}`;
+    if (openedShareRef.current === target) return;
+    const index = deviceData.item.findIndex((item) => item.name === sharedWallpaper);
+    if (index < 0) return;
+    openedShareRef.current = target;
+    openPreview(index);
+  }, [deviceData.item, openPreview, pathname, sharedWallpaper]);
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLang(lang);
@@ -385,6 +398,7 @@ export default function DeviceWallpaperGrid({
                   const imageKey = `${deviceData.name}-${index}`;
                   const imageUrl = imageUrls[imageKey];
                   const isPriorityImage = groupIndex === 0 && itemIndex < 2;
+                  const isVideo = item.type.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath);
 
                   return (
                     <article key={imageKey} className="group w-full">
@@ -422,7 +436,7 @@ export default function DeviceWallpaperGrid({
                             ) : null}
                           </div>
 
-                          <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          {isVideo ? <WallpaperPlayIndicator /> : <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="translate-y-2 transform transition-transform duration-300 group-hover:translate-y-0">
                                 <div className="rounded-full bg-white/95 p-3 shadow-2xl backdrop-blur-sm">
@@ -433,7 +447,7 @@ export default function DeviceWallpaperGrid({
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          </div>}
 
                           <span className="absolute bottom-3 right-3 inline-flex items-center rounded-xl bg-black/45 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
                             {(item.type.split('/')[1] || item.type).toUpperCase()}

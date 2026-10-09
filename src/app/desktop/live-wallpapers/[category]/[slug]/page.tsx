@@ -5,9 +5,9 @@ export const runtime = 'edge';
 type Props = { params: Promise<{ category: string; slug: string }> };
 
 export function generateMetadata(props: Props) {
-  return generateDesktopMetadata({ ...props, mediaType: 'static' });
+  return generateDesktopMetadata({ ...props, mediaType: 'dynamic' });
 }
 
-export default function DesktopStaticWallpaperDetailPage(props: Props) {
-  return DesktopWallpaperDetailPage({ ...props, mediaType: 'static' });
+export default function DesktopLiveWallpaperDetailPage(props: Props) {
+  return DesktopWallpaperDetailPage({ ...props, mediaType: 'dynamic' });
 }

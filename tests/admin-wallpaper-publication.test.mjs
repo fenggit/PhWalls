@@ -76,6 +76,23 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
   return { sqlite, service, upload, load };
 }
 
+test('static and Live uploads with the same name have separate primary covers', async () => {
+  const { sqlite, upload, service } = fixture();
+  try {
+    const still = await upload('same');
+    const live = await upload('same', { media_type: 'dynamic', mime_type: 'video/mp4',
+      origin_key: 'Live/test/device/origin/same.mp4', compress_key: 'Live/test/device/compress/same.webp' });
+    assert.equal(still.is_primary, 1);
+    assert.equal(live.is_primary, 1);
+    const next = await upload('next', { media_type: 'dynamic', mime_type: 'video/mp4',
+      origin_key: 'Live/test/device/origin/next.mp4', compress_key: 'Live/test/device/compress/next.webp' });
+    await service.updateAdminWallpaper({ id: next.id, is_primary: 1 });
+    assert.equal(sqlite.prepare('SELECT is_primary FROM w_wallpapers WHERE id = ?').get(still.id).is_primary, 1);
+    assert.equal(sqlite.prepare('SELECT is_primary FROM w_wallpapers WHERE id = ?').get(live.id).is_primary, 0);
+    assert.equal(sqlite.prepare('SELECT is_primary FROM w_wallpapers WHERE id = ?').get(next.id).is_primary, 1);
+  } finally { sqlite.close(); }
+});
+
 test('first uploaded wallpaper becomes the primary draft and later uploads preserve it', async () => {
   const { sqlite, upload } = fixture();
   try {

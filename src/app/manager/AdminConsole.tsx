@@ -7,7 +7,7 @@ import AdminDeviceI18nPanel from '@/app/manager/AdminDeviceI18nPanel';
 import { adminTabHref, resolveAdminTab, type AdminTab } from '@/lib/admin-navigation';
 import { uploadAdminBatch } from '@/lib/admin-upload-batch';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import type { DeviceI18nRow, DeviceRow, WallpaperRow } from '@/lib/wallpaper-db';
+import type { DeviceI18nRow, DeviceRow, WallpaperRow, WallpaperMediaType } from '@/lib/wallpaper-db';
 import type { Language } from '@/types';
 import { SUPPORTED_LANGUAGES } from '@/lib/language';
 import { getI18nTexts } from '@/lib/i18n';
@@ -214,10 +214,11 @@ function translationDraft(row?: DeviceI18nRow): TranslationDraft {
   return { display_name: row?.display_name || '', seo_title: row?.seo_title || '', description: row?.description || '' };
 }
 
-function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
-  device: Pick<DeviceRow, 'id' | 'device_name'>; initialLanguage: Language; onChanged: () => void; onClose: () => void;
+function DeviceI18nDialog({ device, initialLanguage, initialMedia, onChanged, onClose }: {
+  device: Pick<DeviceRow, 'id' | 'device_name'>; initialLanguage: Language; initialMedia: WallpaperMediaType; onChanged: () => void; onClose: () => void;
 }) {
   const [language, setLanguage] = useState<Language>(initialLanguage);
+  const [media, setMedia] = useState<WallpaperMediaType>(initialMedia);
   const [rows, setRows] = useState<DeviceI18nRow[]>([]);
   const [drafts, setDrafts] = useState<Partial<Record<Language, TranslationDraft>>>({});
   const [loaded, setLoaded] = useState(false);
@@ -229,8 +230,8 @@ function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true); setError('');
-    void api<{ data: DeviceI18nRow[] }>(`device-i18n?device_id=${encodeURIComponent(device.id)}`)
+    setLoading(true); setLoaded(false); setError(''); setMessage('');
+    void api<{ data: DeviceI18nRow[] }>(`device-i18n?${new URLSearchParams({ device_id: device.id, media })}`)
       .then(({ data }) => {
         if (cancelled) return;
         setRows(data);
@@ -240,7 +241,7 @@ function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
       .catch((cause) => { if (!cancelled) setError(cause instanceof Error ? cause.message : '多语言内容加载失败'); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [device.id, attempt]);
+  }, [device.id, media, attempt]);
 
   const saved = rows.find((row) => row.language === language);
   const draft = drafts[language] || emptyTranslation;
@@ -263,7 +264,7 @@ function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
     if (busy || !loaded || !hasContent) return;
     setBusy(true); setError(''); setMessage('');
     try {
-      const { data } = await api<{ data: DeviceI18nRow }>('device-i18n', 'POST', { device_id: device.id, language, ...draft });
+      const { data } = await api<{ data: DeviceI18nRow }>('device-i18n', 'POST', { device_id: device.id, media_type: media, language, ...draft });
       setRows((current) => [...current.filter((row) => row.language !== language), data]);
       setDrafts((current) => ({ ...current, [language]: translationDraft(data) }));
       setMessage(`已保存${translationLanguageLabels[language]}内容`);
@@ -275,7 +276,7 @@ function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
     if (busy || !saved || !window.confirm(`确认删除“${device.device_name}”的${translationLanguageLabels[language]}设备名、SEO 标题和描述？此操作无法撤销。`)) return;
     setBusy(true); setError(''); setMessage('');
     try {
-      await api('device-i18n', 'DELETE', { device_id: device.id, language });
+      await api('device-i18n', 'DELETE', { device_id: device.id, media_type: media, language });
       setRows((current) => current.filter((row) => row.language !== language));
       setDrafts((current) => ({ ...current, [language]: { ...emptyTranslation } }));
       setMessage(`已删除${translationLanguageLabels[language]}内容`);
@@ -289,7 +290,11 @@ function DeviceI18nDialog({ device, initialLanguage, onChanged, onClose }: {
       <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">设备多语言内容</h2>
         <button type="button" className={iconButtonClass} aria-label="关闭多语言内容" disabled={busy} onClick={close}><X size={16} /></button></div>
       <p className="mb-1 text-sm font-semibold">{device.device_name}</p>
-      <p className="mb-4 text-xs leading-5 text-[#66746b]">设备名用于列表与面包屑，SEO 标题用于详情页，可包含“壁纸”等关键词。至少填写一项，留空使用默认内容。各语言独立保存，切换语言保留未保存的修改。</p>
+      <p className="mb-4 text-xs leading-5 text-[#66746b]">静态与动态合集分别保存设备名、SEO 标题和描述，互不覆盖。至少填写一项，留空使用对应类型的默认内容。各语言独立保存，切换语言保留未保存的修改。</p>
+      <label className="mb-4 block text-sm">壁纸类型<select className={`${inputClass} mt-1`} value={media} disabled={busy || loading} onChange={(event) => {
+        if (dirty && !window.confirm('当前壁纸类型有未保存的修改，确认切换并放弃修改？')) return;
+        setLoaded(false); setLoading(true); setRows([]); setDrafts({}); setMedia(event.target.value as WallpaperMediaType);
+      }}><option value="static">静态壁纸</option><option value="dynamic">动态壁纸 · Live</option></select></label>
       {loading && <p role="status" className="mb-4 text-sm text-[#66746b]">正在加载多语言内容…</p>}
       <fieldset disabled={!loaded || loading || busy} className="space-y-4 disabled:opacity-60">
         <label className="block text-sm">语言<select className={`${inputClass} mt-1`} value={language} onChange={(event) => {
@@ -364,7 +369,7 @@ export default function AdminConsole() {
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [editingDevice, setEditingDevice] = useState<Partial<DeviceRow> | null>(null);
-  const [describingDevice, setDescribingDevice] = useState<{ device: Pick<DeviceRow, 'id' | 'device_name'>; language: Language } | null>(null);
+  const [describingDevice, setDescribingDevice] = useState<{ device: Pick<DeviceRow, 'id' | 'device_name'>; language: Language; media?: WallpaperMediaType } | null>(null);
   const [i18nRevision, setI18nRevision] = useState(0);
   const [newBrand, setNewBrand] = useState<{ title: string; slug: string; kind: AdminBrand['kind'] } | null>(null);
   const [deviceCheck, setDeviceCheck] = useState<DeviceCheck | null>(null);
@@ -699,7 +704,7 @@ export default function AdminConsole() {
       const authorize = async (file: File, role: string) => api<{ url: string; token: string }>('upload', 'POST', {
         action: 'authorize', device_id: deviceId, role, media_type: mediaType,
         size_bytes: file.size, mime_type: fileMime(file),
-        r2_prefix: r2Prefix,
+        r2_prefix: uploadPathMode === 'custom' ? r2Prefix : undefined,
       });
       const [origin, preview] = await Promise.all([authorize(row.origin, 'origin'), authorize(row.preview, 'compress')]);
       await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }));
@@ -738,7 +743,9 @@ export default function AdminConsole() {
     : null;
   const folderTargetLocked = Boolean(uploadFolderName) && uploadRows.some((row) => row.state !== 'done');
   const selectedUploadDevice = uploadDevices.find((device) => device.id === uploadDevice && device.brand_name === uploadBrand);
-  let uploadStoragePath = selectedUploadDevice ? deviceR2Prefix(selectedUploadDevice) : '';
+  const pendingUploadMedia = Array.from(new Set(uploadRows.filter((row) => row.state !== 'done' && row.origin)
+    .map((row): WallpaperMediaType => fileMime(row.origin!).startsWith('video/') ? 'dynamic' : 'static')));
+  let uploadStoragePath = selectedUploadDevice ? deviceR2Prefix(selectedUploadDevice, pendingUploadMedia[0] || 'static') : '';
   let uploadStoragePathError = '';
   if (uploadPathMode === 'custom') {
     try { uploadStoragePath = normalizeAdminR2Prefix(uploadR2Prefix); }
@@ -848,7 +855,7 @@ export default function AdminConsole() {
         </div>}
 
         {tab === 'i18n' && <AdminDeviceI18nPanel brands={brands} refreshKey={i18nRevision}
-          onEdit={(device, language) => setDescribingDevice({ device, language })} />}
+          onEdit={(device, language, media) => setDescribingDevice({ device, language, media })} />}
 
         {tab === 'brands' && <section aria-label="品牌目录">
           <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[600px]`}>
@@ -927,7 +934,8 @@ export default function AdminConsole() {
               {uploadPathMode === 'custom' && <button type="button" className={buttonClass} disabled={busy} onClick={() => setChoosingR2Directory(true)}><FolderOpen size={16} />选择目录</button>}
             </div></div>
           </div>
-          <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError && uploadR2Prefix ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError && uploadR2Prefix ? uploadStoragePathError : (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或点击“选择目录”浏览 R2 已有目录。')}</p>
+          <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError && uploadR2Prefix ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError && uploadR2Prefix ? uploadStoragePathError : (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或点击“选择目录”浏览 R2 已有目录。')}
+            {uploadPathMode === 'device' && selectedUploadDevice && pendingUploadMedia.length > 1 && <span className="block">混合上传分别存储：静态 {deviceR2Prefix(selectedUploadDevice)} · 动态 {deviceR2Prefix(selectedUploadDevice, 'dynamic')}</span>}</p>
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
           {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
@@ -1037,8 +1045,8 @@ export default function AdminConsole() {
       {choosingR2Directory && <R2DirectoryDialog selected={uploadR2Prefix} onClose={() => setChoosingR2Directory(false)}
         onSelect={(path) => { setUploadR2Prefix(path); setChoosingR2Directory(false); }} />}
 
-      {describingDevice && <DeviceI18nDialog key={`${describingDevice.device.id}:${describingDevice.language}`} device={describingDevice.device}
-        initialLanguage={describingDevice.language} onChanged={() => setI18nRevision((value) => value + 1)} onClose={() => setDescribingDevice(null)} />}
+      {describingDevice && <DeviceI18nDialog key={`${describingDevice.device.id}:${describingDevice.media}:${describingDevice.language}`} device={describingDevice.device}
+        initialLanguage={describingDevice.language} initialMedia={describingDevice.media || 'static'} onChanged={() => setI18nRevision((value) => value + 1)} onClose={() => setDescribingDevice(null)} />}
 
       {deletingWallpaper && <AdminDialog title="删除壁纸" onClose={() => { if (!busy) setDeletingWallpaper(null); }}>
         <form onSubmit={deleteWallpaper} className={modalClass}>

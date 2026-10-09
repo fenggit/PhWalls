@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: Props) {
   const collection = await loadLiveCollection(category, slug, language);
   if (!collection) return {};
   return buildLiveMetadata(language, buildLiveWallpaperDetailPath(category, slug),
-    getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length }),
+    getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length,
+      seoTitle: collection.seoTitle, description: collection.description }),
     buildPublicR2Url(collection.item[0]?.compressPath || ''));
 }
 
@@ -29,7 +30,8 @@ export default async function LiveDetailPage({ params }: Props) {
   const language = await resolveMetadataLanguage();
   const collection = await loadLiveCollection(category, slug, language);
   if (!collection) notFound();
-  const copy = getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length });
+  const copy = getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length,
+    seoTitle: collection.seoTitle, description: collection.description });
   const texts = getI18nTexts(language);
   const url = withLanguageUrl(`${SITE_URL}${buildLiveWallpaperDetailPath(category, slug)}`, language);
   const images = Object.fromEntries(collection.item.map((item, index) =>

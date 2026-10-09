@@ -12,6 +12,7 @@ import { getAllHomeCollections } from '@/lib/home-index'
 import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db'
 import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data'
 import { loadLiveIndex } from '@/lib/live-data-server'
+import { getWallpaperCollectionMedia, splitWallpaperCollection } from '@/lib/wallpaper-media'
 import {
   buildWallpaperDetailPath,
   parseWallpaperDate,
@@ -53,7 +54,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const allDesktopCollections = isWallpaperDbEnabled()
     ? Object.entries(await loadDbIndex(getDesktopTabData().map((tab) => tab.type)))
         .flatMap(([category, list]) => list.map((collection) => ({ category, collection })))
-    : getAllDesktopWallpaperCollections()
+    : getAllDesktopWallpaperCollections().flatMap(({ category, collection }) =>
+        splitWallpaperCollection(collection).map((entry) => ({ category, collection: entry })))
   const latestCollectionDate =
     [...allCollections, ...allDesktopCollections]
       .map(({ collection }) => parseWallpaperDate(collection.date))
@@ -132,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   })
 
   const desktopDetailRoutes: MetadataRoute.Sitemap = allDesktopCollections.map(({ category, collection }) => {
-    const absolutePath = `${SITE_URL}${buildDesktopWallpaperDetailPath(category, collection.slug || collection.name)}`
+    const absolutePath = `${SITE_URL}${buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, getWallpaperCollectionMedia(collection))}`
     return {
       url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
       alternates: buildLanguageAlternates(absolutePath),

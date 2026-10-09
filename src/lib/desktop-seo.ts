@@ -3,10 +3,12 @@ import { LanguageCode, type Language } from '@/types';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { getI18nTexts } from '@/lib/i18n';
 import { getLocalizedCategorySeoCopy } from '@/lib/category-seo-copy';
+import { getLiveSeoCopy } from '@/lib/live-seo';
 
 export { getLocalizedDesktopHomeSeoCopy as getDesktopHomeSeoCopy } from '@/lib/category-seo-copy';
 
 type DesktopDetailSeoCopyInput = {
+  mediaType?: 'static' | 'dynamic';
   collectionName: string;
   displayName?: string;
   seoTitle?: string | null;
@@ -127,5 +129,14 @@ function buildGeneratedDesktopDetailSeoCopy(
 }
 
 export function buildDesktopDetailSeoCopy(language: Language, input: DesktopDetailSeoCopyInput): DesktopDetailSeoCopy {
+  if (input.mediaType === 'dynamic') {
+    const live = getLiveSeoCopy(language, { name: input.displayName || formatWallpaperDisplayName(input.collectionName), count: input.count });
+    return applyCollectionSeo({
+      title: `${live.title} | PhWalls`, description: live.description,
+      summaryTitle: live.title, summaryDescription: live.description,
+      galleryName: live.title, galleryDescription: live.description,
+      categoryLabel: getDesktopCategoryLabel(language),
+    }, input);
+  }
   return applyCollectionSeo(buildGeneratedDesktopDetailSeoCopy(language, input), input);
 }

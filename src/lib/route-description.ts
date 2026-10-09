@@ -61,12 +61,14 @@ export async function resolveRouteDescription(path: string, language: Language):
       const category = segments[1];
       return getDesktopCategorySeoCopy(language, category, getDesktopWallpaperCategoryLabel(category)).description;
     }
-    if (segments.length === 4 && segments[1] === 'wallpapers') {
+    if (segments.length === 4 && ['wallpapers', 'live-wallpapers'].includes(segments[1])) {
       const [, , category, slug] = segments;
       if (!isDesktopWallpaperCategory(category)) return null;
-      const collection = await loadDesktopWallpaperCollection(category, slug, language);
+      const mediaType = segments[1] === 'live-wallpapers' ? 'dynamic' : 'static';
+      const collection = await loadDesktopWallpaperCollection(category, slug, language, mediaType);
       return collection
         ? buildDesktopDetailSeoCopy(language, {
+            mediaType,
             collectionName: collection.name,
             displayName: collection.deviceId ? collection.name : undefined,
             categoryLabel: getDesktopWallpaperCategoryLabel(category),

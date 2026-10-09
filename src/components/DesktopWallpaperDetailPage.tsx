@@ -1,0 +1,192 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
+import {
+  buildDesktopWallpaperDetailPath,
+  getDesktopWallpaperCategoryLabel,
+  isDesktopWallpaperCategory,
+} from '@/lib/desktop-data';
+import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
+import { formatWallpaperDisplayName } from '@/lib/data';
+import { buildDesktopDetailSeoCopy, getDesktopCategoryLabel } from '@/lib/desktop-seo';
+import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
+import { resolveMetadataLanguage } from '@/lib/metadata';
+import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
+import { SITE_URL } from '@/lib/seo';
+import { parseWallpaperDate } from '@/lib/wallpaper-data';
+import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
+import { getI18nTexts } from '@/lib/i18n';
+
+type DesktopWallpaperDetailPageProps = {
+  mediaType?: 'static' | 'dynamic';
+  params: Promise<{
+    category: string;
+    slug: string;
+  }>;
+};
+
+export async function generateMetadata({ params, mediaType = 'static' }: DesktopWallpaperDetailPageProps): Promise<Metadata> {
+  const { category, slug } = await params;
+  if (!isDesktopWallpaperCategory(category)) {
+    return {};
+  }
+
+  const language = await resolveMetadataLanguage();
+  const collection = await loadDesktopWallpaperCollection(category, slug, language, mediaType);
+  if (!collection) {
+    return {};
+  }
+
+  const categoryLabel = getDesktopWallpaperCategoryLabel(category);
+  const seoCopy = buildDesktopDetailSeoCopy(language, {
+    mediaType,
+    collectionName: collection.name,
+    displayName: collection.deviceId ? collection.name : undefined,
+    categoryLabel,
+    count: collection.item.length,
+    seoTitle: collection.seoTitle,
+    description: collection.description,
+  });
+  const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, mediaType);
+  const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
+  const primaryImagePath = collection.item[0]?.compressPath || collection.item[0]?.originPath;
+  const primaryImageUrl = primaryImagePath
+    ? buildPublicR2Url(primaryImagePath) || `${SITE_URL}/brand/option-03/logo.png`
+    : `${SITE_URL}/brand/option-03/logo.png`;
+
+  return {
+    title: seoCopy.title,
+    description: seoCopy.description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: buildLanguageAlternates(`${SITE_URL}${detailPath}`),
+    },
+    openGraph: {
+      title: seoCopy.title,
+      description: seoCopy.description,
+      type: 'article',
+      url: canonicalUrl,
+      locale: getOpenGraphLocaleForLanguage(language),
+      images: [
+        ...DEFAULT_OPEN_GRAPH_IMAGES,
+        { url: primaryImageUrl, alt: seoCopy.title },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoCopy.title,
+      description: seoCopy.description,
+      images: DEFAULT_X_IMAGES,
+    },
+  };
+}
+
+export default async function DesktopWallpaperDetailPage({ params, mediaType = 'static' }: DesktopWallpaperDetailPageProps) {
+  const { category, slug } = await params;
+  if (!isDesktopWallpaperCategory(category)) {
+    notFound();
+  }
+
+  const language = await resolveMetadataLanguage();
+  const collection = await loadDesktopWallpaperCollection(category, slug, language, mediaType);
+  if (!collection) {
+    notFound();
+  }
+
+  const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, mediaType);
+  const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
+  const categoryLabel = getDesktopWallpaperCategoryLabel(category);
+  const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
+  const seoCopy = buildDesktopDetailSeoCopy(language, {
+    mediaType,
+    collectionName: collection.name,
+    displayName: collection.deviceId ? collection.name : undefined,
+    categoryLabel,
+    count: collection.item.length,
+    seoTitle: collection.seoTitle,
+    description: collection.description,
+  });
+  const categoryLandingPath = `/desktop/${category}`;
+  const categoryLandingUrl = withLanguageUrl(`${SITE_URL}${categoryLandingPath}`, language);
+
+  const initialImageUrls: Record<string, string> | undefined = hasPublicR2Cdn()
+    ? Object.fromEntries(
+        collection.item
+          .map((item, index) => {
+            const path = item.compressPath || item.originPath;
+            const publicUrl = path ? buildPublicR2Url(path) : null;
+            if (!publicUrl) return null;
+            return [`${collection.name}-${index}`, publicUrl] as [string, string];
+          })
+          .filter((entry): entry is [string, string] => entry !== null)
+      )
+    : undefined;
+
+  const summarySection = (
+    <section className="mt-16 border-t border-gray-100 pt-8 pb-4">
+      <h2 className="text-xl font-semibold text-gray-800 mb-3">
+        {seoCopy.summaryTitle}
+      </h2>
+      <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+        {seoCopy.summaryDescription}
+      </p>
+    </section>
+  );
+
+  const imageGallerySchema = {
+    '@context': 'https://schema.org',
+    '@type': mediaType === 'dynamic' ? 'CollectionPage' : 'ImageGallery',
+    name: seoCopy.galleryName,
+    description: seoCopy.galleryDescription,
+    url: canonicalUrl,
+    inLanguage: language,
+    numberOfItems: collection.item.length,
+    ...(publishedDate ? { datePublished: publishedDate } : {}),
+    associatedMedia: collection.item.map((item, index) => {
+      const imageUrl = initialImageUrls?.[`${collection.name}-${index}`];
+      return {
+        '@type': mediaType === 'dynamic' ? 'VideoObject' : 'ImageObject',
+        name: formatWallpaperDisplayName(item.name),
+        description: `${formatWallpaperDisplayName(item.name)} - ${seoCopy.galleryName}`,
+        encodingFormat: mediaType === 'dynamic' ? item.type : item.compressPath ? 'image/webp' : item.type,
+        ...(!item.compressPath ? { contentSize: item.size } : {}),
+        ...(mediaType === 'dynamic' ? {
+          contentUrl: `${SITE_URL}/api/files/preview?key=${encodeURIComponent(item.originPath)}`,
+          thumbnailUrl: imageUrl, uploadDate: publishedDate,
+        } : imageUrl ? { contentUrl: imageUrl, thumbnailUrl: imageUrl } : {}),
+      };
+    }),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: withLanguageUrl(SITE_URL, language) },
+      { '@type': 'ListItem', position: 2, name: seoCopy.categoryLabel, item: categoryLandingUrl },
+      { '@type': 'ListItem', position: 3, name: collection.name, item: canonicalUrl },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema).replace(/</g, '\\u003c') }}
+      />
+      <DeviceWallpaperGrid
+        category={category}
+        deviceData={{ ...collection, seoTitle: seoCopy.galleryName, description: seoCopy.description }}
+        summarySection={summarySection}
+        initialImageUrls={initialImageUrls}
+        categoryLabelOverride={getDesktopCategoryLabel(language)}
+        categoryLandingPathOverride={categoryLandingPath}
+        wallpaperGroupLabelOverride={mediaType === 'dynamic' ? getI18nTexts(language).liveWallpapersNavLabel : undefined}
+      />
+    </>
+  );
+}

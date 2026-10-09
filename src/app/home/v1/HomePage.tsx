@@ -1,4 +1,6 @@
 import { resolveMetadataLanguage } from '@/lib/metadata';
+import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media';
+import { buildLiveWallpaperDetailPath } from '@/lib/live-data';
 import HomeLanding from './HomeLanding';
 import desktopHomeIndex from '@/data/desktop-home-index.json';
 import { BRAND_CATEGORIES } from '@/lib/brands';
@@ -20,7 +22,7 @@ const POPULAR_BRANDS = [
 ] as const;
 
 type DesktopHomeCollection = Pick<WallpaperCollection, 'deviceId' | 'name' | 'slug'> & {
-  item: Array<{ compressPath?: string; originPath?: string }>;
+  item: Array<{ type?: string; compressPath?: string; originPath?: string }>;
 };
 
 const FEATURED_DESKTOP_CATEGORIES = [
@@ -49,7 +51,10 @@ export default async function HomePage() {
     name: collection.name,
     date: collection.date,
     count: collection.count || collection.item?.length || 0,
-    href: buildWallpaperDetailPath(category, collection.slug || collection.name),
+    isLive: getWallpaperCollectionMedia(collection) === 'dynamic',
+    href: getWallpaperCollectionMedia(collection) === 'dynamic'
+      ? buildLiveWallpaperDetailPath(category, collection.slug || collection.name)
+      : buildWallpaperDetailPath(category, collection.slug || collection.name),
     imageUrl: buildPublicR2Url(collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || ''),
   });
 
@@ -67,7 +72,8 @@ export default async function HomePage() {
       category,
       deviceId: collection.deviceId,
       name: collection.name,
-      href: buildDesktopWallpaperDetailPath(category, collection.slug || collection.name),
+      isLive: getWallpaperCollectionMedia(collection) === 'dynamic',
+      href: buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, getWallpaperCollectionMedia(collection)),
       imageUrl: buildPublicR2Url(collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || ''),
     }))
   );

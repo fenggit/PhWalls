@@ -275,11 +275,11 @@ export async function createAdminWallpaper(input: Record<string, unknown>): Prom
     `INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,width,height,file_format,
       theme,media_type,category,is_primary,tags,status,create_date,updated_date)
      SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,
-       CASE WHEN NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = ? AND category = ?) THEN 1 ELSE 0 END,
+       CASE WHEN NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = ? AND category = ? AND media_type = ?) THEN 1 ELSE 0 END,
        ?,'draft',?,? WHERE ${availableFilesClause}`
   ).bind(id, deviceId, name, assertText(input.mime_type, 'MIME 类型', 100), size, origin, preview,
     input.width || null, input.height || null, extension, selectedTheme, media, selectedCategory,
-    deviceId, selectedCategory, tags(input.tags || []), now, now, origin, preview, origin, preview).run();
+    deviceId, selectedCategory, media, tags(input.tags || []), now, now, origin, preview, origin, preview).run();
   if (inserted.meta.changes !== 1) throw new Error('文件正在删除，无法创建引用这些文件的壁纸');
   return (await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>())!;
 }
@@ -312,8 +312,8 @@ export async function updateAdminWallpaper(input: Record<string, unknown>): Prom
   }
   if (previous.is_primary && !primary && previous.status === 'published') {
     const other = await db.prepare(
-      "SELECT COUNT(*) AS count FROM w_wallpapers WHERE device_id = ? AND category = ? AND status = 'published' AND id != ? AND is_primary = 1"
-    ).bind(previous.device_id, previous.category, id).first<{ count: number }>();
+      "SELECT COUNT(*) AS count FROM w_wallpapers WHERE device_id = ? AND category = ? AND media_type = ? AND status = 'published' AND id != ? AND is_primary = 1"
+    ).bind(previous.device_id, previous.category, previous.media_type, id).first<{ count: number }>();
     if (!other?.count && nextStatus === 'published') throw new Error('请先设置另一张主展示壁纸');
   }
   const nextTheme = input.theme || previous.theme;
@@ -333,8 +333,8 @@ export async function updateAdminWallpaper(input: Record<string, unknown>): Prom
     input.tags === undefined ? previous.tags : tags(input.tags), nextStatus, now, id, origin, preview, origin, preview);
   if (primary) {
     const results = await db.batch([
-      db.prepare(`UPDATE w_wallpapers SET is_primary = 0, updated_date = ? WHERE device_id = ? AND category = ? AND id != ? AND is_primary = 1 AND EXISTS (SELECT 1 FROM w_wallpapers target WHERE target.id = ? AND target.deletion_state = 'none') AND ${availableFilesClause}`)
-        .bind(now, previous.device_id, selectedCategory, id, id, origin, preview, origin, preview), update,
+      db.prepare(`UPDATE w_wallpapers SET is_primary = 0, updated_date = ? WHERE device_id = ? AND category = ? AND media_type = ? AND id != ? AND is_primary = 1 AND EXISTS (SELECT 1 FROM w_wallpapers target WHERE target.id = ? AND target.deletion_state = 'none') AND ${availableFilesClause}`)
+        .bind(now, previous.device_id, selectedCategory, media, id, id, origin, preview, origin, preview), update,
     ]);
     if (results[1].meta.changes !== 1) throw new Error('壁纸已进入删除流程，请刷新后重试');
   } else {

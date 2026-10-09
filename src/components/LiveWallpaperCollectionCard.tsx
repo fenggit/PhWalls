@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Images, Play } from 'lucide-react';
+import { Images } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
+import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
 
 type Props = {
   href: string;
@@ -41,11 +42,7 @@ export default function LiveWallpaperCollectionCard({
               <p className="flex h-full items-end justify-center px-3 pb-16 text-center text-xs text-gray-500">{texts.imageLoadFailed}</p>
             ) : null}
           </div>
-          <span className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden="true">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-xl backdrop-blur transition-transform duration-200 group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none">
-              <Play strokeWidth={2.2} className="h-6 w-6 translate-x-0.5 fill-current" />
-            </span>
-          </span>
+          <WallpaperPlayIndicator />
           <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-xl bg-black/45 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
             <Images className="h-3.5 w-3.5" aria-hidden="true" />
             <span>{count}<span className="sr-only"> {texts.wallpapers}</span></span>

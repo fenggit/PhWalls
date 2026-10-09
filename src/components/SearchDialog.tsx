@@ -148,8 +148,8 @@ export default function SearchDialog({ language, onClose }: { language: Language
         : normalizedName.startsWith(normalizedQuery) ? 80 : 60;
       found.push({
         href: withLanguagePath(
-          entry.live ? buildLiveWallpaperDetailPath(entry.category, entry.slug || entry.name) : entry.desktop
-            ? buildDesktopWallpaperDetailPath(entry.category, entry.name)
+          entry.desktop ? buildDesktopWallpaperDetailPath(entry.category, entry.slug || entry.name, entry.live ? 'dynamic' : 'static') : entry.live
+            ? buildLiveWallpaperDetailPath(entry.category, entry.slug || entry.name)
             : buildWallpaperDetailPath(entry.category, entry.name),
           language
         ),

@@ -12,14 +12,19 @@ import { SITE_URL } from '@/lib/seo';
 import { headers } from 'next/headers';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db';
+import { buildWallpaperCollectionKey, splitWallpaperCollection } from '@/lib/wallpaper-media';
 
 export const runtime = 'edge';
 
 type WallpaperEntry = {
+  deviceId?: string;
+  slug?: string;
+  mediaType?: 'static' | 'dynamic';
   name: string;
   item?: Array<{
     compressPath?: string;
     originPath?: string;
+    type?: string;
   }>;
 };
 
@@ -30,7 +35,7 @@ function buildInitialDesktopImageUrls(collections: Record<string, import('@/lib/
     const path = firstImage?.compressPath || firstImage?.originPath;
     const publicUrl = path ? buildPublicR2Url(path) : null;
     if (publicUrl) {
-      map[`${categorySlug}::${entry.name}`] = publicUrl;
+      map[buildWallpaperCollectionKey(categorySlug, entry)] = publicUrl;
     }
   };
 
@@ -43,7 +48,7 @@ function buildInitialDesktopImageUrls(collections: Record<string, import('@/lib/
 async function buildDesktopCollectionsByCategory(language: import('@/types').Language) {
   if (isWallpaperDbEnabled()) return loadDbIndex(getDesktopTabData().map((tab) => tab.type), language);
   return Object.fromEntries(
-    getDesktopTabData().map((tab) => [tab.type, getDesktopWallpaperCollections(tab.type)])
+    getDesktopTabData().map((tab) => [tab.type, getDesktopWallpaperCollections(tab.type).flatMap(splitWallpaperCollection)])
   );
 }
 

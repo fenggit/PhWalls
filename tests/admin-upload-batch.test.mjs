@@ -12,6 +12,16 @@ runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload
 }).outputText, { module, exports: module.exports });
 const { uploadAdminBatch } = module.exports;
 
+test('default upload directories separate static and Live files for the same device or system', () => {
+  const pathModule = { exports: {} };
+  runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-path.ts', import.meta.url), 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText, { module: pathModule, exports: pathModule.exports });
+  const device = { device_category: 'os', brand_name: 'xiaomi', device_slug: 'miui-13' };
+  assert.equal(pathModule.exports.deviceR2Prefix(device, 'static'), 'xiaomi/miui-13');
+  assert.equal(pathModule.exports.deviceR2Prefix(device, 'dynamic'), 'live/xiaomi/miui-13');
+});
+
 test('publication offer waits until every queued upload succeeds', async () => {
   const events = [];
   await uploadAdminBatch(['first', 'second'], async (row) => {

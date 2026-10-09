@@ -10,7 +10,7 @@ function fill(template: string, values: Record<string, string | number>): string
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 }
 
-export function getLiveSeoCopy(language: Language, options: { category?: string; name?: string; count?: number } = {}) {
+export function getLiveSeoCopy(language: Language, options: { category?: string; name?: string; count?: number; seoTitle?: string | null; description?: string | null } = {}) {
   const texts = getI18nTexts(language);
   const brand = getLiveTabData(language).find((tab) => tab.type === options.category)?.title || '';
   const values = { brand, name: options.name || '', count: options.count || 0 };
@@ -18,7 +18,8 @@ export function getLiveSeoCopy(language: Language, options: { category?: string;
     : options.category ? fill(texts.liveCategoryTitleTemplate, values) : texts.liveHeroTitle;
   const description = options.name ? fill(texts.liveDetailDescriptionTemplate, values)
     : options.category ? fill(texts.liveCategoryDescriptionTemplate, values) : texts.liveHeroDescription;
-  return { title, description, subtitle: fill(texts.liveCollectionCountTemplate, values), brand };
+  return { title: options.seoTitle || title, description: options.description || description,
+    subtitle: fill(texts.liveCollectionCountTemplate, values), brand };
 }
 
 export function buildLiveMetadata(language: Language, path: string, copy: { title: string; description: string }, image?: string | null): Metadata {
