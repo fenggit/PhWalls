@@ -48,7 +48,7 @@ function validKey(raw: unknown, role: 'origin' | 'compress', media: 'static' | '
   return value;
 }
 
-function deletionKey(raw: string, role: 'origin' | 'compress'): string {
+function deletionKey(raw: string, role: 'origin' | 'compress' | 'preview'): string {
   const parts = raw.split('/');
   if (!raw || raw.length > 500 || raw.startsWith('/') || raw.includes('\\') || raw.includes('://') ||
       /[\u0000-\u001f\u007f]/.test(raw) || parts.some((part) => !part || part === '.' || part === '..') ||
@@ -354,7 +354,9 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
   }
   const origin = deletionKey(previous.origin_key, 'origin');
   const preview = previous.compress_key ? deletionKey(previous.compress_key, 'compress') : null;
-  const keys = Array.from(new Set([origin, preview].filter((key): key is string => Boolean(key))));
+  const videoPreview = previous.media_type === 'dynamic' ? deletionKey(origin.replace('/origin/', '/preview/'), 'preview') : null;
+  const keys = Array.from(new Set([origin, preview, videoPreview].filter((key): key is string => Boolean(key))));
+  const keyPlaceholders = keys.map(() => '?').join(', ');
   if (await hasStaticWallpaperReference(keys)) {
     throw new Error('文件仍被前台 JSON 数据引用，请先移除静态配置中的引用并同步公开站点后再删除');
   }
@@ -364,8 +366,8 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
     throw new Error('这是已发布设备的主展示壁纸，请先设置另一张主图或取消发布设备');
   }
   const shared = await db.prepare(
-    'SELECT id FROM w_wallpapers WHERE id != ? AND (origin_key IN (?, ?) OR compress_key IN (?, ?)) LIMIT 1'
-  ).bind(id, origin, preview, origin, preview).first<{ id: string }>();
+    `SELECT id FROM w_wallpapers WHERE id != ? AND (origin_key IN (${keyPlaceholders}) OR compress_key IN (${keyPlaceholders})) LIMIT 1`
+  ).bind(id, ...keys, ...keys).first<{ id: string }>();
   if (shared) throw new Error('原图或预览图仍被其他壁纸引用，请先处理关联记录');
 
   // 先下架；R2 与 D1 不能跨服务原子提交，保留记录可让部分失败的删除重试。
@@ -377,9 +379,9 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
        AND NOT EXISTS (SELECT 1 FROM w_devices d WHERE d.id = w_wallpapers.device_id
          AND d.status = 'published' AND w_wallpapers.status = 'published' AND w_wallpapers.is_primary = 1)
        AND NOT EXISTS (SELECT 1 FROM w_wallpapers other WHERE other.id != ?
-         AND (other.origin_key IN (?, ?) OR other.compress_key IN (?, ?)))`
+         AND (other.origin_key IN (${keyPlaceholders}) OR other.compress_key IN (${keyPlaceholders})))`
   ).bind(version, id, previous.updated_date, origin, preview, previous.status, previous.is_primary, previous.deletion_state,
-    id, origin, preview, origin, preview);
+    id, ...keys, ...keys);
   const claimed = await db.batch([claim, ...keys.map((key) => db.prepare(
     `INSERT INTO w_deleted_wallpaper_files (object_key, deleted_at)
      SELECT ?, ? WHERE EXISTS (SELECT 1 FROM w_wallpapers WHERE id = ? AND updated_date = ? AND deletion_state = 'processing')

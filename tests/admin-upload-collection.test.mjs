@@ -24,6 +24,7 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false } = {
     uploadDirectory: { deviceId: device.id, media: 'dynamic', data: { prefix, directories: sourceType === 'default' ? [] : [prefix], source: sourceType } },
     uploadRows: rows ? [{ id: 'live', name: 'live', origin: { name: 'live.mp4', type: 'video/mp4', size: 100 },
       preview: { name: 'live.webp', type: 'image/webp', size: 100 }, folderName: device.device_name,
+      videoPreview: { name: 'live.mp4', type: 'video/mp4', size: 50 },
       theme: 'normal', tags: '', category: '', state: 'ready', progress: 0 }] : [],
   }));
   const refs = [];
@@ -59,15 +60,15 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false } = {
       XMLHttpRequest: class {
         upload = {};
         status = 200;
-        open() {} setRequestHeader() {}
-        send(file) { puts.push(file.name); if (typeof failUpload === 'function' ? failUpload(file) : failUpload) this.onerror(); else this.onload(); }
+        open(method, url) { this.url = url; } setRequestHeader() {}
+        send(file) { puts.push(`${new URL(this.url).pathname}/${file.name}`); if (typeof failUpload === 'function' ? failUpload(file) : failUpload) this.onerror(); else this.onload(); }
       },
       async fetch(path, options) {
         const body = options.body ? JSON.parse(options.body) : null;
         requests.push({ path, method: options.method, body });
         let result;
         if (path === '/api/admin/upload') {
-          result = body.action === 'authorize' ? { url: 'https://uploads.example/file', token: body.role }
+          result = body.action === 'authorize' ? { url: `https://uploads.example/${body.role}`, token: body.role }
             : { data: { id: 'wallpaper', is_primary: 1 } };
         } else if (path === '/api/admin/devices' && options.method === 'POST') {
           assert.fail('First Live collection must reuse the existing static device');
@@ -119,6 +120,8 @@ test('a matched folder can create its first Live collection and offer publicatio
   assert.equal(app.requests.filter((request) => request.body?.action === 'complete').length, 1);
   assert.equal(app.requests.find((request) => request.body?.action === 'authorize').body.r2_prefix, 'live/Huawei/Huawei Mate XT 2');
   assert.equal(app.requests.find((request) => request.body?.action === 'authorize').body.file_name, 'live.mp4');
+  assert.equal(app.requests.find((request) => request.body?.action === 'authorize' && request.body.role === 'preview')?.body.file_name, 'live.mp4');
+  assert.equal(app.requests.find((request) => request.body?.action === 'complete').body.video_preview_token, 'preview');
 });
 
 test('a cover upload retry reuses the successful original and its filename authorization', async () => {
@@ -132,8 +135,8 @@ test('a cover upload retry reuses the successful original and its filename autho
   button(app.render(), '开始上传 (1)').props.onClick();
   await done;
   assert.equal(app.states.get('uploadRows')[0].state, 'done');
-  assert.deepEqual(app.puts, ['live.mp4', 'live.webp', 'live.webp']);
-  assert.equal(app.requests.filter((request) => request.body?.action === 'authorize').length, 2);
+  assert.deepEqual(app.puts, ['/origin/live.mp4', '/compress/live.webp', '/compress/live.webp', '/preview/live.mp4']);
+  assert.equal(app.requests.filter((request) => request.body?.action === 'authorize').length, 3);
 });
 
 test('creation without files explains the next step and never uploads an empty collection', async () => {
@@ -172,7 +175,8 @@ test('partial creation uploads only failed files on retry and still offers publi
   const app = fixture({ failUpload: (file) => file.name === 'second.mp4' });
   const first = app.states.get('uploadRows')[0];
   app.states.set('uploadRows', [first, { ...first, id: 'second', name: 'second',
-    origin: { ...first.origin, name: 'second.mp4' }, preview: { ...first.preview, name: 'second.webp' } }]);
+    origin: { ...first.origin, name: 'second.mp4' }, preview: { ...first.preview, name: 'second.webp' },
+    videoPreview: { ...first.videoPreview, name: 'second.mp4' } }]);
   let done = app.idle();
   button(app.render(), '创建动态合集').props.onClick();
   await done;
@@ -186,4 +190,31 @@ test('partial creation uploads only failed files on retry and still offers publi
   await done;
   assert.equal(app.states.get('uploadPublication').count, 2);
   assert.equal(app.requests.filter((request) => request.body?.action === 'complete').length, 2);
+});
+
+test('folder selection pairs origin, cover and browser preview by the same basename', async () => {
+  const app = fixture({ rows: false });
+  const folder = nodes(app.render()).find((node) => node.type === 'input' && node.props.webkitdirectory !== undefined);
+  const files = [
+    { name: 'live.mp4', type: 'video/mp4', size: 100, webkitRelativePath: 'Huawei Mate XT 2/origin/live.mp4' },
+    { name: 'live.webp', type: 'image/webp', size: 100, webkitRelativePath: 'Huawei Mate XT 2/compress/live.webp' },
+    { name: 'live.mp4', type: 'video/mp4', size: 50, webkitRelativePath: 'Huawei Mate XT 2/preview/live.mp4' },
+  ];
+  await folder.props.onChange({ target: { files, value: 'folder' } });
+  const queue = app.states.get('uploadRows');
+  assert.equal(queue.length, 1);
+  assert.equal(queue[0].videoPreview?.name, 'live.mp4');
+  assert.equal(queue[0].origin?.size, 100);
+  assert.equal(queue[0].videoPreview?.size, 50);
+});
+
+test('a Live collection can upload without a browser preview and keep origin as the playback fallback', async () => {
+  const app = fixture();
+  app.states.set('uploadRows', app.states.get('uploadRows').map((row) => ({ ...row, videoPreview: undefined })));
+  const done = app.idle();
+  button(app.render(), '创建动态合集').props.onClick();
+  await done;
+  assert.equal(app.states.get('error'), '');
+  assert.equal(app.states.get('uploadRows')[0].state, 'done');
+  assert.equal(app.requests.find((request) => request.body?.action === 'complete').body.video_preview_token, undefined);
 });

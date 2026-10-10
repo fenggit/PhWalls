@@ -72,6 +72,6 @@ export function sanitizeWallpaperDownloadKey(rawKey: string | null | undefined):
   if (!rawKey || !/\.(mp4|webm)$/i.test(rawKey)) return null;
   const disguised = rawKey.replace(/\.(mp4|webm)$/i, '.png');
   const valid = sanitizeWallpaperKey(disguised);
-  const extension = rawKey.match(/\.(mp4|webm)$/i)?.[1].toLowerCase();
+  const extension = rawKey.match(/\.(mp4|webm)$/i)?.[1];
   return valid && valid.includes('/origin/') && extension ? valid.replace(/\.png$/i, `.${extension}`) : null;
 }
