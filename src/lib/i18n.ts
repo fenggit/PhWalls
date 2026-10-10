@@ -15,6 +15,9 @@ export interface I18nTexts {
   adminUploadMultipleDirectories: string;
   adminUploadExistingHint: string;
   adminUploadDefaultHint: string;
+  adminUploadCreateStaticCollection: string;
+  adminUploadCreateDynamicCollection: string;
+  adminUploadAddFilesFirst: string;
   adminUploadStaticFilesHelp: string;
   adminUploadDynamicFilesHelp: string;
   adminUploadStaticOriginal: string;
@@ -454,7 +457,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadChooseExisting: "选择已有目录",
     adminUploadMultipleDirectories: "该类型已有多个目录，请选择本次上传位置。",
     adminUploadExistingHint: "将沿用该类型已有的存储目录，保留原始大小写和空格。",
-    adminUploadDefaultHint: "“{name}”暂无{type}，首次上传将创建对应合集，并使用上方目录。",
+    adminUploadDefaultHint: "“{name}”暂无{type}。选择文件后，点击“{action}”或“开始上传”，将使用上方目录上传文件并创建合集。",
+    adminUploadCreateStaticCollection: "创建静态合集",
+    adminUploadCreateDynamicCollection: "创建动态合集",
+    adminUploadAddFilesFirst: "请先选择包含 origin 和 compress 的文件夹，或添加原文件与封面，再创建合集。",
     adminUploadStaticFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加静态原图与封面。上传后保存为草稿。",
     adminUploadDynamicFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加 MP4/WebM 视频与图片封面。视频与封面须同名，上传后保存为草稿。",
     adminUploadStaticOriginal: "原图文件",
@@ -884,7 +890,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadChooseExisting: "Choose an existing directory",
     adminUploadMultipleDirectories: "This type has multiple directories. Choose the upload destination.",
     adminUploadExistingHint: "Reuse this type’s existing directory, preserving capitalization and spaces.",
-    adminUploadDefaultHint: "“{name}” has no {type} yet. The first upload will create this collection using the directory above.",
+    adminUploadDefaultHint: "“{name}” has no {type} yet. Select files, then click “{action}” or start uploading to upload files and create the collection in the directory above.",
+    adminUploadCreateStaticCollection: "Create static collection",
+    adminUploadCreateDynamicCollection: "Create live collection",
+    adminUploadAddFilesFirst: "Select a folder containing origin and compress, or add originals and covers, before creating the collection.",
     adminUploadStaticFilesHelp: "Choose a folder with origin and compress subfolders, or add original images and covers separately. Uploads are saved as drafts.",
     adminUploadDynamicFilesHelp: "Choose a folder with origin and compress subfolders, or add MP4/WebM videos and image covers separately. Match videos and covers by filename. Uploads are saved as drafts.",
     adminUploadStaticOriginal: "Original images",
@@ -1314,7 +1323,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadChooseExisting: "既存フォルダーを選択",
     adminUploadMultipleDirectories: "保存先が複数あります。今回のアップロード先を選択してください。",
     adminUploadExistingHint: "大文字・小文字と空白を保ち、この種類の既存フォルダーを使用します。",
-    adminUploadDefaultHint: "「{name}」にはまだ{type}がありません。初回アップロードで上記フォルダーを使用し、コレクションを作成します。",
+    adminUploadDefaultHint: "「{name}」にはまだ{type}がありません。ファイルを選択し、「{action}」またはアップロード開始をクリックすると、上記フォルダーにアップロードしてコレクションを作成します。",
+    adminUploadCreateStaticCollection: "静止画コレクションを作成",
+    adminUploadCreateDynamicCollection: "ライブコレクションを作成",
+    adminUploadAddFilesFirst: "作成前に origin と compress を含むフォルダーを選択するか、元ファイルとカバーを追加してください。",
     adminUploadStaticFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、原画像とカバーを別々に追加します。下書きとして保存されます。",
     adminUploadDynamicFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、MP4/WebM 動画と画像カバーを追加します。ファイル名を一致させてください。下書きとして保存されます。",
     adminUploadStaticOriginal: "原画像",
@@ -1744,7 +1756,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadChooseExisting: "Chọn thư mục hiện có",
     adminUploadMultipleDirectories: "Loại này có nhiều thư mục. Hãy chọn nơi tải lên.",
     adminUploadExistingHint: "Dùng thư mục hiện có, giữ nguyên chữ hoa, chữ thường và khoảng trắng.",
-    adminUploadDefaultHint: "“{name}” chưa có {type}. Lần tải lên đầu tiên sẽ tạo bộ sưu tập tương ứng trong thư mục phía trên.",
+    adminUploadDefaultHint: "“{name}” chưa có {type}. Chọn tệp, rồi nhấn “{action}” hoặc bắt đầu tải lên để tải tệp và tạo bộ sưu tập trong thư mục phía trên.",
+    adminUploadCreateStaticCollection: "Tạo bộ sưu tập tĩnh",
+    adminUploadCreateDynamicCollection: "Tạo bộ sưu tập động",
+    adminUploadAddFilesFirst: "Hãy chọn thư mục có origin và compress, hoặc thêm tệp gốc và ảnh bìa trước khi tạo bộ sưu tập.",
     adminUploadStaticFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm ảnh gốc và ảnh bìa riêng. Nội dung được lưu dưới dạng bản nháp.",
     adminUploadDynamicFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm video MP4/WebM và ảnh bìa riêng. Video và ảnh bìa phải cùng tên. Nội dung được lưu dưới dạng bản nháp.",
     adminUploadStaticOriginal: "Ảnh gốc",
@@ -2147,7 +2162,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadChooseExisting: "選擇既有目錄",
     adminUploadMultipleDirectories: "該類型已有多個目錄，請選擇本次上傳位置。",
     adminUploadExistingHint: "將沿用該類型既有的儲存目錄，保留原始大小寫與空格。",
-    adminUploadDefaultHint: "「{name}」尚無{type}，首次上傳將建立對應合集，並使用上方目錄。",
+    adminUploadDefaultHint: "「{name}」尚無{type}。選擇檔案後，點擊「{action}」或「開始上傳」，將使用上方目錄上傳檔案並建立合集。",
+    adminUploadCreateStaticCollection: "建立靜態合集",
+    adminUploadCreateDynamicCollection: "建立動態合集",
+    adminUploadAddFilesFirst: "請先選擇包含 origin 和 compress 的資料夾，或新增原檔案與封面，再建立合集。",
     adminUploadStaticFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增靜態原圖與封面。上傳後儲存為草稿。",
     adminUploadDynamicFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增 MP4/WebM 影片與圖片封面。影片與封面須同名，上傳後儲存為草稿。",
     adminUploadStaticOriginal: "原圖檔案",
