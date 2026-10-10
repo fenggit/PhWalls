@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { BRAND_CATEGORIES, normalizeCategoryType } from '@/lib/brands';
+import { LIVE_WALLPAPERS_PATH, buildLiveCategoryPath } from '@/lib/live-paths';
 import {
   DEFAULT_LANGUAGE,
   getLanguageFromPath,
@@ -58,12 +59,23 @@ function safeDecodeURIComponent(value: string): string {
 }
 
 function normalizePublicPath(pathname: string): string {
+  pathname = pathname.replace(/\/+$/, '') || '/';
   if (pathname === '/&') {
     return '/';
   }
 
   if (pathname === '/home/v1' || pathname === '/home/v1/') {
     return '/';
+  }
+
+  if (pathname === '/live' || pathname === '/live/') {
+    return LIVE_WALLPAPERS_PATH;
+  }
+  // Only migrate landing pages; existing /live/wallpapers/{brand}/{device} URLs stay canonical.
+  const liveCategory = pathname.match(/^\/live\/([^/]+)\/?$/);
+  if (liveCategory) {
+    const category = normalizeCategoryType(safeDecodeURIComponent(liveCategory[1]));
+    if (BRAND_SLUGS.has(category)) return buildLiveCategoryPath(category);
   }
 
   if (pathname === '/privacy-policy' || pathname.startsWith('/privacy-policy/')) {
@@ -116,9 +128,11 @@ export function middleware(request: NextRequest) {
   const adminApi = /^\/api\/admin(?:\/|$)/.test(pathname);
   if (localizedAdmin || adminPage || adminApi) {
     if (hostname !== adminHost && !localAdmin) return new NextResponse(null, { status: 404 });
-    if (localizedAdmin || /^\/admin(?:\/|$)/.test(pathname)) {
-      const target = request.nextUrl.clone();
-      target.pathname = (localizedAdmin?.[1] || pathname).replace(/^\/admin(?=\/|$)/, '/manager');
+    const canonicalAdminPath = (localizedAdmin?.[1] || pathname)
+      .replace(/^\/admin(?=\/|$)/, '/manager').replace(/\/+$/, '');
+    if (localizedAdmin || canonicalAdminPath !== pathname) {
+      const target = new URL(request.url);
+      target.pathname = canonicalAdminPath;
       return NextResponse.redirect(target, 308);
     }
     return NextResponse.next();
@@ -129,7 +143,7 @@ export function middleware(request: NextRequest) {
       target.pathname = '/manager';
       return NextResponse.redirect(target);
     }
-    if (!pathname.startsWith('/_next') && !pathname.match(/\.[a-z0-9]+$/i)) {
+    if (!pathname.startsWith('/_next') && !pathname.replace(/\/+$/, '').match(/\.[a-z0-9]+$/i)) {
       return new NextResponse(null, { status: 404 });
     }
   }
@@ -165,7 +179,8 @@ export function middleware(request: NextRequest) {
 
   const preferredLanguage = cookieLanguage || pathLanguage || resolvedLanguage || DEFAULT_LANGUAGE;
 
-  const redirectUrl = request.nextUrl.clone();
+  // Plain URL preserves the explicit normalized pathname; NextURL can re-add an incoming slash.
+  const redirectUrl = new URL(request.url);
   let shouldRedirect = false;
   let isAutomaticLanguageRedirect = false;
 
@@ -196,6 +211,9 @@ export function middleware(request: NextRequest) {
       shouldRedirect = true;
       isAutomaticLanguageRedirect = true;
     }
+  } else if (redirectUrl.pathname !== normalizedPath) {
+    redirectUrl.pathname = normalizedPath;
+    shouldRedirect = true;
   }
 
   if (shouldRedirect) {
@@ -213,7 +231,7 @@ export function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set(LANGUAGE_HEADER_NAME, pathLanguage);
     requestHeaders.set(REQUEST_PATH_HEADER_NAME, normalizedPath);
-    const rewriteUrl = request.nextUrl.clone();
+    const rewriteUrl = new URL(request.url);
     rewriteUrl.pathname = normalizedPath;
     return NextResponse.rewrite(rewriteUrl, {
       request: {

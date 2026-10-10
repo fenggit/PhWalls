@@ -6,4 +6,6 @@ Sitemap: https://phwalls.com/sitemap.xml
 
 # Disallow admin pages
 Disallow: /api/
+# Published video previews are referenced by VideoObject; downloads and admin APIs stay blocked.
+Allow: /api/files/preview?key=
 Disallow: /user/

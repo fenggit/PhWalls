@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const language = await resolveMetadataLanguage();
   const texts = getI18nTexts(language);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}/design`, language);
-  const title = `${texts.customWallpaperTitle} | PhWalls`;
+  const title = texts.customWallpaperTitle;
   const description = texts.customWallpaperDescription;
 
   return {
