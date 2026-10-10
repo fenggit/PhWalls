@@ -122,7 +122,14 @@ test('upload directory API separates media, excludes deleting files, and exposes
     assert.deepEqual((await response.json()).data, { prefix: '',
       directories: ['test/Device One', 'test/Second Directory'], source: 'multiple' });
     assert.deepEqual((await (await lookup('dynamic')).json()).data,
-      { prefix: 'live/test/device-one', directories: [], source: 'default' });
+      { prefix: 'live/test/Device One', directories: [], source: 'default' });
+    const firstLive = await route.POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
+        media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, path_mode: 'device',
+        r2_prefix: 'live/test/Device One' }),
+    }));
+    assert.equal(firstLive.status, 200);
+    assert.ok((await firstLive.json()).key.startsWith('live/test/Device One/origin/'));
     const authorize = (prefix) => route.POST(new Request('https://example.com/api/admin/upload', {
       method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
         media_type: 'static', mime_type: 'image/webp', size_bytes: 100, path_mode: 'device',

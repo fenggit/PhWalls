@@ -3,7 +3,7 @@ import type { DeviceRow, WallpaperMediaType, WallpaperRow } from '@/lib/wallpape
 export type AdminUploadDirectories = { prefix: string; directories: string[]; source: 'existing' | 'default' | 'multiple' };
 
 export function getAdminUploadDirectories(
-  device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>,
+  device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_name' | 'device_slug'>,
   media: WallpaperMediaType,
   files: Pick<WallpaperRow, 'media_type' | 'origin_key'>[],
 ): AdminUploadDirectories {
@@ -16,7 +16,14 @@ export function getAdminUploadDirectories(
     catch { /* 旧数据中的无效路径不能用作上传目录。 */ }
   }
   const paths = Array.from(directories).sort();
-  if (!paths.length) return { prefix: deviceR2Prefix(device, media), directories: [], source: 'default' };
+  if (!paths.length) {
+    let folderName = device.device_slug;
+    try {
+      // 设备名称作为单层目录保留大小写和空格；不适合作目录的名称回退到 slug。
+      if (!device.device_name.includes('/')) folderName = normalizeAdminR2Prefix(device.device_name);
+    } catch { /* 设备名称中的路径保留字符不能用于新目录。 */ }
+    return { prefix: deviceR2Prefix({ ...device, device_slug: folderName }, media), directories: [], source: 'default' };
+  }
   return { prefix: paths.length === 1 ? paths[0] : '', directories: paths, source: paths.length === 1 ? 'existing' : 'multiple' };
 }
 
@@ -28,6 +35,7 @@ export function assertAdminUploadMime(mime: string, role: 'origin' | 'compress',
   }
 }
 
+// 保留基于 slug 的旧授权路径；新上传目录由 getAdminUploadDirectories 按设备名称生成。
 export function deviceR2Prefix(device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>, media: WallpaperMediaType = 'static'): string {
   if (media === 'dynamic') return `live/${device.brand_name}/${device.device_slug}`;
   return device.device_category === 'desktop'

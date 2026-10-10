@@ -995,7 +995,11 @@ export default function AdminConsole() {
             <span>{currentUploadDirectory.error}</span><button className={buttonClass} disabled={busy} onClick={() => setUploadDirectoryRevision((value) => value + 1)}><RefreshCw size={16} />{uploadTexts.adminUploadRetryDirectory}</button>
           </div>}
           <p id="r2-path-help" className={`mb-4 break-all text-xs leading-5 ${uploadStoragePathError && uploadR2Prefix ? 'text-red-700' : 'text-[#66746b]'}`}>{uploadStoragePathError && uploadR2Prefix ? uploadStoragePathError : (uploadStoragePath ? `原图：${uploadStoragePath}/origin/ · 预览：${uploadStoragePath}/compress/` : '使用设备默认目录，或点击“选择目录”浏览 R2 已有目录。')}
-            {uploadPathMode === 'device' && uploadStorage && uploadStorage.source !== 'multiple' && <span className="block">{uploadStorage.source === 'existing' ? uploadTexts.adminUploadExistingHint : uploadTexts.adminUploadDefaultHint}</span>}</p>
+            {uploadPathMode === 'device' && uploadStorage?.source === 'existing' && <span className="block">{uploadTexts.adminUploadExistingHint}</span>}</p>
+          {selectedUploadDevice && uploadStorage?.source === 'default' && <p role="status" className="mb-4 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            {uploadTexts.adminUploadDefaultHint.replace('{name}', selectedUploadDevice.device_name)
+              .replace('{type}', uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicLabel : uploadTexts.adminUploadStaticLabel)}
+          </p>}
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
           {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
@@ -1065,6 +1069,7 @@ export default function AdminConsole() {
                   setUploadPublication({ device, count: count + uploadRows.filter((row) => row.state === 'done').length });
                 }
               });
+              setUploadDirectoryRevision((value) => value + 1);
             })}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
           {uploadQueueError && <p role="alert" className="mb-3 text-sm text-red-700">{uploadQueueError}</p>}
