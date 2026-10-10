@@ -6,6 +6,14 @@ import { test } from 'node:test';
 
 const require = createRequire(import.meta.url);
 const ts = require('typescript');
+const i18nModule = { exports: {} };
+runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/i18n.ts', import.meta.url), 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText, { module: i18nModule, exports: i18nModule.exports });
+const requirePathModule = (specifier) => {
+  assert.equal(specifier, '@/lib/i18n');
+  return i18nModule.exports;
+};
 const module = { exports: {} };
 runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-batch.ts', import.meta.url), 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
@@ -14,7 +22,7 @@ const { uploadAdminBatch } = module.exports;
 const pathModule = { exports: {} };
 runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-path.ts', import.meta.url), 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-}).outputText, { module: pathModule, exports: pathModule.exports });
+}).outputText, { module: pathModule, exports: pathModule.exports, require: requirePathModule });
 
 test('upload directories reuse historical paths separately for each media type', () => {
   const device = { device_category: 'phone_fold', brand_name: 'huawei', device_name: 'Huawei Mate XT 2', device_slug: 'huawei-mate-xt-2' };
@@ -24,7 +32,7 @@ test('upload directories reuse historical paths separately for each media type',
     { media_type: 'dynamic', origin_key: 'live/Huawei/Huawei Mate XT 2/origin/second.mp4' },
   ];
   assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'static', files).prefix, 'huawei/Huawei Mate XT 2');
-  const live = pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files);
+  const live = pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files, 'Huawei');
   assert.equal(live.prefix, 'live/Huawei/Huawei Mate XT 2');
   assert.equal(live.directories.length, 1);
   assert.equal(live.source, 'existing');
@@ -80,7 +88,7 @@ test('default upload directories separate static and Live files for the same dev
   const pathModule = { exports: {} };
   runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-path.ts', import.meta.url), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-  }).outputText, { module: pathModule, exports: pathModule.exports });
+  }).outputText, { module: pathModule, exports: pathModule.exports, require: requirePathModule });
   const device = { device_category: 'os', brand_name: 'xiaomi', device_slug: 'miui-13' };
   assert.equal(pathModule.exports.deviceR2Prefix(device, 'static'), 'xiaomi/miui-13');
   assert.equal(pathModule.exports.deviceR2Prefix(device, 'dynamic'), 'live/xiaomi/miui-13');

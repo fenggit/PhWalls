@@ -19,8 +19,10 @@ import { assertAdminUploadMime, normalizeAdminR2Prefix, type AdminUploadDirector
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
+type UploadFileGrant = { url: string; token: string; headers?: Record<string, string> };
 type UploadRow = { id: string; name: string; origin?: File; preview?: File; theme: string; tags: string;
-  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean; isPublished?: boolean };
+  category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean; isPublished?: boolean;
+  originGrant?: UploadFileGrant; previewGrant?: UploadFileGrant; originUploaded?: boolean; previewUploaded?: boolean };
 type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; primary_count: number; published_primary: number };
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
@@ -335,15 +337,17 @@ function fileStem(file: File): string {
   return file.name.replace(/\.[^.]+$/, '');
 }
 
-function putWithProgress(url: string, file: File, onProgress: (value: number) => void): Promise<void> {
+function putWithProgress(url: string, file: File, onProgress: (value: number) => void, headers: Record<string, string> = {}): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', url);
     xhr.setRequestHeader('Content-Type', fileMime(file));
+    for (const [name, value] of Object.entries(headers)) xhr.setRequestHeader(name, value);
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) onProgress(Math.round(event.loaded / event.total * 100));
     };
-    xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`R2 上传失败 (${xhr.status})`));
+    xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve()
+      : reject(new Error(xhr.status === 412 ? getI18nTexts('zh').adminUploadFileExists.replace('{name}', file.name) : `R2 上传失败 (${xhr.status})`));
     xhr.onerror = () => reject(new Error('R2 网络错误'));
     xhr.send(file);
   });
@@ -698,6 +702,8 @@ export default function AdminConsole() {
           next.push(row);
         }
         row[role === 'origin' ? 'origin' : 'preview'] = file;
+        if (role === 'origin') { row.originGrant = undefined; row.originUploaded = false; }
+        else { row.previewGrant = undefined; row.previewUploaded = false; }
         row.state = 'ready';
         row.error = undefined;
       }
@@ -730,14 +736,21 @@ export default function AdminConsole() {
     try {
       assertAdminUploadMime(fileMime(row.origin), 'origin', uploadMedia);
       assertAdminUploadMime(fileMime(row.preview), 'compress', uploadMedia);
-      const authorize = async (file: File, role: string) => api<{ url: string; token: string }>('upload', 'POST', {
+      const authorize = async (file: File, role: string) => api<UploadFileGrant>('upload', 'POST', {
         action: 'authorize', device_id: deviceId, role, media_type: uploadMedia,
-        size_bytes: file.size, mime_type: fileMime(file),
+        size_bytes: file.size, mime_type: fileMime(file), file_name: file.name,
         r2_prefix: r2Prefix, path_mode: uploadPathMode,
       });
-      const [origin, preview] = await Promise.all([authorize(row.origin, 'origin'), authorize(row.preview, 'compress')]);
-      await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }));
-      await putWithProgress(preview.url, row.preview, (progress) => patchUpload(row.id, { progress: 50 + Math.round(progress / 2) }));
+      const [origin, preview] = await Promise.all([row.originGrant || authorize(row.origin, 'origin'), row.previewGrant || authorize(row.preview, 'compress')]);
+      patchUpload(row.id, { originGrant: origin, previewGrant: preview });
+      if (!row.originUploaded) {
+        await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }), origin.headers);
+        patchUpload(row.id, { originUploaded: true });
+      }
+      if (!row.previewUploaded) {
+        await putWithProgress(preview.url, row.preview, (progress) => patchUpload(row.id, { progress: 50 + Math.round(progress / 2) }), preview.headers);
+        patchUpload(row.id, { previewUploaded: true });
+      }
       const { data } = await api<{ data: WallpaperRow }>('upload', 'POST', {
         action: 'complete', device_id: deviceId, name: row.name, media_type: uploadMedia,
         origin_token: origin.token, preview_token: preview.token,

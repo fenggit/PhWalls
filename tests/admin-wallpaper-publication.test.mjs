@@ -59,7 +59,8 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
           verifyUploadGrant: async (token) => JSON.parse(token),
           headR2Object: async (key) => {
             onHead(key, sqlite);
-            return missingFiles.has(key) ? null : { size: 100, mimeType: 'image/webp' };
+            const existing = sqlite.prepare('SELECT 1 FROM w_wallpapers WHERE origin_key = ? OR compress_key = ?').get(key, key);
+            return missingFiles.has(key) || !existing ? null : { size: 100, mimeType: 'image/webp' };
           },
         };
         if (specifier === '@/lib/admin-static-assets') return {};
@@ -87,10 +88,12 @@ test('upload authorization reuses the selected media directory and rejects the o
     await upload('live', { media_type: 'dynamic', mime_type: 'video/mp4',
       origin_key: 'live/Test/Device One/origin/live.mp4', compress_key: 'live/Test/Device One/compress/live.webp' });
     const route = load(`${root}src/app/api/admin/upload/route.ts`);
-    const authorize = (patch = {}) => route.POST(new Request('https://example.com/api/admin/upload', {
-      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
-        media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, ...patch }),
-    }));
+    const authorize = (patch = {}) => {
+      const input = { action: 'authorize', device_id: 'device-1', role: 'origin',
+        media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, ...patch };
+      input.file_name ||= input.mime_type === 'video/mp4' ? 'new.mp4' : 'new.webp';
+      return route.POST(new Request('https://example.com/api/admin/upload', { method: 'POST', body: JSON.stringify(input) }));
+    };
     const response = await authorize();
     assert.equal(response.status, 200);
     assert.ok((await response.json()).key.startsWith('live/Test/Device One/origin/'));
@@ -122,17 +125,17 @@ test('upload directory API separates media, excludes deleting files, and exposes
     assert.deepEqual((await response.json()).data, { prefix: '',
       directories: ['test/Device One', 'test/Second Directory'], source: 'multiple' });
     assert.deepEqual((await (await lookup('dynamic')).json()).data,
-      { prefix: 'live/test/Device One', directories: [], source: 'default' });
+      { prefix: 'live/Test/Device One', directories: [], source: 'default' });
     const firstLive = await route.POST(new Request('https://example.com/api/admin/upload', {
       method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
         media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, path_mode: 'device',
-        r2_prefix: 'live/test/Device One' }),
+        r2_prefix: 'live/Test/Device One', file_name: 'first.mp4' }),
     }));
     assert.equal(firstLive.status, 200);
-    assert.ok((await firstLive.json()).key.startsWith('live/test/Device One/origin/'));
+    assert.ok((await firstLive.json()).key.startsWith('live/Test/Device One/origin/'));
     const authorize = (prefix) => route.POST(new Request('https://example.com/api/admin/upload', {
       method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
-        media_type: 'static', mime_type: 'image/webp', size_bytes: 100, path_mode: 'device',
+        media_type: 'static', mime_type: 'image/webp', size_bytes: 100, path_mode: 'device', file_name: 'new.webp',
         ...(prefix ? { r2_prefix: prefix } : {}) }),
     }));
     assert.equal((await authorize()).status, 400);
@@ -140,6 +143,45 @@ test('upload directory API separates media, excludes deleting files, and exposes
     assert.equal(selected.status, 200);
     assert.ok((await selected.json()).key.startsWith('test/Second Directory/origin/'));
     assert.equal((await lookup('invalid')).status, 400);
+  } finally { sqlite.close(); }
+});
+
+test('Huawei first Live upload uses the historical brand spelling and keeps the original filename', async () => {
+  const { sqlite, load } = fixture();
+  try {
+    sqlite.exec("UPDATE w_devices SET brand_name='huawei',device_name='Huawei Mate XT 2' WHERE id='device-1'");
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const { NextRequest } = require('next/server');
+    const storage = await route.GET(new NextRequest('https://example.com/api/admin/upload?device_id=device-1&media_type=dynamic'));
+    assert.equal((await storage.json()).data.prefix, 'live/Huawei/Huawei Mate XT 2');
+    const input = { action: 'authorize', device_id: 'device-1', role: 'origin', media_type: 'dynamic',
+      mime_type: 'video/mp4', size_bytes: 100, file_name: 'huawei-mate-xt-2-mountain-gold-shadow.mp4' };
+    const authorize = (patch = {}) => route.POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ ...input, ...patch }),
+    }));
+    const response = await authorize();
+    assert.equal(response.status, 200);
+    const grant = await response.json();
+    assert.equal(grant.key, 'live/Huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-mountain-gold-shadow.mp4');
+    assert.deepEqual(grant.headers, { 'If-None-Match': '*' });
+    assert.equal((await authorize({ path_mode: 'custom', r2_prefix: 'live/huawei/Huawei Mate XT 2' })).status, 400);
+    for (const file_name of ['../outside.mp4', 'nested/video.mp4', 'bad\\video.mp4', 'video.webp', 'video%2Ffile.mp4', 'video\u0000.mp4', '']) {
+      assert.equal((await authorize({ file_name })).status, 400);
+    }
+  } finally { sqlite.close(); }
+});
+
+test('upload authorization refuses an existing original filename instead of overwriting it', async () => {
+  const { sqlite, upload, load } = fixture();
+  try {
+    await upload('first', { origin_key: 'test/Device One/origin/first.webp', compress_key: 'test/Device One/compress/first.webp' });
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const response = await route.POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin', media_type: 'static',
+        mime_type: 'image/webp', size_bytes: 100, file_name: 'first.webp' }),
+    }));
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /已存在/);
   } finally { sqlite.close(); }
 });
 

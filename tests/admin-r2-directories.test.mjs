@@ -65,6 +65,14 @@ test('lists selectable immediate directories, decodes paths and preserves pagina
   assert.ok(url.searchParams.get('X-Amz-Signature'));
 });
 
+test('presigned original filename uploads require conditional PUT to protect existing files', async () => {
+  const { load } = fixture(listing);
+  const service = load(`${root}src/lib/r2-upload.ts`);
+  const url = new URL(await service.createR2UploadUrl('live/Huawei/Huawei Mate XT 2/origin/video.mp4', 'video/mp4', true));
+  assert.equal(decodeURIComponent(url.pathname), '/wallpapers/live/Huawei/Huawei Mate XT 2/origin/video.mp4');
+  assert.equal(url.searchParams.get('X-Amz-SignedHeaders'), 'content-type;host;if-none-match');
+});
+
 test('supports root and empty directories without exposing individual file keys', async () => {
   const { service } = fixture(`<ListBucketResult><EncodingType>url</EncodingType><IsTruncated>false</IsTruncated>
     <CommonPrefixes><Prefix>desktopwalls%2F</Prefix></CommonPrefixes>

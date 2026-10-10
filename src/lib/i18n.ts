@@ -18,6 +18,9 @@ export interface I18nTexts {
   adminUploadCreateStaticCollection: string;
   adminUploadCreateDynamicCollection: string;
   adminUploadAddFilesFirst: string;
+  adminUploadFileNameInvalid: string;
+  adminUploadFileExists: string;
+  adminUploadBrandDirectoryCase: string;
   adminUploadStaticFilesHelp: string;
   adminUploadDynamicFilesHelp: string;
   adminUploadStaticOriginal: string;
@@ -461,6 +464,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadCreateStaticCollection: "创建静态合集",
     adminUploadCreateDynamicCollection: "创建动态合集",
     adminUploadAddFilesFirst: "请先选择包含 origin 和 compress 的文件夹，或添加原文件与封面，再创建合集。",
+    adminUploadFileNameInvalid: "上传文件名无效：须保留与文件类型匹配的扩展名，且不能包含路径或特殊路径字符。",
+    adminUploadFileExists: "同名文件“{name}”已存在，请先检查已有文件，避免覆盖。",
+    adminUploadBrandDirectoryCase: "品牌目录区分大小写，请使用 {path}，避免重复创建品牌目录。",
     adminUploadStaticFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加静态原图与封面。上传后保存为草稿。",
     adminUploadDynamicFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加 MP4/WebM 视频与图片封面。视频与封面须同名，上传后保存为草稿。",
     adminUploadStaticOriginal: "原图文件",
@@ -894,6 +900,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadCreateStaticCollection: "Create static collection",
     adminUploadCreateDynamicCollection: "Create live collection",
     adminUploadAddFilesFirst: "Select a folder containing origin and compress, or add originals and covers, before creating the collection.",
+    adminUploadFileNameInvalid: "Invalid filename: keep the extension matching the file type and exclude paths or reserved path characters.",
+    adminUploadFileExists: "“{name}” already exists. Check the existing file to avoid overwriting it.",
+    adminUploadBrandDirectoryCase: "Brand directories are case-sensitive. Use {path} to avoid creating a duplicate brand directory.",
     adminUploadStaticFilesHelp: "Choose a folder with origin and compress subfolders, or add original images and covers separately. Uploads are saved as drafts.",
     adminUploadDynamicFilesHelp: "Choose a folder with origin and compress subfolders, or add MP4/WebM videos and image covers separately. Match videos and covers by filename. Uploads are saved as drafts.",
     adminUploadStaticOriginal: "Original images",
@@ -1327,6 +1336,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadCreateStaticCollection: "静止画コレクションを作成",
     adminUploadCreateDynamicCollection: "ライブコレクションを作成",
     adminUploadAddFilesFirst: "作成前に origin と compress を含むフォルダーを選択するか、元ファイルとカバーを追加してください。",
+    adminUploadFileNameInvalid: "ファイル名が無効です。種類に一致する拡張子を保ち、パスや予約文字を含めないでください。",
+    adminUploadFileExists: "「{name}」は既に存在します。上書きを防ぐため、既存ファイルを確認してください。",
+    adminUploadBrandDirectoryCase: "ブランドフォルダーは大文字・小文字を区別します。重複を防ぐため {path} を使用してください。",
     adminUploadStaticFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、原画像とカバーを別々に追加します。下書きとして保存されます。",
     adminUploadDynamicFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、MP4/WebM 動画と画像カバーを追加します。ファイル名を一致させてください。下書きとして保存されます。",
     adminUploadStaticOriginal: "原画像",
@@ -1760,6 +1772,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadCreateStaticCollection: "Tạo bộ sưu tập tĩnh",
     adminUploadCreateDynamicCollection: "Tạo bộ sưu tập động",
     adminUploadAddFilesFirst: "Hãy chọn thư mục có origin và compress, hoặc thêm tệp gốc và ảnh bìa trước khi tạo bộ sưu tập.",
+    adminUploadFileNameInvalid: "Tên tệp không hợp lệ: giữ phần mở rộng đúng loại tệp và không chứa đường dẫn hay ký tự dành riêng.",
+    adminUploadFileExists: "“{name}” đã tồn tại. Hãy kiểm tra tệp hiện có để tránh ghi đè.",
+    adminUploadBrandDirectoryCase: "Thư mục thương hiệu phân biệt chữ hoa và chữ thường. Dùng {path} để tránh tạo thư mục trùng lặp.",
     adminUploadStaticFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm ảnh gốc và ảnh bìa riêng. Nội dung được lưu dưới dạng bản nháp.",
     adminUploadDynamicFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm video MP4/WebM và ảnh bìa riêng. Video và ảnh bìa phải cùng tên. Nội dung được lưu dưới dạng bản nháp.",
     adminUploadStaticOriginal: "Ảnh gốc",
@@ -2166,6 +2181,9 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadCreateStaticCollection: "建立靜態合集",
     adminUploadCreateDynamicCollection: "建立動態合集",
     adminUploadAddFilesFirst: "請先選擇包含 origin 和 compress 的資料夾，或新增原檔案與封面，再建立合集。",
+    adminUploadFileNameInvalid: "上傳檔名無效：須保留與檔案類型匹配的副檔名，且不能包含路徑或特殊路徑字元。",
+    adminUploadFileExists: "同名檔案「{name}」已存在，請先檢查既有檔案，避免覆寫。",
+    adminUploadBrandDirectoryCase: "品牌目錄區分大小寫，請使用 {path}，避免重複建立品牌目錄。",
     adminUploadStaticFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增靜態原圖與封面。上傳後儲存為草稿。",
     adminUploadDynamicFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增 MP4/WebM 影片與圖片封面。影片與封面須同名，上傳後儲存為草稿。",
     adminUploadStaticOriginal: "原圖檔案",
