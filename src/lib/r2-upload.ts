@@ -87,7 +87,7 @@ export async function listR2DirectoryPage(prefix: string, cursor?: string): Prom
   return response.text();
 }
 
-type UploadBinding = { deviceId: string; role: 'origin' | 'compress'; prefix: string };
+type UploadBinding = { deviceId: string; role: 'origin' | 'compress' | 'preview'; prefix: string };
 type UploadGrant = { key: string; size: number; mimeType: string; expires: number } & Partial<UploadBinding>;
 
 async function grantSignature(encoded: string): Promise<string> {

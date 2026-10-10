@@ -18,22 +18,27 @@ export async function GET(request: NextRequest) {
     }
     const environment = getCurrentEnvironment();
     const r2 = new R2Service(environment);
-    // Imported live media has a separate H.264 preview; the original stays on the download proxy.
-    const previewKey = key.startsWith('live/') ? key.replace('/origin/', '/preview/') : key;
-    // Read storage inside the authorized proxy; keep CDN rules and signed URLs out of playback.
-    const url = await r2.getPrivateFileUrl(previewKey, environment.r2.urlExpires);
+    // Prefer the browser preview; older uploads can still play their original when no preview exists.
+    const candidates = [key.replace('/origin/', '/preview/'), key];
     let upstream: Response | undefined;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        upstream = await fetch(url, { headers: range ? { Range: range } : {}, signal: request.signal });
-        if (upstream.status >= 500 && attempt === 0) {
-          await upstream.body?.cancel();
-          continue;
+    for (let index = 0; index < candidates.length; index++) {
+      const candidate = candidates[index];
+      // Keep both sources inside the authorized proxy; never expose signed storage URLs.
+      const url = await r2.getPrivateFileUrl(candidate, environment.r2.urlExpires);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          upstream = await fetch(url, { headers: range ? { Range: range } : {}, signal: request.signal });
+          if (upstream.status >= 500 && attempt === 0) {
+            await upstream.body?.cancel();
+            continue;
+          }
+          break;
+        } catch (error) {
+          if (attempt === 1 || request.signal.aborted) throw error;
         }
-        break;
-      } catch (error) {
-        if (attempt === 1 || request.signal.aborted) throw error;
       }
+      if (upstream?.status === 404 && index === 0) { await upstream.body?.cancel(); continue; }
+      break;
     }
     if (!upstream) throw new Error('Storage response unavailable');
     if (!upstream.ok && upstream.status !== 416) {

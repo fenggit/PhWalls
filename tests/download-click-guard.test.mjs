@@ -14,6 +14,7 @@ const code = ts.transpileModule(readFileSync(new URL('../src/components/Wallpape
 function setup({ video = false, fetchFile } = {}) {
   const state = [], refs = [], timers = [], events = [];
   let stateCursor = 0, refCursor = 0, downloads = 0;
+  const downloadLinks = [];
   const module = { exports: {} };
   runInNewContext(code, {
     module, exports: module.exports,
@@ -38,7 +39,7 @@ function setup({ video = false, fetchFile } = {}) {
       return require(name);
     },
     document: {
-      createElement: () => ({ style: {}, click() { downloads++; }, remove() {} }),
+      createElement: () => ({ style: {}, click() { downloads++; downloadLinks.push(this.href); }, remove() {} }),
       body: { appendChild() {}, removeChild() {} },
     },
     window: { location: { href: 'https://phwalls.com/live/test' }, URL: { createObjectURL: () => 'blob:test', revokeObjectURL() {} } },
@@ -65,12 +66,21 @@ function setup({ video = false, fetchFile } = {}) {
       return find(render(), node => typeof node.props?.onDownload === 'function');
     },
     finishTimers: () => { timers.splice(0).forEach(timer => timer.callback()); },
-    downloads: () => downloads, events,
+    downloads: () => downloads, downloadLinks, events,
   };
 }
 
 const click = button => button.props.onClick({ preventDefault() {}, stopPropagation() {} });
 const flush = () => new Promise(resolve => setImmediate(resolve));
+
+test('video download always requests the original file and never the browser preview', () => {
+  const preview = setup({ video: true });
+  click(preview.button());
+  const url = new URL(preview.downloadLinks[0], 'https://phwalls.com');
+  assert.equal(url.pathname, '/api/files/download');
+  assert.equal(url.searchParams.get('key'), 'wallpapers/test/origin/movie.mp4');
+  assert.equal(url.searchParams.get('key').includes('/preview/'), false);
+});
 
 test('video download shows a spinner and blocks repeated clicks until its startup cooldown ends', async () => {
   const preview = setup({ video: true });

@@ -42,6 +42,8 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
     },
   };
   const cache = new Map();
+  const storedObjects = new Map();
+  const removedObjects = [];
   function load(path) {
     if (cache.has(path)) return cache.get(path).exports;
     const module = { exports: {} };
@@ -59,11 +61,13 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
           verifyUploadGrant: async (token) => JSON.parse(token),
           headR2Object: async (key) => {
             onHead(key, sqlite);
+            if (storedObjects.has(key)) return missingFiles.has(key) ? null : storedObjects.get(key);
             const existing = sqlite.prepare('SELECT 1 FROM w_wallpapers WHERE origin_key = ? OR compress_key = ?').get(key, key);
             return missingFiles.has(key) || !existing ? null : { size: 100, mimeType: 'image/webp' };
           },
+          deleteR2Object: async (key) => { removedObjects.push(key); storedObjects.delete(key); },
         };
-        if (specifier === '@/lib/admin-static-assets') return {};
+        if (specifier === '@/lib/admin-static-assets') return { hasStaticWallpaperReference: async () => false };
         if (specifier === '@/lib/admin-auth') return { requireAdmin: async () => null };
         if (specifier === '@/types') return load(`${root}src/types/index.ts`);
         if (specifier.endsWith('.json') && specifier.startsWith('@/')) return JSON.parse(readFileSync(`${root}src/${specifier.slice(2)}`, 'utf8'));
@@ -78,8 +82,51 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
     device_id: 'device-1', name, origin_key: `test/device/origin/${name}.webp`,
     compress_key: `test/device/compress/${name}.webp`, mime_type: 'image/webp', size_bytes: 100, ...patch,
   });
-  return { sqlite, service, upload, load };
+  return { sqlite, service, upload, load, storedObjects, removedObjects };
 }
+
+test('the optional browser preview uses a video grant bound to the original filename and device', async () => {
+  const { sqlite, load, storedObjects } = fixture();
+  try {
+    const prefix = 'live/Test/Device One';
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const request = (input) => route.POST(new Request('https://example.com/api/admin/upload', { method: 'POST', body: JSON.stringify(input) }));
+    const authorize = await request({ action: 'authorize', device_id: 'device-1', role: 'preview', media_type: 'dynamic',
+      mime_type: 'video/mp4', file_name: 'video.mp4', size_bytes: 50 });
+    assert.equal(authorize.status, 200);
+    assert.equal((await authorize.json()).key, `${prefix}/preview/video.mp4`);
+    const grant = (role, file, mimeType, size = 100) => ({ key: `${prefix}/${role}/${file}`, mimeType, size,
+      deviceId: 'device-1', role, prefix });
+    const origin = grant('origin', 'video.mp4', 'video/mp4');
+    const cover = grant('compress', 'video.webp', 'image/webp');
+    const video = grant('preview', 'video.mp4', 'video/mp4', 50);
+    for (const item of [origin, cover, video]) storedObjects.set(item.key, { size: item.size, mimeType: item.mimeType });
+    const input = { action: 'complete', device_id: 'device-1', name: 'video', media_type: 'dynamic',
+      origin_token: JSON.stringify(origin), preview_token: JSON.stringify(cover) };
+    for (const invalid of [{ ...video, key: `${prefix}/preview/other.mp4` }, { ...video, deviceId: 'other-device' },
+      { ...video, role: 'origin' }, { ...video, mimeType: 'image/webp' }, { ...video, size: 51 }]) {
+      assert.equal((await request({ ...input, video_preview_token: JSON.stringify(invalid) })).status, 400);
+      assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 0);
+    }
+    const completed = await request({ ...input, video_preview_token: JSON.stringify(video) });
+    assert.equal(completed.status, 201);
+    const row = (await completed.json()).data;
+    assert.equal(row.origin_key, origin.key);
+    assert.equal(row.compress_key, cover.key);
+    assert.equal(row.size_bytes, 100);
+  } finally { sqlite.close(); }
+});
+
+test('video deletion also cleans the derived browser preview and its deletion marker', async () => {
+  const { sqlite, service, upload, removedObjects } = fixture();
+  try {
+    const row = await upload('video', { media_type: 'dynamic', mime_type: 'video/mp4', origin_key: 'live/Test/Device One/origin/video.mp4', compress_key: 'live/Test/Device One/compress/video.webp' });
+    await service.deleteAdminWallpaper({ id: row.id });
+    assert.ok(removedObjects.includes('live/Test/Device One/preview/video.mp4'));
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_deleted_wallpaper_files').get().count, 3);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 0);
+  } finally { sqlite.close(); }
+});
 
 test('upload authorization reuses the selected media directory and rejects the other media directory', async () => {
   const { sqlite, upload, load } = fixture();

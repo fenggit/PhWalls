@@ -21,6 +21,9 @@ export interface I18nTexts {
   adminUploadFileNameInvalid: string;
   adminUploadFileExists: string;
   adminUploadBrandDirectoryCase: string;
+  adminUploadVideoPreview: string;
+  adminUploadVideoPreviewNameMismatch: string;
+  adminUploadOriginFallbackHint: string;
   adminUploadStaticFilesHelp: string;
   adminUploadDynamicFilesHelp: string;
   adminUploadStaticOriginal: string;
@@ -467,8 +470,11 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadFileNameInvalid: "上传文件名无效：须保留与文件类型匹配的扩展名，且不能包含路径或特殊路径字符。",
     adminUploadFileExists: "同名文件“{name}”已存在，请先检查已有文件，避免覆盖。",
     adminUploadBrandDirectoryCase: "品牌目录区分大小写，请使用 {path}，避免重复创建品牌目录。",
+    adminUploadVideoPreview: "网页预览视频（可选）",
+    adminUploadVideoPreviewNameMismatch: "网页预览视频须与原视频文件名完全一致，并属于同一设备和目录。",
+    adminUploadOriginFallbackHint: "未提供 preview 网页预览时，播放读取 origin 原视频；下载始终读取 origin。",
     adminUploadStaticFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加静态原图与封面。上传后保存为草稿。",
-    adminUploadDynamicFilesHelp: "选择含 origin 和 compress 子目录的文件夹，或分别添加 MP4/WebM 视频与图片封面。视频与封面须同名，上传后保存为草稿。",
+    adminUploadDynamicFilesHelp: "选择含 origin 原视频和 compress 封面的文件夹，可同时上传 preview 网页预览视频。预览视频与原视频文件名须完全一致，封面须同名；上传后保存为草稿。",
     adminUploadStaticOriginal: "原图文件",
     adminUploadDynamicOriginal: "视频文件",
     adminUploadCover: "封面文件",
@@ -903,8 +909,11 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadFileNameInvalid: "Invalid filename: keep the extension matching the file type and exclude paths or reserved path characters.",
     adminUploadFileExists: "“{name}” already exists. Check the existing file to avoid overwriting it.",
     adminUploadBrandDirectoryCase: "Brand directories are case-sensitive. Use {path} to avoid creating a duplicate brand directory.",
+    adminUploadVideoPreview: "Browser preview video (optional)",
+    adminUploadVideoPreviewNameMismatch: "The browser preview must have exactly the same filename as the original and belong to the same device and directory.",
+    adminUploadOriginFallbackHint: "Without a preview video, playback uses the origin video. Downloads always use origin.",
     adminUploadStaticFilesHelp: "Choose a folder with origin and compress subfolders, or add original images and covers separately. Uploads are saved as drafts.",
-    adminUploadDynamicFilesHelp: "Choose a folder with origin and compress subfolders, or add MP4/WebM videos and image covers separately. Match videos and covers by filename. Uploads are saved as drafts.",
+    adminUploadDynamicFilesHelp: "Choose a folder with origin videos and compress covers, optionally including preview videos. Previews must use exactly the original filename; covers must match its stem. Uploads are saved as drafts.",
     adminUploadStaticOriginal: "Original images",
     adminUploadDynamicOriginal: "Video files",
     adminUploadCover: "Cover images",
@@ -1339,8 +1348,11 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadFileNameInvalid: "ファイル名が無効です。種類に一致する拡張子を保ち、パスや予約文字を含めないでください。",
     adminUploadFileExists: "「{name}」は既に存在します。上書きを防ぐため、既存ファイルを確認してください。",
     adminUploadBrandDirectoryCase: "ブランドフォルダーは大文字・小文字を区別します。重複を防ぐため {path} を使用してください。",
+    adminUploadVideoPreview: "ブラウザー用プレビュー動画（任意）",
+    adminUploadVideoPreviewNameMismatch: "プレビュー動画は元動画と同じファイル名で、同じ端末とフォルダーに属する必要があります。",
+    adminUploadOriginFallbackHint: "preview 動画がない場合は origin の元動画を再生します。ダウンロードは常に origin を使用します。",
     adminUploadStaticFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、原画像とカバーを別々に追加します。下書きとして保存されます。",
-    adminUploadDynamicFilesHelp: "origin と compress サブフォルダーを含むフォルダーを選択するか、MP4/WebM 動画と画像カバーを追加します。ファイル名を一致させてください。下書きとして保存されます。",
+    adminUploadDynamicFilesHelp: "origin の元動画と compress のカバーを含むフォルダーを選択します。preview 動画も追加できます。プレビューは元動画と同じファイル名、カバーは同じベース名にしてください。下書きとして保存されます。",
     adminUploadStaticOriginal: "原画像",
     adminUploadDynamicOriginal: "動画ファイル",
     adminUploadCover: "カバー画像",
@@ -1775,8 +1787,11 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadFileNameInvalid: "Tên tệp không hợp lệ: giữ phần mở rộng đúng loại tệp và không chứa đường dẫn hay ký tự dành riêng.",
     adminUploadFileExists: "“{name}” đã tồn tại. Hãy kiểm tra tệp hiện có để tránh ghi đè.",
     adminUploadBrandDirectoryCase: "Thư mục thương hiệu phân biệt chữ hoa và chữ thường. Dùng {path} để tránh tạo thư mục trùng lặp.",
+    adminUploadVideoPreview: "Video xem trước trên web (tùy chọn)",
+    adminUploadVideoPreviewNameMismatch: "Video xem trước phải có tên tệp giống hệt bản gốc và thuộc cùng thiết bị, thư mục.",
+    adminUploadOriginFallbackHint: "Nếu không có video preview, phát bản gốc trong origin. Tải xuống luôn dùng origin.",
     adminUploadStaticFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm ảnh gốc và ảnh bìa riêng. Nội dung được lưu dưới dạng bản nháp.",
-    adminUploadDynamicFilesHelp: "Chọn thư mục có các thư mục con origin và compress, hoặc thêm video MP4/WebM và ảnh bìa riêng. Video và ảnh bìa phải cùng tên. Nội dung được lưu dưới dạng bản nháp.",
+    adminUploadDynamicFilesHelp: "Chọn thư mục có video gốc trong origin và ảnh bìa trong compress, có thể kèm video preview. Video xem trước phải giữ nguyên tên tệp gốc; ảnh bìa phải cùng tên cơ sở. Nội dung được lưu dưới dạng bản nháp.",
     adminUploadStaticOriginal: "Ảnh gốc",
     adminUploadDynamicOriginal: "Tệp video",
     adminUploadCover: "Ảnh bìa",
@@ -2184,8 +2199,11 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadFileNameInvalid: "上傳檔名無效：須保留與檔案類型匹配的副檔名，且不能包含路徑或特殊路徑字元。",
     adminUploadFileExists: "同名檔案「{name}」已存在，請先檢查既有檔案，避免覆寫。",
     adminUploadBrandDirectoryCase: "品牌目錄區分大小寫，請使用 {path}，避免重複建立品牌目錄。",
+    adminUploadVideoPreview: "網頁預覽影片（選填）",
+    adminUploadVideoPreviewNameMismatch: "網頁預覽影片須與原影片檔名完全一致，並屬於同一裝置和目錄。",
+    adminUploadOriginFallbackHint: "未提供 preview 網頁預覽時，播放讀取 origin 原影片；下載始終讀取 origin。",
     adminUploadStaticFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增靜態原圖與封面。上傳後儲存為草稿。",
-    adminUploadDynamicFilesHelp: "選擇含 origin 與 compress 子目錄的資料夾，或分別新增 MP4/WebM 影片與圖片封面。影片與封面須同名，上傳後儲存為草稿。",
+    adminUploadDynamicFilesHelp: "選擇含 origin 原影片和 compress 封面的資料夾，可同時上傳 preview 網頁預覽影片。預覽影片與原影片檔名須完全一致，封面須同名；上傳後儲存為草稿。",
     adminUploadStaticOriginal: "原圖檔案",
     adminUploadDynamicOriginal: "影片檔案",
     adminUploadCover: "封面檔案",

@@ -82,6 +82,10 @@ test('selected upload media validates the original and always requires an image 
   assert.throws(() => pathModule.exports.assertAdminUploadMime('video/mp4', 'origin', 'static'));
   assert.throws(() => pathModule.exports.assertAdminUploadMime('video/mp4', 'compress', 'dynamic'));
   assert.throws(() => pathModule.exports.assertAdminUploadMime('text/plain', 'origin', 'static'));
+  assert.doesNotThrow(() => pathModule.exports.assertAdminUploadMime('video/mp4', 'preview', 'dynamic'));
+  assert.throws(() => pathModule.exports.assertAdminUploadMime('image/webp', 'preview', 'dynamic'));
+  assert.throws(() => pathModule.exports.assertAdminUploadMime('video/mp4', 'preview', 'static'));
+  assert.throws(() => pathModule.exports.assertAdminUploadMime('image/webp', 'preview', 'static'));
 });
 
 test('default upload directories separate static and Live files for the same device or system', () => {

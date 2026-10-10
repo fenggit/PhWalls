@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     if (action === 'authorize') {
       const role = input.role;
-      if (role !== 'origin' && role !== 'compress') throw new Error('文件角色无效');
+      if (role !== 'origin' && role !== 'compress' && role !== 'preview') throw new Error('文件角色无效');
       const mime = assertText(input.mime_type, '文件类型', 100);
       const media = parseWallpaperMedia(input.media_type);
       const size = Number(input.size_bytes);
@@ -61,10 +61,13 @@ export async function POST(request: NextRequest) {
     if (action === 'complete') {
       const origin = await verifyUploadGrant(assertText(input.origin_token, '原图授权', 6000));
       const preview = await verifyUploadGrant(assertText(input.preview_token, '预览授权', 6000));
+      const videoPreview = input.video_preview_token === undefined ? undefined
+        : await verifyUploadGrant(assertText(input.video_preview_token, '视频预览授权', 6000));
       const media = origin.mimeType.startsWith('video/') ? 'dynamic' : 'static';
       if (input.media_type !== undefined && parseWallpaperMedia(input.media_type) !== media) throw new Error('上传文件与所选壁纸类型不匹配');
       assertAdminUploadMime(origin.mimeType, 'origin', media);
       assertAdminUploadMime(preview.mimeType, 'compress', media);
+      if (videoPreview) assertAdminUploadMime(videoPreview.mimeType, 'preview', media);
       const originBase = origin.prefix ?? base;
       const previewBase = preview.prefix ?? base;
       if (originBase !== previewBase || (origin.deviceId !== undefined && origin.deviceId !== deviceId) ||
@@ -73,10 +76,19 @@ export async function POST(request: NextRequest) {
           !origin.key.startsWith(`${originBase}/origin/`) || !preview.key.startsWith(`${previewBase}/compress/`)) {
         throw new Error('文件与设备不匹配');
       }
-      const [originInfo, previewInfo] = await Promise.all([headR2Object(origin.key), headR2Object(preview.key)]);
+      if (videoPreview && (videoPreview.deviceId !== deviceId || videoPreview.role !== 'preview' ||
+          videoPreview.prefix !== originBase || videoPreview.key !== origin.key.replace('/origin/', '/preview/'))) {
+        throw new Error(getI18nTexts('zh').adminUploadVideoPreviewNameMismatch);
+      }
+      const [originInfo, previewInfo, videoPreviewInfo] = await Promise.all([
+        headR2Object(origin.key), headR2Object(preview.key), videoPreview ? headR2Object(videoPreview.key) : undefined,
+      ]);
       if (!originInfo || !previewInfo || originInfo.size !== origin.size || previewInfo.size !== preview.size ||
           originInfo.mimeType !== origin.mimeType || previewInfo.mimeType !== preview.mimeType) {
         throw new Error('R2 文件未上传完成或与授权信息不一致');
+      }
+      if (videoPreview && (!videoPreviewInfo || videoPreviewInfo.size !== videoPreview.size || videoPreviewInfo.mimeType !== videoPreview.mimeType)) {
+        throw new Error('R2 视频预览未上传完成或与授权信息不一致');
       }
       const data = await createAdminWallpaper({
         device_id: deviceId,

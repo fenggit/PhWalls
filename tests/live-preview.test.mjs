@@ -6,7 +6,11 @@ import { test } from 'node:test';
 const require = createRequire(import.meta.url);
 const ts = require('typescript');
 const { NextRequest, NextResponse } = require('next/server');
-function fixture(published = true, upstreamStatus = 206, transientFailures = 0) {
+const keyModule = { exports: {} };
+runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/wallpaper-key.ts', import.meta.url), 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText, { module: keyModule, exports: keyModule.exports });
+function fixture(published = true, upstreamStatus = 206, transientFailures = 0, previewMissing = false) {
   const calls = [];
   const module = { exports: {} };
   const source = ts.transpileModule(readFileSync(new URL('../src/app/api/files/preview/route.ts', import.meta.url), 'utf8'), {
@@ -15,13 +19,14 @@ function fixture(published = true, upstreamStatus = 206, transientFailures = 0) 
   runInNewContext(source, { module, exports: module.exports, console: { error() {} }, Response, Headers,
     fetch: async (url, options) => { calls.push({ url, options });
       if (calls.length <= transientFailures) throw new TypeError('connection reset');
+      if (previewMissing && url.includes('/preview/')) return new Response(null, { status: 404 });
       return new Response('video', {
       status: upstreamStatus, headers: { 'content-type': 'video/mp4', 'content-range': 'bytes 0-4/200',
         'content-length': '5', 'accept-ranges': 'bytes' },
     }); },
     require(name) {
       if (name === 'next/server') return { NextResponse };
-      if (name === '@/lib/wallpaper-key') return { sanitizeWallpaperDownloadKey: (key) => key?.includes('/origin/') && !key.includes('..') ? key : null };
+      if (name === '@/lib/wallpaper-key') return keyModule.exports;
       if (name === '@/lib/wallpaper-db') return { isPublishedWallpaperKey: async () => published };
       if (name === '@/lib/config/environments') return { getCurrentEnvironment: () => ({ r2: { isPrivate: false, urlExpires: 300 } }) };
       if (name === '@/lib/services/r2') return { R2Service: class {
@@ -43,6 +48,25 @@ test('preview forwards byte ranges and serves the browser-compatible preview wit
   assert.equal(f.calls[0].options.headers.Range, 'bytes=0-4');
   assert.equal(await response.text(), 'video');
   assert.ok(![...response.headers.values()].some((value) => value.includes('signature')));
+});
+test('video keys preserve original extension capitalization in preview and fallback paths', async () => {
+  const key = 'live/Huawei/Mate XT 2/origin/Original.MP4';
+  const f = fixture(true, 206, 0, true);
+  assert.equal((await f.route.GET(new NextRequest(`https://phwalls.test/api/files/preview?key=${encodeURIComponent(key)}`))).status, 206);
+  assert.equal(f.calls[0].url, 'https://r2.test/live/Huawei/Mate XT 2/preview/Original.MP4?signature=server-only');
+  assert.equal(f.calls[1].url, `https://r2.test/${key}?signature=server-only`);
+});
+test('a missing preview falls back to the authorized original while preserving byte ranges', async () => {
+  for (const key of ['live/Huawei/Mate XT 2/origin/video.mp4', 'desktopwalls/Windows/origin/video.webm']) {
+    const f = fixture(true, 206, 0, true);
+    const response = await f.route.GET(new NextRequest(`https://phwalls.test/api/files/preview?key=${encodeURIComponent(key)}`, { headers: { range: 'bytes=0-4' } }));
+    assert.equal(response.status, 206);
+    assert.equal(f.calls[0].url, `https://r2.test/${key.replace('/origin/', '/preview/')}?signature=server-only`);
+    assert.equal(f.calls[1].url, `https://r2.test/${key}?signature=server-only`);
+    assert.equal(f.calls[1].options.headers.Range, 'bytes=0-4');
+    assert.equal(await response.text(), 'video');
+    assert.ok(![...response.headers.values()].some((value) => value.includes('signature')));
+  }
 });
 test('preview retries a transient storage connection failure without exposing the signed URL', async () => {
   const f = fixture(true, 206, 1);

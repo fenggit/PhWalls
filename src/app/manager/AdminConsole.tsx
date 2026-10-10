@@ -15,14 +15,15 @@ import { buildWallpaperListTitle } from '@/lib/data';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { AdminDeviceNameConflictError, createWithAdminNameConfirmation, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
-import { assertAdminUploadMime, normalizeAdminR2Prefix, type AdminUploadDirectories } from '@/lib/admin-upload-path';
+import { assertAdminUploadMime, normalizeAdminR2Prefix, type AdminUploadDirectories, type AdminUploadRole } from '@/lib/admin-upload-path';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
 type UploadFileGrant = { url: string; token: string; headers?: Record<string, string> };
-type UploadRow = { id: string; name: string; origin?: File; preview?: File; theme: string; tags: string;
+type UploadRow = { id: string; name: string; origin?: File; preview?: File; videoPreview?: File; theme: string; tags: string;
   category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean; isPublished?: boolean;
-  originGrant?: UploadFileGrant; previewGrant?: UploadFileGrant; originUploaded?: boolean; previewUploaded?: boolean };
+  originGrant?: UploadFileGrant; previewGrant?: UploadFileGrant; videoPreviewGrant?: UploadFileGrant;
+  originUploaded?: boolean; previewUploaded?: boolean; videoPreviewUploaded?: boolean };
 type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; primary_count: number; published_primary: number };
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
@@ -631,12 +632,12 @@ export default function AdminConsole() {
     });
   };
 
-  const addFiles = async (event: ChangeEvent<HTMLInputElement>, explicitRole?: 'origin' | 'compress') => {
+  const addFiles = async (event: ChangeEvent<HTMLInputElement>, explicitRole?: AdminUploadRole) => {
     const files = Array.from(event.target.files || []);
     const folderRoot = !explicitRole && files.length ? files[0].webkitRelativePath.split('/')[0] : '';
-    const roleFiles = !explicitRole ? files.filter((file) => /(^|\/)(origin|compress)\//i.test(file.webkitRelativePath)) : [];
+    const roleFiles = !explicitRole ? files.filter((file) => /(^|\/)(origin|compress|preview)\//i.test(file.webkitRelativePath)) : [];
     if (!explicitRole && files.length &&
-        (!folderRoot || /^(origin|compress)$/i.test(folderRoot) ||
+        (!folderRoot || /^(origin|compress|preview)$/i.test(folderRoot) ||
          files.some((file) => file.webkitRelativePath.split('/')[0] !== folderRoot))) {
       setError('请选择包含 origin 和 compress 子目录的设备或系统文件夹');
       event.target.value = '';
@@ -644,9 +645,9 @@ export default function AdminConsole() {
     }
     if (!explicitRole && roleFiles.some((file) => {
       const parts = file.webkitRelativePath.split('/');
-      return parts.length !== 3 || parts[0] !== folderRoot || !/^(origin|compress)$/i.test(parts[1]);
+      return parts.length !== 3 || parts[0] !== folderRoot || !/^(origin|compress|preview)$/i.test(parts[1]);
     })) {
-      setError('文件夹内的原图和预览图须直接放在 origin 与 compress 子目录');
+      setError('原文件、封面和网页预览须直接放在 origin、compress 和 preview 子目录');
       event.target.value = '';
       return;
     }
@@ -656,7 +657,7 @@ export default function AdminConsole() {
       event.target.value = '';
       return;
     }
-    if (!explicitRole && files.length && files.every((file) => !/(^|\/)(origin|compress)\//i.test(file.webkitRelativePath || file.name))) {
+    if (!explicitRole && files.length && files.every((file) => !/(^|\/)(origin|compress|preview)\//i.test(file.webkitRelativePath || file.name))) {
       setError('文件夹中未找到 origin 或 compress 文件');
       event.target.value = '';
       return;
@@ -669,7 +670,7 @@ export default function AdminConsole() {
     }
     try {
       for (const file of explicitRole ? files : roleFiles) {
-        const role = explicitRole || (/(^|\/)compress\//i.test(file.webkitRelativePath) ? 'compress' : 'origin');
+        const role = explicitRole || file.webkitRelativePath.split('/')[1].toLowerCase() as AdminUploadRole;
         assertAdminUploadMime(fileMime(file), role, uploadMedia);
       }
     } catch {
@@ -690,20 +691,20 @@ export default function AdminConsole() {
       const next = current.length && current.every((row) => row.state === 'done') ? [] : current.map((row) => ({ ...row }));
       for (const file of files) {
         const path = file.webkitRelativePath || file.name;
-        const role = explicitRole || (/(^|\/)compress\//i.test(path) ? 'compress'
-          : /(^|\/)origin\//i.test(path) ? 'origin' : null);
+        const role = explicitRole || path.match(/(?:^|\/)(origin|compress|preview)\//i)?.[1].toLowerCase() as AdminUploadRole | undefined;
         if (!role) continue;
         const stem = fileStem(file);
         const id = file.webkitRelativePath
-          ? path.replace(/(^|\/)(origin|compress)\/[^/]+$/i, `$1${stem}`) : stem;
+          ? path.replace(/(^|\/)(origin|compress|preview)\/[^/]+$/i, `$1${stem}`) : stem;
         let row = next.find((entry) => entry.id === id || (!file.webkitRelativePath && entry.name === stem));
         if (!row) {
           row = { id, name: stem, theme: 'normal', tags: batchTags, category: '', folderName: folderRoot || undefined, state: 'ready', progress: 0 };
           next.push(row);
         }
-        row[role === 'origin' ? 'origin' : 'preview'] = file;
+        row[role === 'origin' ? 'origin' : role === 'compress' ? 'preview' : 'videoPreview'] = file;
         if (role === 'origin') { row.originGrant = undefined; row.originUploaded = false; }
-        else { row.previewGrant = undefined; row.previewUploaded = false; }
+        else if (role === 'compress') { row.previewGrant = undefined; row.previewUploaded = false; }
+        else { row.videoPreviewGrant = undefined; row.videoPreviewUploaded = false; }
         row.state = 'ready';
         row.error = undefined;
       }
@@ -736,24 +737,34 @@ export default function AdminConsole() {
     try {
       assertAdminUploadMime(fileMime(row.origin), 'origin', uploadMedia);
       assertAdminUploadMime(fileMime(row.preview), 'compress', uploadMedia);
-      const authorize = async (file: File, role: string) => api<UploadFileGrant>('upload', 'POST', {
+      if (row.videoPreview) {
+        assertAdminUploadMime(fileMime(row.videoPreview), 'preview', uploadMedia);
+        if (row.videoPreview.name !== row.origin.name) throw new Error(uploadTexts.adminUploadVideoPreviewNameMismatch);
+      }
+      const authorize = async (file: File, role: AdminUploadRole) => api<UploadFileGrant>('upload', 'POST', {
         action: 'authorize', device_id: deviceId, role, media_type: uploadMedia,
         size_bytes: file.size, mime_type: fileMime(file), file_name: file.name,
         r2_prefix: r2Prefix, path_mode: uploadPathMode,
       });
-      const [origin, preview] = await Promise.all([row.originGrant || authorize(row.origin, 'origin'), row.previewGrant || authorize(row.preview, 'compress')]);
-      patchUpload(row.id, { originGrant: origin, previewGrant: preview });
-      if (!row.originUploaded) {
-        await putWithProgress(origin.url, row.origin, (progress) => patchUpload(row.id, { progress: Math.round(progress / 2) }), origin.headers);
-        patchUpload(row.id, { originUploaded: true });
-      }
-      if (!row.previewUploaded) {
-        await putWithProgress(preview.url, row.preview, (progress) => patchUpload(row.id, { progress: 50 + Math.round(progress / 2) }), preview.headers);
-        patchUpload(row.id, { previewUploaded: true });
+      const [origin, preview, videoPreview] = await Promise.all([
+        row.originGrant || authorize(row.origin, 'origin'), row.previewGrant || authorize(row.preview, 'compress'),
+        row.videoPreview ? row.videoPreviewGrant || authorize(row.videoPreview, 'preview') : undefined,
+      ]);
+      patchUpload(row.id, { originGrant: origin, previewGrant: preview, videoPreviewGrant: videoPreview });
+      const files = [
+        { file: row.origin, grant: origin, uploaded: row.originUploaded, flag: 'originUploaded' as const },
+        { file: row.preview, grant: preview, uploaded: row.previewUploaded, flag: 'previewUploaded' as const },
+        ...(row.videoPreview && videoPreview ? [{ file: row.videoPreview, grant: videoPreview, uploaded: row.videoPreviewUploaded, flag: 'videoPreviewUploaded' as const }] : []),
+      ];
+      for (let index = 0; index < files.length; index++) {
+        const item = files[index];
+        if (item.uploaded) continue;
+        await putWithProgress(item.grant.url, item.file, (progress) => patchUpload(row.id, { progress: Math.round((index + progress / 100) / files.length * 100) }), item.grant.headers);
+        patchUpload(row.id, { [item.flag]: true });
       }
       const { data } = await api<{ data: WallpaperRow }>('upload', 'POST', {
         action: 'complete', device_id: deviceId, name: row.name, media_type: uploadMedia,
-        origin_token: origin.token, preview_token: preview.token,
+        origin_token: origin.token, preview_token: preview.token, video_preview_token: videoPreview?.token,
         theme: row.theme, category: row.category || undefined,
         tags: row.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
       });
@@ -801,6 +812,7 @@ export default function AdminConsole() {
     for (const row of uploadRows.filter((item) => item.state !== 'done')) {
       if (row.origin) assertAdminUploadMime(fileMime(row.origin), 'origin', uploadMedia);
       if (row.preview) assertAdminUploadMime(fileMime(row.preview), 'compress', uploadMedia);
+      if (row.videoPreview) assertAdminUploadMime(fileMime(row.videoPreview), 'preview', uploadMedia);
     }
   } catch { uploadQueueError = uploadTexts.adminUploadMediaMismatch; }
   const isNewUploadCollection = Boolean(selectedUploadDevice && uploadStorage?.source === 'default');
@@ -1069,9 +1081,11 @@ export default function AdminConsole() {
           <div className="mb-5 rounded-lg border border-dashed border-[#bdccbf] bg-[#edf2eb]/60 p-4 sm:p-5">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#dfe9de] text-xs text-[#526950]">2</span>选择文件</h3>
           <p className="mb-4 text-xs leading-5 text-[#66746b]">{uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicFilesHelp : uploadTexts.adminUploadStaticFilesHelp}</p>
+          {uploadMedia === 'dynamic' && <p className="mb-4 text-xs leading-5 text-[#66746b]">{uploadTexts.adminUploadOriginFallbackHint}</p>}
           <div className="flex flex-wrap gap-2">
             <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicOriginal : uploadTexts.adminUploadStaticOriginal}<input className="sr-only" type="file" multiple accept={uploadMedia === 'dynamic' ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp,image/avif,image/gif'} disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'origin')} /></label>
             <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />{uploadTexts.adminUploadCover}<input className="sr-only" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/gif" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'compress')} /></label>
+            {uploadMedia === 'dynamic' && <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy || folderTargetLocked ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{uploadTexts.adminUploadVideoPreview}<input className="sr-only" type="file" multiple accept="video/mp4,video/webm" disabled={!uploadDevice || busy || folderTargetLocked} onChange={(event) => addFiles(event, 'preview')} /></label>}
             <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadBrand || busy || uploadFolderState === 'checking' ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy || uploadFolderState === 'checking'} onChange={(event) => addFiles(event)} /></label>
           </div>
           {uploadFolderName && <div className="mt-4 border-t border-[#d4dfd3] pt-4">
@@ -1100,7 +1114,8 @@ export default function AdminConsole() {
             {uploadRows.length === 0 && <div className="flex min-h-44 flex-col items-center justify-center gap-3 px-4 text-center text-sm text-[#758278]"><ImagePlus size={28} className="text-[#9aaba0]" /><span>暂无待上传文件</span><span className="text-xs">添加文件后，在这里检查名称、主题与标签</span></div>}
             {uploadRows.map((row) => <div key={row.id} className="grid gap-3 border-b border-[#ebefeb] p-4 last:border-b-0 sm:grid-cols-2 xl:grid-cols-[minmax(160px,1fr)_90px_90px_minmax(120px,1fr)_110px_40px] xl:items-center">
               <div className="min-w-0"><input className={inputClass} aria-label="壁纸名称" value={row.name} onChange={(event) => patchUpload(row.id, { name: event.target.value })} />
-                <div className="mt-1 truncate text-xs text-gray-500">{row.origin?.name || '缺原图'} / {row.preview?.name || '缺预览'}</div>
+                <div className="mt-1 truncate text-xs text-gray-500">{row.origin?.name || '缺原图'} / {row.preview?.name || '缺封面'}</div>
+                {row.videoPreview && <div className="mt-1 truncate text-xs text-gray-500">{uploadTexts.adminUploadVideoPreview}：{row.videoPreview.name}</div>}
                 {row.origin && <div className="mt-1 text-xs font-medium text-[#247560]">{fileMime(row.origin).startsWith('video/') ? uploadTexts.adminUploadDynamicLabel : uploadTexts.adminUploadStaticLabel}</div>}</div>
               <select className={inputClass} aria-label="主题" value={row.theme} onChange={(event) => patchUpload(row.id, { theme: event.target.value })}>
                 {['normal', 'dark', 'light'].map((value) => <option key={value} value={value}>{themeLabels[value]}</option>)}
@@ -1145,6 +1160,7 @@ export default function AdminConsole() {
           <p className="mb-1 text-sm font-semibold">{deletingWallpaper.name}</p><p className="mb-4 text-xs text-[#66746b]">{deletingWallpaper.brand_name} / {deletingWallpaper.device_name}</p>
           <p className="mb-4 text-sm leading-6 text-red-800">将永久删除后台记录以及以下 R2 文件，此操作无法撤销。</p>
           <dl className="space-y-3 rounded-md bg-[#f5f7f4] p-3 text-xs"><div><dt className="mb-1 text-[#66746b]">原图</dt><dd className="break-all font-mono">{deletingWallpaper.origin_key}</dd></div>{deletingWallpaper.compress_key && <div><dt className="mb-1 text-[#66746b]">预览图</dt><dd className="break-all font-mono">{deletingWallpaper.compress_key}</dd></div>}</dl>
+          {deletingWallpaper.media_type === 'dynamic' && <div className="mt-3 rounded-md bg-[#f5f7f4] p-3 text-xs"><div className="mb-1 text-[#66746b]">{uploadTexts.adminUploadVideoPreview}</div><div className="break-all font-mono">{deletingWallpaper.origin_key.replace('/origin/', '/preview/')}</div></div>}
           {error && <p role="alert" className="mt-4 text-sm leading-6 text-red-700">{error}</p>}
           <div className="mt-5 flex justify-end gap-2"><button type="button" className={buttonClass} disabled={busy} onClick={() => setDeletingWallpaper(null)}>取消</button><button className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-red-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}><Trash2 size={16} />{busy ? '删除中…' : '确认删除'}</button></div>
         </form>
