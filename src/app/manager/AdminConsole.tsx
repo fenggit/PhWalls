@@ -393,7 +393,7 @@ export default function AdminConsole() {
   const [newUploadDate, setNewUploadDate] = useState('');
   const [uploadRows, setUploadRows] = useState<UploadRow[]>([]);
   const [uploadPublication, setUploadPublication] = useState<{ device: Pick<DeviceRow, 'id' | 'device_name'>; count: number } | null>(null);
-  const createdUploadDevices = useRef(new Set<string>());
+  const createdUploadCollections = useRef(new Set<string>());
   const [uploadFolderName, setUploadFolderName] = useState('');
   const [batchTags, setBatchTags] = useState('');
   const [busy, setBusy] = useState(false);
@@ -615,7 +615,7 @@ export default function AdminConsole() {
         release_date: newUploadDate,
       });
       if (!data) return;
-      createdUploadDevices.current.add(data.id);
+      createdUploadCollections.current.add(`${data.id}:${uploadMedia}`);
       setUploadDevices((current) => [data, ...current.filter((device) => device.id !== data.id)]);
       setUploadDevice(data.id);
       if (folderName) setUploadFolderState('matched');
@@ -790,6 +790,29 @@ export default function AdminConsole() {
       if (row.preview) assertAdminUploadMime(fileMime(row.preview), 'compress', uploadMedia);
     }
   } catch { uploadQueueError = uploadTexts.adminUploadMediaMismatch; }
+  const isNewUploadCollection = Boolean(selectedUploadDevice && uploadStorage?.source === 'default');
+  const createUploadCollectionLabel = uploadMedia === 'dynamic'
+    ? uploadTexts.adminUploadCreateDynamicCollection : uploadTexts.adminUploadCreateStaticCollection;
+  const startUpload = () => run(async () => {
+    const pending = uploadRows.filter((item) => item.state !== 'done');
+    if (!pending.length) throw new Error(uploadTexts.adminUploadAddFilesFirst);
+    if (uploadDevicesLoading || uploadStorageLoading || !uploadStorage) throw new Error(uploadTexts.adminUploadLoadingDirectory);
+    if (uploadQueueError) throw new Error(uploadQueueError);
+    if (pending.some((row) => !row.origin || !row.preview)) throw new Error('请先配齐每项原图和预览图');
+    if (uploadFolderName && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
+    const deviceId = await ensureUploadDevice();
+    if (!uploadStoragePath || uploadStoragePathError) throw new Error(uploadStoragePathError || '请选择 R2 存储目录');
+    const collectionKey = `${deviceId}:${uploadMedia}`;
+    if (isNewUploadCollection) createdUploadCollections.current.add(collectionKey);
+    await uploadAdminBatch(pending, (row) => uploadOne(row, deviceId, uploadStoragePath), (count) => {
+      const device = uploadDevices.find((item) => item.id === deviceId);
+      if (device && createdUploadCollections.current.has(collectionKey)) {
+        createdUploadCollections.current.delete(collectionKey);
+        setUploadPublication({ device, count: count + uploadRows.filter((row) => row.state === 'done').length });
+      }
+    });
+    setUploadDirectoryRevision((value) => value + 1);
+  });
   const editingDeviceIsDesktop = brands.some((brand) => brand.slug === editingDevice?.brand_name && brand.kind === 'desktop');
   const changeFilters = (patch: Partial<typeof filters>) => {
     setDevicePage(0);
@@ -969,8 +992,9 @@ export default function AdminConsole() {
               </select>
               </div>
             </label>
-            <button className={buttonClass} disabled={!uploadBrand || busy || folderTargetLocked} onClick={() => setCreatingUploadDevice((current) => !current)}>
-              <Plus size={16} />新增设备/系统
+            <button className={buttonClass} disabled={!uploadBrand || busy || uploadDevicesLoading || uploadStorageLoading || (!isNewUploadCollection && folderTargetLocked)}
+              onClick={() => { if (isNewUploadCollection) void startUpload(); else setCreatingUploadDevice((current) => !current); }}>
+              <Plus size={16} />{isNewUploadCollection ? createUploadCollectionLabel : '新增设备/系统'}
             </button>
           </div>
           <div className="mb-4 grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)]">
@@ -998,7 +1022,8 @@ export default function AdminConsole() {
             {uploadPathMode === 'device' && uploadStorage?.source === 'existing' && <span className="block">{uploadTexts.adminUploadExistingHint}</span>}</p>
           {selectedUploadDevice && uploadStorage?.source === 'default' && <p role="status" className="mb-4 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
             {uploadTexts.adminUploadDefaultHint.replace('{name}', selectedUploadDevice.device_name)
-              .replace('{type}', uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicLabel : uploadTexts.adminUploadStaticLabel)}
+              .replace('{type}', uploadMedia === 'dynamic' ? uploadTexts.adminUploadDynamicLabel : uploadTexts.adminUploadStaticLabel)
+              .replace('{action}', createUploadCollectionLabel)}
           </p>}
           {uploadBrand && !uploadDevicesLoading && uploadDevices.length === 0 && !creatingUploadDevice &&
             <p className="mb-4 text-sm text-gray-600">当前品牌没有设备或系统</p>}
@@ -1055,22 +1080,7 @@ export default function AdminConsole() {
           </div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">3</span>上传队列<span className="text-xs font-normal tabular-nums text-[#758278]">{uploadRows.length} 项</span></h3>
-            <button className={primaryClass} disabled={busy || uploadDevicesLoading || uploadStorageLoading || !uploadStorage || !!uploadQueueError || !uploadBrand || !uploadDevice || !uploadStoragePath || !!uploadStoragePathError || (!!uploadFolderName && uploadFolderState !== 'matched') || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void run(async () => {
-              const pending = uploadRows.filter((item) => item.state !== 'done');
-              if (uploadQueueError) throw new Error(uploadQueueError);
-              if (pending.some((row) => !row.origin || !row.preview)) throw new Error('请先配齐每项原图和预览图');
-              if (uploadFolderName && pending.some((row) => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
-              const deviceId = await ensureUploadDevice();
-              if (!uploadStoragePath || uploadStoragePathError) throw new Error(uploadStoragePathError || '请选择 R2 存储目录');
-              await uploadAdminBatch(pending, (row) => uploadOne(row, deviceId, uploadStoragePath), (count) => {
-                const device = uploadDevices.find((item) => item.id === deviceId);
-                if (device && createdUploadDevices.current.has(deviceId)) {
-                  createdUploadDevices.current.delete(deviceId);
-                  setUploadPublication({ device, count: count + uploadRows.filter((row) => row.state === 'done').length });
-                }
-              });
-              setUploadDirectoryRevision((value) => value + 1);
-            })}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
+            <button className={primaryClass} disabled={busy || uploadDevicesLoading || uploadStorageLoading || !uploadStorage || !!uploadQueueError || !uploadBrand || !uploadDevice || !uploadStoragePath || !!uploadStoragePathError || (!!uploadFolderName && uploadFolderState !== 'matched') || !uploadRows.some((row) => row.state !== 'done')} onClick={() => void startUpload()}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
           {uploadQueueError && <p role="alert" className="mb-3 text-sm text-red-700">{uploadQueueError}</p>}
           <div className="overflow-hidden rounded-lg border border-[#dfe6df] bg-white">
