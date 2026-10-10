@@ -5,12 +5,34 @@ const nextConfig = {
   // 开发与生产产物隔离，避免 next build 覆盖运行中的 dev 模块与 HMR 清单。
   distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
 
+  // Middleware combines slash, language, domain and legacy-path normalization in one hop.
+  skipTrailingSlashRedirect: true,
+
   // 启用压缩
   compress: true,
 
-  // Node 渲染使用阻塞 metadata；Next.js 15.5 Edge 入口仍固定开启流式 metadata。
-  // 各页面 description 由 app/layout.tsx 复用页面文案并显式写入 head 兜底。
+  // SEO 标签统一由 Metadata API 输出，浏览器和爬虫都等待 head metadata。
   htmlLimitedBots: /.*/,
+
+  webpack(config, { nextRuntime }) {
+    if (nextRuntime === 'edge') {
+      // Next 15.5's Edge entry ignores htmlLimitedBots; narrowly fix that generated entry.
+      // Keep the entry request intact: Next uses its prefix to generate client manifests.
+      config.plugins.push({
+        apply(compiler) {
+          compiler.hooks.normalModuleFactory.tap('PhWallsEdgeMetadata', (factory) => {
+            factory.hooks.afterResolve.tap('PhWallsEdgeMetadata', (result) => {
+              const data = result?.createData;
+              if (data?.loaders.some(({ loader }) => /[\\/]next-edge-ssr-loader[\\/]index\.js$/.test(loader))) {
+                data.loaders.unshift({ loader: require.resolve('./scripts/loaders/edge-metadata.cjs') });
+              }
+            });
+          });
+        },
+      });
+    }
+    return config;
+  },
 
   // 头部配置 - 安全性和性能优化
   async headers() {

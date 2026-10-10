@@ -6,6 +6,7 @@ import { ArrowRight, Monitor, Play, Search, Smartphone, X } from 'lucide-react';
 import { getTabData, localizeWallpaperCollectionName } from '@/lib/data';
 import { getDesktopTabData, buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
 import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data';
+import { buildLiveCategoryPath } from '@/lib/live-paths';
 import { getDeviceDisplayName } from '@/lib/device-brand-label';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { buildWallpaperDetailPath } from '@/lib/wallpaper-data';
@@ -133,7 +134,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
     }
     for (const tab of liveTabs) {
       if (!matches(`${tab.title} ${tab.type} ${texts.liveWallpapersNavLabel} live wallpaper`)) continue;
-      found.push({ href: withLanguagePath(`/live/${tab.type}`, language), title: tab.title,
+      found.push({ href: withLanguagePath(buildLiveCategoryPath(tab.type), language), title: tab.title,
         category: texts.liveWallpapersNavLabel, desktop: false, live: true, score: 100, date: '' });
     }
     for (const entry of entries) {

@@ -27,6 +27,7 @@ test('searching HTC U11+ opens the merged 42-wallpaper HTC U11 collection', () =
     if (specifier === '@/lib/data') return { getTabData: () => [], localizeWallpaperCollectionName: (_, name) => name };
     if (specifier === '@/lib/desktop-data') return { getDesktopTabData: () => [] };
     if (specifier === '@/lib/live-data') return { getLiveTabData: () => [] };
+    if (specifier === '@/lib/live-paths') return require('../src/lib/live-paths.ts');
     if (specifier === '@/lib/device-brand-label') return {};
     if (specifier === '@/lib/wallpaper-data') return { buildWallpaperDetailPath: (category, name) => `/wallpapers/${category}/${name.toLowerCase().replace(/\s+/g, '-')}` };
     if (specifier === '@/lib/brands') return { buildBrandPath: (type) => `/${type}`, normalizeCategoryType: (type) => type };

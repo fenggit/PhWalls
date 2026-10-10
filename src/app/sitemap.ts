@@ -11,6 +11,7 @@ import {
 import { getAllHomeCollections } from '@/lib/home-index'
 import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db'
 import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data'
+import { LIVE_WALLPAPERS_PATH, buildLiveCategoryPath } from '@/lib/live-paths'
 import { loadLiveIndex } from '@/lib/live-data-server'
 import { getWallpaperCollectionMedia, splitWallpaperCollection } from '@/lib/wallpaper-media'
 import {
@@ -51,6 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const allCollections = await getAllHomeCollections()
   const liveIndex = await loadLiveIndex()
   const liveUpdatedAt = new Date('2026-10-07T00:00:00+08:00')
+  const liveLandingUpdatedAt = new Date('2026-10-09T00:00:00+08:00')
   const allDesktopCollections = isWallpaperDbEnabled()
     ? Object.entries(await loadDbIndex(getDesktopTabData().map((tab) => tab.type)))
         .flatMap(([category, list]) => list.map((collection) => ({ category, collection })))
@@ -70,9 +72,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }> = [
     { path: '/', changeFrequency: 'weekly', priority: 1.0 },
     { path: '/desktop', changeFrequency: 'weekly', priority: 0.95 },
-    { path: '/live', changeFrequency: 'weekly', priority: 0.95, lastModified: liveUpdatedAt },
+    { path: LIVE_WALLPAPERS_PATH, changeFrequency: 'weekly', priority: 0.95, lastModified: liveLandingUpdatedAt },
     ...getLiveTabData().filter((tab) => liveIndex[tab.type]?.length).map((tab) => ({
-      path: `/live/${tab.type}`, changeFrequency: 'weekly' as const, priority: 0.85, lastModified: liveUpdatedAt,
+      path: buildLiveCategoryPath(tab.type), changeFrequency: 'weekly' as const, priority: 0.85, lastModified: liveLandingUpdatedAt,
     })),
     { path: '/about', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/design', changeFrequency: 'weekly', priority: 0.9 },
@@ -152,7 +154,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return { url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE), alternates: buildLanguageAlternates(absolutePath),
       lastModified: liveUpdatedAt, changeFrequency: 'monthly' as const, priority: 0.8 };
   }));
-  return [...routes, ...detailRoutes, ...desktopDetailRoutes, ...liveDetailRoutes].flatMap((route) =>
+  // Legacy JSON can contain multiple collections with the same canonical slug.
+  const uniqueRoutes = Array.from(new Map(
+    [...routes, ...detailRoutes, ...desktopDetailRoutes, ...liveDetailRoutes].map((route) => [route.url, route])
+  ).values());
+  return uniqueRoutes.flatMap((route) =>
     SUPPORTED_LANGUAGES.map((language) => ({
       ...route,
       url: withLanguageUrl(route.url, language),

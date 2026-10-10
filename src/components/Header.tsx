@@ -24,6 +24,7 @@ import { useShare } from '@/components/ShareProvider';
 import { getTabData } from '@/lib/data';
 import { getDesktopTabData } from '@/lib/desktop-data';
 import { getLiveTabData } from '@/lib/live-data';
+import { LIVE_WALLPAPERS_PATH, buildLiveCategoryPath } from '@/lib/live-paths';
 import { filterHomeTabs } from '@/lib/home-priority';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
@@ -290,8 +291,8 @@ export default function Header({
     const normalizedPath = stripLanguagePrefix(currentPath).path;
     if (normalizedPath === '/') return 'all';
     if (normalizedPath === '/desktop') return 'desktop';
-    if (normalizedPath === '/live') return 'live';
-    const liveCategoryMatch = normalizedPath.match(/^\/live\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
+    if (normalizedPath === LIVE_WALLPAPERS_PATH) return 'live';
+    const liveCategoryMatch = normalizedPath.match(/^\/(?:live-wallpapers|live\/wallpapers)\/([^/]+)(?:\/|$)/);
     if (liveCategoryMatch?.[1]) return normalizeCategoryType(liveCategoryMatch[1]);
     const desktopCategoryMatch = normalizedPath.match(/^\/desktop\/(?:wallpapers\/)?([^/]+)(?:\/|$)/);
     if (desktopCategoryMatch?.[1]) {
@@ -361,7 +362,7 @@ export default function Header({
       },
       {
         id: 'live', label: texts.liveWallpapersNavLabel,
-        href: withLanguagePath('/live', currentLang), menu: 'live',
+        href: withLanguagePath(LIVE_WALLPAPERS_PATH, currentLang), menu: 'live',
       },
     ],
     [
@@ -632,7 +633,7 @@ export default function Header({
     const href = isExternal
       ? tab.link!.trim()
       : withLanguagePath(
-          section === 'live' ? `/live/${normalizedType}`
+          section === 'live' ? buildLiveCategoryPath(normalizedType)
             : section === 'desktop' ? `/desktop/${normalizedType}` : buildBrandPath(tab.type),
           currentLang
         );
@@ -1102,7 +1103,7 @@ export default function Header({
               {mobileNavigationSection === 'phone' || mobileNavigationSection === 'live' ? (
                 <section id={`mobile-${mobileNavigationSection}-panel`} role="tabpanel"
                   aria-label={mobileNavigationSection === 'live' ? texts.liveNavShortLabel : texts.phoneNavShortLabel}>
-                  {mobileNavigationSection === 'live' && <Link href={withLanguagePath('/live', currentLang)} onClick={closeMenus}
+                  {mobileNavigationSection === 'live' && <Link href={withLanguagePath(LIVE_WALLPAPERS_PATH, currentLang)} onClick={closeMenus}
                     className="mb-3 flex min-h-10 items-center justify-between rounded-md bg-gray-50 px-3 text-sm font-medium text-gray-900">
                     {texts.liveWallpapersNavLabel}<ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                   </Link>}
