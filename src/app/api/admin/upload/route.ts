@@ -3,16 +3,12 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { assertText, createAdminWallpaper } from '@/lib/admin-data';
 import { getWallpaperDb, type DeviceRow } from '@/lib/wallpaper-db';
 import { createR2UploadUrl, createUploadGrant, headR2Object, verifyUploadGrant } from '@/lib/r2-upload';
-import { assertAdminUploadMime, deviceR2Prefix } from '@/lib/admin-upload-path';
+import { assertAdminUploadMime, deviceR2Prefix, normalizeAdminUploadFileName } from '@/lib/admin-upload-path';
 import { getAdminUploadStorage, resolveAdminUploadStorage } from '@/lib/admin-upload-storage';
 import { parseWallpaperMedia } from '@/lib/wallpaper-media';
+import { getI18nTexts } from '@/lib/i18n';
 
 export const runtime = 'edge';
-
-const mimeExtensions: Record<string, string> = {
-  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
-  'image/avif': 'avif', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm',
-};
 
 export async function GET(request: NextRequest) {
   const denied = await requireAdmin(request);
@@ -46,18 +42,19 @@ export async function POST(request: NextRequest) {
       const role = input.role;
       if (role !== 'origin' && role !== 'compress') throw new Error('文件角色无效');
       const mime = assertText(input.mime_type, '文件类型', 100);
-      const extension = mimeExtensions[mime];
       const media = parseWallpaperMedia(input.media_type);
       const size = Number(input.size_bytes);
       const video = mime.startsWith('video/');
       assertAdminUploadMime(mime, role, media);
-      if (!extension) throw new Error('文件类型无效');
+      const fileName = normalizeAdminUploadFileName(input.file_name, mime);
       if (!Number.isSafeInteger(size) || size < 1 || size > (video ? 200 : 50) * 1024 * 1024) {
         throw new Error('文件大小超出限制');
       }
       const target = await resolveAdminUploadStorage(device, media, input);
-      const key = `${target}/${role}/${crypto.randomUUID()}.${extension}`;
-      return NextResponse.json({ key, url: await createR2UploadUrl(key, mime),
+      const key = `${target}/${role}/${fileName}`;
+      if (key.length > 500) throw new Error(getI18nTexts('zh').adminUploadFileNameInvalid);
+      if (await headR2Object(key)) throw new Error(getI18nTexts('zh').adminUploadFileExists.replace('{name}', fileName));
+      return NextResponse.json({ key, url: await createR2UploadUrl(key, mime, true), headers: { 'If-None-Match': '*' },
         token: await createUploadGrant(key, size, mime, { deviceId, role, prefix: target }) }, { headers: { 'Cache-Control': 'no-store' } });
     }
 

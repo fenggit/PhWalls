@@ -17,7 +17,7 @@ const stateNames = component.body.statements.filter(ts.isVariableStatement).flat
 function fixture({ sourceType = 'default', rows = true, failUpload = false } = {}) {
   const device = { id: 'mate-xt-2', brand_name: 'huawei', device_name: 'Huawei Mate XT 2',
     device_category: 'phone_fold', release_date: '2026/10/10', status: 'published' };
-  const prefix = 'live/huawei/Huawei Mate XT 2';
+  const prefix = 'live/Huawei/Huawei Mate XT 2';
   const states = new Map(Object.entries({ authenticated: true,
     brands: [{ slug: 'huawei', title: 'Huawei', kind: 'mobile' }], uploadBrand: 'huawei', uploadDevices: [device],
     uploadDevice: device.id, uploadMedia: 'dynamic', uploadFolderName: device.device_name, uploadFolderState: 'matched',
@@ -28,6 +28,7 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false } = {
   }));
   const refs = [];
   const requests = [];
+  const puts = [];
   let stateIndex = 0;
   let refIndex = 0;
   let resolveIdle;
@@ -59,7 +60,7 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false } = {
         upload = {};
         status = 200;
         open() {} setRequestHeader() {}
-        send(file) { if (typeof failUpload === 'function' ? failUpload(file) : failUpload) this.onerror(); else this.onload(); }
+        send(file) { puts.push(file.name); if (typeof failUpload === 'function' ? failUpload(file) : failUpload) this.onerror(); else this.onload(); }
       },
       async fetch(path, options) {
         const body = options.body ? JSON.parse(options.body) : null;
@@ -90,7 +91,7 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false } = {
     stateIndex = refIndex = 0;
     return load('app/manager/AdminConsole.tsx').default();
   };
-  return { states, requests, render, idle, setFailure: (value) => { failUpload = value; } };
+  return { states, requests, puts, render, idle, setFailure: (value) => { failUpload = value; } };
 }
 
 function nodes(node) {
@@ -116,7 +117,23 @@ test('a matched folder can create its first Live collection and offer publicatio
   assert.equal(app.states.get('uploadPublication').device.id, 'mate-xt-2');
   assert.equal(app.states.get('uploadPublication').count, 1);
   assert.equal(app.requests.filter((request) => request.body?.action === 'complete').length, 1);
-  assert.equal(app.requests.find((request) => request.body?.action === 'authorize').body.r2_prefix, 'live/huawei/Huawei Mate XT 2');
+  assert.equal(app.requests.find((request) => request.body?.action === 'authorize').body.r2_prefix, 'live/Huawei/Huawei Mate XT 2');
+  assert.equal(app.requests.find((request) => request.body?.action === 'authorize').body.file_name, 'live.mp4');
+});
+
+test('a cover upload retry reuses the successful original and its filename authorization', async () => {
+  const app = fixture({ failUpload: (file) => file.name === 'live.webp' });
+  let done = app.idle();
+  button(app.render(), '创建动态合集').props.onClick();
+  await done;
+  assert.equal(app.states.get('uploadRows')[0].state, 'failed');
+  app.setFailure(false);
+  done = app.idle();
+  button(app.render(), '开始上传 (1)').props.onClick();
+  await done;
+  assert.equal(app.states.get('uploadRows')[0].state, 'done');
+  assert.deepEqual(app.puts, ['live.mp4', 'live.webp', 'live.webp']);
+  assert.equal(app.requests.filter((request) => request.body?.action === 'authorize').length, 2);
 });
 
 test('creation without files explains the next step and never uploads an empty collection', async () => {

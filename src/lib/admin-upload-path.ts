@@ -1,4 +1,5 @@
 import type { DeviceRow, WallpaperMediaType, WallpaperRow } from '@/lib/wallpaper-db';
+import { getI18nTexts } from '@/lib/i18n';
 
 export type AdminUploadDirectories = { prefix: string; directories: string[]; source: 'existing' | 'default' | 'multiple' };
 
@@ -6,6 +7,7 @@ export function getAdminUploadDirectories(
   device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_name' | 'device_slug'>,
   media: WallpaperMediaType,
   files: Pick<WallpaperRow, 'media_type' | 'origin_key'>[],
+  liveBrandDirectory: string = device.brand_name,
 ): AdminUploadDirectories {
   const directories = new Set<string>();
   for (const file of files) {
@@ -22,9 +24,28 @@ export function getAdminUploadDirectories(
       // 设备名称作为单层目录保留大小写和空格；不适合作目录的名称回退到 slug。
       if (!device.device_name.includes('/')) folderName = normalizeAdminR2Prefix(device.device_name);
     } catch { /* 设备名称中的路径保留字符不能用于新目录。 */ }
-    return { prefix: deviceR2Prefix({ ...device, device_slug: folderName }, media), directories: [], source: 'default' };
+    let brandFolder = device.brand_name;
+    if (media === 'dynamic') {
+      try {
+        if (!liveBrandDirectory.includes('/')) brandFolder = normalizeAdminR2Prefix(liveBrandDirectory);
+      } catch { /* 品牌显示名不适合作目录时，回退到品牌标识。 */ }
+    }
+    return { prefix: deviceR2Prefix({ ...device, brand_name: brandFolder, device_slug: folderName }, media), directories: [], source: 'default' };
   }
   return { prefix: paths.length === 1 ? paths[0] : '', directories: paths, source: paths.length === 1 ? 'existing' : 'multiple' };
+}
+
+export function normalizeAdminUploadFileName(value: unknown, mime: string): string {
+  const extensions: Record<string, string[]> = {
+    'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'],
+    'image/avif': ['avif'], 'image/gif': ['gif'], 'video/mp4': ['mp4'], 'video/webm': ['webm'],
+  };
+  if (typeof value !== 'string' || !value || value.length > 255 || value.includes('..') ||
+      /[\\/:%?#\u0000-\u001f\u007f]/.test(value) ||
+      !/^.+\.[^.]+$/.test(value) || !extensions[mime]?.includes(value.split('.').pop()!.toLowerCase())) {
+    throw new Error(getI18nTexts('zh').adminUploadFileNameInvalid);
+  }
+  return value;
 }
 
 export function assertAdminUploadMime(mime: string, role: 'origin' | 'compress', media: WallpaperMediaType): void {

@@ -26,13 +26,16 @@ async function sign(key: Uint8Array, value: string): Promise<Uint8Array> {
 }
 
 async function signR2Request(method: 'PUT' | 'HEAD' | 'DELETE' | 'GET', key: string, mimeType?: string,
-  extraQuery: Record<string, string> = {}): Promise<string> {
+  extraQuery: Record<string, string> = {}, extraHeaders: Record<string, string> = {}): Promise<string> {
   const config = configuration();
   const date = new Date().toISOString().replace(/[:-]|\.\d{3}/g, '');
   const stamp = date.slice(0, 8);
   const scope = `${stamp}/${config.region}/s3/aws4_request`;
   const path = `/${encode(config.bucket)}${key ? `/${key.split('/').map(encode).join('/')}` : ''}`;
-  const signedHeaders = mimeType ? 'content-type;host' : 'host';
+  const headerValues: Record<string, string> = { host: config.endpoint.host, ...extraHeaders,
+    ...(mimeType ? { 'content-type': mimeType } : {}) };
+  const headerNames = Object.keys(headerValues).sort();
+  const signedHeaders = headerNames.join(';');
   const params: Record<string, string> = {
     ...extraQuery,
     'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
@@ -42,8 +45,7 @@ async function signR2Request(method: 'PUT' | 'HEAD' | 'DELETE' | 'GET', key: str
     'X-Amz-SignedHeaders': signedHeaders,
   };
   const query = Object.keys(params).sort().map((name) => `${encode(name)}=${encode(params[name])}`).join('&');
-  const headers = mimeType ? `content-type:${mimeType}\nhost:${config.endpoint.host}\n`
-    : `host:${config.endpoint.host}\n`;
+  const headers = headerNames.map((name) => `${name}:${headerValues[name]}\n`).join('');
   const canonical = [method, path, query, headers, signedHeaders, 'UNSIGNED-PAYLOAD'].join('\n');
   const stringToSign = ['AWS4-HMAC-SHA256', date, scope, await sha256(canonical)].join('\n');
   const stampKey = await sign(new TextEncoder().encode(`AWS4${config.secret}`), stamp);
@@ -54,8 +56,8 @@ async function signR2Request(method: 'PUT' | 'HEAD' | 'DELETE' | 'GET', key: str
   return `${config.endpoint.origin}${path}?${query}&X-Amz-Signature=${signature}`;
 }
 
-export async function createR2UploadUrl(key: string, mimeType: string): Promise<string> {
-  return signR2Request('PUT', key, mimeType);
+export async function createR2UploadUrl(key: string, mimeType: string, preventOverwrite = false): Promise<string> {
+  return signR2Request('PUT', key, mimeType, {}, preventOverwrite ? { 'if-none-match': '*' } : {});
 }
 
 export async function headR2Object(key: string): Promise<{ size: number; mimeType: string } | null> {
