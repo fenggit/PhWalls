@@ -87,6 +87,35 @@ test('published media URLs stay on the proxy and encode paths correctly', () => 
 import { sqliteD1 } from './sqlite-d1.mjs';
 const data = load('src/lib/mini-api-data.ts');
 const options = (query) => api.parseMiniOptions(new URLSearchParams(query));
+test('builtin desktop brands do not need a custom w_brands row', async (t) => {
+  const db = sqliteD1(t);
+  db.seed([{ sql: "UPDATE w_devices SET brand_name = 'microsoft-windows' WHERE id = 'device-desktop'" }]);
+  const brands = await data.listMiniBrands(options('kind=desktop'), db);
+  assert.deepEqual(brands.data.map((b) => [b.slug, b.title, b.kind, b.wallpaperCount]),
+    [['microsoft-windows', '微软 Windows', 'desktop', 1]]);
+  const result = await data.listMiniCollections(options('kind=desktop&q=微软'), 'https://phwalls.com', db);
+  assert.equal(result.pagination.total, 1);
+  assert.equal(result.data[0].kind, 'desktop');
+  assert.equal(result.data[0].brandTitle, '微软 Windows');
+  const detail = await data.getMiniCollection('device-desktop:static', options(''), 'https://phwalls.com', db);
+  assert.equal(detail.data.wallpapers.length, 1);
+  assert.equal(detail.data.wallpapers[0].kind, 'desktop');
+  const phone = await data.listMiniCollections(options('kind=phone'), 'https://phwalls.com', db);
+  assert.equal(phone.pagination.total, 3);
+});
+test('builtin mobile brands remain visible without a custom w_brands row', async (t) => {
+  const db = sqliteD1(t);
+  db.seed([{ sql: "DELETE FROM w_brands WHERE slug = 'samsung'" }]);
+  const result = await data.listMiniCollections(options('kind=phone&q=三星'), 'https://phwalls.com', db);
+  assert.equal(result.pagination.total, 3);
+  assert.equal(result.data[0].kind, 'phone');
+  assert.equal(result.data[0].brandTitle, '三星');
+  const live = await data.listMiniBrands(options('kind=live'), db);
+  assert.deepEqual(live.data.map((b) => [b.slug, b.wallpaperCount]), [['samsung', 1]]);
+  const row = await data.getMiniWallpaper('device-old:dynamic:asset-live', options(''), 'https://phwalls.com', db);
+  assert.equal(row.data.kind, 'live');
+  await assert.rejects(data.getMiniWallpaper('device-draft:static:asset-private', options(''), 'https://phwalls.com', db), (e) => e.status === 404);
+});
 test('real SQLite filters private/deleting assets and reports paged collection totals', async (t) => {
   const db = sqliteD1(t);
   const result = await data.listMiniCollections(
