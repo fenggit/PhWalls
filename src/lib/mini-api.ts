@@ -215,7 +215,7 @@ export function miniVisibleSql(
   if (options.kind === 'live') where.push("w.media_type = 'dynamic'");
   if (options.kind === 'phone')
     where.push(
-      "w.media_type = 'static' AND b.kind <> 'desktop' AND d.device_category <> 'desktop'",
+      "w.media_type = 'static' AND COALESCE(b.kind, 'mobile') <> 'desktop' AND d.device_category <> 'desktop'",
     );
   if (options.kind === 'desktop')
     where.push(
@@ -243,11 +243,12 @@ export function miniVisibleSql(
     }
   }
   return {
-    sql: `SELECT w.*, d.brand_name, b.title AS brand_title, b.kind AS brand_kind,
+    sql: `SELECT w.*, d.brand_name, COALESCE(b.title, d.brand_name) AS brand_title,
+    COALESCE(b.kind, CASE WHEN d.device_category = 'desktop' THEN 'desktop' ELSE 'mobile' END) AS brand_kind,
     d.device_name, d.device_slug, d.device_category, d.release_date, d.updated_date AS device_updated_date,
     COALESCE(local.display_name, english.display_name, d.device_name) AS display_name,
     COALESCE(local.description, english.description) AS description
-    FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id JOIN w_brands b ON b.slug = d.brand_name
+    FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id LEFT JOIN w_brands b ON b.slug = d.brand_name
     LEFT JOIN w_collection_i18n local ON local.device_id = d.id AND local.media_type = w.media_type AND local.language = ?
     LEFT JOIN w_collection_i18n english ON english.device_id = d.id AND english.media_type = w.media_type AND english.language = 'en'
     WHERE ${where.join(' AND ')}`,

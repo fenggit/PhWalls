@@ -2,6 +2,7 @@ import 'server-only';
 import { getWallpaperDb } from '@/lib/wallpaper-db';
 import { getDeviceBrandLabel } from '@/lib/device-brand-label';
 import { getTabData } from '@/lib/data';
+import desktopTabs from '@/data/desktopwalls/tab.json';
 import { normalizeCategoryType } from '@/lib/brands';
 import {
   MiniApiError,
@@ -30,16 +31,23 @@ function miniDb(): D1Database {
 }
 function brandTitles(options: MiniOptions): Record<string, string> {
   return Object.fromEntries(
-    getTabData(options.language)
+    [...getTabData(options.language), ...desktopTabs]
       .filter((tab) => !tab.link)
-      .map((tab) => [normalizeCategoryType(tab.type), tab.title]),
+      .map((tab) => {
+        const slug = normalizeCategoryType(tab.type);
+        return [slug, getDeviceBrandLabel(slug, options.language, tab.title)];
+      }),
   );
 }
 function title(
   row: Pick<MiniRow, 'brand_name' | 'brand_title'>,
   options: MiniOptions,
 ): string {
-  return getDeviceBrandLabel(row.brand_name, options.language, row.brand_title);
+  return getDeviceBrandLabel(
+    row.brand_name,
+    options.language,
+    brandTitles(options)[row.brand_name] || row.brand_title,
+  );
 }
 function statement(
   db: D1Database,
@@ -84,7 +92,7 @@ export async function listMiniBrands(
   return {
     data: results.map((row) => ({
       ...row,
-      title: getDeviceBrandLabel(row.slug, options.language, row.title),
+      title: title({ brand_name: row.slug, brand_title: row.title }, options),
     })),
   };
 }
