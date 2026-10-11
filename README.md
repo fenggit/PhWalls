@@ -527,6 +527,10 @@ const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
 
 ## API 文档
 
+### 微信小程序 API
+
+`/api/public/mini/v1/` 提供品牌、分页合集、合集详情和单张壁纸详情，支持手机／动态／桌面分类、品牌与机型搜索、五语言，并且只读取 D1 已发布素材。调用参数、响应字段和小程序示例见 [小程序 API 文档](docs/mini-program-api.md)。
+
 ### 认证相关
 
 ```
