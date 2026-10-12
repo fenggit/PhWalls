@@ -12,6 +12,7 @@ import {
   Info,
   Menu,
   Monitor,
+  QrCode,
   RectangleVertical,
   Search,
   Share2,
@@ -66,7 +67,6 @@ const languageOrder: Language[] = [
   LanguageCode.ZH_HANT,
 ];
 
-const SHOW_MINI_PROGRAM = false;
 const PHONE_NAVIGATION_ORDER = [
   'samsung',
   'xiaomi',
@@ -208,7 +208,7 @@ export default function Header({
   const [openPrimaryMenu, setOpenPrimaryMenu] = useState<PrimaryMenu | null>(null);
   const [mobileNavigationSection, setMobileNavigationSection] = useState<PrimaryMenu>('phone');
   const miniProgramMenuRef = useRef<HTMLDivElement>(null);
-  const mobileMiniProgramPanelRef = useRef<HTMLDivElement>(null);
+  const miniProgramButtonRef = useRef<HTMLButtonElement>(null);
   const primaryNavigationRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
   const languageButtonRef = useRef<HTMLButtonElement>(null);
@@ -578,8 +578,9 @@ export default function Header({
   }, [closeMenus, setSharePayload, sharePayload, shareTexts.share, texts.siteName]);
 
   const handleMiniProgramClick = () => {
-    if (!SHOW_MINI_PROGRAM) return;
-    setIsMiniProgramMenuOpen((prev) => !prev);
+    clearPrimaryMenuTimer();
+    const opensOnHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    setIsMiniProgramMenuOpen((prev) => opensOnHover || !prev);
     setIsLanguageMenuOpen(false);
     setIsDeviceMenuOpen(false);
     setOpenPrimaryMenu(null);
@@ -587,25 +588,24 @@ export default function Header({
 
   useEffect(() => {
     if (!isMiniProgramMenuOpen) return;
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       const target = event.target as Node;
-      if (
-        !miniProgramMenuRef.current?.contains(target) &&
-        !mobileMiniProgramPanelRef.current?.contains(target)
-      ) {
+      if (!miniProgramMenuRef.current?.contains(target)) {
         setIsMiniProgramMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsMiniProgramMenuOpen(false);
+      miniProgramButtonRef.current?.focus();
+    };
+    document.addEventListener('pointerdown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('pointerdown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, [isMiniProgramMenuOpen]);
-
-  useEffect(() => {
-    if (!SHOW_MINI_PROGRAM || typeof window === 'undefined') return;
-    if (stripLanguagePrefix(window.location.pathname).path === '/') {
-      setIsMiniProgramMenuOpen(true);
-    }
-  }, []);
 
   const utilityButtonClass = (isActive = false) =>
     `inline-flex h-9 w-9 items-center justify-center rounded-md text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:translate-y-px ${
@@ -896,43 +896,66 @@ export default function Header({
                 </button>
               </div>
 
-              {SHOW_MINI_PROGRAM && (
-                <div
-                  className="relative hidden md:block"
-                  ref={miniProgramMenuRef}
-                  onMouseEnter={() => setIsMiniProgramMenuOpen(true)}
-                  onMouseLeave={() => setIsMiniProgramMenuOpen(false)}
+              <div
+                className="relative"
+                ref={miniProgramMenuRef}
+                onMouseEnter={() => {
+                  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+                  closeMenus();
+                  setIsMiniProgramMenuOpen(true);
+                }}
+                onMouseLeave={() => {
+                  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+                    setIsMiniProgramMenuOpen(false);
+                  }
+                }}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setIsMiniProgramMenuOpen(false);
+                  }
+                }}
+              >
+                <button
+                  ref={miniProgramButtonRef}
+                  type="button"
+                  onClick={handleMiniProgramClick}
+                  aria-expanded={isMiniProgramMenuOpen}
+                  aria-controls="mini-program-panel"
+                  aria-label={texts.miniProgram}
+                  title={texts.miniProgram}
+                  className={utilityButtonClass(isMiniProgramMenuOpen)}
                 >
-                  <button
-                    onClick={handleMiniProgramClick}
-                    aria-expanded={isMiniProgramMenuOpen}
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-700"
-                  >
-                    {texts.miniProgram}
-                  </button>
-                  {isMiniProgramMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-gray-200 bg-white p-3 shadow-xl">
+                  <QrCode className="h-4 w-4" aria-hidden="true" />
+                </button>
+                {isMiniProgramMenuOpen && (
+                  <div id="mini-program-panel" className="fixed right-4 top-12 z-[80] w-52 min-w-52 max-w-none pt-2 md:top-16 lg:absolute lg:right-0 lg:top-full">
+                    <div className="relative rounded-xl border border-gray-200 bg-white p-3 shadow-xl">
                       <button
                         type="button"
-                        onClick={() => setIsMiniProgramMenuOpen(false)}
+                        onClick={() => {
+                          setIsMiniProgramMenuOpen(false);
+                          miniProgramButtonRef.current?.focus();
+                        }}
                         className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center text-gray-500 hover:text-gray-900"
-                        aria-label="Close mini program panel"
+                        aria-label={texts.close}
                       >
                         <X className="h-4 w-4" aria-hidden="true" />
                       </button>
                       <p className="mb-3 px-6 text-center text-sm text-gray-600">{texts.scanWechatQR}</p>
                       <div className="aspect-square w-full overflow-hidden rounded-md bg-gray-50">
                         <img
-                          src="/mini_program.jpg"
+                          src="/phwalls-mini.jpg"
                           alt={texts.miniProgram}
+                          width={344}
+                          height={344}
                           className="h-full w-full object-contain p-2"
                           loading="lazy"
                         />
                       </div>
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
 
               <div className="hidden lg:block">
                 <Link
@@ -1161,29 +1184,6 @@ export default function Header({
         </div>
       )}
 
-      {SHOW_MINI_PROGRAM && isMiniProgramMenuOpen && (
-        <div
-          ref={mobileMiniProgramPanelRef}
-          className="fixed right-4 top-16 z-[75] w-52 rounded-lg border border-gray-200 bg-white p-3 shadow-xl md:hidden"
-        >
-          <button
-            onClick={() => setIsMiniProgramMenuOpen(false)}
-            className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center text-gray-500 hover:text-gray-900"
-            aria-label="Close mini program panel"
-          >
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
-          <p className="mb-3 px-6 text-center text-sm text-gray-600">{texts.scanWechatQR}</p>
-          <div className="aspect-square w-full overflow-hidden rounded-md bg-gray-50">
-            <img
-              src="/mini_program.jpg"
-              alt={texts.miniProgram}
-              className="h-full w-full object-contain p-2"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      )}
     </>
   );
 }
