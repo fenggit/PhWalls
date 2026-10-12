@@ -3,6 +3,29 @@ import type { Language } from '@/types';
 export type { Language } from '@/types';
 
 export interface I18nTexts {
+  adminDeviceDelete: string;
+  adminDeviceDeleteConfirm: string;
+  adminDeviceDeleteWarning: string;
+  adminDeviceDeleteLoading: string;
+  adminDeviceDeleteRefresh: string;
+  adminDeviceDeleteSummary: string;
+  adminDeviceDeleteEmpty: string;
+  adminDeviceDeleteShared: string;
+  adminDeviceDeleteFile: string;
+  adminDeviceDeleteReviewRequired: string;
+  adminDeviceDeleteChanged: string;
+  adminDeviceDeleteProcessing: string;
+  adminDeviceDeleteRetryHint: string;
+  adminDeviceDeleteJsonBlocked: string;
+  adminDeviceWallpaperType: string;
+  adminDeviceWallpaperAllTypes: string;
+  adminDeviceWallpaperEmpty: string;
+  adminDeviceWallpaperCount: string;
+  adminDeviceDeletionPending: string;
+  adminDeviceDeletionProcessing: string;
+  adminDeviceDeleting: string;
+  adminDeviceDeleteCancel: string;
+  adminDeviceDeleteClose: string;
   adminUploadTypeLabel: string;
   adminUploadStaticLabel: string;
   adminUploadDynamicLabel: string;
@@ -452,6 +475,29 @@ export interface I18nTexts {
 
 export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
+    adminDeviceDelete: "删除设备",
+    adminDeviceDeleteConfirm: "确认删除设备及全部壁纸",
+    adminDeviceDeleteWarning: "将永久删除该设备、全部静态与动态壁纸记录、多语言内容及下方标明删除的文件，无法撤销。",
+    adminDeviceDeleteLoading: "正在读取完整删除清单…",
+    adminDeviceDeleteRefresh: "刷新完整清单",
+    adminDeviceDeleteSummary: "壁纸 {count} 张 · 文件 {files} 个 · 多语言 {translations} 条",
+    adminDeviceDeleteEmpty: "该设备暂无壁纸，仅删除设备及关联多语言内容。",
+    adminDeviceDeleteShared: "保留：其他设备共用",
+    adminDeviceDeleteFile: "删除文件",
+    adminDeviceDeleteReviewRequired: "请先加载并核对完整删除清单",
+    adminDeviceDeleteChanged: "设备或壁纸清单已变更，请刷新完整清单并重新确认",
+    adminDeviceDeleteProcessing: "删除正在进行，请稍后重试；中断的操作可在两分钟后重试",
+    adminDeviceDeleteRetryHint: "设备及壁纸已下架并保留记录，请刷新清单后重试删除",
+    adminDeviceDeleteJsonBlocked: "公开站点仍使用 JSON 数据且引用这些文件，请先移除静态配置引用或将公开站点切换为 D1 后再删除",
+    adminDeviceWallpaperType: "壁纸类型与数量",
+    adminDeviceWallpaperAllTypes: "全部壁纸类型",
+    adminDeviceWallpaperEmpty: "暂无壁纸",
+    adminDeviceWallpaperCount: "{count} 张",
+    adminDeviceDeletionPending: "待重试删除",
+    adminDeviceDeletionProcessing: "删除中",
+    adminDeviceDeleting: "删除中…",
+    adminDeviceDeleteCancel: "取消",
+    adminDeviceDeleteClose: "关闭删除窗口",
     adminUploadTypeLabel: "壁纸类型",
     adminUploadStaticLabel: "静态壁纸",
     adminUploadDynamicLabel: "动态壁纸",
@@ -891,6 +937,29 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '当前尺寸'
   },
   en: {
+    adminDeviceDelete: "Delete device",
+    adminDeviceDeleteConfirm: "Delete device and all wallpapers",
+    adminDeviceDeleteWarning: "Permanently delete this device, all static and live wallpaper records, translations, and files marked for deletion below. This cannot be undone.",
+    adminDeviceDeleteLoading: "Loading the complete deletion list…",
+    adminDeviceDeleteRefresh: "Refresh full list",
+    adminDeviceDeleteSummary: "{count} wallpapers · {files} files · {translations} translations",
+    adminDeviceDeleteEmpty: "This device has no wallpapers. Only the device and its translations will be deleted.",
+    adminDeviceDeleteShared: "Keep: shared by another device",
+    adminDeviceDeleteFile: "Delete file",
+    adminDeviceDeleteReviewRequired: "Load and review the complete deletion list first",
+    adminDeviceDeleteChanged: "The device or wallpaper list changed. Refresh the full list and confirm again.",
+    adminDeviceDeleteProcessing: "Deletion is in progress. Retry later; interrupted operations can be retried after two minutes.",
+    adminDeviceDeleteRetryHint: "The device and wallpapers are unpublished and their records retained. Refresh the list and retry deletion.",
+    adminDeviceDeleteJsonBlocked: "The public site still uses JSON referencing these files. Remove those references or switch the public site to D1 before deleting.",
+    adminDeviceWallpaperType: "Wallpaper types and counts",
+    adminDeviceWallpaperAllTypes: "All wallpaper types",
+    adminDeviceWallpaperEmpty: "No wallpapers",
+    adminDeviceWallpaperCount: "{count} wallpapers",
+    adminDeviceDeletionPending: "Deletion needs retry",
+    adminDeviceDeletionProcessing: "Deleting",
+    adminDeviceDeleting: "Deleting…",
+    adminDeviceDeleteCancel: "Cancel",
+    adminDeviceDeleteClose: "Close deletion dialog",
     adminUploadTypeLabel: "Wallpaper type",
     adminUploadStaticLabel: "Static wallpapers",
     adminUploadDynamicLabel: "Live wallpapers",
@@ -1330,6 +1399,29 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Current Size'
   },
   ja: {
+    adminDeviceDelete: "デバイスを削除",
+    adminDeviceDeleteConfirm: "デバイスとすべての壁紙を削除",
+    adminDeviceDeleteWarning: "このデバイス、すべての静止画・ライブ壁紙の記録、翻訳、下記の削除対象ファイルを完全に削除します。取り消せません。",
+    adminDeviceDeleteLoading: "完全な削除一覧を読み込み中…",
+    adminDeviceDeleteRefresh: "一覧を更新",
+    adminDeviceDeleteSummary: "壁紙 {count} 件 · ファイル {files} 件 · 翻訳 {translations} 件",
+    adminDeviceDeleteEmpty: "壁紙はありません。デバイスと翻訳のみを削除します。",
+    adminDeviceDeleteShared: "保持：他のデバイスと共有",
+    adminDeviceDeleteFile: "ファイルを削除",
+    adminDeviceDeleteReviewRequired: "完全な削除一覧を確認してください",
+    adminDeviceDeleteChanged: "デバイスまたは壁紙一覧が変更されました。一覧を更新して再確認してください。",
+    adminDeviceDeleteProcessing: "削除中です。中断された操作は2分後に再試行できます。",
+    adminDeviceDeleteRetryHint: "デバイスと壁紙は非公開になり、記録は保持されています。一覧を更新して削除を再試行してください。",
+    adminDeviceDeleteJsonBlocked: "公開サイトのJSONがこれらのファイルを参照しています。参照を削除するかD1に切り替えてから削除してください。",
+    adminDeviceWallpaperType: "壁紙の種類と件数",
+    adminDeviceWallpaperAllTypes: "すべての壁紙種類",
+    adminDeviceWallpaperEmpty: "壁紙なし",
+    adminDeviceWallpaperCount: "{count} 件",
+    adminDeviceDeletionPending: "削除の再試行待ち",
+    adminDeviceDeletionProcessing: "削除中",
+    adminDeviceDeleting: "削除中…",
+    adminDeviceDeleteCancel: "キャンセル",
+    adminDeviceDeleteClose: "削除画面を閉じる",
     adminUploadTypeLabel: "壁紙の種類",
     adminUploadStaticLabel: "静止画壁紙",
     adminUploadDynamicLabel: "ライブ壁紙",
@@ -1769,6 +1861,29 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '現在のサイズ'
   },
   vi: {
+    adminDeviceDelete: "Xóa thiết bị",
+    adminDeviceDeleteConfirm: "Xóa thiết bị và tất cả hình nền",
+    adminDeviceDeleteWarning: "Xóa vĩnh viễn thiết bị, tất cả bản ghi hình nền tĩnh và động, bản dịch và các tệp được đánh dấu xóa bên dưới. Không thể hoàn tác.",
+    adminDeviceDeleteLoading: "Đang tải danh sách xóa đầy đủ…",
+    adminDeviceDeleteRefresh: "Làm mới danh sách đầy đủ",
+    adminDeviceDeleteSummary: "{count} hình nền · {files} tệp · {translations} bản dịch",
+    adminDeviceDeleteEmpty: "Thiết bị chưa có hình nền. Chỉ xóa thiết bị và bản dịch liên quan.",
+    adminDeviceDeleteShared: "Giữ lại: thiết bị khác dùng chung",
+    adminDeviceDeleteFile: "Xóa tệp",
+    adminDeviceDeleteReviewRequired: "Hãy tải và kiểm tra danh sách xóa đầy đủ trước",
+    adminDeviceDeleteChanged: "Thiết bị hoặc danh sách hình nền đã thay đổi. Làm mới danh sách và xác nhận lại.",
+    adminDeviceDeleteProcessing: "Đang xóa. Hãy thử lại sau; thao tác bị gián đoạn có thể thử lại sau hai phút.",
+    adminDeviceDeleteRetryHint: "Thiết bị và hình nền đã được gỡ và giữ lại bản ghi. Làm mới danh sách rồi thử xóa lại.",
+    adminDeviceDeleteJsonBlocked: "Trang công khai vẫn dùng JSON tham chiếu các tệp này. Xóa tham chiếu hoặc chuyển trang sang D1 trước khi xóa.",
+    adminDeviceWallpaperType: "Loại và số lượng hình nền",
+    adminDeviceWallpaperAllTypes: "Tất cả loại hình nền",
+    adminDeviceWallpaperEmpty: "Chưa có hình nền",
+    adminDeviceWallpaperCount: "{count} hình nền",
+    adminDeviceDeletionPending: "Cần thử xóa lại",
+    adminDeviceDeletionProcessing: "Đang xóa",
+    adminDeviceDeleting: "Đang xóa…",
+    adminDeviceDeleteCancel: "Hủy",
+    adminDeviceDeleteClose: "Đóng cửa sổ xóa",
     adminUploadTypeLabel: "Loại hình nền",
     adminUploadStaticLabel: "Hình nền tĩnh",
     adminUploadDynamicLabel: "Hình nền động",
@@ -2181,6 +2296,29 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Kích thước hiện tại'
   },
   'zh-hant': {
+    adminDeviceDelete: "刪除裝置",
+    adminDeviceDeleteConfirm: "確認刪除裝置及全部桌布",
+    adminDeviceDeleteWarning: "將永久刪除此裝置、全部靜態與動態桌布記錄、多語言內容及下方標明刪除的檔案，無法復原。",
+    adminDeviceDeleteLoading: "正在讀取完整刪除清單…",
+    adminDeviceDeleteRefresh: "重新整理完整清單",
+    adminDeviceDeleteSummary: "桌布 {count} 張 · 檔案 {files} 個 · 多語言 {translations} 筆",
+    adminDeviceDeleteEmpty: "此裝置暫無桌布，僅刪除裝置及關聯多語言內容。",
+    adminDeviceDeleteShared: "保留：其他裝置共用",
+    adminDeviceDeleteFile: "刪除檔案",
+    adminDeviceDeleteReviewRequired: "請先載入並核對完整刪除清單",
+    adminDeviceDeleteChanged: "裝置或桌布清單已變更，請重新整理完整清單並重新確認",
+    adminDeviceDeleteProcessing: "刪除正在進行，請稍後重試；中斷的操作可在兩分鐘後重試",
+    adminDeviceDeleteRetryHint: "裝置及桌布已下架並保留記錄，請重新整理清單後重試刪除",
+    adminDeviceDeleteJsonBlocked: "公開網站仍使用 JSON 資料且引用這些檔案，請先移除靜態設定引用或將公開網站切換為 D1 後再刪除",
+    adminDeviceWallpaperType: "桌布類型與數量",
+    adminDeviceWallpaperAllTypes: "全部桌布類型",
+    adminDeviceWallpaperEmpty: "暫無桌布",
+    adminDeviceWallpaperCount: "{count} 張",
+    adminDeviceDeletionPending: "待重試刪除",
+    adminDeviceDeletionProcessing: "刪除中",
+    adminDeviceDeleting: "刪除中…",
+    adminDeviceDeleteCancel: "取消",
+    adminDeviceDeleteClose: "關閉刪除視窗",
     adminUploadTypeLabel: "桌布類型",
     adminUploadStaticLabel: "靜態桌布",
     adminUploadDynamicLabel: "動態桌布",

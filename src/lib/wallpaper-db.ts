@@ -29,8 +29,16 @@ export type DeviceRow = {
   device_splash_url: string | null;
   release_date: string;
   status: RecordStatus;
+  deletion_state: 'none' | 'processing' | 'pending';
   create_date: number;
   updated_date: number;
+};
+
+export type AdminDeviceListRow = DeviceRow & {
+  wallpaper_count: number;
+  static_count: number;
+  dynamic_count: number;
+  pending_deletion_count: number;
 };
 
 export type WallpaperRow = {

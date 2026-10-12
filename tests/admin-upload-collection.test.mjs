@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import { test } from 'node:test';
@@ -14,12 +14,12 @@ const stateNames = component.body.statements.filter(ts.isVariableStatement).flat
     ts.isCallExpression(declaration.initializer) && declaration.initializer.expression.getText(parsed) === 'useState')
     .map((declaration) => declaration.name.elements[0].name.text));
 
-function fixture({ sourceType = 'default', rows = true, failUpload = false } = {}) {
+function fixture({ sourceType = 'default', rows = true, failUpload = false, tab = 'upload', devices = [] } = {}) {
   const device = { id: 'mate-xt-2', brand_name: 'huawei', device_name: 'Huawei Mate XT 2',
     device_category: 'phone_fold', release_date: '2026/10/10', status: 'published' };
   const prefix = 'live/Huawei/Huawei Mate XT 2';
   const states = new Map(Object.entries({ authenticated: true,
-    brands: [{ slug: 'huawei', title: 'Huawei', kind: 'mobile' }], uploadBrand: 'huawei', uploadDevices: [device],
+    brands: [{ slug: 'huawei', title: 'Huawei', kind: 'mobile' }], devices, uploadBrand: 'huawei', uploadDevices: [device],
     uploadDevice: device.id, uploadMedia: 'dynamic', uploadFolderName: device.device_name, uploadFolderState: 'matched',
     uploadDirectory: { deviceId: device.id, media: 'dynamic', data: { prefix, directories: sourceType === 'default' ? [] : [prefix], source: sourceType } },
     uploadRows: rows ? [{ id: 'live', name: 'live', origin: { name: 'live.mp4', type: 'video/mp4', size: 100 },
@@ -77,12 +77,15 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false } = {
       },
       require(specifier) {
         if (specifier === 'react') return hooks;
-        if (specifier === 'next/navigation') return { useSearchParams: () => new URLSearchParams('tab=upload') };
+        if (specifier === 'next/navigation') return { useSearchParams: () => new URLSearchParams({ tab }) };
         if (specifier === '@/app/manager/AdminDeviceI18nPanel') return { default: () => null };
         if (specifier === '@/lib/language') return { SUPPORTED_LANGUAGES: ['en', 'zh', 'ja', 'vi', 'zh-hant'] };
         if (specifier === '@/lib/data') return { buildWallpaperListTitle: () => '' };
         if (specifier === '@/lib/wallpaper-data') return { slugifyWallpaperName: () => '' };
-        if (specifier.startsWith('@/')) return load(`${specifier.slice(2)}.ts`);
+        if (specifier.startsWith('@/')) {
+          const path = specifier.slice(2);
+          return load(`${path}${existsSync(new URL(`../src/${path}.ts`, import.meta.url)) ? '.ts' : '.tsx'}`);
+        }
         return require(specifier);
       },
     });
@@ -102,6 +105,7 @@ function nodes(node) {
 }
 function label(node) {
   if (Array.isArray(node)) return node.map(label).join('');
+  if (typeof node === 'number') return String(node);
   return typeof node === 'string' ? node : label(node?.props?.children || []);
 }
 function button(tree, text) { return nodes(tree).find((node) => node.type === 'button' && label(node) === text); }
@@ -217,4 +221,33 @@ test('a Live collection can upload without a browser preview and keep origin as 
   assert.equal(app.states.get('error'), '');
   assert.equal(app.states.get('uploadRows')[0].state, 'done');
   assert.equal(app.requests.find((request) => request.body?.action === 'complete').body.video_preview_token, undefined);
+});
+
+test('device directory shows both wallpaper types and opens deletion for the selected device', () => {
+  const mixed = { id: 'mixed', brand_name: 'huawei', device_name: 'Mixed Phone', device_slug: 'mixed-phone',
+    device_category: 'phone', status: 'published', deletion_state: 'none', static_count: 4, dynamic_count: 3,
+    wallpaper_count: 7, pending_deletion_count: 0, release_date: '2026/10/12' };
+  const f = fixture({ tab: 'devices', devices: [mixed] });
+  const tree = f.render();
+  assert.match(label(tree), /静态壁纸 · 4/);
+  assert.match(label(tree), /动态壁纸 · 3/);
+  assert.match(label(tree), /7 张/);
+  const filter = nodes(tree).find((node) => node.type === 'select' && node.props['aria-label'] === '壁纸类型与数量');
+  filter.props.onChange({ target: { value: 'dynamic' } });
+  assert.equal(f.states.get('filters').media, 'dynamic');
+  button(tree, '删除设备').props.onClick();
+  const dialog = nodes(f.render()).find((node) => node.type?.name === 'AdminDeviceDeleteDialog');
+  assert.equal(dialog.props.device.id, 'mixed');
+  assert.equal(typeof dialog.props.request, 'function');
+});
+
+test('device directory identifies empty devices and keeps deletion retry available while editing is disabled', () => {
+  const pending = { id: 'pending', brand_name: 'huawei', device_name: 'Pending Phone', device_slug: 'pending-phone',
+    device_category: 'phone', status: 'unpublished', deletion_state: 'pending', static_count: 0, dynamic_count: 0,
+    wallpaper_count: 0, pending_deletion_count: 0, release_date: '' };
+  const f = fixture({ tab: 'devices', devices: [pending] });
+  const tree = f.render();
+  assert.match(label(tree), /暂无壁纸/);
+  assert.equal(button(tree, '编辑').props.disabled, true);
+  assert.equal(button(tree, '待重试删除').props.disabled, false);
 });

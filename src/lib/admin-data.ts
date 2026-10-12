@@ -1,4 +1,4 @@
-import { getWallpaperDb, type DeviceCategory, type DeviceRow, type RecordStatus, type WallpaperRow } from '@/lib/wallpaper-db';
+import { getWallpaperDb, type AdminDeviceListRow, type DeviceCategory, type DeviceRow, type RecordStatus, type WallpaperRow } from '@/lib/wallpaper-db';
 import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { findAdminBrand } from '@/lib/admin-brands';
 import { isUniqueConstraintError, normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
@@ -56,20 +56,31 @@ function deletionKey(raw: string, role: 'origin' | 'compress' | 'preview'): stri
   return raw;
 }
 
-export async function listAdminDevices(filters: URLSearchParams): Promise<DeviceRow[]> {
+export async function listAdminDevices(filters: URLSearchParams): Promise<AdminDeviceListRow[]> {
   const clauses: string[] = [];
   const values: string[] = [];
   for (const [param, column] of [['brand', 'brand_name'], ['category', 'device_category'], ['status', 'status']] as const) {
     const value = filters.get(param);
-    if (value) { clauses.push(`${column} = ?`); values.push(value); }
+    if (value) { clauses.push(`d.${column} = ?`); values.push(value); }
   }
   const name = filters.get('name');
   const nameKey = name ? normalizeAdminName(assertText(name, '设备名称')) : null;
   const popular = filters.get('popular');
-  if (popular === '0' || popular === '1') { clauses.push('is_popular_brand = ?'); values.push(popular); }
+  if (popular === '0' || popular === '1') { clauses.push('d.is_popular_brand = ?'); values.push(popular); }
+  const media = filters.get('media');
+  if (media === 'static' || media === 'dynamic') {
+    clauses.push('EXISTS (SELECT 1 FROM w_wallpapers w WHERE w.device_id = d.id AND w.media_type = ?)');
+    values.push(media);
+  } else if (media === 'empty') clauses.push('NOT EXISTS (SELECT 1 FROM w_wallpapers w WHERE w.device_id = d.id)');
   // Legacy imports may have no name_key. Normalize actual names before applying the list limit.
-  const sql = `SELECT * FROM w_devices ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY updated_date DESC, device_name ${nameKey ? '' : 'LIMIT 1500'}`;
-  const { results } = await getWallpaperDb().prepare(sql).bind(...values).all<DeviceRow>();
+  const sql = `SELECT d.*, COALESCE(w.wallpaper_count, 0) AS wallpaper_count,
+    COALESCE(w.static_count, 0) AS static_count, COALESCE(w.dynamic_count, 0) AS dynamic_count,
+    COALESCE(w.pending_deletion_count, 0) AS pending_deletion_count
+    FROM w_devices d LEFT JOIN (SELECT device_id, COUNT(*) AS wallpaper_count,
+      SUM(media_type = 'static') AS static_count, SUM(media_type = 'dynamic') AS dynamic_count,
+      SUM(deletion_state != 'none') AS pending_deletion_count FROM w_wallpapers GROUP BY device_id) w ON w.device_id = d.id
+    ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY d.updated_date DESC, d.device_name ${nameKey ? '' : 'LIMIT 1500'}`;
+  const { results } = await getWallpaperDb().prepare(sql).bind(...values).all<AdminDeviceListRow>();
   return nameKey ? results.filter((device) => normalizeAdminName(device.device_name) === nameKey).slice(0, 1500) : results;
 }
 
@@ -125,6 +136,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   const db = getWallpaperDb();
   const previous = await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>();
   if (!previous) throw new Error('设备不存在');
+  if (previous.deletion_state !== 'none') throw new Error('设备正在删除或等待重试，无法编辑或重新发布');
   const name = input.device_name === undefined ? previous.device_name : normalizeAdminDisplay(assertText(input.device_name, '设备名称'));
   const nameKey = normalizeAdminName(name);
   const previousNameKey = normalizeAdminName(previous.device_name);
@@ -176,7 +188,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   try {
     const update = db.prepare(
       `UPDATE w_devices SET device_name = ?, name_key = ?, device_category = ?, brand_logo = ?, device_splash_url = ?,
-        release_date = ?, status = ?, updated_date = ? WHERE id = ?${publishDrafts ? `
+        release_date = ?, status = ?, updated_date = ? WHERE id = ? AND deletion_state = 'none'${publishDrafts ? `
         AND updated_date = ?
         AND EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'published' AND is_primary = 1 AND deletion_state = 'none')
         AND NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'draft' AND deletion_state = 'none')` : ''}`
@@ -206,14 +218,15 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
       const results = await db.batch([publish, update]);
       if (results[1].meta.changes !== 1) throw new Error('设备或壁纸在发布期间发生变化，请刷新后重试');
     } else {
-      await update.run();
+      const result = await update.run();
+      if (result.meta.changes !== 1) throw new Error('设备已进入删除流程，请刷新后重试');
     }
   } catch (error) {
     if (isUniqueConstraintError(error)) throw new Error('该品牌下设备或系统已存在');
     throw error;
   }
   if (input.is_popular_brand !== undefined) {
-    await db.prepare('UPDATE w_devices SET is_popular_brand = ?, updated_date = ? WHERE brand_name = ?')
+    await db.prepare("UPDATE w_devices SET is_popular_brand = ?, updated_date = ? WHERE brand_name = ? AND deletion_state = 'none'")
       .bind(input.is_popular_brand, now, previous.brand_name).run();
   }
   return (await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>())!;
@@ -258,6 +271,7 @@ export async function createAdminWallpaper(input: Record<string, unknown>): Prom
   const deviceId = assertText(input.device_id, '设备 ID', 80);
   const device = await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
   if (!device) throw new Error('设备不存在');
+  if (device.deletion_state !== 'none') throw new Error('设备正在删除或等待重试，无法新增壁纸');
   const name = assertText(input.name, '壁纸名称');
   const media = input.media_type || 'static';
   if (!mediaTypes.has(media as string)) throw new Error('媒体类型无效');
@@ -349,6 +363,9 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
   const db = getWallpaperDb();
   const previous = await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>();
   if (!previous) return { id, deleted: true };
+  const deletingDevice = await db.prepare("SELECT id FROM w_devices WHERE id = ? AND deletion_state != 'none'")
+    .bind(previous.device_id).first();
+  if (deletingDevice) throw new Error('设备已进入整体删除流程，请在设备列表重试删除');
   if (previous.deletion_state === 'processing' && Date.now() - previous.updated_date < 120000) {
     throw new Error('壁纸正在删除，请稍后重试；中断的操作可在两分钟后重试');
   }
