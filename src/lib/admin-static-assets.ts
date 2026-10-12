@@ -9,6 +9,7 @@ export async function hasStaticWallpaperReference(keys: string[]): Promise<boole
       ...WALLPAPER_BRAND_SLUGS.map(loadWallpaperCollections),
       ...getDesktopTabData().filter((tab) => isDesktopWallpaperCategory(tab.type))
         .map((tab) => loadDesktopWallpaperCollections(tab.type)),
+      import('@/data/livewalls/catalog.json').then(({ default: catalog }) => catalog.map((entry) => entry.collection)),
     ]).then((brands) => {
       const result = new Set<string>();
       for (const collections of brands) for (const collection of collections) for (const wallpaper of collection.item) {

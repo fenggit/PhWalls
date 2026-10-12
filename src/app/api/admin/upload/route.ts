@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const media = parseWallpaperMedia(request.nextUrl.searchParams.get('media_type'));
     const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
     if (!device) throw new Error('设备不存在');
+    if (device.deletion_state !== 'none') throw new Error(getI18nTexts('zh').adminDeviceDeletionPending);
     const { prefix, directories, source } = await getAdminUploadStorage(device, media);
     const data = { prefix, directories, source };
     return NextResponse.json({ data }, { headers: { 'Cache-Control': 'no-store' } });
@@ -36,6 +37,7 @@ export async function POST(request: NextRequest) {
     const deviceId = assertText(input.device_id, '设备 ID', 80);
     const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
     if (!device) throw new Error('设备不存在');
+    if (device.deletion_state !== 'none') throw new Error(getI18nTexts('zh').adminDeviceDeletionPending);
     const base = deviceR2Prefix(device);
 
     if (action === 'authorize') {

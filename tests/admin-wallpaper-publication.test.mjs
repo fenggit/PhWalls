@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
 const ts = require('typescript');
 const root = fileURLToPath(new URL('../', import.meta.url));
 
-function fixture(missingFiles = new Set(), onHead = () => {}) {
+function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {}, beforeBatch = () => {}, options = {}) {
   const sqlite = new DatabaseSync(':memory:');
   sqlite.exec('PRAGMA foreign_keys = ON');
   for (const migration of readdirSync(`${root}migrations`).filter((name) => name.endsWith('.sql')).sort()) {
@@ -32,6 +32,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
       };
     },
     async batch(statements) {
+      beforeBatch(sqlite);
       sqlite.exec('BEGIN');
       try {
         const results = [];
@@ -54,7 +55,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
     runInNewContext(source, {
       module, exports: module.exports, crypto: globalThis.crypto, Date, Error, URL, TextEncoder,
       require(specifier) {
-        if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db };
+        if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db, isWallpaperDbEnabled: () => options.dbEnabled ?? true };
         if (specifier === '@/lib/r2-upload') return {
           createR2UploadUrl: async (key) => `https://uploads.example/${encodeURIComponent(key)}`,
           createUploadGrant: async (key) => key,
@@ -65,9 +66,9 @@ function fixture(missingFiles = new Set(), onHead = () => {}) {
             const existing = sqlite.prepare('SELECT 1 FROM w_wallpapers WHERE origin_key = ? OR compress_key = ?').get(key, key);
             return missingFiles.has(key) || !existing ? null : { size: 100, mimeType: 'image/webp' };
           },
-          deleteR2Object: async (key) => { removedObjects.push(key); storedObjects.delete(key); },
+          deleteR2Object: async (key) => { await onDelete(key, sqlite); removedObjects.push(key); storedObjects.delete(key); },
         };
-        if (specifier === '@/lib/admin-static-assets') return { hasStaticWallpaperReference: async () => false };
+        if (specifier === '@/lib/admin-static-assets') return { hasStaticWallpaperReference: async () => options.staticReference ?? false };
         if (specifier === '@/lib/admin-auth') return { requireAdmin: async () => null };
         if (specifier === '@/types') return load(`${root}src/types/index.ts`);
         if (specifier.endsWith('.json') && specifier.startsWith('@/')) return JSON.parse(readFileSync(`${root}src/${specifier.slice(2)}`, 'utf8'));
@@ -548,5 +549,301 @@ test('canceling the similarity prompt creates nothing; accepting creates the req
     assert.equal(prompts, 2);
     await assert.rejects(() => createWithAdminNameConfirmation(newDevice('DEVICE ONE'), service.createAdminDevice,
       () => assert.fail('Duplicates must not offer confirmation')), /已存在/);
+  } finally { sqlite.close(); }
+});
+
+test('device deletion previews every wallpaper beyond one page, then deletes files and both translations', async () => {
+  const { sqlite, upload, load, removedObjects } = fixture();
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    for (let index = 0; index < 55; index++) await upload(`still-${index}`);
+    await upload('movie', { media_type: 'dynamic', mime_type: 'video/mp4', origin_key: 'live/Test/Device One/origin/movie.mp4' });
+    sqlite.exec(`UPDATE w_devices SET status='published'; UPDATE w_wallpapers SET status='published';
+      INSERT INTO w_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('static','device-1','en','Static',1,1);
+      INSERT INTO w_live_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('live','device-1','en','Live',1,1);`);
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    assert.equal(preview.wallpapers.length, 56);
+    assert.equal(preview.translation_count, 2);
+    assert.equal(removedObjects.length, 0);
+    await service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot });
+    for (const table of ['w_devices', 'w_wallpapers', 'w_device_i18n', 'w_live_device_i18n']) {
+      assert.equal(sqlite.prepare(`SELECT COUNT(*) AS count FROM ${table}`).get().count, 0);
+    }
+    assert.ok(removedObjects.includes('live/Test/Device One/preview/movie.mp4'));
+    assert.equal(removedObjects.length, 113);
+  } finally { sqlite.close(); }
+});
+
+test('device deletion rejects an unreviewed or changed wallpaper list before removing any file', async () => {
+  const { sqlite, upload, load, removedObjects } = fixture();
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('first');
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1' }));
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    await upload('second');
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }), /变化|变更/);
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT status FROM w_devices').get().status, 'draft');
+  } finally { sqlite.close(); }
+});
+
+test('failed device deletion keeps all rows for retry and blocks upload and publishing while locked', async () => {
+  let fail = true;
+  const { sqlite, service: data, upload, load } = fixture(new Set(), () => {}, (key, db) => {
+    assert.equal(db.prepare('SELECT status FROM w_devices').get().status, 'unpublished');
+    assert.throws(() => db.exec("UPDATE w_devices SET status='published'"));
+    if (fail && key.includes('/compress/')) throw new Error('R2 unavailable');
+  });
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('first');
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }), /重试/);
+    assert.equal(sqlite.prepare('SELECT deletion_state FROM w_devices').get().deletion_state, 'pending');
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 1);
+    await assert.rejects(() => upload('late'));
+    await assert.rejects(() => data.updateAdminDevice({ id: 'device-1', status: 'published' }));
+    fail = false;
+    const retry = await service.previewAdminDeviceDeletion('device-1');
+    await service.deleteAdminDevice({ id: 'device-1', snapshot: retry.snapshot });
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 0);
+  } finally { sqlite.close(); }
+});
+
+test('device deletion lists shared files as retained and only deletes the target device references', async () => {
+  const { sqlite, upload, load, removedObjects } = fixture();
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    const wallpaper = await upload('shared');
+    sqlite.exec(`INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,create_date,updated_date)
+      VALUES ('other','test','Other','other','phone',1,1);
+      INSERT INTO w_wallpapers SELECT 'other-wallpaper','other',name,mime_type,size_bytes,origin_key,compress_key,width,height,
+      file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date,deletion_state FROM w_wallpapers;`);
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    assert.equal(preview.files.length, 2);
+    assert.ok(preview.files.every((file) => file.shared));
+    await service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot });
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT origin_key FROM w_wallpapers').get().origin_key, wallpaper.origin_key);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_deleted_wallpaper_files').get().count, 0);
+  } finally { sqlite.close(); }
+});
+
+test('device list reports static, live and pending deletion counts and filters by media', async () => {
+  const { sqlite, service, upload } = fixture();
+  try {
+    await upload('static');
+    await upload('live', { media_type: 'dynamic', origin_key: 'test/device/origin/live.mp4' });
+    const rows = await service.listAdminDevices(new URLSearchParams({ media: 'dynamic' }));
+    assert.equal(rows[0].static_count, 1);
+    assert.equal(rows[0].dynamic_count, 1);
+    assert.equal(rows[0].wallpaper_count, 2);
+    sqlite.exec('DELETE FROM w_wallpapers WHERE media_type = \'dynamic\'');
+    assert.equal((await service.listAdminDevices(new URLSearchParams({ media: 'dynamic' }))).length, 0);
+    assert.equal((await service.listAdminDevices(new URLSearchParams({ media: 'empty' }))).length, 0);
+  } finally { sqlite.close(); }
+});
+
+test('device deletion transaction rejects wallpaper changes after the server has checked the snapshot', async () => {
+  let mutate = false;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+    if (mutate) {
+      mutate = false;
+      // Deliberately keep the timestamp unchanged to test persisted fields, not just a version number.
+      db.exec("UPDATE w_wallpapers SET origin_key='test/device/origin/changed.webp'");
+    }
+  });
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('first');
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    mutate = true;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }), /变更/);
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT deletion_state FROM w_devices').get().deletion_state, 'none');
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_deleted_wallpaper_files').get().count, 0);
+  } finally { sqlite.close(); }
+});
+
+test('device deletion transaction refuses new sharing introduced after the confirmation snapshot check', async () => {
+  let mutate = false;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+    if (mutate) {
+      mutate = false;
+      db.exec(`INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,create_date,updated_date)
+        VALUES ('other','test','Other','other','phone',1,1);
+        INSERT INTO w_wallpapers SELECT 'other-wallpaper','other',name,mime_type,size_bytes,origin_key,compress_key,width,height,
+        file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date,deletion_state FROM w_wallpapers;`);
+    }
+  });
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('first');
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    mutate = true;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }), /变更/);
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT deletion_state FROM w_devices WHERE id=\'device-1\'').get().deletion_state, 'none');
+  } finally { sqlite.close(); }
+});
+
+test('device deletion handles empty devices and its authenticated API requires a reviewed snapshot', async () => {
+  const { sqlite, load, removedObjects } = fixture();
+  try {
+    const route = load(`${root}src/app/api/admin/devices/route.ts`);
+    const missingSnapshot = await route.DELETE({ json: async () => ({ id: 'device-1' }) });
+    assert.equal(missingSnapshot.status, 400);
+    const response = await route.GET({ nextUrl: new URL('https://example.test/api/admin/devices?delete_preview=device-1') });
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    const { data } = await response.json();
+    assert.equal(data.wallpapers.length, 0);
+    assert.equal(data.files.length, 0);
+    const deleted = await route.DELETE({ json: async () => ({ id: 'device-1', snapshot: data.snapshot, origin_key: 'foreign/origin/secret.webp' }) });
+    assert.equal(deleted.status, 200);
+    assert.equal((await deleted.json()).deleted, true);
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 0);
+  } finally { sqlite.close(); }
+});
+
+test('device deletion transaction rejects device edits even when they share the previous timestamp', async () => {
+  let mutate = false;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+    if (mutate) { mutate = false; db.exec("UPDATE w_devices SET device_name='Changed Name'"); }
+  });
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('first');
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    mutate = true;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }), /变更/);
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT deletion_state FROM w_devices').get().deletion_state, 'none');
+  } finally { sqlite.close(); }
+});
+
+test('devices sharing files cannot both finish deletion concurrently and orphan the last-owner files', async () => {
+  let release;
+  let notify;
+  const held = new Promise((resolve) => { release = resolve; });
+  const started = new Promise((resolve) => { notify = resolve; });
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, async (key) => {
+    if (key.includes('unique')) { notify(); await held; }
+  });
+  let first;
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('shared');
+    sqlite.exec(`INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,create_date,updated_date)
+      VALUES ('other','test','Other','other','phone',1,1);
+      INSERT INTO w_wallpapers SELECT 'other-wallpaper','other',name,mime_type,size_bytes,origin_key,compress_key,width,height,
+      file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date,deletion_state FROM w_wallpapers;`);
+    await upload('unique');
+    const a = await service.previewAdminDeviceDeletion('device-1');
+    const b = await service.previewAdminDeviceDeletion('other');
+    first = service.deleteAdminDevice({ id: 'device-1', snapshot: a.snapshot });
+    await started;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'other', snapshot: b.snapshot }));
+    release();
+    await first;
+    const retry = await service.previewAdminDeviceDeletion('other');
+    await service.deleteAdminDevice({ id: 'other', snapshot: retry.snapshot });
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 0);
+    assert.ok(removedObjects.includes('test/device/origin/shared.webp'));
+    assert.ok(removedObjects.includes('test/device/compress/shared.webp'));
+  } finally { release(); if (first) await first; sqlite.close(); }
+});
+
+test('device deletion requires reconfirmation if retained files lose their other owner before claim', async () => {
+  let mutate = false;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+    if (mutate) { mutate = false; db.exec("DELETE FROM w_wallpapers WHERE device_id='other'; DELETE FROM w_devices WHERE id='other';"); }
+  });
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('shared');
+    sqlite.exec(`INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,create_date,updated_date)
+      VALUES ('other','test','Other','other','phone',1,1);
+      INSERT INTO w_wallpapers SELECT 'other-wallpaper','other',name,mime_type,size_bytes,origin_key,compress_key,width,height,
+      file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date,deletion_state FROM w_wallpapers;`);
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    mutate = true;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }));
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 1);
+  } finally { sqlite.close(); }
+});
+
+test('JSON fallback file protection includes Live catalog originals and covers', async () => {
+  const module = { exports: {} };
+  const source = ts.transpileModule(readFileSync(`${root}src/lib/admin-static-assets.ts`, 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
+  }).outputText;
+  runInNewContext(source, {
+    module, exports: module.exports,
+    require(specifier) {
+      if (specifier === '@/lib/wallpaper-data') return { WALLPAPER_BRAND_SLUGS: [], loadWallpaperCollections: async () => [] };
+      if (specifier === '@/lib/desktop-data') return { getDesktopTabData: () => [], isDesktopWallpaperCategory: () => true };
+      if (specifier === '@/data/livewalls/catalog.json') return JSON.parse(readFileSync(`${root}src/data/livewalls/catalog.json`, 'utf8'));
+      throw new Error(specifier);
+    },
+  });
+  for (const key of ['live/ASUS/ASUS ROG Phone 3/origin/asus-rog-phone-3-live-wallpaper-1.mp4',
+    'live/ASUS/ASUS ROG Phone 3/compress/asus-rog-phone-3-live-wallpaper-1.webp']) {
+    assert.equal(await module.exports.hasStaticWallpaperReference([key]), true);
+  }
+});
+
+test('device deletion protects JSON site assets and allows historical JSON references when serving D1', async () => {
+  for (const dbEnabled of [false, true]) {
+    const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, () => {}, { dbEnabled, staticReference: true });
+    try {
+      const service = load(`${root}src/lib/admin-device-deletion.ts`);
+      await upload('static');
+      const preview = await service.previewAdminDeviceDeletion('device-1');
+      if (!dbEnabled) {
+        assert.ok(preview.blocked_reason);
+        await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }));
+        assert.equal(removedObjects.length, 0);
+      } else {
+        assert.equal(preview.blocked_reason, null);
+        await service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot });
+        assert.equal(removedObjects.length, 2);
+      }
+    } finally { sqlite.close(); }
+  }
+});
+
+test('device deletion dialog renders the full preview list and disables confirmation before loading finishes', async () => {
+  const { sqlite, upload, load } = fixture();
+  try {
+    for (let index = 0; index < 55; index++) await upload(`wallpaper-${index}`);
+    const preview = await load(`${root}src/lib/admin-device-deletion.ts`).previewAdminDeviceDeletion('device-1');
+    let values;
+    let stateIndex;
+    const module = { exports: {} };
+    const source = ts.transpileModule(readFileSync(`${root}src/app/manager/AdminDeviceDeleteDialog.tsx`, 'utf8'), {
+      compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
+    }).outputText;
+    runInNewContext(source, {
+      module, exports: module.exports, URLSearchParams,
+      require(specifier) {
+        if (specifier === 'react') return { useState: () => [values[stateIndex++], () => {}],
+          useRef: () => ({ current: 0 }), useEffect: () => {}, useCallback: (fn) => fn };
+        if (specifier.startsWith('@/')) return load(`${root}src/${specifier.slice(2)}.ts`);
+        return require(specifier);
+      },
+    });
+    const props = { device: preview.device, request: () => assert.fail('Rendering cannot delete'), onClose: () => {}, onDeleted: () => {} };
+    const { renderToStaticMarkup } = require('react-dom/server');
+    values = [preview, false, false, '']; stateIndex = 0;
+    const html = renderToStaticMarkup(module.exports.default(props));
+    assert.match(html, /壁纸 55 张/);
+    for (let index = 0; index < 55; index++) assert.ok(html.includes(`test/device/origin/wallpaper-${index}.webp`));
+    values = [null, true, false, '']; stateIndex = 0;
+    const loading = renderToStaticMarkup(module.exports.default(props));
+    assert.match(loading, /正在读取完整删除清单/);
+    assert.match(loading, /<button type="submit" disabled=""/);
   } finally { sqlite.close(); }
 });

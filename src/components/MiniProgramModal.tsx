@@ -79,7 +79,7 @@ export default function MiniProgramModal({
         <div className="flex justify-center mb-6">
           <div className="relative w-64 h-64 bg-gray-100 rounded-lg overflow-hidden shadow-inner">
             <Image
-              src="/mini_program.jpg"
+              src="/phwalls-mini.jpg"
               alt={texts.miniProgram}
               fill
               className="object-contain p-4"
