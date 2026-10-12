@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Images, RefreshCw, Trash2, X } from 'lucide-react';
-import type { AdminDeviceDeletionPreview } from '@/lib/admin-device-deletion';
-import type { DeviceRow } from '@/lib/wallpaper-db';
+import type { AdminDeviceDeletionPreview, AdminDeviceDeletionResult } from '@/lib/admin-device-deletion';
+import type { DeviceRow, WallpaperMediaType } from '@/lib/wallpaper-db';
 import { getI18nTexts } from '@/lib/i18n';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 
@@ -11,13 +11,16 @@ const buttonClass = 'inline-flex h-10 items-center justify-center gap-2 rounded-
 
 type Props = {
   device: Pick<DeviceRow, 'id' | 'device_name'>;
+  media?: WallpaperMediaType | null;
   request: <T>(path: string, method?: string, body?: unknown) => Promise<T>;
   onClose: () => void;
-  onDeleted: () => Promise<void>;
+  onDeleted: (result: AdminDeviceDeletionResult) => Promise<void>;
 };
 
-export default function AdminDeviceDeleteDialog({ device, request, onClose, onDeleted }: Props) {
+export default function AdminDeviceDeleteDialog({ device, media, request, onClose, onDeleted }: Props) {
   const texts = getI18nTexts('zh');
+  const title = media ? texts.adminCollectionDelete : texts.adminDeviceDelete;
+  const mediaLabel = media === 'dynamic' ? texts.adminUploadDynamicLabel : texts.adminUploadStaticLabel;
   const ref = useRef<HTMLDialogElement>(null);
   const requestId = useRef(0);
   const [preview, setPreview] = useState<AdminDeviceDeletionPreview | null>(null);
@@ -29,12 +32,12 @@ export default function AdminDeviceDeleteDialog({ device, request, onClose, onDe
     setLoading(true);
     setPreview(null);
     try {
-      const { data } = await request<{ data: AdminDeviceDeletionPreview }>(`devices?${new URLSearchParams({ delete_preview: device.id })}`);
+      const { data } = await request<{ data: AdminDeviceDeletionPreview }>(`devices?${new URLSearchParams({ delete_preview: device.id, ...(media ? { media_type: media } : {}) })}`);
       if (current === requestId.current) setPreview(data);
     } catch (cause) {
       if (current === requestId.current) setError(cause instanceof Error ? cause.message : texts.adminDeviceDeleteReviewRequired);
     } finally { if (current === requestId.current) setLoading(false); }
-  }, [device.id, request, texts.adminDeviceDeleteReviewRequired]);
+  }, [device.id, media, request, texts.adminDeviceDeleteReviewRequired]);
 
   useEffect(() => {
     const generation = requestId;
@@ -49,8 +52,9 @@ export default function AdminDeviceDeleteDialog({ device, request, onClose, onDe
     setBusy(true);
     setError('');
     try {
-      await request('devices', 'DELETE', { id: device.id, snapshot: preview.snapshot });
-      await onDeleted();
+      const result = await request<AdminDeviceDeletionResult>('devices', 'DELETE', { id: device.id,
+        ...(media ? { media_type: media } : {}), snapshot: preview.snapshot });
+      await onDeleted(result);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : texts.adminDeviceDeleteRetryHint);
       await refresh();
@@ -58,15 +62,15 @@ export default function AdminDeviceDeleteDialog({ device, request, onClose, onDe
   };
   const shared = new Set(preview?.files.filter((file) => file.shared).map((file) => file.key));
 
-  return <dialog ref={ref} aria-label={texts.adminDeviceDelete} onCancel={(event) => { event.preventDefault(); if (!busy) onClose(); }}
+  return <dialog ref={ref} aria-label={title} onCancel={(event) => { event.preventDefault(); if (!busy) onClose(); }}
     className="fixed m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-4xl overflow-hidden rounded-lg border border-[#dce5dd] bg-white p-0 text-[#25332d] shadow-xl backdrop:bg-[#15271e]/50 backdrop:backdrop-blur-sm">
     <form onSubmit={remove} className="flex max-h-[calc(100dvh-2rem)] flex-col">
       <div className="flex items-center justify-between gap-3 border-b border-[#e3e9e4] px-5 py-4">
-        <div className="min-w-0"><h2 className="text-lg font-semibold">{texts.adminDeviceDelete}</h2><p className="mt-1 break-words text-sm">{device.device_name}</p></div>
+        <div className="min-w-0"><h2 className="text-lg font-semibold">{title}</h2><p className="mt-1 break-words text-sm">{device.device_name}{media ? ` · ${mediaLabel}` : ''}</p></div>
         <button type="button" className={`${buttonClass} w-10 shrink-0 px-0`} aria-label={texts.adminDeviceDeleteClose} disabled={busy} onClick={onClose}><X size={16} /></button>
       </div>
       <div className="min-h-0 overflow-y-auto p-5" aria-busy={loading}>
-        <p className="text-sm leading-6 text-red-800">{texts.adminDeviceDeleteWarning}</p>
+        <p className="text-sm leading-6 text-red-800">{media ? texts.adminCollectionDeleteWarning : texts.adminDeviceDeleteWarning}</p>
         {loading && <p role="status" className="mt-4 text-sm text-[#66746b]">{texts.adminDeviceDeleteLoading}</p>}
         {preview && <>
           <p className="mt-4 text-sm font-medium tabular-nums">{texts.adminDeviceDeleteSummary.replace('{count}', String(preview.wallpapers.length))
@@ -98,7 +102,7 @@ export default function AdminDeviceDeleteDialog({ device, request, onClose, onDe
         <button type="button" className={buttonClass} disabled={busy} onClick={onClose}>{texts.adminDeviceDeleteCancel}</button>
         <button type="submit" disabled={busy || loading || !preview || !!preview.blocked_reason}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-red-700 px-4 text-sm font-semibold text-white hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-50">
-          <Trash2 size={16} />{busy ? texts.adminDeviceDeleting : texts.adminDeviceDeleteConfirm}
+          <Trash2 size={16} />{busy ? texts.adminDeviceDeleting : media ? texts.adminCollectionDeleteConfirm : texts.adminDeviceDeleteConfirm}
         </button>
       </div>
     </form>

@@ -56,7 +56,8 @@ function fixture({ sourceType = 'default', rows = true, failUpload = false, tab 
       module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
     } }).outputText, {
       module, exports: module.exports, URL, URLSearchParams, process: { env: {} },
-      window: { confirm: () => assert.fail('Existing devices must not be recreated') },
+      window: { confirm: () => assert.fail('Existing devices must not be recreated'),
+        location: { href: `https://example.test/manager?tab=${tab}` }, history: { pushState() {} } },
       XMLHttpRequest: class {
         upload = {};
         status = 200;
@@ -223,7 +224,7 @@ test('a Live collection can upload without a browser preview and keep origin as 
   assert.equal(app.requests.find((request) => request.body?.action === 'complete').body.video_preview_token, undefined);
 });
 
-test('device directory shows both wallpaper types and opens deletion for the selected device', () => {
+test('device directory splits static and dynamic rows with scoped deletion, wallpaper and translation actions', () => {
   const mixed = { id: 'mixed', brand_name: 'huawei', device_name: 'Mixed Phone', device_slug: 'mixed-phone',
     device_category: 'phone', status: 'published', deletion_state: 'none', static_count: 4, dynamic_count: 3,
     wallpaper_count: 7, pending_deletion_count: 0, release_date: '2026/10/12' };
@@ -231,13 +232,22 @@ test('device directory shows both wallpaper types and opens deletion for the sel
   const tree = f.render();
   assert.match(label(tree), /静态壁纸 · 4/);
   assert.match(label(tree), /动态壁纸 · 3/);
-  assert.match(label(tree), /7 张/);
+  const entries = nodes(tree).filter((node) => node.type === 'tr' && label(node).includes('Mixed Phone'));
+  assert.equal(entries.length, 2);
+  assert.match(label(entries[0]), /静态壁纸 · 4/);
+  assert.doesNotMatch(label(entries[0]), /动态壁纸/);
+  assert.match(label(entries[1]), /动态壁纸 · 3/);
   const filter = nodes(tree).find((node) => node.type === 'select' && node.props['aria-label'] === '壁纸类型与数量');
   filter.props.onChange({ target: { value: 'dynamic' } });
   assert.equal(f.states.get('filters').media, 'dynamic');
-  button(tree, '删除设备').props.onClick();
+  button(entries[1], '壁纸').props.onClick();
+  assert.equal(f.states.get('filters').media, 'dynamic');
+  button(entries[1], '多语言').props.onClick();
+  assert.equal(f.states.get('describingDevice').media, 'dynamic');
+  button(entries[1], '删除合集').props.onClick();
   const dialog = nodes(f.render()).find((node) => node.type?.name === 'AdminDeviceDeleteDialog');
   assert.equal(dialog.props.device.id, 'mixed');
+  assert.equal(dialog.props.media, 'dynamic');
   assert.equal(typeof dialog.props.request, 'function');
 });
 

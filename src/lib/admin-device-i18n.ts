@@ -1,5 +1,6 @@
 import { getWallpaperDb, type DeviceI18nListRow, type DeviceI18nRow } from '@/lib/wallpaper-db';
 import { isLanguage, SUPPORTED_LANGUAGES } from '@/lib/language';
+import { getI18nTexts } from '@/lib/i18n';
 import { parseWallpaperMedia } from '@/lib/wallpaper-media';
 
 export type AdminDeviceI18nDirectoryRow = DeviceI18nListRow & { wallpaper_count?: number };
@@ -14,6 +15,12 @@ async function requireDevice(db: D1Database, id: string): Promise<void> {
   if (!await db.prepare('SELECT id FROM w_devices WHERE id = ?').bind(id).first()) {
     throw new Error('设备不存在');
   }
+}
+
+async function requireWritableCollection(db: D1Database, id: string, media: string): Promise<void> {
+  if (await db.prepare(`SELECT 1 WHERE EXISTS (SELECT 1 FROM w_devices WHERE id = ? AND deletion_state != 'none')
+    OR EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = ? AND media_type = ?)`)
+    .bind(id, id, media).first()) throw new Error(getI18nTexts('zh').adminCollectionDeleteRetryHint);
 }
 
 function translationTarget(input: Record<string, unknown>) {
@@ -108,6 +115,7 @@ export async function saveAdminDeviceI18n(input: Record<string, unknown>): Promi
   if (!displayName && !seoTitle && !description) throw new Error('设备名称、SEO 标题和描述至少填写一项');
   const db = getWallpaperDb();
   await requireDevice(db, id);
+  await requireWritableCollection(db, id, media);
   const now = Date.now();
   const table = media === 'dynamic' ? 'w_live_device_i18n' : 'w_device_i18n';
   await db.prepare(`INSERT INTO ${table} (id, device_id, language, display_name, seo_title, description, create_date, updated_date)
@@ -125,7 +133,12 @@ export async function deleteAdminDeviceI18n(input: Record<string, unknown>): Pro
   const { id, language, media } = translationTarget(input);
   const db = getWallpaperDb();
   await requireDevice(db, id);
+  await requireWritableCollection(db, id, media);
   const table = media === 'dynamic' ? 'w_live_device_i18n' : 'w_device_i18n';
-  await db.prepare(`DELETE FROM ${table} WHERE device_id = ? AND language = ?`).bind(id, language).run();
+  await db.prepare(`DELETE FROM ${table} WHERE device_id = ? AND language = ?
+    AND NOT EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = ? AND media_type = ?)
+    AND NOT EXISTS (SELECT 1 FROM w_devices WHERE id = ? AND deletion_state != 'none')`)
+    .bind(id, language, id, media, id).run();
+  await requireWritableCollection(db, id, media);
   return { deleted: true };
 }

@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
     if (!device) throw new Error('设备不存在');
     if (device.deletion_state !== 'none') throw new Error(getI18nTexts('zh').adminDeviceDeletionPending);
+    await assertCollectionAvailable(deviceId, media);
     const { prefix, directories, source } = await getAdminUploadStorage(device, media);
     const data = { prefix, directories, source };
     return NextResponse.json({ data }, { headers: { 'Cache-Control': 'no-store' } });
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
       if (role !== 'origin' && role !== 'compress' && role !== 'preview') throw new Error('文件角色无效');
       const mime = assertText(input.mime_type, '文件类型', 100);
       const media = parseWallpaperMedia(input.media_type);
+      await assertCollectionAvailable(deviceId, media);
       const size = Number(input.size_bytes);
       const video = mime.startsWith('video/');
       assertAdminUploadMime(mime, role, media);
@@ -66,6 +68,7 @@ export async function POST(request: NextRequest) {
       const videoPreview = input.video_preview_token === undefined ? undefined
         : await verifyUploadGrant(assertText(input.video_preview_token, '视频预览授权', 6000));
       const media = origin.mimeType.startsWith('video/') ? 'dynamic' : 'static';
+      await assertCollectionAvailable(deviceId, media);
       if (input.media_type !== undefined && parseWallpaperMedia(input.media_type) !== media) throw new Error('上传文件与所选壁纸类型不匹配');
       assertAdminUploadMime(origin.mimeType, 'origin', media);
       assertAdminUploadMime(preview.mimeType, 'compress', media);
@@ -110,4 +113,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : '上传失败' }, { status: 400 });
   }
+}
+
+async function assertCollectionAvailable(deviceId: string, media: string): Promise<void> {
+  const deleting = await getWallpaperDb().prepare('SELECT 1 FROM w_collection_deletions WHERE device_id = ? AND media_type = ?')
+    .bind(deviceId, media).first();
+  if (deleting) throw new Error(getI18nTexts('zh').adminCollectionDeleteRetryHint);
 }

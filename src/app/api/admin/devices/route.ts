@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
 import { checkAdminDeviceName, createAdminDevice, listAdminDevices, updateAdminDevice } from '@/lib/admin-data';
 import { AdminDeviceNameConflictError } from '@/lib/admin-device-name';
-import { deleteAdminDevice, previewAdminDeviceDeletion } from '@/lib/admin-device-deletion';
+import { getI18nTexts } from '@/lib/i18n';
+import { deleteAdminDevice, previewAdminDeviceDeletion, type AdminDeviceDeletionPreview } from '@/lib/admin-device-deletion';
 
 export const runtime = 'edge';
 
@@ -11,7 +12,8 @@ export async function GET(request: NextRequest) {
   if (denied) return denied;
   if (request.nextUrl.searchParams.has('delete_preview')) {
     try {
-      const data = await previewAdminDeviceDeletion(request.nextUrl.searchParams.get('delete_preview'));
+      const data = await previewAdminDeviceDeletion(request.nextUrl.searchParams.get('delete_preview'), request.nextUrl.searchParams.get('media_type'));
+      assertDeletionScope(data);
       return NextResponse.json({ data }, { headers: { 'Cache-Control': 'no-store' } });
     } catch (error) {
       return NextResponse.json({ error: error instanceof Error ? error.message : '加载失败' },
@@ -53,10 +55,20 @@ export async function DELETE(request: NextRequest) {
   const denied = await requireAdmin(request, true);
   if (denied) return denied;
   try {
-    return NextResponse.json(await deleteAdminDevice(await request.json() as Record<string, unknown>),
+    const input = await request.json() as Record<string, unknown>;
+    if (input.media_type === undefined || input.media_type === null) {
+      assertDeletionScope(await previewAdminDeviceDeletion(input.id));
+    }
+    return NextResponse.json(await deleteAdminDevice(input),
       { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : '删除失败' },
       { status: 400, headers: { 'Cache-Control': 'no-store' } });
+  }
+}
+
+function assertDeletionScope(preview: AdminDeviceDeletionPreview): void {
+  if (!preview.media_type && preview.wallpapers.length && preview.device.deletion_state === 'none') {
+    throw new Error(getI18nTexts('zh').adminCollectionDeleteScopeRequired);
   }
 }
