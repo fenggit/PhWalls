@@ -68,6 +68,17 @@ function normalizePublicPath(pathname: string): string {
     return '/';
   }
 
+  // Preserve indexed desktop URLs whose list/category moved to the current catalog.
+  if (pathname === '/desktop/wallpapers') {
+    return '/desktop';
+  }
+  if (pathname === '/desktop/google-aluminium-os') {
+    return '/desktop/google-os';
+  }
+  if (pathname === '/desktop/wallpapers/google-aluminium-os/google-aluminium-os') {
+    return '/desktop/wallpapers/google-os/google-aluminium-os';
+  }
+
   if (pathname === '/live' || pathname === '/live/') {
     return LIVE_WALLPAPERS_PATH;
   }
