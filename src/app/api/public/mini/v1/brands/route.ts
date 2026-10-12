@@ -4,5 +4,5 @@ import { miniApiResponse } from '@/lib/mini-api-response';
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export function GET(request: NextRequest) {
-  return miniApiResponse(request, (options) => listMiniBrands(options));
+  return miniApiResponse(request, (options) => listMiniBrands(options), 'brands');
 }
