@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
 import AdminDeviceI18nPanel from '@/app/manager/AdminDeviceI18nPanel';
 import AdminDeviceDeleteDialog from '@/app/manager/AdminDeviceDeleteDialog';
+import { listAdminDeviceCollectionRows, type AdminDeviceCollectionRow } from '@/lib/admin-device-collections';
 import { adminTabHref, resolveAdminTab, type AdminTab } from '@/lib/admin-navigation';
 import { uploadAdminBatch } from '@/lib/admin-upload-batch';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
@@ -368,7 +369,7 @@ export default function AdminConsole() {
   };
   const [brands, setBrands] = useState<AdminBrand[]>([]);
   const [devices, setDevices] = useState<AdminDeviceListRow[]>([]);
-  const [deletingDevice, setDeletingDevice] = useState<AdminDeviceListRow | null>(null);
+  const [deletingDevice, setDeletingDevice] = useState<AdminDeviceCollectionRow | null>(null);
   const [wallpapers, setWallpapers] = useState<WallpaperListRow[]>([]);
   const [wallpaperTotal, setWallpaperTotal] = useState(0);
   const [devicePage, setDevicePage] = useState(0);
@@ -791,8 +792,8 @@ export default function AdminConsole() {
     });
   };
 
-  const visibleDevices = devices.filter((device) => !searchInput ||
-    `${device.device_name} ${device.brand_name}`.toLowerCase().includes(searchInput.toLowerCase()));
+  const visibleDevices = listAdminDeviceCollectionRows(devices.filter((device) => !searchInput ||
+    `${device.device_name} ${device.brand_name}`.toLowerCase().includes(searchInput.toLowerCase())), filters.media);
   useEffect(() => {
     const lastPage = Math.max(0, Math.ceil(visibleDevices.length / PAGE_SIZE) - 1);
     setDevicePage((page) => Math.min(page, lastPage));
@@ -907,7 +908,7 @@ export default function AdminConsole() {
       <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-7 lg:px-9 lg:py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div><h2 className="text-2xl font-semibold tracking-tight text-[#17251d]">{tab === 'brands' ? '品牌目录' : tab === 'devices' ? '设备目录' : tab === 'wallpapers' ? '壁纸目录' : tab === 'i18n' ? '多语言内容' : '上传工作区'}</h2>
-            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 个设备` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : tab === 'i18n' ? '设备名称、SEO 标题与合集描述' : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
+            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 条记录` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : tab === 'i18n' ? '设备名称、SEO 标题与合集描述' : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
           </div>
           {tab === 'brands' && <button className={primaryClass} onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} />新增品牌</button>}
           {tab === 'devices' && <button className={primaryClass} onClick={() => setEditingDevice({ device_category: 'phone', status: 'draft', is_popular_brand: 0, release_date: '' })}><Plus size={16} />新建设备</button>}
@@ -967,14 +968,14 @@ export default function AdminConsole() {
         {tab === 'devices' && <section aria-label="设备目录">
           <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[1050px]`}>
             <thead className={tableHeadClass}><tr><th className="px-4 py-3">设备</th><th className="px-4 py-3">品牌</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">{uploadTexts.adminDeviceWallpaperType}</th><th className="px-4 py-3">状态</th><th className="px-4 py-3">发布日期</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
-            <tbody>{loading ? <TableFeedback columns={7} loading message="" /> : visibleDevices.length === 0 ? <TableFeedback columns={7} loading={false} message="没有符合条件的设备" onReset={resetFilters} /> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map((device) => <tr key={device.id} className={tableRowClass}>
+            <tbody>{loading ? <TableFeedback columns={7} loading message="" /> : visibleDevices.length === 0 ? <TableFeedback columns={7} loading={false} message="没有符合条件的设备" onReset={resetFilters} /> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map((device) => <tr key={`${device.id}:${device.media_type || 'device'}`} className={tableRowClass}>
               <td className="px-4 py-3 font-medium text-gray-950"><div>{device.device_name}</div><div className="mt-1 font-mono text-xs font-normal text-[#758278]">{device.device_slug}</div></td><td className="px-4 py-3">{brands.find((brand) => brand.slug === device.brand_name)?.title || device.brand_name}{device.is_popular_brand ? <span className="ml-2 text-xs text-amber-700">热门</span> : null}</td>
               <td className="px-4 py-3 text-gray-600">{categoryLabels[device.device_category]}</td><td className="px-4 py-3"><div className="flex flex-wrap gap-1.5">
-                {device.static_count > 0 && <span className="rounded bg-[#edf2eb] px-2 py-1 text-xs text-[#34433b]">{uploadTexts.adminUploadStaticLabel} · {device.static_count}</span>}
-                {device.dynamic_count > 0 && <span className="rounded bg-sky-50 px-2 py-1 text-xs text-sky-800">{uploadTexts.adminUploadDynamicLabel} · {device.dynamic_count}</span>}
-                {device.wallpaper_count === 0 && <span className="text-xs text-[#758278]">{uploadTexts.adminDeviceWallpaperEmpty}</span>}
-              </div><p className="mt-1 text-xs tabular-nums text-[#758278]">{uploadTexts.adminDeviceWallpaperCount.replace('{count}', String(device.wallpaper_count))}</p></td><td className="px-4 py-3"><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${statusClasses[device.status]}`}>{statusLabels[device.status]}</span>{device.deletion_state !== 'none' && <p className="mt-1 text-xs text-red-700">{device.deletion_state === 'processing' ? uploadTexts.adminDeviceDeletionProcessing : uploadTexts.adminDeviceDeletionPending}</p>}</td><td className="px-4 py-3 font-mono text-xs tabular-nums text-gray-600">{device.release_date || '—'}</td>
-              <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><button className={rowButtonClass} title="查看该设备的壁纸" aria-label={`查看 ${device.device_name} 的壁纸`} onClick={() => { setSearchInput(''); setFilters({ ...emptyFilters, brand: device.brand_name, device: device.id }); setDevicePage(0); setWallpaperPage(0); setTab('wallpapers'); }}><Images size={15} />壁纸</button><button className={rowButtonClass} title="管理五语言设备名、SEO 标题与描述" aria-label={`管理 ${device.device_name} 的多语言内容`} onClick={() => setDescribingDevice({ device, language: 'en' })}><Pencil size={15} />多语言</button><button className={rowButtonClass} disabled={busy || device.deletion_state !== 'none'} title="编辑设备" aria-label={`编辑 ${device.device_name}`} onClick={() => setEditingDevice(device)}><Pencil size={15} />编辑</button><button className={`${rowButtonClass} text-red-700 hover:bg-red-50 hover:text-red-800`} disabled={busy} title={uploadTexts.adminDeviceDelete} aria-label={`${uploadTexts.adminDeviceDelete} ${device.device_name}`} onClick={() => { setError(''); setDeletingDevice(device); }}><Trash2 size={15} />{device.deletion_state === 'pending' ? uploadTexts.adminDeviceDeletionPending : uploadTexts.adminDeviceDelete}</button></div></td>
+                {device.media_type === 'static' && <span className="rounded bg-[#edf2eb] px-2 py-1 text-xs text-[#34433b]">{uploadTexts.adminUploadStaticLabel} · {device.collection_count}</span>}
+                {device.media_type === 'dynamic' && <span className="rounded bg-sky-50 px-2 py-1 text-xs text-sky-800">{uploadTexts.adminUploadDynamicLabel} · {device.collection_count}</span>}
+                {!device.media_type && <span className="text-xs text-[#758278]">{device.collection_count ? uploadTexts.adminDeviceWallpaperAllTypes : uploadTexts.adminDeviceWallpaperEmpty}</span>}
+              </div><p className="mt-1 text-xs tabular-nums text-[#758278]">{uploadTexts.adminDeviceWallpaperCount.replace('{count}', String(device.collection_count))}</p></td><td className="px-4 py-3"><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${statusClasses[device.status]}`}>{statusLabels[device.status]}</span>{device.collection_deletion_state !== 'none' && <p className="mt-1 text-xs text-red-700">{device.collection_deletion_state === 'processing' ? uploadTexts.adminDeviceDeletionProcessing : uploadTexts.adminDeviceDeletionPending}</p>}</td><td className="px-4 py-3 font-mono text-xs tabular-nums text-gray-600">{device.release_date || '—'}</td>
+              <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><button className={rowButtonClass} title="查看该设备的壁纸" aria-label={`查看 ${device.device_name} 的壁纸`} onClick={() => { setSearchInput(''); setFilters({ ...emptyFilters, brand: device.brand_name, device: device.id, media: device.media_type || '' }); setDevicePage(0); setWallpaperPage(0); setTab('wallpapers'); }}><Images size={15} />壁纸</button><button className={rowButtonClass} disabled={device.collection_deletion_state !== 'none'} title="管理五语言设备名、SEO 标题与描述" aria-label={`管理 ${device.device_name} 的多语言内容`} onClick={() => setDescribingDevice({ device, language: 'en', media: device.media_type || 'static' })}><Pencil size={15} />多语言</button><button className={rowButtonClass} disabled={busy || device.deletion_state !== 'none' || (!!device.static_deletion_state && device.static_deletion_state !== 'none') || (!!device.dynamic_deletion_state && device.dynamic_deletion_state !== 'none')} title="编辑设备" aria-label={`编辑 ${device.device_name}`} onClick={() => setEditingDevice(device)}><Pencil size={15} />编辑</button><button className={`${rowButtonClass} text-red-700 hover:bg-red-50 hover:text-red-800`} disabled={busy} title={device.media_type ? uploadTexts.adminCollectionDelete : uploadTexts.adminDeviceDelete} aria-label={`${device.media_type ? uploadTexts.adminCollectionDelete : uploadTexts.adminDeviceDelete} ${device.device_name} ${device.media_type === 'dynamic' ? uploadTexts.adminUploadDynamicLabel : device.media_type === 'static' ? uploadTexts.adminUploadStaticLabel : ''}`} onClick={() => { setError(''); setDeletingDevice(device); }}><Trash2 size={15} />{device.collection_deletion_state === 'pending' ? uploadTexts.adminDeviceDeletionPending : device.media_type ? uploadTexts.adminCollectionDelete : uploadTexts.adminDeviceDelete}</button></div></td>
             </tr>)}</tbody>
           </table></div>
           <div className="mt-4 flex flex-wrap items-center justify-end gap-2 text-xs tabular-nums text-[#66746b]">
@@ -1168,12 +1169,16 @@ export default function AdminConsole() {
       {describingDevice && <DeviceI18nDialog key={`${describingDevice.device.id}:${describingDevice.media}:${describingDevice.language}`} device={describingDevice.device}
         initialLanguage={describingDevice.language} initialMedia={describingDevice.media || 'static'} onChanged={() => setI18nRevision((value) => value + 1)} onClose={() => setDescribingDevice(null)} />}
 
-      {deletingDevice && <AdminDeviceDeleteDialog key={deletingDevice.id} device={deletingDevice} request={api}
-        onClose={() => setDeletingDevice(null)} onDeleted={async () => {
+      {deletingDevice && <AdminDeviceDeleteDialog key={`${deletingDevice.id}:${deletingDevice.media_type}`} device={deletingDevice} media={deletingDevice.media_type} request={api}
+        onClose={() => setDeletingDevice(null)} onDeleted={async (result) => {
           setDeletingDevice(null);
           setI18nRevision((value) => value + 1);
-          setUploadDevices((current) => current.filter((device) => device.id !== deletingDevice.id));
-          if (uploadDevice === deletingDevice.id) { setUploadDevice(''); setUploadRows([]); }
+          if (result.device_deleted) setUploadDevices((current) => current.filter((device) => device.id !== deletingDevice.id));
+          if (uploadDevice === deletingDevice.id && (!deletingDevice.media_type || deletingDevice.media_type === uploadMedia)) {
+            if (result.device_deleted) setUploadDevice('');
+            setUploadRows([]);
+            setUploadDirectoryRevision((value) => value + 1);
+          }
           await reload();
         }} />}
 

@@ -75,10 +75,14 @@ export async function listAdminDevices(filters: URLSearchParams): Promise<AdminD
   // Legacy imports may have no name_key. Normalize actual names before applying the list limit.
   const sql = `SELECT d.*, COALESCE(w.wallpaper_count, 0) AS wallpaper_count,
     COALESCE(w.static_count, 0) AS static_count, COALESCE(w.dynamic_count, 0) AS dynamic_count,
-    COALESCE(w.pending_deletion_count, 0) AS pending_deletion_count
+    COALESCE(w.pending_deletion_count, 0) AS pending_deletion_count,
+    COALESCE(ds.deletion_state, 'none') AS static_deletion_state,
+    COALESCE(dd.deletion_state, 'none') AS dynamic_deletion_state
     FROM w_devices d LEFT JOIN (SELECT device_id, COUNT(*) AS wallpaper_count,
       SUM(media_type = 'static') AS static_count, SUM(media_type = 'dynamic') AS dynamic_count,
       SUM(deletion_state != 'none') AS pending_deletion_count FROM w_wallpapers GROUP BY device_id) w ON w.device_id = d.id
+    LEFT JOIN w_collection_deletions ds ON ds.device_id = d.id AND ds.media_type = 'static'
+    LEFT JOIN w_collection_deletions dd ON dd.device_id = d.id AND dd.media_type = 'dynamic'
     ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY d.updated_date DESC, d.device_name ${nameKey ? '' : 'LIMIT 1500'}`;
   const { results } = await getWallpaperDb().prepare(sql).bind(...values).all<AdminDeviceListRow>();
   return nameKey ? results.filter((device) => normalizeAdminName(device.device_name) === nameKey).slice(0, 1500) : results;
@@ -137,6 +141,9 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   const previous = await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>();
   if (!previous) throw new Error('设备不存在');
   if (previous.deletion_state !== 'none') throw new Error('设备正在删除或等待重试，无法编辑或重新发布');
+  if (await db.prepare('SELECT 1 FROM w_collection_deletions WHERE device_id = ?').bind(id).first()) {
+    throw new Error(getI18nTexts('zh').adminCollectionDeleteRetryHint);
+  }
   const name = input.device_name === undefined ? previous.device_name : normalizeAdminDisplay(assertText(input.device_name, '设备名称'));
   const nameKey = normalizeAdminName(name);
   const previousNameKey = normalizeAdminName(previous.device_name);
@@ -226,7 +233,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
     throw error;
   }
   if (input.is_popular_brand !== undefined) {
-    await db.prepare("UPDATE w_devices SET is_popular_brand = ?, updated_date = ? WHERE brand_name = ? AND deletion_state = 'none'")
+    await db.prepare("UPDATE w_devices SET is_popular_brand = ?, updated_date = ? WHERE brand_name = ? AND deletion_state = 'none' AND NOT EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = w_devices.id)")
       .bind(input.is_popular_brand, now, previous.brand_name).run();
   }
   return (await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(id).first<DeviceRow>())!;
@@ -366,6 +373,8 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
   const deletingDevice = await db.prepare("SELECT id FROM w_devices WHERE id = ? AND deletion_state != 'none'")
     .bind(previous.device_id).first();
   if (deletingDevice) throw new Error('设备已进入整体删除流程，请在设备列表重试删除');
+  if (await db.prepare('SELECT 1 FROM w_collection_deletions WHERE device_id = ? AND media_type = ?')
+    .bind(previous.device_id, previous.media_type).first()) throw new Error(getI18nTexts('zh').adminCollectionDeleteRetryHint);
   if (previous.deletion_state === 'processing' && Date.now() - previous.updated_date < 120000) {
     throw new Error('壁纸正在删除，请稍后重试；中断的操作可在两分钟后重试');
   }
@@ -393,6 +402,7 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
     `UPDATE w_wallpapers SET status = 'unpublished', is_primary = 0, deletion_state = 'processing', updated_date = ?
      WHERE id = ? AND updated_date = ? AND origin_key = ? AND compress_key IS ?
        AND status = ? AND is_primary = ? AND deletion_state = ?
+       AND NOT EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = w_wallpapers.device_id AND media_type = w_wallpapers.media_type)
        AND NOT EXISTS (SELECT 1 FROM w_devices d WHERE d.id = w_wallpapers.device_id
          AND d.status = 'published' AND w_wallpapers.status = 'published' AND w_wallpapers.is_primary = 1)
        AND NOT EXISTS (SELECT 1 FROM w_wallpapers other WHERE other.id != ?

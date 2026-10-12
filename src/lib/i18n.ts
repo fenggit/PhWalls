@@ -4,6 +4,11 @@ export type { Language } from '@/types';
 
 export interface I18nTexts {
   adminDeviceDelete: string;
+  adminCollectionDelete: string;
+  adminCollectionDeleteScopeRequired: string;
+  adminCollectionDeleteConfirm: string;
+  adminCollectionDeleteWarning: string;
+  adminCollectionDeleteRetryHint: string;
   adminDeviceDeleteConfirm: string;
   adminDeviceDeleteWarning: string;
   adminDeviceDeleteLoading: string;
@@ -476,13 +481,18 @@ export interface I18nTexts {
 export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
     adminDeviceDelete: "删除设备",
+    adminCollectionDelete: "删除合集",
+    adminCollectionDeleteScopeRequired: "删除合集时必须明确选择静态或动态壁纸",
+    adminCollectionDeleteConfirm: "确认删除当前类型合集",
+    adminCollectionDeleteWarning: "将永久删除此设备当前类型的壁纸、对应多语言内容及下方标明删除的文件。另一类型的壁纸和内容保留；若已无壁纸和其他类型文案，将同时删除空设备。此操作无法撤销。",
+    adminCollectionDeleteRetryHint: "当前类型合集已下架并保留记录，请刷新清单后重试删除；另一类型不受影响",
     adminDeviceDeleteConfirm: "确认删除设备及全部壁纸",
     adminDeviceDeleteWarning: "将永久删除该设备、全部静态与动态壁纸记录、多语言内容及下方标明删除的文件，无法撤销。",
     adminDeviceDeleteLoading: "正在读取完整删除清单…",
     adminDeviceDeleteRefresh: "刷新完整清单",
     adminDeviceDeleteSummary: "壁纸 {count} 张 · 文件 {files} 个 · 多语言 {translations} 条",
     adminDeviceDeleteEmpty: "该设备暂无壁纸，仅删除设备及关联多语言内容。",
-    adminDeviceDeleteShared: "保留：其他设备共用",
+    adminDeviceDeleteShared: "保留：其他壁纸共用",
     adminDeviceDeleteFile: "删除文件",
     adminDeviceDeleteReviewRequired: "请先加载并核对完整删除清单",
     adminDeviceDeleteChanged: "设备或壁纸清单已变更，请刷新完整清单并重新确认",
@@ -938,13 +948,18 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   en: {
     adminDeviceDelete: "Delete device",
+    adminCollectionDelete: "Delete collection",
+    adminCollectionDeleteScopeRequired: "Choose static or dynamic wallpapers before deleting a collection.",
+    adminCollectionDeleteConfirm: "Confirm deletion of this collection",
+    adminCollectionDeleteWarning: "Permanently delete this wallpaper type, its translations and the files marked below. The other wallpaper type is retained. If no wallpapers or other-type translations remain, the empty device is also removed. This cannot be undone.",
+    adminCollectionDeleteRetryHint: "This collection is unpublished with its records retained. Refresh the list and retry deletion; the other wallpaper type is unaffected.",
     adminDeviceDeleteConfirm: "Delete device and all wallpapers",
     adminDeviceDeleteWarning: "Permanently delete this device, all static and live wallpaper records, translations, and files marked for deletion below. This cannot be undone.",
     adminDeviceDeleteLoading: "Loading the complete deletion list…",
     adminDeviceDeleteRefresh: "Refresh full list",
     adminDeviceDeleteSummary: "{count} wallpapers · {files} files · {translations} translations",
     adminDeviceDeleteEmpty: "This device has no wallpapers. Only the device and its translations will be deleted.",
-    adminDeviceDeleteShared: "Keep: shared by another device",
+    adminDeviceDeleteShared: "Keep: shared by another wallpaper",
     adminDeviceDeleteFile: "Delete file",
     adminDeviceDeleteReviewRequired: "Load and review the complete deletion list first",
     adminDeviceDeleteChanged: "The device or wallpaper list changed. Refresh the full list and confirm again.",
@@ -1400,13 +1415,18 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   ja: {
     adminDeviceDelete: "デバイスを削除",
+    adminCollectionDelete: "コレクションを削除",
+    adminCollectionDeleteScopeRequired: "削除する壁紙の種類（静止画またはライブ）を選択してください。",
+    adminCollectionDeleteConfirm: "この種類のコレクションを削除",
+    adminCollectionDeleteWarning: "この種類の壁紙、対応する翻訳、下記の削除対象ファイルを完全に削除します。もう一方の種類は保持されます。壁紙ともう一方の種類の翻訳が残らない場合は空のデバイスも削除します。この操作は取り消せません。",
+    adminCollectionDeleteRetryHint: "この種類のコレクションは非公開になり、記録は保持されています。一覧を更新して削除を再試行してください。もう一方の種類には影響しません。",
     adminDeviceDeleteConfirm: "デバイスとすべての壁紙を削除",
     adminDeviceDeleteWarning: "このデバイス、すべての静止画・ライブ壁紙の記録、翻訳、下記の削除対象ファイルを完全に削除します。取り消せません。",
     adminDeviceDeleteLoading: "完全な削除一覧を読み込み中…",
     adminDeviceDeleteRefresh: "一覧を更新",
     adminDeviceDeleteSummary: "壁紙 {count} 件 · ファイル {files} 件 · 翻訳 {translations} 件",
     adminDeviceDeleteEmpty: "壁紙はありません。デバイスと翻訳のみを削除します。",
-    adminDeviceDeleteShared: "保持：他のデバイスと共有",
+    adminDeviceDeleteShared: "保持：他の壁紙と共有",
     adminDeviceDeleteFile: "ファイルを削除",
     adminDeviceDeleteReviewRequired: "完全な削除一覧を確認してください",
     adminDeviceDeleteChanged: "デバイスまたは壁紙一覧が変更されました。一覧を更新して再確認してください。",
@@ -1862,13 +1882,18 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   vi: {
     adminDeviceDelete: "Xóa thiết bị",
+    adminCollectionDelete: "Xóa bộ sưu tập",
+    adminCollectionDeleteScopeRequired: "Chọn hình nền tĩnh hoặc động trước khi xóa bộ sưu tập.",
+    adminCollectionDeleteConfirm: "Xác nhận xóa bộ sưu tập này",
+    adminCollectionDeleteWarning: "Xóa vĩnh viễn loại hình nền này, bản dịch tương ứng và các tệp được đánh dấu bên dưới. Loại hình nền còn lại được giữ nguyên. Nếu không còn hình nền và cũng không còn bản dịch của loại khác, thiết bị trống cũng sẽ bị xóa. Không thể hoàn tác.",
+    adminCollectionDeleteRetryHint: "Bộ sưu tập này đã được ẩn và giữ lại bản ghi. Làm mới danh sách rồi thử xóa lại; loại hình nền còn lại không bị ảnh hưởng.",
     adminDeviceDeleteConfirm: "Xóa thiết bị và tất cả hình nền",
     adminDeviceDeleteWarning: "Xóa vĩnh viễn thiết bị, tất cả bản ghi hình nền tĩnh và động, bản dịch và các tệp được đánh dấu xóa bên dưới. Không thể hoàn tác.",
     adminDeviceDeleteLoading: "Đang tải danh sách xóa đầy đủ…",
     adminDeviceDeleteRefresh: "Làm mới danh sách đầy đủ",
     adminDeviceDeleteSummary: "{count} hình nền · {files} tệp · {translations} bản dịch",
     adminDeviceDeleteEmpty: "Thiết bị chưa có hình nền. Chỉ xóa thiết bị và bản dịch liên quan.",
-    adminDeviceDeleteShared: "Giữ lại: thiết bị khác dùng chung",
+    adminDeviceDeleteShared: "Giữ lại: hình nền khác dùng chung",
     adminDeviceDeleteFile: "Xóa tệp",
     adminDeviceDeleteReviewRequired: "Hãy tải và kiểm tra danh sách xóa đầy đủ trước",
     adminDeviceDeleteChanged: "Thiết bị hoặc danh sách hình nền đã thay đổi. Làm mới danh sách và xác nhận lại.",
@@ -2297,13 +2322,18 @@ export const i18nTexts: Record<Language, I18nTexts> = {
   },
   'zh-hant': {
     adminDeviceDelete: "刪除裝置",
+    adminCollectionDelete: "刪除合集",
+    adminCollectionDeleteScopeRequired: "刪除合集時必須明確選擇靜態或動態桌布",
+    adminCollectionDeleteConfirm: "確認刪除目前類型合集",
+    adminCollectionDeleteWarning: "將永久刪除此裝置目前類型的桌布、對應多語言內容及下方標明刪除的檔案。另一類型的桌布和內容保留；若已無桌布及其他類型文案，將同時刪除空裝置。此操作無法復原。",
+    adminCollectionDeleteRetryHint: "目前類型合集已下架並保留記錄，請重新整理清單後重試刪除；另一類型不受影響",
     adminDeviceDeleteConfirm: "確認刪除裝置及全部桌布",
     adminDeviceDeleteWarning: "將永久刪除此裝置、全部靜態與動態桌布記錄、多語言內容及下方標明刪除的檔案，無法復原。",
     adminDeviceDeleteLoading: "正在讀取完整刪除清單…",
     adminDeviceDeleteRefresh: "重新整理完整清單",
     adminDeviceDeleteSummary: "桌布 {count} 張 · 檔案 {files} 個 · 多語言 {translations} 筆",
     adminDeviceDeleteEmpty: "此裝置暫無桌布，僅刪除裝置及關聯多語言內容。",
-    adminDeviceDeleteShared: "保留：其他裝置共用",
+    adminDeviceDeleteShared: "保留：其他桌布共用",
     adminDeviceDeleteFile: "刪除檔案",
     adminDeviceDeleteReviewRequired: "請先載入並核對完整刪除清單",
     adminDeviceDeleteChanged: "裝置或桌布清單已變更，請重新整理完整清單並重新確認",

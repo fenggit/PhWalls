@@ -35,6 +35,9 @@ function fixture(legacyDescription = false, stubs = {}) {
   sqlite.exec(readFileSync(`${root}migrations/0010_device_i18n.sql`, 'utf8'));
   const mediaMigration = `${root}migrations/0012_collection_media_scope.sql`;
   if (existsSync(mediaMigration)) sqlite.exec(readFileSync(mediaMigration, 'utf8'));
+  for (const name of ['0013_device_deletion_state.sql', '0014_collection_deletion_state.sql']) {
+    sqlite.exec(readFileSync(`${root}migrations/${name}`, 'utf8'));
+  }
   const db = {
     prepare(sql) {
       const statement = sqlite.prepare(sql);

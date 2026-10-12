@@ -39,6 +39,8 @@ export type AdminDeviceListRow = DeviceRow & {
   static_count: number;
   dynamic_count: number;
   pending_deletion_count: number;
+  static_deletion_state: DeviceRow['deletion_state'];
+  dynamic_deletion_state: DeviceRow['deletion_state'];
 };
 
 export type WallpaperRow = {

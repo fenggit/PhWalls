@@ -53,7 +53,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
     }).outputText;
     runInNewContext(source, {
-      module, exports: module.exports, crypto: globalThis.crypto, Date, Error, URL, TextEncoder,
+      module, exports: module.exports, crypto: globalThis.crypto, Date: options.fixedNow === undefined ? Date : class extends Date { static now() { return options.fixedNow; } }, Error, URL, TextEncoder,
       require(specifier) {
         if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db, isWallpaperDbEnabled: () => options.dbEnabled ?? true };
         if (specifier === '@/lib/r2-upload') return {
@@ -845,5 +845,256 @@ test('device deletion dialog renders the full preview list and disables confirma
     const loading = renderToStaticMarkup(module.exports.default(props));
     assert.match(loading, /正在读取完整删除清单/);
     assert.match(loading, /<button type="submit" disabled=""/);
+  } finally { sqlite.close(); }
+});
+
+test('collection deletion only previews and deletes the chosen media and preserves the other collection unchanged', async () => {
+  for (const media of ['static', 'dynamic']) {
+    const { sqlite, upload, load, removedObjects } = fixture();
+    try {
+      const service = load(`${root}src/lib/admin-device-deletion.ts`);
+      await upload('still');
+      await upload('movie', { media_type: 'dynamic', mime_type: 'video/mp4', origin_key: 'live/Test/Device One/origin/movie.mp4', compress_key: 'live/Test/Device One/compress/movie.webp' });
+      sqlite.exec(`UPDATE w_devices SET status='published'; UPDATE w_wallpapers SET status='published';
+        INSERT INTO w_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('static','device-1','en','Static',1,1);
+        INSERT INTO w_live_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('live','device-1','en','Live',1,1);`);
+      const otherMedia = media === 'static' ? 'dynamic' : 'static';
+      const other = sqlite.prepare('SELECT * FROM w_wallpapers WHERE media_type=?').get(otherMedia);
+      const parent = sqlite.prepare('SELECT * FROM w_devices').get();
+      const preview = await service.previewAdminDeviceDeletion('device-1', media);
+      assert.equal(preview.media_type, media);
+      assert.equal(preview.wallpapers.length, 1);
+      assert.equal(preview.wallpapers[0].media_type, media);
+      assert.equal(preview.translation_count, 1);
+      await service.deleteAdminDevice({ id: 'device-1', media_type: media, snapshot: preview.snapshot });
+      assert.deepEqual(sqlite.prepare('SELECT * FROM w_wallpapers').get(), other);
+      assert.deepEqual(sqlite.prepare('SELECT * FROM w_devices').get(), parent);
+      const removedTable = media === 'static' ? 'w_device_i18n' : 'w_live_device_i18n';
+      const keptTable = media === 'static' ? 'w_live_device_i18n' : 'w_device_i18n';
+      assert.equal(sqlite.prepare(`SELECT COUNT(*) AS count FROM ${removedTable}`).get().count, 0);
+      assert.equal(sqlite.prepare(`SELECT COUNT(*) AS count FROM ${keptTable}`).get().count, 1);
+      assert.equal(removedObjects.length, media === 'static' ? 2 : 3);
+      assert.ok(!removedObjects.includes(other.origin_key));
+      assert.ok(!removedObjects.includes(other.compress_key));
+    } finally { sqlite.close(); }
+  }
+});
+
+test('collection deletion retains cross-media shared files in the same device and removes the last empty device', async () => {
+  const { sqlite, upload, load, removedObjects } = fixture();
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    const still = await upload('shared');
+    await upload('movie', { media_type: 'dynamic', mime_type: 'video/mp4', origin_key: 'live/Test/Device One/origin/movie.mp4', compress_key: still.compress_key });
+    const preview = await service.previewAdminDeviceDeletion('device-1', 'dynamic');
+    assert.equal(preview.files.find((file) => file.key === still.compress_key).shared, true);
+    await service.deleteAdminDevice({ id: 'device-1', media_type: 'dynamic', snapshot: preview.snapshot });
+    assert.ok(!removedObjects.includes(still.compress_key));
+    const last = await service.previewAdminDeviceDeletion('device-1', 'static');
+    await service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: last.snapshot });
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 0);
+    assert.ok(removedObjects.includes(still.compress_key));
+  } finally { sqlite.close(); }
+});
+
+test('collection deletion failure locks only that media, retries it, and prevents accidentally switching the reviewed scope', async () => {
+  let fail = true;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, (key) => {
+    if (fail && key.includes('/compress/')) throw new Error('R2 unavailable');
+  });
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('still');
+    await upload('movie', { media_type: 'dynamic', mime_type: 'video/mp4', origin_key: 'live/Test/Device One/origin/movie.mp4' });
+    sqlite.exec("UPDATE w_devices SET status='published'; UPDATE w_wallpapers SET status='published'");
+    const preview = await service.previewAdminDeviceDeletion('device-1', 'dynamic');
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: preview.snapshot }));
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }));
+    assert.equal(removedObjects.length, 0);
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', media_type: 'dynamic', snapshot: preview.snapshot }), /重试/);
+    assert.equal(sqlite.prepare("SELECT status FROM w_devices").get().status, 'published');
+    assert.equal(sqlite.prepare("SELECT deletion_state FROM w_wallpapers WHERE media_type='static'").get().deletion_state, 'none');
+    await assert.rejects(() => upload('late-movie', { media_type: 'dynamic', origin_key: 'live/Test/Device One/origin/late.mp4' }));
+    await upload('allowed-still');
+    const rows = await load(`${root}src/lib/admin-data.ts`).listAdminDevices(new URLSearchParams());
+    assert.equal(rows[0].dynamic_deletion_state, 'pending');
+    assert.equal(rows[0].static_deletion_state, 'none');
+    fail = false;
+    const retry = await service.previewAdminDeviceDeletion('device-1', 'dynamic');
+    await service.deleteAdminDevice({ id: 'device-1', media_type: 'dynamic', snapshot: retry.snapshot });
+    assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM w_wallpapers WHERE media_type='static'").get().count, 2);
+  } finally { sqlite.close(); }
+});
+
+test('collection deletion API requires valid media and a snapshot from the same scoped preview', async () => {
+  const { sqlite, upload, load, removedObjects } = fixture();
+  try {
+    await upload('still');
+    await upload('movie', { media_type: 'dynamic', origin_key: 'live/Test/Device One/origin/movie.mp4' });
+    const route = load(`${root}src/app/api/admin/devices/route.ts`);
+    const request = (media) => ({ nextUrl: new URL(`https://example.test/api/admin/devices?delete_preview=device-1&media_type=${media}`) });
+    assert.equal((await route.GET(request('invalid'))).status, 400);
+    assert.equal((await route.GET({ nextUrl: new URL('https://example.test/api/admin/devices?delete_preview=device-1') })).status, 400);
+    const whole = await load(`${root}src/lib/admin-device-deletion.ts`).previewAdminDeviceDeletion('device-1');
+    assert.equal((await route.DELETE({ json: async () => ({ id: 'device-1', snapshot: whole.snapshot }) })).status, 400);
+    assert.equal(removedObjects.length, 0);
+    const { data } = await (await route.GET(request('dynamic'))).json();
+    assert.equal(data.wallpapers.length, 1);
+    const result = await route.DELETE({ json: async () => ({ id: 'device-1', media_type: 'dynamic', snapshot: data.snapshot }) });
+    assert.equal(result.status, 200);
+    assert.equal(sqlite.prepare('SELECT media_type FROM w_wallpapers').get().media_type, 'static');
+    assert.ok(removedObjects.length > 0);
+  } finally { sqlite.close(); }
+});
+
+test('collection deletion rechecks selected rows and sharing inside the claim transaction', async () => {
+  for (const change of ['file', 'sharing']) {
+    let mutate = false;
+    const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+      if (!mutate) return;
+      mutate = false;
+      if (change === 'file') db.exec("UPDATE w_wallpapers SET origin_key='live/Test/Device One/origin/changed.mp4' WHERE media_type='dynamic'");
+      else db.exec("UPDATE w_wallpapers SET compress_key=(SELECT compress_key FROM w_wallpapers WHERE media_type='dynamic') WHERE media_type='static'");
+    });
+    try {
+      const service = load(`${root}src/lib/admin-device-deletion.ts`);
+      await upload('still');
+      await upload('movie', { media_type: 'dynamic', origin_key: 'live/Test/Device One/origin/movie.mp4' });
+      const preview = await service.previewAdminDeviceDeletion('device-1', 'dynamic');
+      mutate = true;
+      await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', media_type: 'dynamic', snapshot: preview.snapshot }), /变更/);
+      assert.equal(removedObjects.length, 0);
+      assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_collection_deletions').get().count, 0);
+    } finally { sqlite.close(); }
+  }
+});
+
+test('same-device collections sharing a cover cannot concurrently delete and leave the last file orphaned', async () => {
+  let release;
+  let notify;
+  const held = new Promise((resolve) => { release = resolve; });
+  const started = new Promise((resolve) => { notify = resolve; });
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, async (key) => {
+    if (key.includes('movie.mp4')) { notify(); await held; }
+  });
+  let first;
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    const still = await upload('shared');
+    await upload('movie', { media_type: 'dynamic', origin_key: 'live/Test/Device One/origin/movie.mp4', compress_key: still.compress_key });
+    const dynamic = await service.previewAdminDeviceDeletion('device-1', 'dynamic');
+    const staticPreview = await service.previewAdminDeviceDeletion('device-1', 'static');
+    first = service.deleteAdminDevice({ id: 'device-1', media_type: 'dynamic', snapshot: dynamic.snapshot });
+    await started;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: staticPreview.snapshot }));
+    release();
+    await first;
+    const retry = await service.previewAdminDeviceDeletion('device-1', 'static');
+    await service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: retry.snapshot });
+    assert.ok(removedObjects.includes(still.compress_key));
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 0);
+  } finally { release(); if (first) await first; sqlite.close(); }
+});
+
+test('collection deletion preserves translations of an empty other media collection', async () => {
+  const { sqlite, upload, load } = fixture();
+  try {
+    await upload('still');
+    sqlite.exec("INSERT INTO w_live_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('empty-live','device-1','en','Future live collection',1,1)");
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    const preview = await service.previewAdminDeviceDeletion('device-1', 'static');
+    const deleted = await service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: preview.snapshot });
+    assert.equal(deleted.device_deleted, false);
+    assert.equal(sqlite.prepare('SELECT display_name FROM w_live_device_i18n').get().display_name, 'Future live collection');
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_devices').get().count, 1);
+  } finally { sqlite.close(); }
+});
+
+test('collection deletion reconfirms edited translations, including changes between preview validation and claim', async () => {
+  for (const timing of ['preview', 'claim']) {
+    let mutate = false;
+    const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+      if (mutate) { mutate = false; db.exec("UPDATE w_device_i18n SET display_name='Edited', updated_date=1"); }
+    });
+    try {
+      await upload('still');
+      sqlite.exec("INSERT INTO w_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('static','device-1','en','Original',1,1)");
+      const service = load(`${root}src/lib/admin-device-deletion.ts`);
+      const preview = await service.previewAdminDeviceDeletion('device-1', 'static');
+      if (timing === 'preview') sqlite.exec("UPDATE w_device_i18n SET display_name='Edited', updated_date=1");
+      else mutate = true;
+      await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: preview.snapshot }), /变更/);
+      assert.equal(removedObjects.length, 0);
+      assert.equal(sqlite.prepare('SELECT display_name FROM w_device_i18n').get().display_name, 'Edited');
+    } finally { sqlite.close(); }
+  }
+});
+
+test('collection deletion blocks selected translation saves and removal during processing but allows other media edits', async () => {
+  let service;
+  let checked = false;
+  const { sqlite, upload, load } = fixture(new Set(), () => {}, async () => {
+    if (checked) return;
+    checked = true;
+    await assert.rejects(() => service.saveAdminDeviceI18n({ device_id: 'device-1', media_type: 'dynamic', language: 'en', display_name: 'Late live' }));
+    await assert.rejects(() => service.deleteAdminDeviceI18n({ device_id: 'device-1', media_type: 'dynamic', language: 'en' }));
+    await service.saveAdminDeviceI18n({ device_id: 'device-1', media_type: 'static', language: 'en', display_name: 'Kept still' });
+  });
+  try {
+    service = load(`${root}src/lib/admin-device-i18n.ts`);
+    await upload('still');
+    await upload('movie', { media_type: 'dynamic', origin_key: 'live/Test/Device One/origin/movie.mp4' });
+    sqlite.exec("INSERT INTO w_live_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('live','device-1','en','Live',1,1)");
+    const deletion = load(`${root}src/lib/admin-device-deletion.ts`);
+    const preview = await deletion.previewAdminDeviceDeletion('device-1', 'dynamic');
+    await deletion.deleteAdminDevice({ id: 'device-1', media_type: 'dynamic', snapshot: preview.snapshot });
+    assert.equal(checked, true);
+    assert.equal(sqlite.prepare('SELECT display_name FROM w_device_i18n').get().display_name, 'Kept still');
+  } finally { sqlite.close(); }
+});
+
+test('a rejected collection claim cannot use a concurrent winner with the same timestamp to mark shared files deleted', async () => {
+  let mutate = false;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+    if (!mutate) return;
+    mutate = false;
+    db.exec(`INSERT INTO w_devices (id,brand_name,device_name,device_slug,device_category,create_date,updated_date)
+      VALUES ('other','test','Other','other','phone',1,1);
+      INSERT INTO w_wallpapers SELECT 'other-wallpaper','other',name,mime_type,size_bytes,origin_key,compress_key,width,height,
+      file_format,theme,media_type,category,is_primary,tags,status,create_date,updated_date,deletion_state FROM w_wallpapers;`);
+    const hasToken = db.prepare("SELECT name FROM pragma_table_info('w_collection_deletions') WHERE name='lease_token'").get();
+    db.exec(`INSERT INTO w_collection_deletions (device_id,media_type,deletion_state,updated_date${hasToken ? ',lease_token' : ''})
+      VALUES ('device-1','static','processing',1001${hasToken ? ",'winner-token'" : ''});
+      UPDATE w_wallpapers SET status='unpublished',is_primary=0,deletion_state='processing',updated_date=1001 WHERE device_id='device-1';`);
+  }, { fixedNow: 1000 });
+  try {
+    await upload('shared');
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    const preview = await service.previewAdminDeviceDeletion('device-1', 'static');
+    mutate = true;
+    await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', media_type: 'static', snapshot: preview.snapshot }), /变更/);
+    assert.equal(removedObjects.length, 0);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_deleted_wallpaper_files').get().count, 0);
+  } finally { sqlite.close(); }
+});
+
+test('legacy whole-device retries lock translation writes and recheck full translation content at claim', async () => {
+  let mutate = false;
+  const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, (db) => {
+    if (mutate) { mutate = false; db.exec("UPDATE w_device_i18n SET display_name='Edited',updated_date=1"); }
+  });
+  try {
+    await upload('still');
+    sqlite.exec("INSERT INTO w_device_i18n (id,device_id,language,display_name,create_date,updated_date) VALUES ('static','device-1','en','Original',1,1)");
+    const deletion = load(`${root}src/lib/admin-device-deletion.ts`);
+    const preview = await deletion.previewAdminDeviceDeletion('device-1');
+    mutate = true;
+    await assert.rejects(() => deletion.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }), /变更/);
+    assert.equal(removedObjects.length, 0);
+    sqlite.exec("UPDATE w_devices SET status='unpublished',deletion_state='pending'");
+    const translations = load(`${root}src/lib/admin-device-i18n.ts`);
+    await assert.rejects(() => translations.saveAdminDeviceI18n({ device_id: 'device-1', language: 'en', display_name: 'Late edit' }));
+    await assert.rejects(() => translations.deleteAdminDeviceI18n({ device_id: 'device-1', language: 'en' }));
+    assert.throws(() => sqlite.exec("UPDATE w_device_i18n SET display_name='Direct late edit'"));
   } finally { sqlite.close(); }
 });
