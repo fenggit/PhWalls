@@ -41,6 +41,44 @@ const { NextRequest } = await import('next/server.js');
 const { resolveRequestLanguage } = await import('../src/lib/language.ts');
 const { middleware } = await import('../src/middleware.ts');
 
+test('历史桌面列表与 Aluminium OS 地址永久迁移到有效页面', () => {
+  const migrations = [
+    ['/desktop/wallpapers', '/desktop'],
+    ['/desktop/google-aluminium-os', '/desktop/google-os'],
+    ['/desktop/wallpapers/google-aluminium-os/google-aluminium-os', '/desktop/wallpapers/google-os/google-aluminium-os'],
+  ];
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    for (const [oldPath, newPath] of migrations) {
+      for (const slash of ['', '/']) {
+        const response = middleware(new NextRequest(`https://www.phwalls.com/${language}${oldPath}${slash}?source=share#gallery`));
+        assert.equal(response.status, 308);
+        assert.equal(response.headers.get('location'), `https://phwalls.com/${language}${newPath}?source=share#gallery`);
+        assert.equal(middleware(new NextRequest(`https://phwalls.com/${language}${newPath}`)).headers.get('location'), null);
+      }
+    }
+  }
+});
+
+test('未带语言的历史桌面地址一跳迁移并保留浏览器语言选择', () => {
+  const response = middleware(new NextRequest('https://phwalls.com/desktop/wallpapers/', {
+    headers: { 'accept-language': 'ja' },
+  }));
+  assert.equal(response.status, 307);
+  assert.equal(response.headers.get('location'), 'https://phwalls.com/ja/desktop');
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+});
+
+test('桌面迁移不改变其他分类、详情 slug 或素材 API 路径', () => {
+  for (const path of ['/desktop/wallpapers/ubuntu/ubuntu-8-04-lts-hardy-heron',
+    '/desktop/wallpapers/google-os/google-aluminium-os',
+    '/desktop/wallpapers/google-aluminium-os/unrelated-slug']) {
+    const response = middleware(new NextRequest(`https://phwalls.com/en${path}`));
+    assert.equal(response.headers.get('location'), null);
+    assert.equal(response.headers.get('x-middleware-rewrite'), `https://phwalls.com${path}`);
+  }
+  assert.equal(middleware(new NextRequest('https://phwalls.com/api/files/preview?key=desktopwalls/Google%20OS/Google%20Aluminium%20OS/origin/test.mp4')).headers.get('location'), null);
+});
+
 test('动态入口和品牌旧地址一跳永久迁移，保留语言、查询参数和片段', () => {
   for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
     for (const [oldPath, newPath] of [['/live', '/live-wallpapers'], ['/live/', '/live-wallpapers'],
