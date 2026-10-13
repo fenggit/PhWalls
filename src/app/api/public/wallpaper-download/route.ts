@@ -1,65 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { R2Service } from '@/lib/services/r2';
-import { getCurrentEnvironment } from '@/lib/config/environments';
-import { DOWNLOAD_CACHE_CONTROL } from '@/lib/cache-control';
-import { sanitizeWallpaperDownloadKey } from '@/lib/wallpaper-key';
-import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
+import { NextRequest } from 'next/server';
+import { wallpaperDownload } from '@/lib/wallpaper-download';
 
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const rawKey = searchParams.get('key');
-
-    if (!rawKey) {
-      return NextResponse.json({ error: 'Key is required' }, { status: 400 });
-    }
-
-    const key = sanitizeWallpaperDownloadKey(rawKey);
-    if (!key || !await isPublishedWallpaperKey(key, true)) {
-      return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
-    }
-
-    const environment = getCurrentEnvironment();
-
-    const r2Service = new R2Service(environment);
-    const fileUrl = environment.r2.isPrivate
-      ? await r2Service.getPrivateFileUrl(
-          key,
-          environment.r2.urlExpires,
-          undefined,
-          false
-        )
-      : r2Service.getPublicFileUrl(key);
-
-    const fileResponse = await fetch(fileUrl, { method: 'GET' });
-
-    if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch file: ${fileResponse.status} ${fileResponse.statusText}`);
-    }
-
-    const filename = key.split('/').pop() || 'download';
-    const contentType = fileResponse.headers.get('content-type') || 'application/octet-stream';
-
-    return new NextResponse(fileResponse.body, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${filename.replace(/[^\x00-\x7F]/g, '_')}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
-        'Cache-Control': DOWNLOAD_CACHE_CONTROL,
-        ...(fileResponse.headers.get('content-length') && {
-          'Content-Length': fileResponse.headers.get('content-length')!,
-        }),
-      },
-    });
-  } catch (error) {
-    console.error('Error downloading wallpaper:', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to download wallpaper',
-      },
-      { status: 500, headers: { 'Cache-Control': 'no-store' } }
-    );
-  }
+  return wallpaperDownload(request, 'Failed to download wallpaper');
 }

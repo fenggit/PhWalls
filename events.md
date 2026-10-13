@@ -46,9 +46,9 @@
 - `file_type`: 原图 MIME 类型
 - `file_size`: 原图文件大小
 
-### `w_wallpaper_download_success`
+### `w_wallpaper_download_started`
 
-下载接口成功返回文件，且浏览器下载动作已触发。
+原图下载已交给浏览器。静态图片与动态视频均由浏览器管理下载，不在页面内读取 Blob；该事件表示下载动作已触发，不代表文件传输完成或保存成功。
 
 - `category_name`: 壁纸合集名称
 - `wallpaper_name`: 壁纸名称
@@ -57,7 +57,7 @@
 
 ### `w_wallpaper_download_fail`
 
-下载接口或浏览器下载准备阶段失败。
+浏览器下载准备阶段失败。交给浏览器后的网络错误、取消与保存结果没有页面回调，不能用此事件计算完整的下载失败率；服务端传输状态见[下载排障说明](docs/download-performance.md)。
 
 - `category_name`: 壁纸合集名称
 - `wallpaper_name`: 壁纸名称
@@ -66,7 +66,7 @@
 
 ## GA4 建议配置
 
-- 将 `w_wallpaper_download_success` 标记为关键事件。
-- 使用 `page_location`、默认来源/媒介维度与上述事件串联“自然搜索落地页 -> 预览 -> 下载点击 -> 下载成功”漏斗。
+- 将 `w_wallpaper_download_started` 作为下载启动关键事件；历史 `w_wallpaper_download_success` 属于旧版图片 Blob 下载口径，新版不再上报。
+- 使用 `page_location`、默认来源/媒介维度与上述事件串联“自然搜索落地页 -> 预览 -> 下载点击 -> 下载启动”漏斗。
 - 为 `category_name`、`wallpaper_name`、`wallpaper_category` 注册事件级自定义维度；`file_type` 可按分析需要注册。
-- 不要把 `w_wallpaper_download_click` 当成最终转化；优先以 `w_wallpaper_download_success` 计算下载转化率。
+- 用 `w_wallpaper_download_started` 计算下载启动转化率，不将它解释为下载完成率。

@@ -11,7 +11,7 @@ const code = ts.transpileModule(readFileSync(new URL('../src/components/Wallpape
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
 }).outputText;
 
-function setup({ video = false, fetchFile } = {}) {
+function setup({ video = false, fetchFile, clickDownload } = {}) {
   const state = [], refs = [], timers = [], events = [];
   let stateCursor = 0, refCursor = 0, downloads = 0;
   const downloadLinks = [];
@@ -39,7 +39,7 @@ function setup({ video = false, fetchFile } = {}) {
       return require(name);
     },
     document: {
-      createElement: () => ({ style: {}, click() { downloads++; downloadLinks.push(this.href); }, remove() {} }),
+      createElement: () => ({ style: {}, click() { clickDownload?.(); downloads++; downloadLinks.push(this.href); }, remove() {} }),
       body: { appendChild() {}, removeChild() {} },
     },
     window: { location: { href: 'https://phwalls.com/live/test' }, URL: { createObjectURL: () => 'blob:test', revokeObjectURL() {} } },
@@ -105,37 +105,42 @@ test('video download shows a spinner and blocks repeated clicks until its startu
   await flush();
 });
 
-test('image download stays locked while reading the response body and unlocks after saving', async () => {
-  let requests = 0, finishBlob;
-  const preview = setup({ fetchFile: async () => {
-    requests++;
-    return { ok: true, headers: { get: () => null }, blob: () => new Promise(resolve => { finishBlob = resolve; }) };
-  } });
+test('image download starts immediately through the browser without fetching or buffering a blob', async () => {
+  let requests = 0;
+  const preview = setup({ fetchFile: async () => { requests++; throw new Error('Must not buffer images'); } });
   const button = preview.button();
   click(button);
   click(button);
   await flush();
-  assert.equal(requests, 1);
+  assert.equal(requests, 0);
+  assert.equal(preview.downloads(), 1);
+  const url = new URL(preview.downloadLinks[0], 'https://phwalls.com');
+  assert.equal(url.pathname, '/api/files/download');
+  assert.equal(url.searchParams.get('key'), 'wallpapers/test/origin/image.webp');
   assert.equal(preview.spinning(), true);
   assert.equal(preview.button().props.disabled, true);
   click(preview.button());
-  assert.equal(requests, 1);
-  finishBlob({});
+  assert.equal(preview.actions().props.downloadDisabled, true);
+  assert.equal(preview.downloads(), 1);
+  assert.equal(preview.events.includes('w_wallpaper_download_started'), true);
+  assert.equal(preview.events.includes('w_wallpaper_download_success'), false);
+  preview.finishTimers();
   await flush();
   assert.equal(preview.downloads(), 1);
   assert.equal(preview.button().props.disabled, false);
   assert.equal(preview.spinning(), false);
-  preview.finishTimers();
 });
 
-test('a failed download releases the lock and spinner so the user can retry', async () => {
-  let requests = 0;
-  const preview = setup({ fetchFile: async () => { requests++; throw new Error('Offline'); } });
+test('a failed browser handoff releases the lock and spinner so the user can retry', async () => {
+  let attempts = 0;
+  const preview = setup({ clickDownload: () => { attempts++; throw new Error('Download blocked'); } });
   click(preview.button());
   await flush();
   assert.equal(preview.button().props.disabled, false);
   assert.equal(preview.spinning(), false);
   click(preview.button());
   await flush();
-  assert.equal(requests, 2);
+  assert.equal(attempts, 2);
+  assert.equal(preview.events.includes('w_wallpaper_download_started'), false);
+  assert.equal(preview.events.filter(name => name === 'w_wallpaper_download_fail').length, 2);
 });

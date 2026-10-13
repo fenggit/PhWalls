@@ -1,79 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { R2Service } from '@/lib/services/r2';
-import { getCurrentEnvironment } from '@/lib/config/environments';
-import { DOWNLOAD_CACHE_CONTROL } from '@/lib/cache-control';
-import { sanitizeWallpaperDownloadKey } from '@/lib/wallpaper-key';
-import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
+import { NextRequest } from 'next/server';
+import { wallpaperDownload } from '@/lib/wallpaper-download';
 
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const rawKey = searchParams.get('key');
-
-    if (!rawKey) {
-      return NextResponse.json({ error: 'Key is required' }, { status: 400 });
-    }
-
-    const key = sanitizeWallpaperDownloadKey(rawKey);
-    if (!key || !await isPublishedWallpaperKey(key, true)) {
-      return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
-    }
-
-    // 获取环境配置
-    const environment = getCurrentEnvironment();
-    const r2Service = new R2Service(environment);
-    
-    // 生成签名URL
-    let fileUrl = '';
-    if (environment.r2.isPrivate) {
-      // 私有存储桶，生成签名URL
-      fileUrl = await r2Service.getPrivateFileUrl(
-        key, 
-        environment.r2.urlExpires,
-        undefined, // expires 参数（当第二个参数是 number 时，此参数被忽略）
-        false // 不需要强制下载头，因为我们会在响应中设置
-      );
-    } else {
-      fileUrl = r2Service.getPublicFileUrl(key);
-    }
-
-    // 在服务器端获取文件
-    const fileResponse = await fetch(fileUrl, {
-      method: 'GET',
-    });
-
-    if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch file: ${fileResponse.status} ${fileResponse.statusText}`);
-    }
-
-    // 获取文件名
-    const filename = key.split('/').pop() || 'download';
-    
-    // 获取Content-Type
-    const contentType = fileResponse.headers.get('content-type') || 'application/octet-stream';
-
-    // 直接使用 Response 的 body stream，避免将整个文件加载到内存
-    return new NextResponse(fileResponse.body, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${filename.replace(/[^\x00-\x7F]/g, '_')}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
-        'Cache-Control': DOWNLOAD_CACHE_CONTROL,
-        // 传递原始响应的大小（如果可用）
-        ...(fileResponse.headers.get('content-length') && {
-          'Content-Length': fileResponse.headers.get('content-length')!,
-        }),
-      },
-    });
-  } catch (error) {
-    console.error('Error downloading file:', error);
-    return NextResponse.json(
-      { 
-        error: 'Failed to download file',
-      },
-      { status: 500, headers: { 'Cache-Control': 'no-store' } }
-    );
-  }
+  return wallpaperDownload(request, 'Failed to download file');
 }

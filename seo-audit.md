@@ -72,13 +72,13 @@
 ### 7/14/28 天复核
 
 - 7 天：检查 sitemap 抓取、语言 canonical、索引覆盖、Schema 错误、5xx/404 与 GA4 事件是否稳定进入。
-- 14 天：比较自然搜索落地页的预览率、下载点击率、下载成功率及失败率；按移动/桌面和语言目录拆分，并复核品牌页查询词与 CTR。
-- 28 天：比较各语言目录的曝光、CTR、平均排名与有效下载，决定是否小批量本地化品牌页和详情页摘要。
+- 14 天：比较自然搜索落地页的预览率、下载点击率、启动率及准备失败率；按移动/桌面和语言目录拆分，并复核品牌页查询词与 CTR。
+- 28 天：比较各语言目录的曝光、CTR、平均排名与下载启动，决定是否小批量本地化品牌页和详情页摘要。
 
 ### 指标口径
 
 - 预览率：`w_preview_wallpaper(action=open)` / 详情页或首页会话。
 - 下载点击率：`w_wallpaper_download_click` / 预览打开次数。
-- 下载成功率：`w_wallpaper_download_success` / 下载点击次数。
-- 下载失败率：`w_wallpaper_download_fail` / 下载点击次数。
-- 自然搜索有效下载：默认渠道组为 Organic Search 且触发 `w_wallpaper_download_success` 的会话或用户。
+- 下载启动率：`w_wallpaper_download_started` / 下载点击次数。浏览器管理下载后不再上报旧版 `w_wallpaper_download_success`，启动不等同于传输或保存成功。
+- 下载准备失败率：`w_wallpaper_download_fail` / 下载点击次数；浏览器接管后的失败与取消需结合服务端传输日志核查。
+- 自然搜索下载启动：默认渠道组为 Organic Search 且触发 `w_wallpaper_download_started` 的会话或用户。
