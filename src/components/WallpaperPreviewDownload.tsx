@@ -285,69 +285,27 @@ export default function WallpaperPreviewDownload({
       // 使用服务器端代理下载，避免CORS问题
       const downloadUrl = `/api/files/download?key=${encodeURIComponent(currentWallpaper.originPath)}`;
 
-      if (isVideo) {
-        // Let the browser stream large MP4 downloads without buffering the file in mobile memory.
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = currentWallpaper.originPath.split('/').pop() || 'wallpaper.mp4';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        trackAnalyticsEvent('w_wallpaper_download_started', { category_name: categoryName, wallpaper_name: currentWallpaper.name, file_type: currentWallpaper.type });
-        // Browser-managed downloads have no completion event. Keep startup feedback visible
-        // and block repeated clicks without buffering large videos in memory.
-        await new Promise<void>((resolve) => setTimeout(resolve, 2000));
-        return;
-      }
-
-      // 使用fetch获取文件
-      const fileResponse = await fetch(downloadUrl);
-
-      if (!fileResponse.ok) {
-        throw new Error(`${texts.downloadFailed}: ${fileResponse.status} ${fileResponse.statusText}`);
-      }
-
-      // 获取文件blob
-      const blob = await fileResponse.blob();
-
-      // 从响应头获取文件名，如果没有则使用默认名称
-      const contentDisposition = fileResponse.headers.get('content-disposition');
-      let filename = currentWallpaper.name || 'download';
-
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (filenameMatch && filenameMatch[1]) {
-          // 处理UTF-8编码的文件名
-          const matchedFilename = filenameMatch[1].replace(/['"]/g, '');
-          if (matchedFilename.startsWith("UTF-8''")) {
-            filename = decodeURIComponent(matchedFilename.substring(7));
-          } else {
-            filename = matchedFilename;
-          }
-        }
-      }
-
-      // 创建下载链接
-      const blobUrl = window.URL.createObjectURL(blob);
+      // Hand off inside the click gesture: the browser streams originals to disk,
+      // shows its download progress and avoids buffering large images in mobile memory.
       const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
+      link.href = downloadUrl;
+      link.download = currentWallpaper.originPath.split('/').pop() || 'wallpaper';
       link.style.display = 'none';
       document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      trackAnalyticsEvent('w_wallpaper_download_success', {
+      try {
+        link.click();
+      } finally {
+        link.remove();
+      }
+      // A browser-managed download has no completion callback. Record the handoff
+      // without claiming that the file has finished downloading or been saved.
+      trackAnalyticsEvent('w_wallpaper_download_started', {
         category_name: categoryName,
         wallpaper_name: currentWallpaper.name,
         file_type: currentWallpaper.type,
         file_size: currentWallpaper.size,
       });
-
-      // 延迟释放blob URL，确保下载完成
-      setTimeout(() => {
-        window.URL.revokeObjectURL(blobUrl);
-      }, 100);
+      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
     } catch (error) {
       console.error('Download failed:', error);
       trackAnalyticsEvent('w_wallpaper_download_fail', {
@@ -364,7 +322,6 @@ export default function WallpaperPreviewDownload({
   }, [
     categoryName,
     currentWallpaper,
-    isVideo,
     texts.downloadFailed,
     texts.errorDetails,
     texts.unknownError,
