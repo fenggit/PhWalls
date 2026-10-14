@@ -122,17 +122,6 @@ export default async function DesktopWallpaperDetailPage({ params, mediaType = '
       )
     : undefined;
 
-  const summarySection = (
-    <section className="mt-16 border-t border-gray-100 pt-8 pb-4">
-      <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        {seoCopy.summaryTitle}
-      </h2>
-      <p className="text-gray-600 mb-6 text-sm leading-relaxed">
-        {seoCopy.summaryDescription}
-      </p>
-    </section>
-  );
-
   const imageGallerySchema = {
     '@context': 'https://schema.org',
     '@type': mediaType === 'dynamic' ? 'CollectionPage' : 'ImageGallery',
@@ -181,7 +170,6 @@ export default async function DesktopWallpaperDetailPage({ params, mediaType = '
       <DeviceWallpaperGrid
         category={category}
         deviceData={{ ...collection, seoTitle: seoCopy.galleryName, description: seoCopy.description }}
-        summarySection={summarySection}
         initialImageUrls={initialImageUrls}
         categoryLabelOverride={getDesktopCategoryLabel(language)}
         categoryLandingPathOverride={categoryLandingPath}

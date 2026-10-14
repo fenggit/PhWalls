@@ -50,11 +50,6 @@ export default async function LiveDetailPage({ params }: Props) {
     <DeviceWallpaperGrid category={category} deviceData={{ ...collection, seoTitle: copy.title, description: copy.description }}
       initialImageUrls={images} categoryLabelOverride={texts.liveWallpapersNavLabel}
       wallpaperGroupLabelOverride={texts.liveWallpapersNavLabel}
-      categoryLandingPathOverride={buildLiveCategoryPath(category)}
-      summarySection={<section className="mt-16 border-t border-gray-100 pt-8 pb-4">
-        <h2 className="mb-3 text-xl font-semibold text-gray-800">{copy.title}</h2>
-        <p className="text-sm leading-relaxed text-gray-600">{copy.description}</p>
-        <p className="mt-3 text-sm leading-relaxed text-gray-500">{texts.liveCompatibilityNote}</p>
-      </section>} />
+      categoryLandingPathOverride={buildLiveCategoryPath(category)} />
   </>;
 }

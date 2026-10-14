@@ -40,7 +40,6 @@ interface DeviceWallpaperGridProps {
   category: WallpaperCategory;
   deviceData: DeviceData;
   displayName?: string;
-  summarySection?: React.ReactNode;
   /** 服务端预构建的 CDN 图片 URL（key 格式: `${deviceData.name}-${index}`）。
    *  提供后可跳过 batch-private-urls API 调用，SSR 即包含 src，搜索引擎可抓取。
    */
@@ -57,7 +56,6 @@ export default function DeviceWallpaperGrid({
   category,
   deviceData,
   displayName,
-  summarySection,
   initialImageUrls,
   categoryLabelOverride,
   categoryLandingPathOverride,
@@ -305,6 +303,17 @@ export default function DeviceWallpaperGrid({
     return brand ? buildBrandPath(brand.type) : `/${category}`;
   }, [category, categoryLandingPathOverride]);
 
+  const hasVideoWallpapers = deviceData.item.some(
+    (item) => item.type.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath)
+  );
+  const previewNoticeTitle = hasVideoWallpapers
+    ? texts.wallpaperVideoPreviewNoticeTitle
+    : texts.wallpaperPreviewNoticeTitle;
+  const previewNotice = (hasVideoWallpapers
+    ? texts.wallpaperVideoPreviewNoticeTemplate
+    : texts.wallpaperPreviewNoticeTemplate
+  ).replace('{name}', displayDeviceName).replace('{download}', texts.downloadWallpaper);
+
   const pageDescription = useMemo(
     () => deviceData.description || texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
     [deviceData.description, pageTitle, texts.multiResolutionPageDescription]
@@ -467,7 +476,15 @@ export default function DeviceWallpaperGrid({
           ))}
         </div>
 
-        {summarySection}
+        <section className="mt-12 rounded-2xl border border-gray-200 bg-white/70 p-4 sm:p-5" aria-labelledby="wallpaper-preview-notice">
+          <h2 id="wallpaper-preview-notice" className="text-sm sm:text-base font-semibold text-gray-800">
+            {previewNoticeTitle}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-gray-600">{previewNotice}</p>
+          {hasVideoWallpapers && (
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">{texts.liveCompatibilityNote}</p>
+          )}
+        </section>
       </main>
 
       <WallpaperPreviewDownload
