@@ -151,7 +151,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
         href: withLanguagePath(
           entry.desktop ? buildDesktopWallpaperDetailPath(entry.category, entry.slug || entry.name, entry.live ? 'dynamic' : 'static') : entry.live
             ? buildLiveWallpaperDetailPath(entry.category, entry.slug || entry.name)
-            : buildWallpaperDetailPath(entry.category, entry.name),
+            : buildWallpaperDetailPath(entry.category, entry.slug || entry.name),
           language
         ),
         title: localizedName,

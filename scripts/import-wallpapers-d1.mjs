@@ -51,7 +51,7 @@ for (const { file, desktop } of files) {
       warnings.push(`设备名称冲突：${brand}/${collection.name} -> ${deviceName}`);
     }
     seenDeviceNames.add(`${brand}/${normalizeName(deviceName)}`);
-    let slug = slugify(collection.name);
+    let slug = collection.slug || slugify(collection.name);
     if (!slug) throw new Error(`设备名称无法生成 slug：${file} #${collectionIndex}`);
     let deviceKey = `${brand}/${slug}`;
     if (seenDevices.has(deviceKey)) {

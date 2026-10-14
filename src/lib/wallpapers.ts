@@ -125,6 +125,6 @@ export function getAllWallpaperCollections(): WallpaperCollectionEntry[] {
 
 export function findWallpaperCollection(category: WallpaperCategory, slug: string): WallpaperCollection | null {
   return (
-    getWallpaperCollections(category).find((collection) => slugifyWallpaperName(collection.name) === slug) || null
+    getWallpaperCollections(category).find((collection) => (collection.slug || slugifyWallpaperName(collection.name)) === slug) || null
   );
 }

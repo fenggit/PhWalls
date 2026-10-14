@@ -84,6 +84,7 @@ const addSearchEntries = (slug, collections, desktop, live = false) => {
     searchIndex.push({
       category: slug,
       name: collection.name,
+      ...(collection.slug ? { slug: collection.slug } : {}),
       date: collection.date || '',
       count: items.length,
       desktop,
@@ -106,6 +107,7 @@ for (const [slug, file] of Object.entries(brandFiles)) {
     const items = Array.isArray(collection.item) ? collection.item : [];
     return {
       name: collection.name,
+      ...(collection.slug ? { slug: collection.slug } : {}),
       date: collection.date,
       count: items.length,
       item: items.length > 0 ? [items[0]] : [],
