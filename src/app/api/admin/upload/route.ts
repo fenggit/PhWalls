@@ -7,6 +7,7 @@ import { assertAdminUploadMime, deviceR2Prefix, normalizeAdminUploadFileName } f
 import { getAdminUploadStorage, resolveAdminUploadStorage } from '@/lib/admin-upload-storage';
 import { parseWallpaperMedia } from '@/lib/wallpaper-media';
 import { getI18nTexts } from '@/lib/i18n';
+import { readR2OriginMetadata } from '@/lib/admin-origin-metadata';
 
 export const runtime = 'edge';
 
@@ -95,13 +96,16 @@ export async function POST(request: NextRequest) {
       if (videoPreview && (!videoPreviewInfo || videoPreviewInfo.size !== videoPreview.size || videoPreviewInfo.mimeType !== videoPreview.mimeType)) {
         throw new Error('R2 视频预览未上传完成或与授权信息不一致');
       }
+      const metadata = await readR2OriginMetadata(origin.key, originInfo);
       const data = await createAdminWallpaper({
         device_id: deviceId,
         name: input.name,
         origin_key: origin.key,
         compress_key: preview.key,
         mime_type: origin.mimeType,
-        size_bytes: origin.size,
+        size_bytes: metadata.size,
+        width: metadata.width,
+        height: metadata.height,
         media_type: media,
         category: input.category || device.device_category,
         theme: input.theme || 'normal',

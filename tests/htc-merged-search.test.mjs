@@ -8,7 +8,8 @@ const require = createRequire(import.meta.url);
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const ts = require('typescript');
-const index = JSON.parse(readFileSync(new URL('../public/search-index.json', import.meta.url), 'utf8'));
+// 与 D1 搜索接口相同的数据形状；关键词来自已发布壁纸名称及标签。
+const index = [{ category: 'htc', name: 'HTC U11', slug: 'htc-u11', count: 42, date: '2017/05/16', desktop: false, localized: true, keywords: 'HTC U11+ HTC U11' }];
 
 test('searching HTC U11+ opens the merged 42-wallpaper HTC U11 collection', () => {
   const entries = index.filter((entry) => entry.category === 'htc' && /^HTC U11\+?$/.test(entry.name));

@@ -9,6 +9,8 @@ export type WallpaperAsset = {
   originPath: string;
   compressPath: string;
   tag: string;
+  width?: number | null;
+  height?: number | null;
 };
 
 export type WallpaperCollection = {
@@ -30,64 +32,11 @@ export type WallpaperCollectionEntry = {
   collection: WallpaperCollection;
 };
 
-// 按品牌的惰性数据加载器：此模块不静态 import 任何品牌 JSON，
-// 只有被实际调用的 import() 才会触发对应 JSON 的解析。
-// 这样品牌页 / 详情页等 Edge Function 冷启动时只解析所需的单个品牌数据，
-// 而不是全部 2.5MB JSON，显著降低单请求 CPU 时间。
-const brandLoaders: Record<string, () => Promise<WallpaperCollection[]>> = {
-  'black-shark': () => import('@/data/black-shark.json').then((m) => m.default as WallpaperCollection[]),
-  'fairphone': () => import('@/data/fairphone.json').then((m) => m.default as WallpaperCollection[]),
-  'hmd': () => import('@/data/hmd.json').then((m) => m.default as WallpaperCollection[]),
-  'htc': () => import('@/data/htc.json').then((m) => m.default as WallpaperCollection[]),
-  'lg': () => import('@/data/lg.json').then((m) => m.default as WallpaperCollection[]),
-  'lava': () => import('@/data/lava.json').then((m) => m.default as WallpaperCollection[]),
-  'lenovo': () => import('@/data/lenovo.json').then((m) => m.default as WallpaperCollection[]),
-  'meizu': () => import('@/data/meizu.json').then((m) => m.default as WallpaperCollection[]),
-  'micromax': () => import('@/data/micromax.json').then((m) => m.default as WallpaperCollection[]),
-  'nio': () => import('@/data/nio.json').then((m) => m.default as WallpaperCollection[]),
-  'nubia': () => import('@/data/nubia.json').then((m) => m.default as WallpaperCollection[]),
-  'redmagic': () => import('@/data/redmagic.json').then((m) => m.default as WallpaperCollection[]),
-  'sharp': () => import('@/data/sharp.json').then((m) => m.default as WallpaperCollection[]),
-  'zte': () => import('@/data/zte.json').then((m) => m.default as WallpaperCollection[]),
-  android: () => import('@/data/android.json').then((m) => m.default as WallpaperCollection[]),
-  'asus-rog-phone': () => import('@/data/asus rog phone.json').then((m) => m.default as WallpaperCollection[]),
-  'google-pixel': () => import('@/data/google pixel.json').then((m) => m.default as WallpaperCollection[]),
-  google: () => import('@/data/google.json').then((m) => m.default as WallpaperCollection[]),
-  harmonyos: () => import('@/data/harmonyos.json').then((m) => m.default as WallpaperCollection[]),
-  honor: () => import('@/data/honor.json').then((m) => m.default as WallpaperCollection[]),
-  huawei: () => import('@/data/huawei.json').then((m) => m.default as WallpaperCollection[]),
-  'huawei-matepad': () => import('@/data/huawei matepad.json').then((m) => m.default as WallpaperCollection[]),
-  iqoo: () => import('@/data/iqoo.json').then((m) => m.default as WallpaperCollection[]),
-  motorola: () => import('@/data/motorola.json').then((m) => m.default as WallpaperCollection[]),
-  nokia: () => import('@/data/nokia.json').then((m) => m.default as WallpaperCollection[]),
-  nothing: () => import('@/data/nothing.json').then((m) => m.default as WallpaperCollection[]),
-  oneplus: () => import('@/data/oneplus.json').then((m) => m.default as WallpaperCollection[]),
-  oppo: () => import('@/data/oppo.json').then((m) => m.default as WallpaperCollection[]),
-  poco: () => import('@/data/poco.json').then((m) => m.default as WallpaperCollection[]),
-  realme: () => import('@/data/realme.json').then((m) => m.default as WallpaperCollection[]),
-  redmi: () => import('@/data/redmi.json').then((m) => m.default as WallpaperCollection[]),
-  samsung: () => import('@/data/samsung.json').then((m) => m.default as WallpaperCollection[]),
-  smartisan: () => import('@/data/smartisan.json').then((m) => m.default as WallpaperCollection[]),
-  sony: () => import('@/data/sony.json').then((m) => m.default as WallpaperCollection[]),
-  'transsion-infinix': () => import('@/data/transsion infinix.json').then((m) => m.default as WallpaperCollection[]),
-  'transsion-tecno': () => import('@/data/transsion tecno.json').then((m) => m.default as WallpaperCollection[]),
-  vivo: () => import('@/data/vivo.json').then((m) => m.default as WallpaperCollection[]),
-  xiaomi: () => import('@/data/xiaomi.json').then((m) => m.default as WallpaperCollection[]),
-};
-
-export const WALLPAPER_BRAND_SLUGS: WallpaperCategory[] = Object.keys(brandLoaders);
+// 品牌识别来自导航配置；壁纸内容统一由 D1 服务读取。
+export const WALLPAPER_BRAND_SLUGS: WallpaperCategory[] = BRAND_CATEGORIES.map((brand) => brand.slug);
 
 export function isWallpaperCategory(value: string): value is WallpaperCategory {
-  return Object.prototype.hasOwnProperty.call(brandLoaders, value);
-}
-
-// 惰性加载单个品牌的壁纸集合（仅解析该品牌 JSON）。
-export async function loadWallpaperCollections(category: string): Promise<WallpaperCollection[]> {
-  const loader = brandLoaders[category];
-  if (!loader) {
-    return [];
-  }
-  return loader();
+  return WALLPAPER_BRAND_SLUGS.includes(value);
 }
 
 export function slugifyWallpaperName(value: string): string {
@@ -101,15 +50,6 @@ export function slugifyWallpaperName(value: string): string {
 
 export function buildWallpaperDetailPath(category: WallpaperCategory, name: string): string {
   return `/wallpapers/${category}/${slugifyWallpaperName(name)}`;
-}
-
-// 惰性查找单个品牌下的某个壁纸集合（仅解析该品牌 JSON）。
-export async function loadWallpaperCollection(
-  category: string,
-  slug: string
-): Promise<WallpaperCollection | null> {
-  const collections = await loadWallpaperCollections(category);
-  return collections.find((collection) => (collection.slug || slugifyWallpaperName(collection.name)) === slug) || null;
 }
 
 export function parseWallpaperDate(value: string): Date | null {

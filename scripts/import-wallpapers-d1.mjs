@@ -1,9 +1,11 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
-import { join, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, basename, resolve } from 'node:path';
 
-const root = fileURLToPath(new URL('..', import.meta.url));
+// 历史 JSON 仅作为显式指定的外部迁移输入，不再随应用打包。
+const dataArg = process.argv.indexOf('--data-dir');
+if (dataArg < 0 || !process.argv[dataArg + 1]) throw new Error('--data-dir requires an external legacy data directory');
+const dataDir = resolve(process.argv[dataArg + 1]);
 const outputArg = process.argv.indexOf('--out');
 const output = outputArg >= 0 ? process.argv[outputArg + 1] : null;
 if (outputArg >= 0 && !output) throw new Error('--out requires a filename');
@@ -25,10 +27,10 @@ const inferCategory = (brand, name, desktop) => desktop ? 'desktop'
 const inferTheme = (name) => /(?:^|[-_ ])dark(?:$|[-_ ])/i.test(name) ? 'dark'
   : /(?:^|[-_ ])light(?:$|[-_ ])/i.test(name) ? 'light' : 'normal';
 const files = [
-  ...(await readdir(join(root, 'src/data'))).filter((file) => file.endsWith('.json') && file !== 'home-index.json')
-    .map((file) => ({ file: join(root, 'src/data', file), desktop: false })),
-  ...(await readdir(join(root, 'src/data/desktopwalls'))).filter((file) => file.endsWith('.json') && file !== 'tab.json')
-    .map((file) => ({ file: join(root, 'src/data/desktopwalls', file), desktop: true })),
+  ...(await readdir(join(dataDir))).filter((file) => file.endsWith('.json') && !['home-index.json', 'desktop-home-index.json', 'device-localization.json'].includes(file))
+    .map((file) => ({ file: join(dataDir, file), desktop: false })),
+  ...(await readdir(join(dataDir, 'desktopwalls'))).filter((file) => file.endsWith('.json') && file !== 'tab.json')
+    .map((file) => ({ file: join(dataDir, 'desktopwalls', file), desktop: true })),
 ];
 
 const sql = ['PRAGMA foreign_keys = ON;'];

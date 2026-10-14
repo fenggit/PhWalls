@@ -1,32 +1,23 @@
 import assert from 'node:assert/strict';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
+import { sqliteD1 } from '../scripts/tests/sqlite-d1.mjs';
+import { createTsLoader } from '../scripts/tests/load-ts.mjs';
 
-test('generated desktop cover and search indexes preserve both media categories of one model', (t) => {
-  const root = mkdtempSync(join(tmpdir(), 'phwalls-media-catalog-'));
-  t.after(() => rmSync(root, { recursive: true, force: true }));
-  cpSync(new URL('../src/data/', import.meta.url), join(root, 'src/data'), { recursive: true });
-  mkdirSync(join(root, 'scripts'));
-  mkdirSync(join(root, 'public'));
-  cpSync(new URL('../scripts/generate-home-index.mjs', import.meta.url), join(root, 'scripts/generate-home-index.mjs'));
-  writeFileSync(join(root, 'src/data/desktopwalls/microsoft-windows.json'), JSON.stringify([{
-    name: 'Mixed desktop', date: '2026-01-01', item: [
-      { name: 'still', type: 'image/png', originPath: 'desktopwalls/windows/origin/still.png', compressPath: 'desktopwalls/windows/compress/still.webp' },
-      { name: 'movie1', type: 'video/mp4', originPath: 'desktopwalls/windows/origin/movie1.mp4', compressPath: 'desktopwalls/windows/compress/movie1.webp' },
-      { name: 'movie2', type: 'video/mp4', originPath: 'desktopwalls/windows/origin/movie2.mp4', compressPath: 'desktopwalls/windows/compress/movie2.webp' },
-    ],
-  }]));
-  const result = spawnSync(process.execPath, [join(root, 'scripts/generate-home-index.mjs')], { encoding: 'utf8' });
-  assert.equal(result.status, 0, result.stderr);
-  const covers = JSON.parse(readFileSync(join(root, 'src/data/desktop-home-index.json'), 'utf8'))['microsoft-windows'];
+test('D1 desktop cover and search indexes preserve separate static and dynamic collections', async (t) => {
+  const db = sqliteD1(t);
+  db.seed([
+    { sql: "INSERT INTO w_devices(id,brand_name,device_name,device_slug,device_category,release_date,status,create_date,updated_date) VALUES('mixed-desktop','microsoft-windows','Mixed desktop','stable-desktop','desktop','2026-01-01','published',1,1)" },
+    ...[['still','static','image/png'],['movie1','dynamic','video/mp4'],['movie2','dynamic','video/mp4']].map(([name, media, mime]) => ({
+      sql: "INSERT INTO w_wallpapers(id,device_id,name,mime_type,origin_key,compress_key,file_format,media_type,category,status,create_date,updated_date) VALUES(?,'mixed-desktop',?,?,?,?,'png',?,'desktop','published',1,1)",
+      params: [name,name,mime,`desktopwalls/windows/origin/${name}`,`desktopwalls/windows/compress/${name}`,media],
+    })),
+  ]);
+  const load = createTsLoader({ '@cloudflare/next-on-pages': { getOptionalRequestContext: () => ({ env: { DB: db } }) } });
+  const service = load('src/lib/wallpaper-db.ts');
+  const covers = (await service.loadDbIndex(['microsoft-windows']))['microsoft-windows'];
   assert.equal(covers.length, 2);
-  assert.deepEqual(covers.map(collection => collection.count), [1, 2]);
-  assert.equal(covers[0].item[0].type, 'image/png');
-  assert.equal(covers[1].item[0].type, 'video/mp4');
-  const entries = JSON.parse(readFileSync(join(root, 'public/search-index.json'), 'utf8')).filter(entry => entry.name === 'Mixed desktop');
+  assert.deepEqual(covers.map(collection => collection.count).sort(), [1, 2]);
+  const entries = (await service.loadDbSearchIndex()).filter(entry => entry.slug === 'stable-desktop');
   assert.equal(entries.length, 2);
   assert.ok(entries.every(entry => entry.desktop));
   assert.equal(entries.find(entry => !entry.live).count, 1);

@@ -1,6 +1,5 @@
-import { getWallpaperDb, isWallpaperDbEnabled, type DeviceRow, type WallpaperRow, type WallpaperMediaType, type DeviceI18nRow } from '@/lib/wallpaper-db';
+import { getWallpaperDb, type DeviceRow, type WallpaperRow, type WallpaperMediaType, type DeviceI18nRow } from '@/lib/wallpaper-db';
 import { deleteR2Object } from '@/lib/r2-upload';
-import { hasStaticWallpaperReference } from '@/lib/admin-static-assets';
 import { getI18nTexts } from '@/lib/i18n';
 
 export type AdminDeviceDeletionPreview = {
@@ -71,9 +70,7 @@ export async function previewAdminDeviceDeletion(rawId: unknown, rawMedia?: unkn
   const { results: translations } = await db.prepare('SELECT * FROM w_collection_i18n WHERE device_id = ? AND (? IS NULL OR media_type = ?) ORDER BY media_type, language, id')
     .bind(id, media, media).all<DeviceI18nRow>();
   const translation_count = translations.length;
-  const texts = getI18nTexts('zh');
-  const blocked_reason = !isWallpaperDbEnabled() && await hasStaticWallpaperReference(files.filter((file) => !file.shared).map((file) => file.key))
-    ? texts.adminDeviceDeleteJsonBlocked : null;
+  const blocked_reason = null;
   return { device, media_type: media, collection_deletion, wallpapers, files, translations, translation_count, blocked_reason,
     snapshot: await snapshot({ device, media_type: media, collection_deletion, wallpapers, files, translations, translation_count, blocked_reason }) };
 }

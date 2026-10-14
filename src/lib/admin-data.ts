@@ -3,7 +3,6 @@ import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { findAdminBrand } from '@/lib/admin-brands';
 import { isUniqueConstraintError, normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
-import { hasStaticWallpaperReference } from '@/lib/admin-static-assets';
 import { normalizeAdminReleaseDate } from '@/lib/admin-release-date';
 import { AdminDeviceNameConflictError, checkAdminDeviceNames, type AdminDeviceNameCandidate, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { getI18nTexts } from '@/lib/i18n';
@@ -383,9 +382,6 @@ export async function deleteAdminWallpaper(input: Record<string, unknown>): Prom
   const videoPreview = previous.media_type === 'dynamic' ? deletionKey(origin.replace('/origin/', '/preview/'), 'preview') : null;
   const keys = Array.from(new Set([origin, preview, videoPreview].filter((key): key is string => Boolean(key))));
   const keyPlaceholders = keys.map(() => '?').join(', ');
-  if (await hasStaticWallpaperReference(keys)) {
-    throw new Error('文件仍被前台 JSON 数据引用，请先移除静态配置中的引用并同步公开站点后再删除');
-  }
   const parent = await db.prepare('SELECT status FROM w_devices WHERE id = ?').bind(previous.device_id)
     .first<{ status: RecordStatus }>();
   if (previous.status === 'published' && previous.is_primary && parent?.status === 'published') {

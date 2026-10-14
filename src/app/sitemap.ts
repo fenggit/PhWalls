@@ -4,16 +4,15 @@ import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, withLanguageUrl } from '@/lib/la
 import { BRAND_CATEGORIES, buildBrandPath } from '@/lib/brands'
 import {
   buildDesktopWallpaperDetailPath,
-  getAllDesktopWallpaperCollections,
   getDesktopTabData,
   isDesktopWallpaperCategory,
 } from '@/lib/desktop-wallpapers'
 import { getAllHomeCollections } from '@/lib/home-index'
-import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db'
+import { loadDbIndex } from '@/lib/wallpaper-db'
 import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data'
 import { LIVE_WALLPAPERS_PATH, buildLiveCategoryPath } from '@/lib/live-paths'
 import { loadLiveIndex } from '@/lib/live-data-server'
-import { getWallpaperCollectionMedia, splitWallpaperCollection } from '@/lib/wallpaper-media'
+import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media'
 import {
   buildWallpaperDetailPath,
   parseWallpaperDate,
@@ -53,11 +52,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const liveIndex = await loadLiveIndex()
   const liveUpdatedAt = new Date('2026-10-07T00:00:00+08:00')
   const liveLandingUpdatedAt = new Date('2026-10-09T00:00:00+08:00')
-  const allDesktopCollections = isWallpaperDbEnabled()
-    ? Object.entries(await loadDbIndex(getDesktopTabData().map((tab) => tab.type)))
-        .flatMap(([category, list]) => list.map((collection) => ({ category, collection })))
-    : getAllDesktopWallpaperCollections().flatMap(({ category, collection }) =>
-        splitWallpaperCollection(collection).map((entry) => ({ category, collection: entry })))
+  const allDesktopCollections = Object.entries(await loadDbIndex(getDesktopTabData().map((tab) => tab.type)))
+    .flatMap(([category, list]) => list.map((collection) => ({ category, collection })))
   const latestCollectionDate =
     [...allCollections, ...allDesktopCollections]
       .map(({ collection }) => parseWallpaperDate(collection.date))

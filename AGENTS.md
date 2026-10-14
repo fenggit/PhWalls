@@ -13,7 +13,7 @@ PhWalls 是一个展示主流手机/桌面品牌系统内置壁纸的网站。�
 - 存储：Cloudflare R2（公开域名 `https://static.phwalls.com`）
 - 多语言：内置 5 种语言（en / zh / ja / vi / zh-hant），通过中间件按路径前缀与地区检测切换
 
-> 注意：`README.md` 部分章节（如 iPhone/iPad/macOS）已过时，实际产品以手机品牌（Google Pixel、Xiaomi、Samsung、Huawei 等）和桌面品牌为主，数据见 `src/data/`。以代码为准。
+> 注意：`README.md` 部分章节（如 iPhone/iPad/macOS）已过时，实际产品以手机品牌（Google Pixel、Xiaomi、Samsung、Huawei 等）和桌面品牌为主。壁纸内容统一读取 Cloudflare D1 的 `DB` 绑定，`src/data/` 仅保留多语言与导航配置。以代码为准。
 
 ## 环境准备
 
@@ -68,7 +68,7 @@ src/
 │   ├── language.ts       # 语言解析逻辑
 │   ├── i18n.ts           # 翻译文本
 │   ├── data.ts、wallpapers.ts、metadata.ts、seo.ts 等
-├── data/                 # 壁纸数据（按品牌的 JSON 文件 + 多语言 tab.json）
+├── data/                 # 多语言、品牌标签与导航配置（无本地壁纸内容 JSON）
 ├── types/                # TypeScript 类型定义
 └── middleware.ts         # 语言/域名规范化中间件
 ```
@@ -83,6 +83,7 @@ src/
 /api/public/wallpaper-image       # 公开壁纸图片
 /api/public/wallpaper-download    # 公开壁纸下载
 /api/public/tabs                  # 分类标签
+/api/public/search                # D1 已发布合集搜索索引（lang 指定语言）
 ```
 
 IndexNow 使用运维脚本 `npm run indexnow` 提交线上 sitemap，验证文件为 `public/indexnow-key.txt`；没有公开提交 API。`npm run deploy` 成功后会通过 `postdeploy` 调用提交脚本。
@@ -99,10 +100,10 @@ IndexNow 使用运维脚本 `npm run indexnow` 提交线上 sitemap，验证文�
 
 ## 添加新品牌/设备
 
-1. 在 `src/data/` 下新增对应品牌的 JSON 数据文件。
+1. 通过后台维护 D1 中的品牌、设备、壁纸与五语言合集文案，确保设备和素材已发布；原始分辨率记录在 `w_wallpapers.width`、`height`。
 2. 在 `src/data/language/<lang>/tab.json` 中登记分类，确保 `BRAND_CATEGORIES` 能识别。
 3. 在 `public/brand-icons/` 下新增以品牌 slug 命名的 SVG Logo（如 `smartisan.svg`），并在 `src/components/Header.tsx` 的 `BRAND_ICON_PATHS` 中登记映射；Logo 必须来源可靠、使用紧凑 `viewBox`，并在 Header 的桌面端与移动端图标位验证清晰度。
-4. 页面路由 `[brand]` 与 `generateStaticParams` 会自动生成静态页面与 SEO 元数据。
+4. 页面路由 `[brand]` 与对应详情页从 D1 读取已发布内容并生成 SEO 元数据；无需新增壁纸 JSON 或运行本地索引生成脚本。
 
 ## 安全与注意事项
 

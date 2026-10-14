@@ -198,7 +198,7 @@ npm start
 |--------|------|--------|
 | `STORAGE_PROVIDER_PROD` | 存储提供商 | `r2` |
 | `NEXT_PUBLIC_ENABLE_ADS` | 是否启用广告 | `false` |
-| `WALLPAPER_DATA_SOURCE` | 公开壁纸数据源：`json` 或 `d1` | `json` |
+| Cloudflare D1 `DB` 绑定 | 壁纸内容唯一数据源（生产读取远程 D1，本地开发读取本机 D1） | 必需 |
 | `ADMIN_HOST` | 线上后台专用域名 | `a.phwalls.com` |
 
 #### 代码默认值（无需配置）

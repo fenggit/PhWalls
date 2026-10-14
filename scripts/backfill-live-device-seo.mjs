@@ -64,12 +64,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       WHERE w.media_type='dynamic' AND w.deletion_state='none'
         AND EXISTS (SELECT 1 FROM w_wallpapers live WHERE live.device_id=d.id AND live.media_type='dynamic' AND live.origin_key LIKE 'live/%')
       GROUP BY d.id ORDER BY d.brand_name,d.device_name`).all();
-    const catalog = JSON.parse(readFileSync(new URL('../src/data/livewalls/catalog.json', import.meta.url), 'utf8'));
-    for (const entry of catalog) {
-      if (!inventory.some(device => device.brand_name === entry.category && device.device_slug === entry.collection.slug)) {
-        throw new Error(`Live catalog collection missing in snapshot: ${entry.category}/${entry.collection.slug}`);
-      }
-    }
     const rows = inventory.flatMap(buildLiveDeviceSeoRows);
     const prefix = resolve(arg('--out'));
     mkdirSync(dirname(prefix), { recursive: true });

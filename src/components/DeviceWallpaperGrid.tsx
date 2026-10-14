@@ -25,6 +25,8 @@ interface DeviceItem {
   originPath: string;
   compressPath: string;
   tag: string;
+  width?: number | null;
+  height?: number | null;
 }
 
 interface DeviceData {
@@ -408,6 +410,8 @@ export default function DeviceWallpaperGrid({
                   const imageUrl = imageUrls[imageKey];
                   const isPriorityImage = groupIndex === 0 && itemIndex < 2;
                   const isVideo = item.type.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath);
+                  const resolution = item.width && item.height && Number.isInteger(item.width) && Number.isInteger(item.height) && item.width > 0 && item.height > 0
+                    ? `${item.width} × ${item.height}` : null;
 
                   return (
                     <article key={imageKey} className="group w-full">
@@ -467,7 +471,10 @@ export default function DeviceWallpaperGrid({
                       <h3 className="mt-3 text-xs sm:text-sm font-semibold leading-tight text-gray-900">
                         {formatWallpaperDisplayName(item.name)}
                       </h3>
-                      <p className="mt-1 text-xs text-gray-500">{item.size}</p>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                        {resolution && <span className="tabular-nums">{resolution}</span>}
+                        {item.size && <span>{resolution ? '· ' : ''}{item.size}</span>}
+                      </p>
                     </article>
                   );
                 })}

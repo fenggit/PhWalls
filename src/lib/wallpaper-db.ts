@@ -3,7 +3,7 @@ import type { WallpaperAsset, WallpaperCollection } from '@/lib/wallpaper-data';
 import type { Language } from '@/types';
 import { withWallpaperQueryCache } from '@/lib/wallpaper-query-cache';
 import { sortByDateDesc } from '@/lib/data';
-import { normalizeCategoryType } from '@/lib/brands';
+import { getDesktopTabData } from '@/lib/desktop-data';
 
 export type RecordStatus = 'draft' | 'published' | 'unpublished';
 export type WallpaperMediaType = 'static' | 'dynamic';
@@ -82,23 +82,7 @@ export type DeviceI18nListRow = DeviceI18nRow & {
   brand_name: string;
 };
 
-export function isWallpaperDbEnabled(): boolean {
-  const bindings = getOptionalRequestContext()?.env as { WALLPAPER_DATA_SOURCE?: string } | undefined;
-  return (bindings?.WALLPAPER_DATA_SOURCE || process.env.WALLPAPER_DATA_SOURCE) === 'd1';
-}
-
 export async function isPublishedWallpaperKey(key: string, originOnly = false): Promise<boolean> {
-  if (!isWallpaperDbEnabled()) {
-    if (!/\.(mp4|webm)$/i.test(key)) return true;
-    const catalog = (await import('@/data/livewalls/catalog.json')).default;
-    if (catalog.some((entry) => entry.status === 'published' && entry.collection.item.some((item) => item.originPath === key))) return true;
-    const parts = key.split('/');
-    const category = normalizeCategoryType(parts[0] === 'desktopwalls' ? parts[1] || '' : parts[0]);
-    const collections = parts[0] === 'desktopwalls'
-      ? await (await import('@/lib/desktop-data-server')).loadDesktopWallpaperCollections(category)
-      : await (await import('@/lib/live-data-server')).loadLiveCollections(category);
-    return collections.some((collection) => collection.item.some((item) => item.originPath === key && /\.(mp4|webm)$/i.test(item.originPath)));
-  }
   const query = originOnly
     ? `SELECT 1 FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id
        WHERE d.status = 'published' AND w.status = 'published' AND w.origin_key = ?
@@ -113,7 +97,6 @@ export async function isPublishedWallpaperKey(key: string, originOnly = false): 
 
 export async function getPublishedWallpaperKeys(keys: string[]): Promise<Set<string>> {
   if (!keys.length) return new Set();
-  if (!isWallpaperDbEnabled()) return new Set(keys.filter((key) => !/\.(mp4|webm)$/i.test(key)));
   const { results } = await getWallpaperDb().prepare(
     `SELECT k.value AS key FROM json_each(?) k
      WHERE EXISTS (
@@ -144,6 +127,8 @@ export function toWallpaperAsset(row: WallpaperRow): WallpaperAsset {
     name: row.name,
     type: row.mime_type,
     size: formatSize(row.size_bytes),
+    width: row.width,
+    height: row.height,
     originPath: row.origin_key,
     compressPath: row.compress_key || '',
     tag: tags[0] || '',
@@ -168,6 +153,41 @@ const mixedTranslationJoins = `LEFT JOIN w_device_i18n local ON local.device_id 
   LEFT JOIN w_live_device_i18n live_local ON live_local.device_id = d.id AND live_local.language = ? AND w.media_type = 'dynamic'
   LEFT JOIN w_live_device_i18n live_english ON live_english.device_id = d.id AND live_english.language = 'en' AND w.media_type = 'dynamic'`;
 
+export type WallpaperSearchEntry = {
+  category: string;
+  name: string;
+  slug: string;
+  date: string;
+  count: number;
+  desktop: boolean;
+  live: boolean;
+  localized: true;
+  keywords: string;
+};
+
+export async function loadDbSearchIndex(language: Language = 'en'): Promise<WallpaperSearchEntry[]> {
+  return withWallpaperQueryCache(['search-index-media-i18n', language], async () => {
+    const { results } = await getWallpaperDb().prepare(
+      `SELECT d.brand_name, d.device_category, d.device_slug, d.release_date, ${mixedLocalizedFields},
+        w.media_type, COUNT(*) AS count, GROUP_CONCAT(w.name || ' ' || w.tags, ' ') AS keywords
+       FROM w_devices d JOIN w_wallpapers w ON w.device_id = d.id ${mixedTranslationJoins}
+       WHERE d.status = 'published' AND w.status = 'published'
+         AND d.deletion_state = 'none' AND w.deletion_state = 'none'
+         AND NOT EXISTS (SELECT 1 FROM w_collection_deletions c WHERE c.device_id = d.id AND c.media_type = w.media_type)
+       GROUP BY d.id, w.media_type ORDER BY d.release_date DESC, d.device_slug, w.media_type`
+    ).bind(language, language).all<{
+      brand_name: string; device_category: DeviceCategory; device_slug: string; release_date: string;
+      display_name: string; media_type: WallpaperMediaType; count: number; keywords: string;
+    }>();
+    const desktopCategories = new Set(getDesktopTabData().map((tab) => tab.type));
+    return results.map((row) => ({
+      category: row.brand_name, name: row.display_name, slug: row.device_slug, date: row.release_date,
+      count: row.count, desktop: row.device_category === 'desktop' || desktopCategories.has(row.brand_name),
+      live: row.media_type === 'dynamic', localized: true, keywords: row.keywords,
+    }));
+  });
+}
+
 function toCollection(device: LocalizedDeviceRow, wallpapers: WallpaperRow[]): WallpaperCollection {
   return {
     deviceId: device.id,
@@ -188,7 +208,7 @@ export async function loadDbCollections(brand: string, language: Language = 'en'
     ]);
     return sortByDateDesc(collections.flat());
   }
-  return withWallpaperQueryCache(['collections-media-i18n', brand, language, media], () => queryDbCollections(brand, language, media));
+  return withWallpaperQueryCache(['collections-media-i18n-dimensions', brand, language, media], () => queryDbCollections(brand, language, media));
 }
 
 async function queryDbCollections(brand: string, language: Language, media: WallpaperMediaType): Promise<WallpaperCollection[]> {
@@ -215,7 +235,7 @@ async function queryDbCollections(brand: string, language: Language, media: Wall
 }
 
 export async function loadDbCollection(brand: string, slug: string, language: Language = 'en', media: WallpaperMediaType = 'static'): Promise<WallpaperCollection | null> {
-  return withWallpaperQueryCache(['collection-media-i18n', brand, slug, language, media], () => queryDbCollection(brand, slug, language, media));
+  return withWallpaperQueryCache(['collection-media-i18n-dimensions', brand, slug, language, media], () => queryDbCollection(brand, slug, language, media));
 }
 
 async function queryDbCollection(brand: string, slug: string, language: Language, media: WallpaperMediaType): Promise<WallpaperCollection | null> {

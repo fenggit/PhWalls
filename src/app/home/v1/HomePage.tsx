@@ -2,14 +2,13 @@ import { resolveMetadataLanguage } from '@/lib/metadata';
 import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media';
 import { buildLiveWallpaperDetailPath } from '@/lib/live-data';
 import HomeLanding from './HomeLanding';
-import desktopHomeIndex from '@/data/desktop-home-index.json';
 import { BRAND_CATEGORIES } from '@/lib/brands';
 import { selectRecentCollections } from '@/lib/home-curation';
 import { getHomeCollectionsByCategory } from '@/lib/home-index';
 import { isHomeCategoryVisible } from '@/lib/home-priority';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
-import { isWallpaperDbEnabled, loadDbIndex } from '@/lib/wallpaper-db';
+import { loadDbIndex } from '@/lib/wallpaper-db';
 import {
   buildWallpaperDetailPath,
   type WallpaperCollection,
@@ -64,9 +63,7 @@ export default async function HomePage() {
       .map(toPhoneCard),
   }));
 
-  const desktopCollectionsByCategory: Record<string, DesktopHomeCollection[]> = isWallpaperDbEnabled()
-    ? await loadDbIndex([...FEATURED_DESKTOP_CATEGORIES], language)
-    : desktopHomeIndex;
+  const desktopCollectionsByCategory: Record<string, DesktopHomeCollection[]> = await loadDbIndex([...FEATURED_DESKTOP_CATEGORIES], language);
   const desktop = FEATURED_DESKTOP_CATEGORIES.flatMap((category) =>
     (desktopCollectionsByCategory[category] || []).map((collection) => ({
       category,
