@@ -88,6 +88,7 @@ function buildSeoName(
 
 const ENGLISH_TITLE_EXPERIMENTS = new Set([
   'Infinix Note 60',
+  'Infinix Note 60 Pro',
   'Samsung Galaxy A17 5G',
 ]);
 

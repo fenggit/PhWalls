@@ -25,7 +25,8 @@ type UploadFileGrant = { url: string; token: string; headers?: Record<string, st
 type UploadRow = { id: string; name: string; origin?: File; preview?: File; videoPreview?: File; theme: string; tags: string;
   category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean; isPublished?: boolean;
   originGrant?: UploadFileGrant; previewGrant?: UploadFileGrant; videoPreviewGrant?: UploadFileGrant;
-  originUploaded?: boolean; previewUploaded?: boolean; videoPreviewUploaded?: boolean };
+  originUploaded?: boolean; previewUploaded?: boolean; videoPreviewUploaded?: boolean;
+  originalDimensions?: { width: number; height: number } };
 type DeviceCheck = { total: number; published: number; pending: number; missing_preview: number; primary_count: number; published_primary: number };
 
 async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
@@ -772,7 +773,8 @@ export default function AdminConsole() {
         theme: row.theme, category: row.category || undefined,
         tags: row.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
       });
-      patchUpload(row.id, { state: 'done', progress: 100, isPrimary: !!data.is_primary, isPublished: false });
+      patchUpload(row.id, { state: 'done', progress: 100, isPrimary: !!data.is_primary, isPublished: false,
+        originalDimensions: data.width && data.height ? { width: data.width, height: data.height } : undefined });
       return true;
     } catch (cause) {
       patchUpload(row.id, { state: 'failed', error: cause instanceof Error ? cause.message : '上传失败' });
@@ -1130,6 +1132,7 @@ export default function AdminConsole() {
             {uploadRows.map((row) => <div key={row.id} className="grid gap-3 border-b border-[#ebefeb] p-4 last:border-b-0 sm:grid-cols-2 xl:grid-cols-[minmax(160px,1fr)_90px_90px_minmax(120px,1fr)_110px_40px] xl:items-center">
               <div className="min-w-0"><input className={inputClass} aria-label="壁纸名称" value={row.name} onChange={(event) => patchUpload(row.id, { name: event.target.value })} />
                 <div className="mt-1 truncate text-xs text-gray-500">{row.origin?.name || '缺原图'} / {row.preview?.name || '缺封面'}</div>
+                {row.originalDimensions && <div className="mt-1 text-xs tabular-nums text-gray-500">{row.originalDimensions.width} × {row.originalDimensions.height}</div>}
                 {row.videoPreview && <div className="mt-1 truncate text-xs text-gray-500">{uploadTexts.adminUploadVideoPreview}：{row.videoPreview.name}</div>}
                 {row.origin && <div className="mt-1 text-xs font-medium text-[#247560]">{fileMime(row.origin).startsWith('video/') ? uploadTexts.adminUploadDynamicLabel : uploadTexts.adminUploadStaticLabel}</div>}</div>
               <select className={inputClass} aria-label="主题" value={row.theme} onChange={(event) => patchUpload(row.id, { theme: event.target.value })}>

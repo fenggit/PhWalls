@@ -23,6 +23,7 @@ type SearchEntry = {
   live?: boolean;
   slug?: string;
   keywords: string;
+  localized?: boolean;
 };
 
 type SearchResult = {
@@ -48,7 +49,9 @@ export default function SearchDialog({ language, onClose }: { language: Language
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/search-index.json', { signal: controller.signal })
+    setLoadState('loading');
+    setEntries([]);
+    fetch(`/api/public/search?lang=${encodeURIComponent(language)}`, { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error(`Search index: ${response.status}`);
         return response.json() as Promise<SearchEntry[]>;
@@ -64,7 +67,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
         setLoadState('error');
       });
     return () => controller.abort();
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -139,7 +142,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
     }
     for (const entry of entries) {
       const label = categoryLabels.get(entry.category) || entry.category;
-      const localizedName = entry.live ? getDeviceDisplayName(entry.category, entry.name, language)
+      const localizedName = entry.localized ? entry.name : entry.live ? getDeviceDisplayName(entry.category, entry.name, language)
         : localizeWallpaperCollectionName(language, entry.name);
       if (!matches(`${label} ${entry.category} ${entry.name} ${localizedName} ${entry.keywords} ${entry.live ? texts.liveWallpapersNavLabel + ' live wallpaper video MP4' : ''}`)) continue;
       const normalizedName = normalizeSearchText(entry.name);
@@ -151,7 +154,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
         href: withLanguagePath(
           entry.desktop ? buildDesktopWallpaperDetailPath(entry.category, entry.slug || entry.name, entry.live ? 'dynamic' : 'static') : entry.live
             ? buildLiveWallpaperDetailPath(entry.category, entry.slug || entry.name)
-            : buildWallpaperDetailPath(entry.category, entry.name),
+            : buildWallpaperDetailPath(entry.category, entry.slug || entry.name),
           language
         ),
         title: localizedName,

@@ -55,7 +55,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
     runInNewContext(source, {
       module, exports: module.exports, crypto: globalThis.crypto, Date: options.fixedNow === undefined ? Date : class extends Date { static now() { return options.fixedNow; } }, Error, URL, TextEncoder,
       require(specifier) {
-        if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db, isWallpaperDbEnabled: () => options.dbEnabled ?? true };
+        if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db };
         if (specifier === '@/lib/r2-upload') return {
           createR2UploadUrl: async (key) => `https://uploads.example/${encodeURIComponent(key)}`,
           createUploadGrant: async (key) => key,
@@ -68,7 +68,10 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
           },
           deleteR2Object: async (key) => { await onDelete(key, sqlite); removedObjects.push(key); storedObjects.delete(key); },
         };
-        if (specifier === '@/lib/admin-static-assets') return { hasStaticWallpaperReference: async () => options.staticReference ?? false };
+        if (specifier === '@/lib/admin-origin-metadata') return { readR2OriginMetadata: async (key, info) => {
+          if (options.metadataFailure) throw new Error('无法读取原文件分辨率');
+          return { ...info, width: options.originWidth || 1440, height: options.originHeight || 3200 };
+        } };
         if (specifier === '@/lib/admin-auth') return { requireAdmin: async () => null };
         if (specifier === '@/types') return load(`${root}src/types/index.ts`);
         if (specifier.endsWith('.json') && specifier.startsWith('@/')) return JSON.parse(readFileSync(`${root}src/${specifier.slice(2)}`, 'utf8'));
@@ -111,10 +114,49 @@ test('the optional browser preview uses a video grant bound to the original file
     }
     const completed = await request({ ...input, video_preview_token: JSON.stringify(video) });
     assert.equal(completed.status, 201);
-    const row = (await completed.json()).data;
+    const saved = (await completed.json()).data;
+    assert.equal(saved.width, 1440);
+    assert.equal(saved.height, 3200);
+    assert.equal(saved.size_bytes, origin.size);
+    const row = saved;
     assert.equal(row.origin_key, origin.key);
     assert.equal(row.compress_key, cover.key);
     assert.equal(row.size_bytes, 100);
+  } finally { sqlite.close(); }
+});
+
+test('completed static uploads save server-read original dimensions and ignore client metadata', async () => {
+  const { sqlite, load, storedObjects } = fixture(new Set(), () => {}, () => {}, () => {}, { originWidth: 17, originHeight: 31 });
+  try {
+    const prefix = 'test/Device One';
+    const origin = { key: `${prefix}/origin/original.png`, prefix, deviceId: 'device-1', role: 'origin', size: 100, mimeType: 'image/png' };
+    const cover = { key: `${prefix}/compress/cover.webp`, prefix, deviceId: 'device-1', role: 'compress', size: 20, mimeType: 'image/webp' };
+    for (const grant of [origin, cover]) storedObjects.set(grant.key, { size: grant.size, mimeType: grant.mimeType });
+    const route = load(`${root}src/app/api/admin/upload/route.ts`);
+    const response = await route.POST(new Request('https://example.com/api/admin/upload', { method: 'POST', body: JSON.stringify({
+      action: 'complete', device_id: 'device-1', name: 'original', origin_token: JSON.stringify(origin), preview_token: JSON.stringify(cover),
+      width: 999, height: 999, size_bytes: 999,
+    }) }));
+    assert.equal(response.status, 201);
+    const saved = (await response.json()).data;
+    assert.equal(saved.width, 17); assert.equal(saved.height, 31); assert.equal(saved.size_bytes, 100);
+    assert.equal(saved.status, 'draft');
+  } finally { sqlite.close(); }
+});
+
+test('unreadable original metadata blocks upload registration without leaving a dimensionless row', async () => {
+  const { sqlite, load, storedObjects } = fixture(new Set(), () => {}, () => {}, () => {}, { metadataFailure: true });
+  try {
+    const prefix = 'test/Device One';
+    const origin = { key: `${prefix}/origin/broken.png`, prefix, size: 100, mimeType: 'image/png' };
+    const cover = { key: `${prefix}/compress/cover.webp`, prefix, size: 20, mimeType: 'image/webp' };
+    for (const grant of [origin, cover]) storedObjects.set(grant.key, { size: grant.size, mimeType: grant.mimeType });
+    const response = await load(`${root}src/app/api/admin/upload/route.ts`).POST(new Request('https://example.com/api/admin/upload', {
+      method: 'POST', body: JSON.stringify({ action: 'complete', device_id: 'device-1', name: 'broken',
+        origin_token: JSON.stringify(origin), preview_token: JSON.stringify(cover) }),
+    }));
+    assert.equal(response.status, 400);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 0);
   } finally { sqlite.close(); }
 });
 
@@ -775,44 +817,16 @@ test('device deletion requires reconfirmation if retained files lose their other
   } finally { sqlite.close(); }
 });
 
-test('JSON fallback file protection includes Live catalog originals and covers', async () => {
-  const module = { exports: {} };
-  const source = ts.transpileModule(readFileSync(`${root}src/lib/admin-static-assets.ts`, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
-  }).outputText;
-  runInNewContext(source, {
-    module, exports: module.exports,
-    require(specifier) {
-      if (specifier === '@/lib/wallpaper-data') return { WALLPAPER_BRAND_SLUGS: [], loadWallpaperCollections: async () => [] };
-      if (specifier === '@/lib/desktop-data') return { getDesktopTabData: () => [], isDesktopWallpaperCategory: () => true };
-      if (specifier === '@/data/livewalls/catalog.json') return JSON.parse(readFileSync(`${root}src/data/livewalls/catalog.json`, 'utf8'));
-      throw new Error(specifier);
-    },
-  });
-  for (const key of ['live/ASUS/ASUS ROG Phone 3/origin/asus-rog-phone-3-live-wallpaper-1.mp4',
-    'live/ASUS/ASUS ROG Phone 3/compress/asus-rog-phone-3-live-wallpaper-1.webp']) {
-    assert.equal(await module.exports.hasStaticWallpaperReference([key]), true);
-  }
-});
-
-test('device deletion protects JSON site assets and allows historical JSON references when serving D1', async () => {
-  for (const dbEnabled of [false, true]) {
-    const { sqlite, upload, load, removedObjects } = fixture(new Set(), () => {}, () => {}, () => {}, { dbEnabled, staticReference: true });
-    try {
-      const service = load(`${root}src/lib/admin-device-deletion.ts`);
-      await upload('static');
-      const preview = await service.previewAdminDeviceDeletion('device-1');
-      if (!dbEnabled) {
-        assert.ok(preview.blocked_reason);
-        await assert.rejects(() => service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot }));
-        assert.equal(removedObjects.length, 0);
-      } else {
-        assert.equal(preview.blocked_reason, null);
-        await service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot });
-        assert.equal(removedObjects.length, 2);
-      }
-    } finally { sqlite.close(); }
-  }
+test('device deletion uses the database inventory without historical JSON restrictions', async () => {
+  const { sqlite, upload, load, removedObjects } = fixture();
+  try {
+    const service = load(`${root}src/lib/admin-device-deletion.ts`);
+    await upload('static');
+    const preview = await service.previewAdminDeviceDeletion('device-1');
+    assert.equal(preview.blocked_reason, null);
+    await service.deleteAdminDevice({ id: 'device-1', snapshot: preview.snapshot });
+    assert.equal(removedObjects.length, 2);
+  } finally { sqlite.close(); }
 });
 
 test('device deletion dialog renders the full preview list and disables confirmation before loading finishes', async () => {

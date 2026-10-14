@@ -5,14 +5,20 @@
 以下命令只操作本机 D1，不影响线上数据库。本地开发服务器默认使用本机 D1；正式后台通过 `DB` 绑定访问线上 D1，入口为 `https://a.phwalls.com/manager`。前后台统一到 Pages 项目 `phwalls` 的迁移步骤与当前进度见[项目合并说明](cloudflare-pages-consolidation.md)。
 
 1. `npx wrangler d1 migrations apply phwalls --local` 建表。
-2. `npm run db:import:dry-run` 查看 JSON 条目数量和冲突映射。
-3. `node scripts/import-wallpapers-d1.mjs --out /tmp/phwalls-import.sql` 生成幂等导入 SQL。
+2. 如需迁移历史数据，`npm run db:import:dry-run -- --data-dir <外部历史数据目录>` 查看 JSON 条目数量和冲突映射。仓库已移除本地壁纸内容 JSON，新环境也可直接导入 D1 导出快照。
+3. `node scripts/import-wallpapers-d1.mjs --data-dir <外部历史数据目录> --out /tmp/phwalls-import.sql` 生成幂等导入 SQL。
 4. `npx wrangler d1 execute phwalls --local --file=/tmp/phwalls-import.sql` 导入本地 D1。重复执行不会覆盖后台已修改的行。
-5. 在 `.env.local` 设置 `WALLPAPER_DATA_SOURCE=d1`，运行 `npm run dev`，核对首页、品牌、桌面、详情和 `/sitemap.xml`。改回 `json` 即恢复本地 JSON 读取。
+5. 运行 `npm run dev`，核对首页、品牌、桌面、详情和 `/sitemap.xml`。壁纸内容仅从 `DB` 绑定读取，历史 `WALLPAPER_DATA_SOURCE` 设置不再生效；缺少数据库绑定或查询失败时不会回退本地数据。
 
 导入工具保留旧合集日期，保证列表排序与 SEO 日期不变。JSON 里的同名设备或同名壁纸会得到稳定的 `-2` 等后缀；报告列出全部映射。旧数据的字节数由 JSON 的 `size` 字段换算，宽高暂留空；上线前需要抽样核对 R2 原文件和预览文件。导入 SQL 使用 `ON CONFLICT DO NOTHING`，不会覆盖后台修改，但重复导入后仍需对比数据库计数和报告，确认没有未处理的冲突。
 
 ## 后台配置
+
+上传完成接口会通过签名请求检查 R2 `origin` 原文件，并读取原始图片或视频头部中的宽高；文件字节大小取自 R2 `Content-Length`，分辨率不取封面图或客户端提交值。支持 JPEG、PNG、WebP、AVIF、GIF、MP4 和 WebM；MP4 会跳过视频内容块查找元数据，并处理竖屏旋转。无法读取元数据时上传队列保留失败状态，修复原文件后重试，不创建缺少分辨率的壁纸记录。
+
+批量补齐已有原始尺寸：`node scripts/backfill-origin-dimensions.mjs --snapshot <D1导出.sql> --source <本地素材目录> --out <输出前缀>`。优先读取与 R2 ETag、字节数匹配的本地 `origin`，无法匹配时读取 R2 原文件头部。脚本只生成缺失尺寸更新、回滚 SQL 与核验报告，不自动写入线上；执行前会验证完整快照模拟、重复执行幂等和精确回滚。
+
+补齐缺少的五语言与 SEO 字段：`node scripts/backfill-missing-device-seo.mjs --snapshot <D1导出.sql> --out <输出前缀>`。分别按真实静态／动态合集的名称、张数及格式生成文案，只补空缺字段，保留已有非空文案，并校验素材数量、发布及删除状态、名称与稳定 slug。输出补全 SQL、回滚 SQL 和缺失审计，不自动写入线上。
 
 Cloudflare Pages 项目绑定 D1 数据库 `phwalls`，绑定名必须是 `DB`。在 Pages 配置后台专用域名 `a.phwalls.com`。管理路由只接受该域名；本地开发允许 `localhost`。
 
@@ -35,7 +41,7 @@ npx wrangler d1 execute phwalls --remote --command "SELECT LOWER(TRIM(title)) AS
 
 手动部署统一执行 `npm run deploy`；`npm run admin:deploy` 保留为该命令的兼容别名，也会更新前后台并执行生产发布后的 IndexNow 提交。部署会影响公开站点，执行前需确认。旧 `phwalls-admin` 已在验证统一项目的自动部署成功后按用户要求删除；故障回退使用 `phwalls` 的历史完整部署，见项目合并说明。
 
-公开站点是否显示后台保存的数据由 `WALLPAPER_DATA_SOURCE` 控制；合并后的目标配置为 `d1`。生产切换前先按本文末尾的流程核对数据库与公开站点，不能仅依据合并部署命令认定线上已启用数据库。
+公开站点直接显示 `DB` 绑定中已发布的内容，不再提供 JSON 数据源切换。生产切换前先按本文末尾的流程核对数据库绑定与公开站点。
 
 配置 `ADMIN_USERNAME`、`ADMIN_PASSWORD_HASH`、`ADMIN_SESSION_SECRET` 作为 Pages Secret。密码哈希可在本机生成，直接运行脚本并按提示输入两次密码（输入隐藏）：
 
@@ -117,7 +123,7 @@ R2 删除失败时保留当前类型的全部记录和合集删除锁，标为�
 
 动态合集与静态合集共用标准设备 ID，但使用独立内容。`0012_collection_media_scope.sql` 新增 `w_live_device_i18n` 保存动态五语言文案；原 `w_device_i18n` 继续保存静态文案，兼容已部署版本。`w_collection_i18n` 视图提供带 `media_type` 的统一读取。后台多语言目录可按静态／动态筛选；编辑窗口须确认壁纸类型，保存、删除和语言回退只作用于选定类型。壁纸名称及主封面唯一性同时区分媒体类型；默认动态上传目录为 `live/<brand>/<device-slug>`，已有素材目录不迁移，自定义目录保留原路径的大小写和空格。
 
-动态文案补全工具：`node scripts/backfill-live-device-seo.mjs --snapshot <D1导出.sql> --out <输出前缀>`。工具核对 Live catalog 中的品牌与稳定 slug，从快照读取实际动态素材数量与格式，生成英、简中、日、越、繁中名称、SEO 标题及描述。仅补充缺失字段，保留已有动态人工编辑，重复导入幂等；不写静态文案表、不改变发布状态或 R2 key。线上写入前先导出备份，预演迁移与 SQL，并逐字段比对静态内容及素材记录；写入后检查 131 个合集的 655 条完整语言记录与外键。数据库迁移和文案写入完成后，部署本次代码才会在后台及动态页面使用新内容。
+动态文案补全工具：`node scripts/backfill-live-device-seo.mjs --snapshot <D1导出.sql> --out <输出前缀>`。工具从 D1 快照读取品牌、稳定 slug、实际动态素材数量与格式，生成英、简中、日、越、繁中名称、SEO 标题及描述。仅补充缺失字段，保留已有动态人工编辑，重复导入幂等；不写静态文案表、不改变发布状态或 R2 key。线上写入前先导出备份，预演迁移与 SQL，并逐字段比对静态内容及素材记录；写入后按快照中的实际合集数核对五语言完整记录与外键。数据库迁移和文案写入完成后，部署代码才会在后台及动态页面使用新内容。
 
 2026-10-02 的调研、库存快照、五语言文案与入库 SQL 保存在 `docs/research/device-seo-2026-10-02/`。英文、简中、日语、越南语及台港共用繁中按当地壁纸用语分别撰写，设备/版本/特别版名称保留；数量、文件格式、统一尺寸与明暗版本依据线上库存，设计词取自素材名称，不添加未核实的 4K、官方来源或屏幕适配承诺。
 
@@ -133,11 +139,11 @@ R2 删除失败时保留当前类型的全部记录和合集删除锁，标为�
 
 ## 生产切换
 
-先备份 D1 与 JSON 数据，再在预览环境应用迁移、导入 SQL，并对比设备数、壁纸数、主要品牌页面、详情路径和站点地图。确认 R2 文件与 CORS 后，在生产 D1 应用迁移和导入，最后设置 Pages 环境变量 `WALLPAPER_DATA_SOURCE=d1` 并部署。生产写入和部署需单独执行；切换后只在后台维护 D1 元数据。回退时改为 `json` 并重新部署，JSON 文件始终保留。
+先备份 D1，再在预览环境应用迁移、按需导入快照或外部历史数据，并对比设备数、壁纸数、主要品牌页面、详情路径和站点地图。确认 R2 文件与 CORS 后，在生产 D1 应用迁移和导入，核对 Pages 的 `DB` 绑定并部署。生产写入和部署需单独执行；内容只在后台维护 D1 元数据。回退使用已备份的数据库与对应代码版本，当前代码不支持 JSON 回退。
 
 ### D1 公开读取、缓存与限流
 
-前台首页、品牌列表及设备详情的 D1 展示查询，在生产环境使用 Cloudflare Cache API 缓存 60 秒，按请求域名、语言、品牌及合集隔离。缓存仅在当前边缘节点生效，不是全局共享缓存；节点首次请求或缓存不可用时直接查询 D1。同一次 Cloudflare 请求中的相同查询会复用结果（包括并发调用）。本地 `npm run dev` 不启用跨请求缓存，后台编辑后刷新即可看到最新数据。缓存不存失败查询或缺失的详情；数据结构变化时同步递增 `src/lib/wallpaper-query-cache.ts` 中的缓存路径版本。
+前台首页、品牌列表、搜索索引及设备详情的 D1 展示查询，在生产环境使用 Cloudflare Cache API 缓存 60 秒，按请求域名、语言、品牌及合集隔离。缓存仅在当前边缘节点生效，不是全局共享缓存；节点首次请求或缓存不可用时直接查询 D1。同一次 Cloudflare 请求中的相同查询会复用结果（包括并发调用）。本地 `npm run dev` 不启用跨请求缓存，后台编辑后刷新即可看到最新数据。缓存不存失败查询或缺失的详情；数据结构变化时更新对应查询缓存 key 或递增 `src/lib/wallpaper-query-cache.ts` 中的缓存路径版本。
 
 发布、下架、修改多语言内容后，前台展示最多延迟约 60 秒更新。下载、签名地址和批量签名的发布权限检查不使用展示缓存，下架立即影响新的代理/签名请求；已有签名 URL 与已缓存或公开的 R2 文件不因数据库下架而自动撤销。
 

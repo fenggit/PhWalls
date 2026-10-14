@@ -11,10 +11,82 @@ const ts = require('typescript');
 const root = fileURLToPath(new URL('../', import.meta.url));
 const { NextRequest } = require('next/server');
 
-test('JSON sitemap contains each localized canonical URL only once', async (t) => {
+test('sitemap contains each localized D1 canonical URL only once even with a legacy JSON setting', async (t) => {
   const f = fixture({ dataSource: 'json' }); t.after(() => f.sqlite.close());
+  f.add('database-only', 'samsung');
   const sitemap = await f.load(`${root}src/app/sitemap.ts`).default();
   assert.equal(new Set(sitemap.map(entry => entry.url)).size, sitemap.length);
+  assert.ok(sitemap.some(entry => entry.url.endsWith('/wallpapers/samsung/device-database-only')));
+});
+
+test('D1 original dimensions reach static, live and desktop wallpaper list items', async (t) => {
+  const f = fixture(); t.after(() => f.sqlite.close());
+  for (const [id, brand, media, width, height] of [
+    ['phone', 'samsung', 'static', 1440, 3200],
+    ['video', 'samsung', 'dynamic', 1080, 2400],
+    ['desktop', 'microsoft-windows', 'static', 3840, 2160],
+  ]) {
+    f.add(id, brand);
+    f.sqlite.prepare('UPDATE w_wallpapers SET width=?,height=?,media_type=? WHERE device_id=?').run(width, height, media, id);
+    const collection = await f.service.loadDbCollection(brand, `device-${id}`, 'en', media);
+    assert.equal(collection.item[0].width, width);
+    assert.equal(collection.item[0].height, height);
+    const React = require('react');
+    const Grid = f.load(`${root}src/components/DeviceWallpaperGrid.tsx`).default;
+    const html = require('react-dom/server').renderToStaticMarkup(React.createElement(Grid, { category: brand, deviceData: collection }));
+    assert.ok(html.includes(`${width} × ${height}`), `${id}: original resolution is rendered before images load`);
+  }
+});
+
+test('missing and invalid dimensions are hidden in all five languages', async (t) => {
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    const f = fixture({ language }); t.after(() => f.sqlite.close());
+    f.add('missing-size', 'samsung');
+    const collection = await f.service.loadDbCollection('samsung', 'device-missing-size', language);
+    const React = require('react');
+    const Grid = f.load(`${root}src/components/DeviceWallpaperGrid.tsx`).default;
+    for (const [width, height] of [[null, null], [0, 2400], [-1, 2400], [1080, null]]) {
+      collection.item[0].width = width; collection.item[0].height = height;
+      const html = require('react-dom/server').renderToStaticMarkup(React.createElement(Grid, { category: 'samsung', deviceData: collection }));
+      assert.ok(!html.includes(' × '));
+      for (const label of ['分辨率未知', 'Resolution unknown', '解像度不明', 'Chưa rõ độ phân giải', '解析度未知']) assert.ok(!html.includes(label));
+    }
+  }
+});
+
+test('database-only search keeps stable slugs, localized names, media types and published asset keywords', async (t) => {
+  const f = fixture(); t.after(() => f.sqlite.close());
+  f.add('renamed', 'samsung');
+  f.add('hidden', 'samsung', { status: 'draft' });
+  f.sqlite.exec(`UPDATE w_devices SET device_name='New name',device_slug='original-url' WHERE id='renamed';
+    UPDATE w_wallpapers SET name='HTC U11+',tags='["special keyword"]' WHERE device_id='renamed';
+    INSERT INTO w_wallpapers (id,device_id,name,mime_type,origin_key,file_format,media_type,category,status,create_date,updated_date)
+      VALUES ('live','renamed','motion','video/mp4','live/movie.mp4','mp4','dynamic','phone','published',2,2),
+        ('draft','renamed','private keyword','image/png','draft.png','png','static','phone','draft',3,3);`);
+  const entries = await f.service.loadDbSearchIndex('en');
+  assert.equal(entries.length, 2);
+  assert.ok(entries.every(entry => entry.slug === 'original-url' && entry.name === 'New name' && entry.count === 1));
+  assert.ok(entries.find(entry => !entry.live).keywords.includes('HTC U11+'));
+  assert.ok(entries.find(entry => !entry.live).keywords.includes('special keyword'));
+  assert.ok(entries.every(entry => !entry.keywords.includes('private keyword')));
+  const route = f.load(`${root}src/app/api/public/search/route.ts`);
+  const response = await route.GET(new NextRequest('https://phwalls.test/api/public/search?lang=en'));
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).length, 2);
+  assert.equal((await route.GET(new NextRequest('https://phwalls.test/api/public/search?lang=invalid'))).status, 400);
+  f.sqlite.exec("UPDATE w_wallpapers SET deletion_state='pending' WHERE id='live'");
+  assert.equal((await f.service.loadDbSearchIndex('en')).length, 1);
+  f.sqlite.exec("INSERT INTO w_collection_deletions(device_id,media_type,deletion_state,lease_token,updated_date) VALUES('renamed','static','pending','test',1)");
+  assert.equal((await f.service.loadDbSearchIndex('en')).length, 0);
+});
+
+test('D1 search errors return a service error without leaking database details or local fallback data', async (t) => {
+  const f = fixture({ failingDb: true, dataSource: 'json' }); t.after(() => f.sqlite.close());
+  const route = f.load(`${root}src/app/api/public/search/route.ts`);
+  const response = await route.GET(new NextRequest('https://phwalls.test/api/public/search?lang=en'));
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.equal(await response.text(), '{"error":"Search unavailable"}');
 });
 
 test('live landing pages and sitemap use the new language-specific canonical paths', async (t) => {
@@ -114,79 +186,23 @@ test('a model with static and dynamic wallpapers produces two independent recent
   assert.ok(liveDetail.item.every(item => item.type === 'video/mp4'));
 });
 
-test('JSON home and brand indexes keep static and dynamic collections separate', async (t) => {
-  const f = fixture({ dataSource: 'json', language: 'en' }); t.after(() => f.sqlite.close());
-  const homeService = f.load(`${root}src/lib/home-index.ts`);
-  const byCategory = await homeService.getHomeCollectionsByCategory('en');
-  const covers = byCategory.samsung.filter(collection => collection.name === 'Samsung Galaxy S25');
-  assert.equal(covers.length, 2);
-  assert.ok(covers.some(collection => collection.item[0].type.startsWith('image/')));
-  assert.ok(covers.some(collection => collection.item[0].type === 'video/mp4'));
-  const brand = await f.load(`${root}src/lib/wallpaper-data-server.ts`).loadWallpaperCollectionIndex('samsung', 'en');
-  assert.equal(brand.filter(collection => collection.name === 'Samsung Galaxy S25').length, 2);
-  const legacyBrand = await f.load(`${root}src/lib/wallpaper-data-server.ts`).loadWallpaperCollectionIndex('lg', 'en');
-  assert.equal(legacyBrand.filter(collection => collection.name === 'LG Velvet 2 Pro').length, 2,
-    'the dynamic catalog replaces the duplicated legacy video set');
-  const still = await f.load(`${root}src/lib/wallpaper-data-server.ts`).loadWallpaperCollection('lg', 'lg-velvet-2-pro', 'en');
-  assert.equal(still.item.length, 14);
-  assert.ok(still.item.every(item => item.type.startsWith('image/')));
-  const staticSitemapEntries = await homeService.getAllHomeCollections();
-  assert.ok(staticSitemapEntries.every(({ collection }) => !collection.item[0]?.type.startsWith('video/')));
-});
-
-test('mixed JSON sources retain independent phone and desktop media details and authorized playback', async (t) => {
-  const collection = { name: 'Original Motion', date: '2026-01-01', item: [
-    { name: 'still', type: 'image/png', originPath: 'samsung/Original Motion/origin/still.png', compressPath: 'samsung/Original Motion/compress/still.webp', size: '1KB', tag: '' },
-    { name: 'movie', type: 'video/mp4', originPath: 'samsung/Original Motion/origin/movie.mp4', compressPath: 'samsung/Original Motion/compress/movie.webp', size: '1MB', tag: '' },
-  ] };
-  const f = fixture({ dataSource: 'json', jsonOverrides: {
-    'data/samsung.json': [collection], 'data/desktopwalls/microsoft-windows.json': [collection],
-    'data/home-index.json': { samsung: [
-      { ...collection, count: 1, item: [collection.item[0]] },
-      { ...collection, count: 1, item: [collection.item[1]] },
-    ] },
-  } }); t.after(() => f.sqlite.close());
+test('all site services read D1 even when a legacy JSON data-source setting remains', async (t) => {
+  const f = fixture({ dataSource: 'json' }); t.after(() => f.sqlite.close());
+  f.add('still', 'samsung'); f.add('video', 'samsung'); f.add('desktop', 'microsoft-windows');
+  f.sqlite.exec("UPDATE w_wallpapers SET media_type='dynamic',mime_type='video/mp4' WHERE device_id='video'");
   const phones = f.load(`${root}src/lib/wallpaper-data-server.ts`);
   const live = f.load(`${root}src/lib/live-data-server.ts`);
-  assert.equal((await phones.loadWallpaperCollection('samsung', 'original-motion')).item.length, 1);
-  assert.equal((await live.loadLiveCollection('samsung', 'original-motion')).item[0].type, 'video/mp4');
-  const index = await live.loadLiveIndex();
-  assert.equal(index.samsung.find(collection => collection.slug === 'original-motion').count, 1);
-  const desktop = f.load(`${root}src/lib/desktop-data-server.ts`);
-  assert.equal((await desktop.loadDesktopWallpaperCollectionIndex('microsoft-windows')).length, 2);
-  assert.equal((await desktop.loadDesktopWallpaperCollection('microsoft-windows', 'original-motion')).item[0].type, 'image/png');
-  assert.equal((await desktop.loadDesktopWallpaperCollection('microsoft-windows', 'original-motion', 'en', 'dynamic')).item[0].type, 'video/mp4');
-  assert.equal(await f.service.isPublishedWallpaperKey(collection.item[1].originPath, true), true);
-  assert.equal(await f.service.isPublishedWallpaperKey('samsung/Original Motion/origin/unknown.mp4', true), false);
-});
-
-test('all phone JSON categories keep each model media separate with matching source counts', async (t) => {
-  const f = fixture({ dataSource: 'json', language: 'en' }); t.after(() => f.sqlite.close());
-  const index = await f.load(`${root}src/lib/home-index.ts`).getHomeCollectionsByCategory('en');
-  const phones = f.load(`${root}src/lib/wallpaper-data-server.ts`);
-  const live = f.load(`${root}src/lib/live-data-server.ts`);
-  const media = f.load(`${root}src/lib/wallpaper-media.ts`);
-  const { slugifyWallpaperName } = f.load(`${root}src/lib/wallpaper-data.ts`);
-  for (const [category, collections] of Object.entries(index)) {
-    const staticCollections = await phones.loadWallpaperCollections(category, 'en');
-    const dynamicCollections = await live.loadLiveCollections(category, 'en');
-    const seen = new Set();
-    for (const collection of collections) {
-      if (!collection.item.length) continue;
-      const type = media.getWallpaperCollectionMedia(collection);
-      const slug = collection.slug || slugifyWallpaperName(collection.name);
-      const key = `${collection.name}:${type}`;
-      assert.ok(!seen.has(key), `${category}/${key}: duplicate card`);
-      seen.add(key);
-      const detail = type === 'dynamic'
-        ? dynamicCollections.find(entry => entry.slug === slug)
-        : staticCollections.find(entry => entry.name === collection.name);
-      assert.ok(detail, `${category}/${key}: missing detail`);
-      assert.equal(detail.item.length, collection.count, `${category}/${key}: incorrect count`);
-      assert.ok(detail.item.every(item => item.type.startsWith('video/') === (type === 'dynamic')),
-        `${category}/${key}: mixed media detail`);
-    }
-  }
+  const desktops = f.load(`${root}src/lib/desktop-data-server.ts`);
+  assert.equal((await phones.loadWallpaperCollections('samsung')).length, 1);
+  assert.equal((await phones.loadWallpaperCollectionIndex('samsung')).length, 2);
+  assert.equal((await phones.loadWallpaperCollection('samsung', 'device-still')).deviceId, 'still');
+  assert.equal((await live.loadLiveCollection('samsung', 'device-video')).deviceId, 'video');
+  assert.equal((await live.loadLiveIndex()).samsung.length, 1);
+  assert.equal((await desktops.loadDesktopWallpaperCollection('microsoft-windows', 'device-desktop')).deviceId, 'desktop');
+  const home = await f.load(`${root}src/lib/home-index.ts`).getHomeCollectionsByCategory('en');
+  assert.equal(home.samsung.length, 2);
+  assert.equal(await f.service.isPublishedWallpaperKey('samsung/still/origin/still.png', true), true);
+  assert.equal(await f.service.isPublishedWallpaperKey('not-in-database.png', true), false);
 });
 
 test('all desktop categories keep static and dynamic indexes, covers and details independent', async (t) => {
@@ -261,32 +277,10 @@ test('live queries count and select only published dynamic media, with independe
   assert.equal(await f.service.loadDbCollection('samsung', 'device-static-only', 'en', 'dynamic'), null);
 });
 
-test('live JSON fallback localizes all five languages and keeps unpublished videos private', async (t) => {
-  const f = fixture({ dataSource: 'json' }); t.after(() => f.sqlite.close());
-  const live = f.load(`${root}src/lib/live-data-server.ts`);
-  const seo = f.load(`${root}src/lib/live-seo.ts`);
-  for (const [language, expectedPrefix] of [['en','Samsung'], ['zh','三星'], ['ja','サムスン'], ['vi','Samsung'], ['zh-hant','三星']]) {
-    const collection = await live.loadLiveCollection('samsung', 'samsung-galaxy-s25', language);
-    assert.ok(collection.name.startsWith(expectedPrefix));
-    assert.equal(collection.item.length, 5);
-    const copy = seo.getLiveSeoCopy(language, { category: 'samsung', name: collection.name, count: collection.item.length });
-    assert.ok(copy.description.includes('MP4'));
-    assert.ok(!copy.description.includes('{'));
-    const metadata = seo.buildLiveMetadata(language, '/live/wallpapers/samsung/samsung-galaxy-s25', copy);
-    assert.equal(new Set(Object.values(metadata.alternates.languages)).size, 5);
-    assert.ok(await f.service.isPublishedWallpaperKey(collection.item[0].originPath, true));
-  }
-  assert.equal(await live.loadLiveCollection('samsung', 'samsung-thom-browne'), null);
-  const draft = JSON.parse(readFileSync(`${root}src/data/livewalls/catalog.json`, 'utf8'))
-    .find((entry) => entry.collection.name === 'Samsung Thom Browne');
-  assert.equal(draft.status, 'draft');
-  assert.equal(await f.service.isPublishedWallpaperKey(draft.collection.item[0].originPath, true), false);
-  assert.equal(f.calls.length, 0);
-});
 
 function fixture({ production = false, dataSource = 'd1', failingDb = false, sameRequest = false, r2Failure = true, language = 'zh', jsonOverrides = {} } = {}) {
   const sqlite = new DatabaseSync(':memory:');
-  for (const name of ['0001_wallpaper_admin', '0006_wallpaper_deletion_state', '0007_deleted_wallpaper_files', '0008_device_descriptions', '0009_device_description_name', '0010_device_i18n', '0011_public_wallpaper_query_indexes', '0012_collection_media_scope']) {
+  for (const name of ['0001_wallpaper_admin', '0006_wallpaper_deletion_state', '0007_deleted_wallpaper_files', '0008_device_descriptions', '0009_device_description_name', '0010_device_i18n', '0011_public_wallpaper_query_indexes', '0012_collection_media_scope', '0013_device_deletion_state', '0014_collection_deletion_state']) {
     sqlite.exec(readFileSync(`${root}migrations/${name}.sql`, 'utf8'));
   }
   const calls = [];
@@ -338,7 +332,7 @@ function fixture({ production = false, dataSource = 'd1', failingDb = false, sam
         if (specifier === 'server-only') return {};
         if (specifier === './HomeLanding') return load(`${root}src/app/home/v1/HomeLanding.tsx`);
         if (specifier === '@/components/LiveWallpaperCollectionCard') return load(`${root}src/components/LiveWallpaperCollectionCard.tsx`);
-        if (['@/components/Header', '@/components/Footer', '@/components/ShareRegistration'].includes(specifier)) return { default: () => null, __esModule: true };
+        if (['@/components/Header', '@/components/Footer', '@/components/ShareRegistration', '@/components/WallpaperPreviewDownload'].includes(specifier)) return { default: () => null, __esModule: true };
         if (specifier === 'next/navigation') return { usePathname: () => `/${language}/desktop`, useSearchParams: () => new URLSearchParams(), notFound: () => { throw new Error('NOT_FOUND'); } };
         if (specifier === 'next/link') return { __esModule: true, default: ({ href, children, prefetch, ...props }) => require('react').createElement('a', { ...props, href }, children) };
         if (specifier === '@/components/LanguageProvider') return { useLanguage: () => ({ language, setLanguage() {}, texts: load(`${root}src/lib/i18n.ts`).getI18nTexts(language) }) };

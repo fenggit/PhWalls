@@ -60,14 +60,35 @@ export async function createR2UploadUrl(key: string, mimeType: string, preventOv
   return signR2Request('PUT', key, mimeType, {}, preventOverwrite ? { 'if-none-match': '*' } : {});
 }
 
-export async function headR2Object(key: string): Promise<{ size: number; mimeType: string } | null> {
+export async function headR2Object(key: string): Promise<{ size: number; mimeType: string; etag?: string } | null> {
   const response = await fetch(await signR2Request('HEAD', key), { method: 'HEAD' });
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`R2 文件检查失败 (${response.status})`);
   return {
     size: Number(response.headers.get('content-length') || 0),
     mimeType: response.headers.get('content-type') || '',
+    etag: response.headers.get('etag') || undefined,
   };
+}
+
+export async function readR2ObjectRange(key: string, start: number, length: number, size: number, etag?: string): Promise<Uint8Array> {
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(length) || start < 0 || length < 1 || start + length > size) {
+    throw new Error('原文件读取范围无效');
+  }
+  const range = `bytes=${start}-${start + length - 1}`;
+  const headers = { range, ...(etag ? { 'if-match': etag } : {}) };
+  const response = await fetch(await signR2Request('GET', key, undefined, {}, headers), {
+    headers, signal: AbortSignal.timeout(15000),
+  });
+  const expectedRange = `bytes ${start}-${start + length - 1}/${size}`;
+  if (!response.ok || (response.status === 206 ? response.headers.get('content-range') !== expectedRange
+    : response.status !== 200 || start !== 0 || size !== length)) {
+    await response.body?.cancel();
+    throw new Error(`R2 原文件元数据读取失败 (${response.status})`);
+  }
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.length !== length) throw new Error('R2 原文件元数据不完整');
+  return bytes;
 }
 
 export async function deleteR2Object(key: string): Promise<void> {

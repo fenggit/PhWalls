@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Home from '@/app/home/v1/Home';
 import {
   getDesktopTabData,
-  getDesktopWallpaperCollections,
 } from '@/lib/desktop-wallpapers';
 import { getDesktopHomeSeoCopy } from '@/lib/desktop-seo';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
@@ -11,8 +10,8 @@ import { resolveMetadataLanguage } from '@/lib/metadata';
 import { SITE_URL } from '@/lib/seo';
 import { headers } from 'next/headers';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
-import { loadDbIndex, isWallpaperDbEnabled } from '@/lib/wallpaper-db';
-import { buildWallpaperCollectionKey, splitWallpaperCollection } from '@/lib/wallpaper-media';
+import { loadDbIndex } from '@/lib/wallpaper-db';
+import { buildWallpaperCollectionKey } from '@/lib/wallpaper-media';
 
 export const runtime = 'edge';
 
@@ -46,10 +45,7 @@ function buildInitialDesktopImageUrls(collections: Record<string, import('@/lib/
 }
 
 async function buildDesktopCollectionsByCategory(language: import('@/types').Language) {
-  if (isWallpaperDbEnabled()) return loadDbIndex(getDesktopTabData().map((tab) => tab.type), language);
-  return Object.fromEntries(
-    getDesktopTabData().map((tab) => [tab.type, getDesktopWallpaperCollections(tab.type).flatMap(splitWallpaperCollection)])
-  );
+  return loadDbIndex(getDesktopTabData().map((tab) => tab.type), language);
 }
 
 export async function generateMetadata(): Promise<Metadata> {

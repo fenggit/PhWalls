@@ -25,6 +25,8 @@ interface DeviceItem {
   originPath: string;
   compressPath: string;
   tag: string;
+  width?: number | null;
+  height?: number | null;
 }
 
 interface DeviceData {
@@ -40,7 +42,6 @@ interface DeviceWallpaperGridProps {
   category: WallpaperCategory;
   deviceData: DeviceData;
   displayName?: string;
-  summarySection?: React.ReactNode;
   /** 服务端预构建的 CDN 图片 URL（key 格式: `${deviceData.name}-${index}`）。
    *  提供后可跳过 batch-private-urls API 调用，SSR 即包含 src，搜索引擎可抓取。
    */
@@ -57,7 +58,6 @@ export default function DeviceWallpaperGrid({
   category,
   deviceData,
   displayName,
-  summarySection,
   initialImageUrls,
   categoryLabelOverride,
   categoryLandingPathOverride,
@@ -305,6 +305,17 @@ export default function DeviceWallpaperGrid({
     return brand ? buildBrandPath(brand.type) : `/${category}`;
   }, [category, categoryLandingPathOverride]);
 
+  const hasVideoWallpapers = deviceData.item.some(
+    (item) => item.type.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath)
+  );
+  const previewNoticeTitle = hasVideoWallpapers
+    ? texts.wallpaperVideoPreviewNoticeTitle
+    : texts.wallpaperPreviewNoticeTitle;
+  const previewNotice = (hasVideoWallpapers
+    ? texts.wallpaperVideoPreviewNoticeTemplate
+    : texts.wallpaperPreviewNoticeTemplate
+  ).replace('{name}', displayDeviceName).replace('{download}', texts.downloadWallpaper);
+
   const pageDescription = useMemo(
     () => deviceData.description || texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
     [deviceData.description, pageTitle, texts.multiResolutionPageDescription]
@@ -399,6 +410,8 @@ export default function DeviceWallpaperGrid({
                   const imageUrl = imageUrls[imageKey];
                   const isPriorityImage = groupIndex === 0 && itemIndex < 2;
                   const isVideo = item.type.startsWith('video/') || /\.(mp4|webm)$/i.test(item.originPath);
+                  const resolution = item.width && item.height && Number.isInteger(item.width) && Number.isInteger(item.height) && item.width > 0 && item.height > 0
+                    ? `${item.width} × ${item.height}` : null;
 
                   return (
                     <article key={imageKey} className="group w-full">
@@ -458,7 +471,10 @@ export default function DeviceWallpaperGrid({
                       <h3 className="mt-3 text-xs sm:text-sm font-semibold leading-tight text-gray-900">
                         {formatWallpaperDisplayName(item.name)}
                       </h3>
-                      <p className="mt-1 text-xs text-gray-500">{item.size}</p>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                        {resolution && <span className="tabular-nums">{resolution}</span>}
+                        {item.size && <span>{resolution ? '· ' : ''}{item.size}</span>}
+                      </p>
                     </article>
                   );
                 })}
@@ -467,7 +483,15 @@ export default function DeviceWallpaperGrid({
           ))}
         </div>
 
-        {summarySection}
+        <section className="mt-12 rounded-2xl border border-gray-200 bg-white/70 p-4 sm:p-5" aria-labelledby="wallpaper-preview-notice">
+          <h2 id="wallpaper-preview-notice" className="text-sm sm:text-base font-semibold text-gray-800">
+            {previewNoticeTitle}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-gray-600">{previewNotice}</p>
+          {hasVideoWallpapers && (
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">{texts.liveCompatibilityNote}</p>
+          )}
+        </section>
       </main>
 
       <WallpaperPreviewDownload

@@ -5,9 +5,12 @@ import { getI18nTexts } from '@/lib/i18n';
 
 async function getLiveBrandDirectory(brand: string): Promise<string> {
   // Live 历史品牌目录不是 URL slug；Google、REDMAGIC 等也有独立的存储命名。
-  const catalog = (await import('@/data/livewalls/catalog.json')).default;
-  const historical = catalog.find((entry) => entry.category === brand)?.collection.item
-    .find((item) => item.originPath.startsWith('live/'))?.originPath.split('/')[1];
+  const row = await getWallpaperDb().prepare(
+    `SELECT w.origin_key FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id
+     WHERE d.brand_name = ? AND w.media_type = 'dynamic' AND w.origin_key LIKE 'live/%'
+       AND w.deletion_state = 'none' ORDER BY w.create_date, w.id LIMIT 1`
+  ).bind(brand).first<Pick<WallpaperRow, 'origin_key'>>();
+  const historical = row?.origin_key.split('/')[1];
   const candidate = historical || (await findAdminBrand(brand))?.title || brand;
   try { if (!candidate.includes('/')) return normalizeAdminR2Prefix(candidate); }
   catch { /* 无效品牌显示名不能成为存储目录。 */ }

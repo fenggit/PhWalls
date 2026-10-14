@@ -210,6 +210,10 @@ export interface I18nTexts {
   downloadWallpaper: string;
   wallpaperActions: string;
   imageLoadFailed: string;
+  wallpaperPreviewNoticeTitle: string;
+  wallpaperPreviewNoticeTemplate: string;
+  wallpaperVideoPreviewNoticeTitle: string;
+  wallpaperVideoPreviewNoticeTemplate: string;
   videoLoadFailed: string;
   videoLoading: string;
   retryVideo: string;
@@ -679,6 +683,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: '下载中...',
     downloadFailed: '下载失败，请重试',
     imageLoadFailed: '图片加载失败',
+    wallpaperPreviewNoticeTitle: '壁纸预览与原图下载说明',
+    wallpaperPreviewNoticeTemplate: '注意：以上 {name} 壁纸图片仅供预览，网页预览经过压缩，不代表原始画质。请勿直接保存预览图；点击壁纸打开预览，再使用“{download}”按钮免费获取原始分辨率的无水印壁纸。',
+    wallpaperVideoPreviewNoticeTitle: '动态壁纸预览与原视频下载说明',
+    wallpaperVideoPreviewNoticeTemplate: '注意：以上 {name} 封面图片与视频仅供预览，网页预览不代表原始画质。请勿将封面或预览视频作为原始动态壁纸保存；点击壁纸打开播放器，再使用“{download}”按钮免费获取原始分辨率的视频文件。',
     videoLoadFailed: '视频加载失败，请重试。',
     videoLoading: '视频加载中…',
     retryVideo: '重新加载视频',
@@ -1146,6 +1154,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: 'Downloading...',
     downloadFailed: 'Download failed, please try again',
     imageLoadFailed: 'Image load failed',
+    wallpaperPreviewNoticeTitle: 'Wallpaper previews and original downloads',
+    wallpaperPreviewNoticeTemplate: 'Note: The {name} wallpaper images above are compressed previews for reference and do not reflect the original quality. Please do not save the preview images. Open a wallpaper, then use the “{download}” button to get the watermark-free original at its original resolution for free.',
+    wallpaperVideoPreviewNoticeTitle: 'Live wallpaper previews and original video downloads',
+    wallpaperVideoPreviewNoticeTemplate: 'Note: The {name} covers and videos above are previews for reference and do not reflect the original quality. Please do not save covers or preview videos as the original live wallpapers. Open a wallpaper, then use the “{download}” button to get the original video file at its original resolution for free.',
     videoLoadFailed: 'Video could not be loaded. Please try again.',
     videoLoading: 'Loading video…',
     retryVideo: 'Reload video',
@@ -1613,6 +1625,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: 'ダウンロード中...',
     downloadFailed: 'ダウンロードに失敗しました。再試行してください',
     imageLoadFailed: '画像の読み込みに失敗しました',
+    wallpaperPreviewNoticeTitle: '壁紙のプレビューと原画像のダウンロード',
+    wallpaperPreviewNoticeTemplate: '注意：上記の {name} の壁紙画像は、確認用に圧縮したプレビューです。元の画質とは異なるため、プレビュー画像を直接保存しないでください。壁紙を開き、「{download}」ボタンから透かしのない元の解像度の画像を無料でダウンロードできます。',
+    wallpaperVideoPreviewNoticeTitle: 'ライブ壁紙のプレビューと元動画のダウンロード',
+    wallpaperVideoPreviewNoticeTemplate: '注意：上記の {name} のカバー画像と動画は確認用のプレビューで、元の画質とは異なります。カバー画像やプレビュー動画を元のライブ壁紙として保存しないでください。壁紙を開き、「{download}」ボタンから元の解像度の動画ファイルを無料でダウンロードできます。',
     videoLoadFailed: '動画を読み込めませんでした。もう一度お試しください。',
     videoLoading: '動画を読み込み中…',
     retryVideo: '動画を再読み込み',
@@ -2070,6 +2086,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: 'Đang tải xuống...',
     downloadFailed: 'Tải xuống thất bại, vui lòng thử lại',
     imageLoadFailed: 'Tải hình ảnh thất bại',
+    wallpaperPreviewNoticeTitle: 'Xem trước hình nền và tải ảnh gốc',
+    wallpaperPreviewNoticeTemplate: 'Lưu ý: Các hình nền {name} bên trên là ảnh xem trước đã nén, chỉ để tham khảo và không thể hiện chất lượng gốc. Vui lòng không lưu trực tiếp ảnh xem trước. Mở hình nền rồi dùng nút “{download}” để tải miễn phí ảnh gốc không watermark ở độ phân giải ban đầu.',
+    wallpaperVideoPreviewNoticeTitle: 'Xem trước hình nền động và tải video gốc',
+    wallpaperVideoPreviewNoticeTemplate: 'Lưu ý: Ảnh bìa và video {name} bên trên chỉ để xem trước, không thể hiện chất lượng gốc. Vui lòng không lưu ảnh bìa hoặc video xem trước làm hình nền động gốc. Mở hình nền rồi dùng nút “{download}” để tải miễn phí tệp video gốc ở độ phân giải ban đầu.',
     videoLoadFailed: 'Không thể tải video. Vui lòng thử lại.',
     videoLoading: 'Đang tải video…',
     retryVideo: 'Tải lại video',
@@ -2520,6 +2540,10 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     downloading: '下載中...',
     downloadFailed: '下載失敗，請重試',
     imageLoadFailed: '圖片載入失敗',
+    wallpaperPreviewNoticeTitle: '桌布預覽與原圖下載說明',
+    wallpaperPreviewNoticeTemplate: '注意：以上 {name} 桌布圖片僅供預覽，網頁預覽經過壓縮，不代表原始畫質。請勿直接儲存預覽圖；點擊桌布開啟預覽，再使用「{download}」按鈕免費取得原始解析度的無浮水印桌布。',
+    wallpaperVideoPreviewNoticeTitle: '動態桌布預覽與原影片下載說明',
+    wallpaperVideoPreviewNoticeTemplate: '注意：以上 {name} 封面圖片與影片僅供預覽，網頁預覽不代表原始畫質。請勿將封面或預覽影片當作原始動態桌布儲存；點擊桌布開啟播放器，再使用「{download}」按鈕免費取得原始解析度的影片檔案。',
     videoLoadFailed: '影片載入失敗，請重試。',
     videoLoading: '影片載入中…',
     retryVideo: '重新載入影片',
