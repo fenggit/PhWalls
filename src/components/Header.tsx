@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useShare } from '@/components/ShareProvider';
+import { useLanguage } from '@/components/LanguageProvider';
 import { getTabData } from '@/lib/data';
 import { getDesktopTabData } from '@/lib/desktop-data';
 import { getLiveTabData } from '@/lib/live-data';
@@ -245,6 +246,7 @@ export default function Header({
 
   useEffect(() => clearPrimaryMenuTimer, [clearPrimaryMenuTimer]);
   const pathname = usePathname();
+  const { claimMiniProgramAutoOpen } = useLanguage();
   const { sharePayload, setSharePayload } = useShare();
   const texts = getI18nTexts(currentLang);
   const shareTexts = getShareTexts(currentLang);
@@ -383,6 +385,22 @@ export default function Header({
     setIsDeviceMenuOpen(false);
     setIsSearchOpen(false);
   }, [pathname, resolveActiveType, clearPrimaryMenuTimer]);
+
+  // 每次打开网站仅自动展示一次，跨页面保留记录，返回首页不再展开。
+  useEffect(() => {
+    const { language: pathLanguage, path } = stripLanguagePrefix(pathname);
+    const language = pathLanguage || currentLang;
+    const isChinese = language === LanguageCode.ZH || language === LanguageCode.ZH_HANT;
+    const isHomePage = path === '/' || path === '/home/v1';
+
+    if (!isChinese || !isHomePage) {
+      setIsMiniProgramMenuOpen(false);
+      return;
+    }
+    if (claimMiniProgramAutoOpen()) {
+      setIsMiniProgramMenuOpen(true);
+    }
+  }, [claimMiniProgramAutoOpen, currentLang, pathname]);
 
   useEffect(() => {
     if (!openPrimaryMenu) return;

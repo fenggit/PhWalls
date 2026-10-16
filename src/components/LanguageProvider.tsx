@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getI18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
@@ -22,6 +22,7 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   texts: ReturnType<typeof getI18nTexts>;
+  claimMiniProgramAutoOpen: () => boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -37,6 +38,12 @@ export function LanguageProvider({
   const [isInitialized, setIsInitialized] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const hasAutoOpenedMiniProgram = useRef(false);
+  const claimMiniProgramAutoOpen = useCallback(() => {
+    if (hasAutoOpenedMiniProgram.current) return false;
+    hasAutoOpenedMiniProgram.current = true;
+    return true;
+  }, []);
 
   // 小程序二维码弹窗
   const [isMiniProgramOpen, setIsMiniProgramOpen] = useState(false);
@@ -125,7 +132,7 @@ export function LanguageProvider({
   const texts = getI18nTexts(language);
   
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: setLanguageAndPersist, texts }}>
+    <LanguageContext.Provider value={{ language, setLanguage: setLanguageAndPersist, texts, claimMiniProgramAutoOpen }}>
       <MiniProgramModal
         isOpen={isMiniProgramOpen}
         onClose={handleMiniProgramClose}
