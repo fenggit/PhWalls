@@ -48,6 +48,8 @@
 
 壁纸包含 `id`、`collectionId`、`name`、`collectionName`、`brand`、`brandTitle`、`kind`、`mediaType`、`mimeType`、`format`、`sizeBytes`、`width`、`height`、`theme`、`tags`、`updatedAt`、`canSaveToAlbum`、`previewUrl`、`downloadUrl`、`videoUrl`。
 
+- `tags` 直接返回小写英文数组，例如 `["abstract","gradient","fluid art"]`。英文既是可直接展示的标签，也是多语言 JSON 的键；标签不随 `lang` 变化，也不新增 `tagKeys`。需要本地化展示的使用方按英文匹配对应语言 JSON。适用于合集详情中的壁纸条目和单张壁纸详情，完整的 94 个英文标签及中文说明见[壁纸标签说明](wallpaper-tags.md)。
+
 - `previewUrl` 为图片预览地址；动态素材没有封面时可为 null，客户端展示占位图。
 - `videoUrl` 仅动态素材提供，支持 Range 分段播放。
 - `downloadUrl` 始终走 `/api/files/download` 服务端代理，不返回 R2 原图直链或签名。
