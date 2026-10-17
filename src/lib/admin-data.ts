@@ -6,6 +6,7 @@ import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
 import { normalizeAdminReleaseDate } from '@/lib/admin-release-date';
 import { AdminDeviceNameConflictError, checkAdminDeviceNames, type AdminDeviceNameCandidate, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { getI18nTexts } from '@/lib/i18n';
+import { DEVICE_THEMES, type DeviceTheme } from '@/lib/device-theme';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
 const statuses = new Set<RecordStatus>(['draft', 'published', 'unpublished']);
@@ -36,6 +37,17 @@ function tags(value: unknown): string {
     throw new Error('标签无效');
   }
   return JSON.stringify(Array.from(new Set(value.map((tag: string) => tag.trim()))));
+}
+
+function deviceTheme(value: unknown): DeviceTheme | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== 'string' || value.trim().length > 40 || /[\u0000-\u001f\u007f]/.test(value)) {
+    throw new Error(getI18nTexts('zh').adminDeviceThemeInvalid);
+  }
+  const theme = value.trim();
+  if (!theme) return null;
+  if (!DEVICE_THEMES.includes(theme as DeviceTheme)) throw new Error(getI18nTexts('zh').adminDeviceThemeInvalid);
+  return theme as DeviceTheme;
 }
 
 function validKey(raw: unknown, role: 'origin' | 'compress', media: 'static' | 'dynamic'): string {
@@ -107,6 +119,7 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   const selectedCategory = category(input.device_category);
   if ((brandInfo.kind === 'desktop') !== (selectedCategory === 'desktop')) throw new Error('品牌类型与设备分类不匹配');
   const releaseDate = normalizeAdminReleaseDate(input.release_date);
+  const theme = deviceTheme(input.theme);
   const now = Date.now();
   const id = crypto.randomUUID();
   const db = getWallpaperDb();
@@ -122,11 +135,11 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   try {
     await db.prepare(
       `INSERT INTO w_devices (id,brand_name,device_name,name_key,device_slug,device_category,brand_logo,device_splash_url,
-        is_popular_brand,release_date,status,create_date,updated_date) VALUES (?,?,?,?,?,?,?,?,?,?,'draft',?,?)`
+        is_popular_brand,release_date,theme,status,create_date,updated_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,'draft',?,?)`
     ).bind(id, brand, name, nameKey, slug, selectedCategory,
       typeof input.brand_logo === 'string' ? input.brand_logo || null : null,
       typeof input.device_splash_url === 'string' ? input.device_splash_url || null : null,
-      existing[0]?.is_popular_brand ?? 0, releaseDate, now, now).run();
+      existing[0]?.is_popular_brand ?? 0, releaseDate, theme, now, now).run();
   } catch (error) {
     if (isUniqueConstraintError(error)) throw new AdminDeviceNameConflictError({ kind: 'duplicate', matches: [] }, getI18nTexts('zh').adminNameDuplicateRetry);
     throw error;
@@ -162,6 +175,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   }
   const nextStatus = input.status === undefined ? previous.status : status(input.status);
   const releaseDate = input.release_date === undefined ? previous.release_date : normalizeAdminReleaseDate(input.release_date, true);
+  const theme = input.theme === undefined ? previous.theme : deviceTheme(input.theme);
   if (input.is_popular_brand !== undefined && input.is_popular_brand !== 0 && input.is_popular_brand !== 1) {
     throw new Error('热门品牌标记无效');
   }
@@ -194,14 +208,14 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   try {
     const update = db.prepare(
       `UPDATE w_devices SET device_name = ?, name_key = ?, device_category = ?, brand_logo = ?, device_splash_url = ?,
-        release_date = ?, status = ?, updated_date = ? WHERE id = ? AND deletion_state = 'none'${publishDrafts ? `
+        release_date = ?, theme = ?, status = ?, updated_date = ? WHERE id = ? AND deletion_state = 'none'${publishDrafts ? `
         AND updated_date = ?
         AND EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'published' AND is_primary = 1 AND deletion_state = 'none')
         AND NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'draft' AND deletion_state = 'none')` : ''}`
     ).bind(name, nameKey === previousNameKey ? previous.name_key : nameKey, selectedCategory,
       input.brand_logo === undefined ? previous.brand_logo : input.brand_logo || null,
       input.device_splash_url === undefined ? previous.device_splash_url : input.device_splash_url || null,
-      releaseDate,
+      releaseDate, theme,
       nextStatus, now, id, ...(publishDrafts ? [previous.updated_date] : []));
     if (publishDrafts) {
       // 所有草稿都必须仍匹配 R2 核验时的快照，避免发布并发编辑或刚上传的未核验文件。

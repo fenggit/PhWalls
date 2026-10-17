@@ -18,6 +18,7 @@ import { slugifyWallpaperName } from '@/lib/wallpaper-data';
 import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity';
 import { AdminDeviceNameConflictError, createWithAdminNameConfirmation, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { assertAdminUploadMime, normalizeAdminR2Prefix, type AdminUploadDirectories, type AdminUploadRole } from '@/lib/admin-upload-path';
+import { DEVICE_THEMES, DEVICE_THEME_LABEL_KEYS, type DeviceTheme } from '@/lib/device-theme';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
@@ -972,7 +973,7 @@ export default function AdminConsole() {
             <thead className={tableHeadClass}><tr><th className="px-4 py-3">设备</th><th className="px-4 py-3">品牌</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">{uploadTexts.adminDeviceWallpaperType}</th><th className="px-4 py-3">状态</th><th className="px-4 py-3">发布日期</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
             <tbody>{loading ? <TableFeedback columns={7} loading message="" /> : visibleDevices.length === 0 ? <TableFeedback columns={7} loading={false} message="没有符合条件的设备" onReset={resetFilters} /> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map((device) => <tr key={`${device.id}:${device.media_type || 'device'}`} className={tableRowClass}>
               <td className="px-4 py-3 font-medium text-gray-950"><div>{device.device_name}</div><div className="mt-1 font-mono text-xs font-normal text-[#758278]">{device.device_slug}</div></td><td className="px-4 py-3">{brands.find((brand) => brand.slug === device.brand_name)?.title || device.brand_name}{device.is_popular_brand ? <span className="ml-2 text-xs text-amber-700">热门</span> : null}</td>
-              <td className="px-4 py-3 text-gray-600">{categoryLabels[device.device_category]}</td><td className="px-4 py-3"><div className="flex flex-wrap gap-1.5">
+              <td className="px-4 py-3 text-gray-600">{categoryLabels[device.device_category]}{device.theme && <div className="mt-1 text-xs text-[#758278]">{uploadTexts.adminDeviceTheme}: {uploadTexts[DEVICE_THEME_LABEL_KEYS[device.theme]]}</div>}</td><td className="px-4 py-3"><div className="flex flex-wrap gap-1.5">
                 {device.media_type === 'static' && <span className="rounded bg-[#edf2eb] px-2 py-1 text-xs text-[#34433b]">{uploadTexts.adminUploadStaticLabel} · {device.collection_count}</span>}
                 {device.media_type === 'dynamic' && <span className="rounded bg-sky-50 px-2 py-1 text-xs text-sky-800">{uploadTexts.adminUploadDynamicLabel} · {device.collection_count}</span>}
                 {!device.media_type && <span className="text-xs text-[#758278]">{device.collection_count ? uploadTexts.adminDeviceWallpaperAllTypes : uploadTexts.adminDeviceWallpaperEmpty}</span>}
@@ -1234,8 +1235,14 @@ export default function AdminConsole() {
             <div className="text-sm"><label>设备名称<input required maxLength={200} className={`${inputClass} mt-1`} value={editingDevice.device_name || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_name: event.target.value })} /></label>
               {!editingDevice.id && <DeviceNameFeedback brand={editingDevice.brand_name || ''} name={editingDevice.device_name || ''} />}
             </div>
-            <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.filter((value) => (value === 'desktop') === editingDeviceIsDesktop)
+            <label className="text-sm">分类<select className={`${inputClass} mt-1`} value={editingDevice.device_category} onChange={(event) => setEditingDevice({ ...editingDevice, device_category: event.target.value as DeviceRow['device_category'] })}>{categories.filter((value) => value === editingDevice.device_category || (value === 'desktop') === editingDeviceIsDesktop)
               .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}</select></label>
+            <label className="text-sm">{uploadTexts.adminDeviceTheme}<select className={`${inputClass} mt-1`} value={editingDevice.theme || ''} onChange={(event) => setEditingDevice({ ...editingDevice, theme: event.target.value as DeviceTheme || null })}>
+              <option value="">{uploadTexts.adminDeviceThemeEmpty}</option>
+              {DEVICE_THEMES.map((theme) => <option key={theme} value={theme}>{uploadTexts[DEVICE_THEME_LABEL_KEYS[theme]]}</option>)}
+              </select>
+              <span className="mt-1 block text-xs text-gray-500">{uploadTexts.adminDeviceThemeHint}</span>
+            </label>
             <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（必填）'}<input className={`${inputClass} mt-1`} required={!editingDevice.id} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="2021/09/22 或 2021年9月22日" /></label>
             <label className="text-sm">Logo 路径<input className={`${inputClass} mt-1`} value={editingDevice.brand_logo || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_logo: event.target.value })} /></label>
             <label className="text-sm">宣传图 URL<input className={`${inputClass} mt-1`} value={editingDevice.device_splash_url || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_splash_url: event.target.value })} /></label>

@@ -59,6 +59,7 @@
 | `device_name` | TEXT | 品牌下的设备或系统版本标准名称，用于后台识别、归一化查重和翻译缺失时的兜底，如 `xiaomi 14`、`Google Pixel 11`、`iOS 14`、`Android 17` |
 | `device_slug` | TEXT | 稳定的设备/系统版本 URL slug；创建时生成，名称变更时保持不变 |
 | `device_category` | TEXT | 目标分类枚举：`phone`、`phone_fold`、`pad`、`desktop`、`os` |
+| `theme` | TEXT NULL DEFAULT NULL | 设备整套壁纸的主要视觉风格，保存单个英文枚举：`dark`、`gradient`、`minimal_geometric`、`anime`、`abstract`、`nature`、`photography`、`floral`、`technology`、`illustration`；`NULL` 表示未分类，各语言通过文案映射展示 |
 | `is_popular_brand` | INTEGER NOT NULL DEFAULT 0 | 是否为热门品牌，布尔值 `0/1` |
 | `device_splash_url` | TEXT NULL | 设备宣传图 URL，可为空 |
 | `status` | TEXT | `draft` 草稿（仅后台可见）；`published` 已发布（公开可见）；`unpublished` 已取消发布（保留记录，仅后台可见，可重新发布） |
@@ -66,6 +67,8 @@
 | `updated_date` | INTEGER | 最近修改时间，64 位 Unix 毫秒时间戳 |
 
 约束：`UNIQUE(brand_name, device_name)`、`UNIQUE(brand_name, device_slug)`；`brand_name`、`device_name` 使用 TEXT 保存；`device_category`、`status` 限定为上述固定值；`is_popular_brand` 限定为 `0/1`。同一 `brand_name` 下的设备记录必须保持 `is_popular_brand` 一致，后台切换时批量更新该品牌的设备行。时间字段统一使用 Unix 毫秒时间戳。
+
+`theme` 通过 `0015_device_theme.sql` 新增，非空值限制为无首尾空白的 1–40 字符文本；`0016_device_theme_enum.sql` 的插入与更新触发器进一步限定上述十个枚举，非法值拒绝写入。它不是翻译文本或字符串数组，也不代表单张壁纸的明暗版本。类型与枚举统一维护在 `src/lib/device-theme.ts`，五语言标签位于 `src/lib/i18n.ts`；完整对照和存量数据说明见[设备主色调与壁纸标签](device-themes.md)。后台创建时省略该字段默认 `NULL`，更新时省略保留原值，显式 `null` 或空字符串清除分类。
 
 ### 4.2 `w_wallpapers`：壁纸条目
 
@@ -85,7 +88,7 @@
 | `media_type` | TEXT | 媒体类型：`static` 静态壁纸或 `dynamic` 动态壁纸 |
 | `category` | TEXT | 壁纸自身分类：`phone`、`phone_fold`、`pad`、`desktop`、`os`；可与所属设备分类不同 |
 | `is_primary` | INTEGER NOT NULL DEFAULT 0 | 是否为该设备该分类的主展示壁纸，布尔值 `0/1`；每个设备分类最多一张 |
-| `tags` | TEXT | 多个标签组成的 JSON 字符串数组，例如 `["abstract","blue"]`，默认 `[]` |
+| `tags` | TEXT | 风格与画面相关标签组成的 JSON 字符串数组，例如 `["抽象","渐变","流体"]`，默认 `[]`；不以品牌或机型代替画面标签 |
 | `status` | TEXT | `draft` 草稿（仅后台可见）；`published` 已发布（公开可见）；`unpublished` 已取消发布（保留记录，仅后台可见，可重新发布） |
 | `create_date` | INTEGER | 创建时间，64 位 Unix 毫秒时间戳 |
 | `updated_date` | INTEGER | 最近修改时间，64 位 Unix 毫秒时间戳 |
@@ -158,7 +161,7 @@
 - `w_devices.device_name` 保存设备或系统本名，例如 `Oppo Find X10`；`w_device_i18n.seo_title` 保存对应语言的 SEO 展示标题，例如 `Oppo Find X10 壁纸`。修改 SEO 标题不修改设备名、稳定 URL slug 或素材对象键。
 - 数据库存储 `origin_key`、`compress_key` 等 R2 对象键，不保存可变 CDN 域名或下载 URL。服务端根据 key 生成访问地址；原图下载继续通过 `/api/files/download` 代理，不向用户暴露 R2 原图直链。`device_splash_url` 保持为可空的宣传图 URL。
 - 静态壁纸的 `origin_key` 指向原图，`compress_key` 指向压缩预览图；动态壁纸的 `origin_key` 指向视频，`compress_key` 指向封面图。
-- `theme` 仅使用 `dark`、`light`、`normal`；文件没有明确的暗黑或明亮变体时设为 `normal`，不使用未知状态。
+- `w_wallpapers.theme` 仅使用 `dark`、`light`、`normal`；文件没有明确的暗黑或明亮配对变体时设为 `normal`。`w_devices.theme` 使用独立的视觉风格枚举，不能混用两个字段的业务含义。
 - `device_splash_url` 是设备宣传图；`is_primary` 是某设备分类下列表首张壁纸，两者用途不同。
 - `create_date` 和 `updated_date` 分别记录数据库记录的创建与修改时间；旧 JSON 顶层 `date` 不迁移。
 

@@ -98,6 +98,12 @@ IndexNow 使用运维脚本 `npm run indexnow` 提交线上 sitemap，验证文�
 - 品牌 slug 通过 `normalizeCategoryType()` 归一化（小写、空格转 `-`），新增品牌时复用该逻辑。
 - API 路由运行在 Edge Runtime，避免使用 Node.js 专有 API（除非已在 `wrangler.toml` 启用 `nodejs_compat`）。
 
+## 数据库变更与文档同步
+
+- 任何数据库字段变更（新增、删除、重命名、类型、默认值、可空性、枚举值、约束或业务含义调整）都必须在同一次改动中同步更新相关文档，不能只修改迁移 SQL 或代码。
+- 数据表与字段定义统一同步到 `docs/wallpaper-admin-d1-design.md`，说明字段名称、类型、用途、默认值及约束；删除或重命名字段时，同步清理过时说明。
+- 如变更影响后台操作、导入流程或 API 请求/响应，还需同步更新 `docs/wallpaper-admin-operations.md`、相关专题文档、API 文档及 `README.md` 中受影响的内容；涉及存量数据迁移或回填时，补充迁移步骤与兼容性说明。
+
 ## 添加新品牌/设备
 
 1. 通过后台维护 D1 中的品牌、设备、壁纸与五语言合集文案，确保设备和素材已发布；原始分辨率记录在 `w_wallpapers.width`、`height`。

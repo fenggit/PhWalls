@@ -100,7 +100,7 @@ export async function deleteAdminDevice(input: Record<string, unknown>): Promise
     'width', 'height', 'file_format', 'theme', 'media_type', 'category', 'is_primary', 'tags', 'status', 'deletion_state', 'create_date', 'updated_date'];
   const matches = columns.map((column) => `json_extract(checked.value, '$.${column}') IS w.${column}`).join(' AND ');
   const deviceColumns: Array<keyof DeviceRow> = ['id', 'brand_logo', 'brand_name', 'device_name', 'name_key', 'device_slug',
-    'device_category', 'is_popular_brand', 'device_splash_url', 'release_date', 'status', 'deletion_state', 'create_date', 'updated_date'];
+    'device_category', 'theme', 'is_popular_brand', 'device_splash_url', 'release_date', 'status', 'deletion_state', 'create_date', 'updated_date'];
   const translationColumns: Array<keyof DeviceI18nRow> = ['id', 'device_id', 'media_type', 'language', 'display_name', 'seo_title', 'description', 'create_date', 'updated_date'];
   const translationMatches = translationColumns.map((column) => `json_extract(checked.value, '$.${column}') IS t.${column}`).join(' AND ');
   const deviceMatches = deviceColumns.map((column) => `json_extract(checked.value, '$.${column}') IS w_devices.${column}`).join(' AND ');
@@ -183,7 +183,7 @@ async function deleteAdminCollection(preview: AdminDeviceDeletionPreview): Promi
     'width', 'height', 'file_format', 'theme', 'media_type', 'category', 'is_primary', 'tags', 'status', 'deletion_state', 'create_date', 'updated_date'];
   const matches = columns.map((column) => `json_extract(checked.value, '$.${column}') IS w.${column}`).join(' AND ');
   const deviceColumns: Array<keyof DeviceRow> = ['id', 'brand_logo', 'brand_name', 'device_name', 'name_key', 'device_slug',
-    'device_category', 'is_popular_brand', 'device_splash_url', 'release_date', 'status', 'deletion_state', 'create_date', 'updated_date'];
+    'device_category', 'theme', 'is_popular_brand', 'device_splash_url', 'release_date', 'status', 'deletion_state', 'create_date', 'updated_date'];
   const translationColumns: Array<keyof DeviceI18nRow> = ['id', 'device_id', 'media_type', 'language', 'display_name', 'seo_title', 'description', 'create_date', 'updated_date'];
   const translationMatches = translationColumns.map((column) => `json_extract(checked.value, '$.${column}') IS t.${column}`).join(' AND ');
   const deviceMatches = deviceColumns
