@@ -348,7 +348,7 @@ https://phwalls.com/{设备名称}
 
 #### 访问方式
 
-1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/manager`。设备主色调采用单值英文枚举与五语言映射，详见[设备主色调与壁纸标签](docs/device-themes.md)。
+1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/manager`。设备主色调采用单值英文枚举与五语言映射，详见[设备主色调说明](docs/device-themes.md)；单张壁纸使用小写英文数组，英文直接作为五语言 JSON 的键，全部 94 个英文及中文说明见[壁纸标签说明](docs/wallpaper-tags.md)。
 2. 使用 `ADMIN_USERNAME` 与生成哈希时输入的原密码登录。
 3. 正式后台部署并绑定专用域名后访问 `https://a.phwalls.com/manager`。
 

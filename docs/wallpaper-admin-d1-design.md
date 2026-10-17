@@ -88,12 +88,14 @@
 | `media_type` | TEXT | 媒体类型：`static` 静态壁纸或 `dynamic` 动态壁纸 |
 | `category` | TEXT | 壁纸自身分类：`phone`、`phone_fold`、`pad`、`desktop`、`os`；可与所属设备分类不同 |
 | `is_primary` | INTEGER NOT NULL DEFAULT 0 | 是否为该设备该分类的主展示壁纸，布尔值 `0/1`；每个设备分类最多一张 |
-| `tags` | TEXT | 风格与画面相关标签组成的 JSON 字符串数组，例如 `["抽象","渐变","流体"]`，默认 `[]`；不以品牌或机型代替画面标签 |
+| `tags` | TEXT NOT NULL DEFAULT '[]' | 风格与画面相关标签的小写英文 JSON 数组，例如 `["abstract","gradient","fluid art"]`；英文同时作为英文展示与五语言 JSON 的匹配键，不以品牌或机型代替画面标签 |
 | `status` | TEXT | `draft` 草稿（仅后台可见）；`published` 已发布（公开可见）；`unpublished` 已取消发布（保留记录，仅后台可见，可重新发布） |
 | `create_date` | INTEGER | 创建时间，64 位 Unix 毫秒时间戳 |
 | `updated_date` | INTEGER | 最近修改时间，64 位 Unix 毫秒时间戳 |
 
 约束：`device_id` 外键使用 `ON DELETE RESTRICT`；同一设备内 `name` 唯一；`media_type`、`category`、`theme` 与 `status` 限定为上述固定值；`is_primary` 限定为 `0/1`，并通过 `(device_id, category)` 唯一部分索引保证每个设备分类最多一张主展示壁纸；`tags` 使用 `json_valid` 校验。时间字段统一使用 Unix 毫秒时间戳。
+
+`tags` 的数据库约束同时要求 JSON 数组，现有应用写入限制为最多 20 个、每个不超过 40 字符的非空标签。本次把存量中文标签转换为小写英文，不修改列结构或在线接口处理；后续写入请使用词表中的英文原值。小程序直接返回英文 `tags`，不增加额外键字段；五语言翻译只在 JSON 中维护，按英文名称匹配。全部 94 个英文标签与中文说明、存量转换及回滚步骤见[壁纸英文标签说明](wallpaper-tags.md)。
 
 可按数据访问路径建立少量索引：设备 `(brand_name, device_category, status)`、壁纸 `(device_id, status, category)`；另为 `is_primary=1` 建立按 `(device_id, category)` 唯一的部分索引。初版未建立独立品牌表，后续后台新增品牌功能已通过 `0002_admin_brands.sql` 引入 `w_brands`；仍不建立独立标签、上传任务、用户或文件资产表。
 
