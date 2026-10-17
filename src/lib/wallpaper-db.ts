@@ -4,6 +4,7 @@ import type { Language } from '@/types';
 import { withWallpaperQueryCache } from '@/lib/wallpaper-query-cache';
 import { sortByDateDesc } from '@/lib/data';
 import { getDesktopTabData } from '@/lib/desktop-data';
+import type { DeviceTheme } from '@/lib/device-theme';
 
 export type RecordStatus = 'draft' | 'published' | 'unpublished';
 export type WallpaperMediaType = 'static' | 'dynamic';
@@ -25,6 +26,7 @@ export type DeviceRow = {
   name_key: string | null;
   device_slug: string;
   device_category: DeviceCategory;
+  theme: DeviceTheme | null;
   is_popular_brand: number;
   device_splash_url: string | null;
   release_date: string;

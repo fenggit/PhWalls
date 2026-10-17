@@ -89,6 +89,55 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
   return { sqlite, service, upload, load, storedObjects, removedObjects };
 }
 
+test('device themes round trip as one optional style without changing wallpaper light/dark themes', async () => {
+  const { sqlite, service, upload } = fixture();
+  try {
+    await upload('paired-dark', { theme: 'dark' });
+    const created = await service.createAdminDevice({ brand_name: 'test', device_name: 'Device Two',
+      device_category: 'phone', release_date: '2026/10/17', theme: ' gradient ' });
+    assert.equal(created.theme, 'gradient');
+    assert.equal((await service.updateAdminDevice({ id: created.id, theme: 'dark' })).theme, 'dark');
+    assert.equal((await service.updateAdminDevice({ id: created.id, device_name: 'Device Two Updated' })).theme, 'dark');
+    assert.equal((await service.updateAdminDevice({ id: created.id, theme: '' })).theme, null);
+    assert.equal((await service.updateAdminDevice({ id: created.id, theme: null })).theme, null);
+    assert.equal(sqlite.prepare("SELECT theme FROM w_wallpapers WHERE name='paired-dark'").get().theme, 'dark');
+    assert.equal(sqlite.prepare("SELECT theme FROM w_devices WHERE id='device-1'").get().theme, null);
+  } finally { sqlite.close(); }
+});
+
+test('device theme edits reject arrays, non-strings and oversized values without overwriting the device', async () => {
+  const { sqlite, service } = fixture();
+  try {
+    for (const theme of [['gradient', 'anime'], 123, {}, 'x'.repeat(41), 'gradient\nanime', '渐变', 'unknown-theme']) {
+      await assert.rejects(service.updateAdminDevice({ id: 'device-1', theme }));
+    }
+    assert.equal(sqlite.prepare("SELECT device_name FROM w_devices WHERE id='device-1'").get().device_name, 'Device One');
+    const created = await service.createAdminDevice({ brand_name: 'test', device_name: 'Device Three',
+      device_category: 'phone', release_date: '2026/10/17' });
+    assert.equal(created.theme, null);
+  } finally { sqlite.close(); }
+});
+
+test('the database enforces the same device theme enum as the five-language labels', () => {
+  const { sqlite, load } = fixture();
+  try {
+    const { DEVICE_THEMES, DEVICE_THEME_LABEL_KEYS } = load(`${root}src/lib/device-theme.ts`);
+    const { getI18nTexts } = load(`${root}src/lib/i18n.ts`);
+    for (const theme of DEVICE_THEMES) {
+      sqlite.prepare("UPDATE w_devices SET theme=? WHERE id='device-1'").run(theme);
+      for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+        assert.ok(getI18nTexts(language)[DEVICE_THEME_LABEL_KEYS[theme]]);
+      }
+    }
+    for (const invalid of ['渐变', 'unknown-theme', '["gradient","anime"]', '']) {
+      assert.throws(() => sqlite.prepare("UPDATE w_devices SET theme=? WHERE id='device-1'").run(invalid));
+      assert.throws(() => sqlite.prepare(`INSERT INTO w_devices
+        (id,brand_name,device_name,device_slug,device_category,theme,create_date,updated_date)
+        VALUES('invalid','test','Invalid','invalid','phone',?,1,1)`).run(invalid));
+    }
+  } finally { sqlite.close(); }
+});
+
 test('the optional browser preview uses a video grant bound to the original filename and device', async () => {
   const { sqlite, load, storedObjects } = fixture();
   try {

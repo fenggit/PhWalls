@@ -3,6 +3,20 @@ import type { Language } from '@/types';
 export type { Language } from '@/types';
 
 export interface I18nTexts {
+  adminDeviceTheme: string;
+  adminDeviceThemeEmpty: string;
+  deviceThemeDark: string;
+  deviceThemeGradient: string;
+  deviceThemeMinimalGeometric: string;
+  deviceThemeAnime: string;
+  deviceThemeAbstract: string;
+  deviceThemeNature: string;
+  deviceThemePhotography: string;
+  deviceThemeFloral: string;
+  deviceThemeTechnology: string;
+  deviceThemeIllustration: string;
+  adminDeviceThemeHint: string;
+  adminDeviceThemeInvalid: string;
   adminDeviceDelete: string;
   adminCollectionDelete: string;
   adminCollectionDeleteScopeRequired: string;
@@ -484,6 +498,20 @@ export interface I18nTexts {
 
 export const i18nTexts: Record<Language, I18nTexts> = {
   zh: {
+    adminDeviceTheme: '主色调',
+    adminDeviceThemeEmpty: "未分类",
+    deviceThemeDark: "暗黑系",
+    deviceThemeGradient: "渐变",
+    deviceThemeMinimalGeometric: "极简几何",
+    deviceThemeAnime: "动漫风",
+    deviceThemeAbstract: "抽象艺术",
+    deviceThemeNature: "自然风景",
+    deviceThemePhotography: "摄影",
+    deviceThemeFloral: "花卉植物",
+    deviceThemeTechnology: "科技未来",
+    deviceThemeIllustration: "插画艺术",
+    adminDeviceThemeHint: "设备合集的整体视觉风格，选择一个主题；留空表示未分类。",
+    adminDeviceThemeInvalid: "请选择有效的主色调",
     adminDeviceDelete: "删除设备",
     adminCollectionDelete: "删除合集",
     adminCollectionDeleteScopeRequired: "删除合集时必须明确选择静态或动态壁纸",
@@ -955,6 +983,20 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '当前尺寸'
   },
   en: {
+    adminDeviceTheme: 'Visual theme',
+    adminDeviceThemeEmpty: "Unclassified",
+    deviceThemeDark: "Dark",
+    deviceThemeGradient: "Gradient",
+    deviceThemeMinimalGeometric: "Minimal geometry",
+    deviceThemeAnime: "Anime",
+    deviceThemeAbstract: "Abstract art",
+    deviceThemeNature: "Nature",
+    deviceThemePhotography: "Photography",
+    deviceThemeFloral: "Floral & botanical",
+    deviceThemeTechnology: "Futuristic tech",
+    deviceThemeIllustration: "Illustration",
+    adminDeviceThemeHint: "Choose one overall visual style for this device collection. Leave blank if unclassified.",
+    adminDeviceThemeInvalid: "Choose a valid visual theme",
     adminDeviceDelete: "Delete device",
     adminCollectionDelete: "Delete collection",
     adminCollectionDeleteScopeRequired: "Choose static or dynamic wallpapers before deleting a collection.",
@@ -1426,6 +1468,20 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Current Size'
   },
   ja: {
+    adminDeviceTheme: 'ビジュアルテーマ',
+    adminDeviceThemeEmpty: "未分類",
+    deviceThemeDark: "ダーク",
+    deviceThemeGradient: "グラデーション",
+    deviceThemeMinimalGeometric: "ミニマル幾何学",
+    deviceThemeAnime: "アニメ",
+    deviceThemeAbstract: "抽象アート",
+    deviceThemeNature: "自然風景",
+    deviceThemePhotography: "写真",
+    deviceThemeFloral: "花・植物",
+    deviceThemeTechnology: "未来・テクノロジー",
+    deviceThemeIllustration: "イラスト",
+    adminDeviceThemeHint: "このデバイスのコレクション全体のスタイルを一つ選択します。未分類の場合は空欄にします。",
+    adminDeviceThemeInvalid: "有効なビジュアルテーマを選択してください",
     adminDeviceDelete: "デバイスを削除",
     adminCollectionDelete: "コレクションを削除",
     adminCollectionDeleteScopeRequired: "削除する壁紙の種類（静止画またはライブ）を選択してください。",
@@ -1897,6 +1953,20 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: '現在のサイズ'
   },
   vi: {
+    adminDeviceTheme: 'Chủ đề hình ảnh',
+    adminDeviceThemeEmpty: "Chưa phân loại",
+    deviceThemeDark: "Tông tối",
+    deviceThemeGradient: "Chuyển sắc",
+    deviceThemeMinimalGeometric: "Hình học tối giản",
+    deviceThemeAnime: "Phong cách anime",
+    deviceThemeAbstract: "Nghệ thuật trừu tượng",
+    deviceThemeNature: "Phong cảnh thiên nhiên",
+    deviceThemePhotography: "Nhiếp ảnh",
+    deviceThemeFloral: "Hoa và thực vật",
+    deviceThemeTechnology: "Công nghệ tương lai",
+    deviceThemeIllustration: "Nghệ thuật minh họa",
+    adminDeviceThemeHint: "Chọn một phong cách tổng thể cho bộ sưu tập của thiết bị. Để trống nếu chưa phân loại.",
+    adminDeviceThemeInvalid: "Vui lòng chọn chủ đề hình ảnh hợp lệ",
     adminDeviceDelete: "Xóa thiết bị",
     adminCollectionDelete: "Xóa bộ sưu tập",
     adminCollectionDeleteScopeRequired: "Chọn hình nền tĩnh hoặc động trước khi xóa bộ sưu tập.",
@@ -2341,6 +2411,20 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     currentSize: 'Kích thước hiện tại'
   },
   'zh-hant': {
+    adminDeviceTheme: '主色調',
+    adminDeviceThemeEmpty: "未分類",
+    deviceThemeDark: "暗黑系",
+    deviceThemeGradient: "漸層",
+    deviceThemeMinimalGeometric: "極簡幾何",
+    deviceThemeAnime: "動漫風",
+    deviceThemeAbstract: "抽象藝術",
+    deviceThemeNature: "自然風景",
+    deviceThemePhotography: "攝影",
+    deviceThemeFloral: "花卉植物",
+    deviceThemeTechnology: "科技未來",
+    deviceThemeIllustration: "插畫藝術",
+    adminDeviceThemeHint: "裝置合集的整體視覺風格，選擇一個主題；留空表示未分類。",
+    adminDeviceThemeInvalid: "請選擇有效的主色調",
     adminDeviceDelete: "刪除裝置",
     adminCollectionDelete: "刪除合集",
     adminCollectionDeleteScopeRequired: "刪除合集時必須明確選擇靜態或動態桌布",
