@@ -6,6 +6,7 @@ import { ArrowRight, Monitor } from 'lucide-react';
 import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
+import WallpaperThemeLinks from '@/components/WallpaperThemeLinks';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
 import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
@@ -17,6 +18,7 @@ import { withLanguagePath } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
 import type { I18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
+import type { ThemeCard } from '@/lib/wallpaper-theme-db';
 
 type CollectionCard = {
   deviceId?: string;
@@ -33,6 +35,7 @@ type PhoneCollectionCard = CollectionCard & {
 };
 
 type HomeLandingProps = {
+  themes: ThemeCard[];
   latest: PhoneCollectionCard[];
   popular: Array<{ category: string; cards: PhoneCollectionCard[] }>;
   desktop: CollectionCard[];
@@ -120,7 +123,7 @@ function CategoryLink({ label, slug, language }: { label: string; slug: string; 
   );
 }
 
-export default function HomeLanding({ latest, popular, desktop }: HomeLandingProps) {
+export default function HomeLanding({ latest, popular, desktop, themes }: HomeLandingProps) {
   const { language, setLanguage, texts } = useLanguage();
   const pathname = usePathname();
   const tabs = getTabData(language);
@@ -180,6 +183,8 @@ export default function HomeLanding({ latest, popular, desktop }: HomeLandingPro
               ))}
             </div>
           </section>
+
+          <WallpaperThemeLinks language={language} cards={themes} />
 
           <section aria-labelledby="home-popular" className="border-t border-gray-200 py-9 sm:py-11">
             <div className="mb-10 text-center">

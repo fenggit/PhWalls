@@ -126,6 +126,9 @@ function formatSize(bytes: number): string {
 export function toWallpaperAsset(row: WallpaperRow): WallpaperAsset {
   const tags = JSON.parse(row.tags) as string[];
   return {
+    id: row.id,
+    tags,
+    category: row.category,
     name: row.name,
     type: row.mime_type,
     size: formatSize(row.size_bytes),
@@ -193,6 +196,8 @@ export async function loadDbSearchIndex(language: Language = 'en'): Promise<Wall
 function toCollection(device: LocalizedDeviceRow, wallpapers: WallpaperRow[]): WallpaperCollection {
   return {
     deviceId: device.id,
+    deviceName: device.device_name,
+    deviceCategory: device.device_category,
     mediaType: wallpapers[0]?.media_type,
     name: device.display_name,
     seoTitle: device.seo_title,
@@ -237,18 +242,19 @@ async function queryDbCollections(brand: string, language: Language, media: Wall
 }
 
 export async function loadDbCollection(brand: string, slug: string, language: Language = 'en', media: WallpaperMediaType = 'static'): Promise<WallpaperCollection | null> {
-  return withWallpaperQueryCache(['collection-media-i18n-dimensions', brand, slug, language, media], () => queryDbCollection(brand, slug, language, media));
+  return withWallpaperQueryCache(['collection-media-i18n-tags-v2', brand, slug, language, media], () => queryDbCollection(brand, slug, language, media));
 }
 
 async function queryDbCollection(brand: string, slug: string, language: Language, media: WallpaperMediaType): Promise<WallpaperCollection | null> {
   const db = getWallpaperDb();
   const device = await db.prepare(
     `SELECT d.*, ${localizedFields} FROM w_devices d ${collectionTranslationJoins(media)}
-     WHERE d.brand_name = ? AND d.device_slug = ? AND d.status = 'published'`
-  ).bind(language, brand, slug).first<LocalizedDeviceRow>();
+     WHERE d.brand_name = ? AND d.device_slug = ? AND d.status = 'published' AND d.deletion_state='none'
+       AND NOT EXISTS (SELECT 1 FROM w_collection_deletions c WHERE c.device_id=d.id AND c.media_type=?)`
+  ).bind(language, brand, slug, media).first<LocalizedDeviceRow>();
   if (!device) return null;
   const { results } = await db.prepare(
-    "SELECT * FROM w_wallpapers WHERE device_id = ? AND status = 'published' AND (? IS NULL OR media_type = ?) ORDER BY is_primary DESC, create_date ASC, name ASC"
+    "SELECT * FROM w_wallpapers WHERE device_id = ? AND status = 'published' AND deletion_state='none' AND (? IS NULL OR media_type = ?) ORDER BY is_primary DESC, create_date ASC, name ASC"
   ).bind(device.id, media, media).all<WallpaperRow>();
   return results.length ? toCollection(device, results) : null;
 }

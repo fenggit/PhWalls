@@ -110,7 +110,7 @@
 | `language` | TEXT NOT NULL | `en`、`zh`、`ja`、`vi`、`zh-hant`，与网站语言代码一致 |
 | `display_name` | TEXT NULL | 本地化设备或系统名称，1–200 字；用于列表和面包屑，例如 `小米 15 Ultra` |
 | `seo_title` | TEXT NULL | 该语言完整 SEO 标题，1–200 字，例如 `小米 15 Ultra 原装壁纸`；用于详情页标题与元数据 |
-| `description` | TEXT NULL | 壁纸合集描述，1–5000 字纯文本；用于元数据、摘要与图库结构化数据 |
+| `description` | TEXT NULL | 壁纸合集的风格、内容及适配场景说明，1–5000 字纯文本；默认 NULL。公开详情在该文案前拼接实时张数与原始尺寸，供正文、元数据及图库结构化数据共用；保留人工说明，不建议在新文案中重复写可变张数 |
 | `create_date` | INTEGER NOT NULL | Unix 毫秒创建时间 |
 | `updated_date` | INTEGER NOT NULL | Unix 毫秒修改时间 |
 
@@ -129,6 +129,8 @@
 后台通过 `/api/admin/device-i18n` 逐语言读取、保存和删除；保存提交 `display_name`、`seo_title`、`description`，采用整条语言记录替换语义，省略或留空的字段清为 `NULL`。更新保留 ID 和创建时间。删除此语言会移除该语言的整条记录。
 
 `0010_device_i18n.sql` 将旧 `w_device_desc.name` 原样迁为 `seo_title`，`desc` 原样迁为 `description`，保留 ID、语言、关联和时间戳；`display_name` 初始为 `NULL`，读取时兜底到设备标准名称，不从 SEO 标题反推设备名。迁移完成后删除旧表，新代码不保留旧接口或旧字段兼容层。
+
+2026-10-17 起，静态 `w_device_i18n` 与动态 `w_live_device_i18n` 的 `description` 维护场景与画面说明。字段类型、默认值、可空性、长度和语言唯一约束均不变；新文案不存张数及固定尺寸承诺。`buildCollectionIntro()` 按当前可见素材计算准确张数、主要原始尺寸和已知尺寸缺失情况，拼接数据库说明；旧人工文案只在展示时去除重复的标准下载开头，型号范围、配色和裁切说明继续保留。公开小程序 API 的 `description` 仍直接返回存储内容，不自动拼接网页导语。回填和回滚流程见[运维文档](wallpaper-admin-operations.md#合集场景文案与主题试点)。
 
 ### 4.4 `w_brands`：后台自定义品牌目录（已实现）
 

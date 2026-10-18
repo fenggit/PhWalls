@@ -46,6 +46,8 @@
 
 集合包含 `id`、`brand`、`brandTitle`、`name`、`slug`、`kind`、`mediaType: static|dynamic`、`deviceCategory`、`date`、`description`、`count`、`coverUrl`。同一设备的静态和动态合集使用不同 ID 与数量。手机栏目覆盖手机、折叠屏、平板及移动系统静态壁纸；静态桌面类型按设备类别或桌面品牌识别。
 
+`description` 返回后台所存的本地化风格、画面与适配说明；2026-10-17 起通用描述不再重复存储可变张数与尺寸。使用独立 `count` 及单张壁纸尺寸字段展示事实；网页的完整导语在服务端另行组合，不改变本接口响应结构。
+
 壁纸包含 `id`、`collectionId`、`name`、`collectionName`、`brand`、`brandTitle`、`kind`、`mediaType`、`mimeType`、`format`、`sizeBytes`、`width`、`height`、`theme`、`tags`、`updatedAt`、`canSaveToAlbum`、`previewUrl`、`downloadUrl`、`videoUrl`。
 
 - `tags` 直接返回小写英文数组，例如 `["abstract","gradient","fluid art"]`。英文既是可直接展示的标签，也是多语言 JSON 的键；标签不随 `lang` 变化，也不新增 `tagKeys`。需要本地化展示的使用方按英文匹配对应语言 JSON。适用于合集详情中的壁纸条目和单张壁纸详情，完整的 94 个英文标签及中文说明见[壁纸标签说明](wallpaper-tags.md)。

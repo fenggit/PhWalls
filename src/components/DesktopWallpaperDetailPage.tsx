@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
+import RelatedWallpapers from '@/components/RelatedWallpapers';
+import { buildCollectionIntro } from '@/lib/collection-intro';
 import {
   buildDesktopWallpaperDetailPath,
   getDesktopWallpaperCategoryLabel,
@@ -45,7 +47,7 @@ export async function generateMetadata({ params, mediaType = 'static' }: Desktop
     categoryLabel,
     count: collection.item.length,
     seoTitle: collection.seoTitle,
-    description: collection.description,
+    description: buildCollectionIntro(language, collection),
   });
   const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, mediaType);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
@@ -104,7 +106,7 @@ export default async function DesktopWallpaperDetailPage({ params, mediaType = '
     categoryLabel,
     count: collection.item.length,
     seoTitle: collection.seoTitle,
-    description: collection.description,
+    description: buildCollectionIntro(language, collection),
   });
   const categoryLandingPath = `/desktop/${category}`;
   const categoryLandingUrl = withLanguageUrl(`${SITE_URL}${categoryLandingPath}`, language);
@@ -169,7 +171,9 @@ export default async function DesktopWallpaperDetailPage({ params, mediaType = '
       />
       <DeviceWallpaperGrid
         category={category}
-        deviceData={{ ...collection, seoTitle: seoCopy.galleryName, description: seoCopy.description }}
+        deviceData={{ ...collection, seoTitle: seoCopy.galleryName }}
+        relatedContent={<RelatedWallpapers category={category} collection={collection} language={language}
+          brandPath={categoryLandingPath} brandLabel={categoryLabel} />}
         initialImageUrls={initialImageUrls}
         categoryLabelOverride={getDesktopCategoryLabel(language)}
         categoryLandingPathOverride={categoryLandingPath}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
+import RelatedWallpapers from '@/components/RelatedWallpapers';
 import {
   buildWallpaperDetailPath,
   isWallpaperCategory,
@@ -196,6 +197,8 @@ export default async function WallpaperDetailPage({ params }: WallpaperDetailPag
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema).replace(/</g, '\\u003c') }}
       />
       <DeviceWallpaperGrid
+        relatedContent={<RelatedWallpapers category={category} collection={collection} language={language}
+          brandPath={categoryBrand ? buildBrandPath(categoryBrand.type) : `/${category}`} brandLabel={categoryLabel} />}
         category={category}
         deviceData={collection}
         displayName={seoCopy.seoName}

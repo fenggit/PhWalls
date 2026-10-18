@@ -798,3 +798,7 @@ npm run indexnow -- https://phwalls.com/zh/wallpapers/huawei/huawei-matebook-fol
 
 - Next.js 部署到 Cloudflare Pages
 - https://www.exi.ink/posts/nextjs%E9%83%A8%E7%BD%B2%E5%88%B0cloudflare-pages/
+
+### 壁纸发现与主题 SEO
+
+机型详情展示兄弟合集内链、完整五语言标签，并根据当前已发布素材实时生成张数与原始尺寸导语，后台维护画面及设备场景说明。十个主题提供五语言页面，从既有 D1 素材精选，首页、标签与来源机型相互连接，不按标签组合批量生成页面。主题清单、维护和观察门槛见 [壁纸发现与主题 SEO](docs/wallpaper-discovery-seo.md)，文案整理与条件回滚见 [后台运维](docs/wallpaper-admin-operations.md#合集场景文案与主题试点)。

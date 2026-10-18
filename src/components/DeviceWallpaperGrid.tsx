@@ -10,6 +10,10 @@ import { Language } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareRegistration from '@/components/ShareRegistration';
+import WallpaperTags from '@/components/WallpaperTags';
+import { buildCollectionIntro } from '@/lib/collection-intro';
+import type { ReactNode } from 'react';
+import type { WallpaperAsset, WallpaperCollection } from '@/lib/wallpaper-data';
 import { buildWallpaperListTitle, formatWallpaperDisplayName } from '@/lib/data';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { withLanguagePath } from '@/lib/language';
@@ -18,27 +22,11 @@ import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpap
 import { SITE_URL } from '@/lib/seo';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 
-interface DeviceItem {
-  name: string;
-  type: string;
-  size: string;
-  originPath: string;
-  compressPath: string;
-  tag: string;
-  width?: number | null;
-  height?: number | null;
-}
-
-interface DeviceData {
-  deviceId?: string;
-  name: string;
-  seoTitle?: string | null;
-  description?: string | null;
-  date: string;
-  item: DeviceItem[];
-}
+type DeviceItem = WallpaperAsset;
+type DeviceData = WallpaperCollection;
 
 interface DeviceWallpaperGridProps {
+  relatedContent?: ReactNode;
   category: WallpaperCategory;
   deviceData: DeviceData;
   displayName?: string;
@@ -55,6 +43,7 @@ interface DeviceWallpaperGridProps {
 type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
 
 export default function DeviceWallpaperGrid({
+  relatedContent,
   category,
   deviceData,
   displayName,
@@ -317,8 +306,8 @@ export default function DeviceWallpaperGrid({
   ).replace('{name}', displayDeviceName).replace('{download}', texts.downloadWallpaper);
 
   const pageDescription = useMemo(
-    () => deviceData.description || texts.multiResolutionPageDescription.replace('{pageTitle}', pageTitle),
-    [deviceData.description, pageTitle, texts.multiResolutionPageDescription]
+    () => buildCollectionIntro(currentLang, deviceData),
+    [currentLang, deviceData]
   );
   const sharePayload = useMemo(() => {
     return {
@@ -475,6 +464,8 @@ export default function DeviceWallpaperGrid({
                         {resolution && <span className="tabular-nums">{resolution}</span>}
                         {item.size && <span>{resolution ? '· ' : ''}{item.size}</span>}
                       </p>
+                      <WallpaperTags tags={item.tags || (item.tag ? [item.tag] : [])}
+                        language={currentLang} limit={3} onMore={() => openPreview(index)} />
                     </article>
                   );
                 })}
@@ -482,6 +473,8 @@ export default function DeviceWallpaperGrid({
             </section>
           ))}
         </div>
+
+        {relatedContent}
 
         <section className="mt-12 rounded-2xl border border-gray-200 bg-white/70 p-4 sm:p-5" aria-labelledby="wallpaper-preview-notice">
           <h2 id="wallpaper-preview-notice" className="text-sm sm:text-base font-semibold text-gray-800">

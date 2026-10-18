@@ -1,5 +1,8 @@
 import { notFound } from 'next/navigation';
 import DeviceWallpaperGrid from '@/components/DeviceWallpaperGrid';
+import RelatedWallpapers from '@/components/RelatedWallpapers';
+import { buildCollectionIntro } from '@/lib/collection-intro';
+import { getCategoryLabelForLanguage } from '@/lib/seo';
 import { getI18nTexts } from '@/lib/i18n';
 import { buildLiveWallpaperDetailPath, isLiveWallpaperCategory } from '@/lib/live-data';
 import { buildLiveCategoryPath } from '@/lib/live-paths';
@@ -21,7 +24,7 @@ export async function generateMetadata({ params }: Props) {
   if (!collection) return {};
   return buildLiveMetadata(language, buildLiveWallpaperDetailPath(category, slug),
     getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length,
-      seoTitle: collection.seoTitle, description: collection.description }),
+      seoTitle: collection.seoTitle, description: buildCollectionIntro(language, collection) }),
     buildPublicR2Url(collection.item[0]?.compressPath || ''));
 }
 
@@ -32,7 +35,7 @@ export default async function LiveDetailPage({ params }: Props) {
   const collection = await loadLiveCollection(category, slug, language);
   if (!collection) notFound();
   const copy = getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length,
-    seoTitle: collection.seoTitle, description: collection.description });
+    seoTitle: collection.seoTitle, description: buildCollectionIntro(language, collection) });
   const texts = getI18nTexts(language);
   const url = withLanguageUrl(`${SITE_URL}${buildLiveWallpaperDetailPath(category, slug)}`, language);
   const images = Object.fromEntries(collection.item.map((item, index) =>
@@ -47,7 +50,9 @@ export default async function LiveDetailPage({ params }: Props) {
           uploadDate: '2026-10-07T00:00:00+08:00' } })) } };
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-    <DeviceWallpaperGrid category={category} deviceData={{ ...collection, seoTitle: copy.title, description: copy.description }}
+    <DeviceWallpaperGrid category={category} deviceData={{ ...collection, seoTitle: copy.title }}
+      relatedContent={<RelatedWallpapers category={category} collection={collection} language={language}
+        brandPath={buildLiveCategoryPath(category)} brandLabel={getCategoryLabelForLanguage(language, category)} />}
       initialImageUrls={images} categoryLabelOverride={texts.liveWallpapersNavLabel}
       wallpaperGroupLabelOverride={texts.liveWallpapersNavLabel}
       categoryLandingPathOverride={buildLiveCategoryPath(category)} />

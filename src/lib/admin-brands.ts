@@ -7,7 +7,7 @@ export type AdminBrand = Pick<BrandRow, 'slug' | 'title' | 'kind'> & { source: '
 type StoredBrand = Pick<BrandRow, 'slug' | 'title' | 'kind'>;
 
 const reservedSlugs = new Set(['admin', 'api', 'desktop', 'wallpapers', 'home', 'about', 'design',
-  'privacy', 'en', 'zh', 'ja', 'vi', 'zh-hant']);
+  'privacy', 'themes', 'en', 'zh', 'ja', 'vi', 'zh-hant']);
 
 const builtinBrands: AdminBrand[] = [
   ...BRAND_CATEGORIES.map((brand) => ({ slug: brand.slug, title: brand.title, kind: 'mobile' as const, source: 'builtin' as const })),

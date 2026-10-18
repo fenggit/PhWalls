@@ -3,6 +3,9 @@ import { BRAND_CATEGORIES, type WallpaperCategory } from '@/lib/brands';
 export type { WallpaperCategory } from '@/lib/brands';
 
 export type WallpaperAsset = {
+  id?: string;
+  tags?: string[];
+  category?: string;
   name: string;
   type: string;
   size: string;
@@ -14,6 +17,8 @@ export type WallpaperAsset = {
 };
 
 export type WallpaperCollection = {
+  deviceName?: string;
+  deviceCategory?: string;
   mediaType?: 'static' | 'dynamic';
   deviceId?: string;
   name: string;
