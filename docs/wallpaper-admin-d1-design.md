@@ -249,3 +249,28 @@
 - 直接在管理端编辑 R2 对象或允许任意文件浏览
 
 这些能力只有在首期后台使用后出现明确需求时再扩展，避免把简单内容管理做成通用 CMS。
+
+
+## 接口监控辅助表（2026-10-18）
+
+`0017_api_access_events.sql` 新增 `w_api_access_events`；不改变四张业务表。全部字段如下，除特别标明外均无默认值：
+
+| 字段 | 类型、默认值与约束 | 用途 |
+| --- | --- | --- |
+| `id` | TEXT PRIMARY KEY NOT NULL | 每次请求独立 UUID |
+| `created_at` | INTEGER NOT NULL | 请求开始时间，Unix 毫秒 |
+| `endpoint` | TEXT NOT NULL | 白名单中的归一化 API 路径，详情 ID 替换为 `:id` |
+| `method` | TEXT NOT NULL | HTTP 方法 |
+| `status` | INTEGER NOT NULL，100–599 | 返回 HTTP 状态码，处理函数抛错记 500 |
+| `duration_ms` | REAL NOT NULL，≥ 0 | 函数耗时至响应头，毫秒，非完整传输耗时 |
+| `client_ip` | TEXT NULL，省略为 NULL | Cloudflare 连接 IP；不信任 X-Forwarded-For 兜底 |
+| `country` | TEXT NULL，省略为 NULL | Cloudflare 国家/地区码，含 T1 等特殊代码 |
+| `source` | TEXT NOT NULL，CHECK 枚举 | `site`、`own_mini`、`wechat`、`external`、`unknown`，仅请求头线索，非认证 |
+| `source_host` | TEXT NULL，省略为 NULL | 推断来源的域名，不保存完整 Referer/Origin |
+| `mini_app_id` | TEXT NULL，省略为 NULL | 微信来源路径中格式有效的 AppID |
+| `user_agent` | TEXT NOT NULL DEFAULT ''，长度 ≤ 256 | 截断后的 User-Agent |
+| `target_hash` | TEXT NULL，省略为 NULL | GET 资源 key 或详情路径 ID 的 SHA-256，统计不同资源；不存原始值，不读取请求体 |
+
+索引：`idx_api_access_created(created_at)`、`idx_api_access_ip_created(client_ip, created_at)`。无外键、不关联管理员或壁纸业务表。
+
+触发器 `api_access_retention` 在插入后按新事件时间删除早于 7 天的最旧记录，每次最多 100 条；无新流量时不触发。查询仅展示最近 7 天。到期不是立即物理删除承诺；停采、无流量及积压时需按运维策略另行清理。迁移为空表初始化，无历史回填；旧应用忽略此表，新应用在缺表时不影响公开请求但无法采集。生产先备份并核对迁移，再应用迁移及发布应用。字段口径、成本和操作见 [API 监控说明](api-monitoring.md)。

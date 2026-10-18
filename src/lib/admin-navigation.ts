@@ -1,4 +1,4 @@
-const ADMIN_TABS = ['brands', 'devices', 'i18n', 'wallpapers', 'upload'] as const;
+const ADMIN_TABS = ['brands', 'devices', 'i18n', 'wallpapers', 'upload', 'api-monitor'] as const;
 export type AdminTab = typeof ADMIN_TABS[number];
 
 export function resolveAdminTab(value: unknown): AdminTab {

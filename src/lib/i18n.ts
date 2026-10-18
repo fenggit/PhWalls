@@ -1,3 +1,8 @@
+import apiMonitor0 from '@/data/language/zh/api-monitor.json';
+import apiMonitor1 from '@/data/language/en/api-monitor.json';
+import apiMonitor2 from '@/data/language/ja/api-monitor.json';
+import apiMonitor3 from '@/data/language/vi/api-monitor.json';
+import apiMonitor4 from '@/data/language/zh-hant/api-monitor.json';
 import type { Language } from '@/types';
 
 export type { Language } from '@/types';
@@ -2899,4 +2904,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
 
 export function getI18nTexts(language: Language): I18nTexts {
   return i18nTexts[language] || i18nTexts['en'];
+}
+
+const apiMonitorTexts: Record<Language, typeof apiMonitor0> = {
+  'zh': apiMonitor0,
+  'en': apiMonitor1,
+  'ja': apiMonitor2,
+  'vi': apiMonitor3,
+  'zh-hant': apiMonitor4,
+};
+
+export function getApiMonitorTexts(language: Language) {
+  return apiMonitorTexts[language];
 }

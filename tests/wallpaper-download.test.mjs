@@ -20,6 +20,7 @@ function setup(t, { published = true, upstream } = {}) {
     } });
   });
   const load = createTsLoader({
+    '@cloudflare/next-on-pages': { getOptionalRequestContext: () => undefined },
     '@/lib/wallpaper-db': { async isPublishedWallpaperKey(...args) { checks.push(args); return published; } },
   });
   return {

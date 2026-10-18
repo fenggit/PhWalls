@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   MiniApiError,
@@ -11,7 +12,7 @@ const RESPONSE_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'X-Robots-Tag': 'noindex, nofollow',
 };
-export async function miniApiResponse(
+async function respond(
   request: NextRequest,
   operation: (options: MiniOptions, origin: string) => Promise<object>,
   cacheScope?: 'brands' | 'collections',
@@ -62,4 +63,12 @@ export async function miniApiResponse(
       { status: 500, headers: responseHeaders() },
     );
   }
+}
+
+export function miniApiResponse(
+  request: NextRequest,
+  operation: (options: MiniOptions, origin: string) => Promise<object>,
+  cacheScope?: 'brands' | 'collections',
+) {
+  return observeApiRequest(request, () => respond(request, operation, cacheScope));
 }

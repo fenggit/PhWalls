@@ -5,6 +5,8 @@ pages_build_output_dir = ".vercel/output/static"
 
 [vars]
 ADMIN_HOST = "a.phwalls.com"
+API_MONITOR_ENABLED = "true"
+API_MONITOR_MINI_APP_ID = "wxa64dd85e9a157ffd"
 
 [[d1_databases]]
 binding = "DB"

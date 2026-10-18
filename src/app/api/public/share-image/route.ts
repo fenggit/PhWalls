@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
@@ -10,7 +11,7 @@ function isAllowedShareImageKey(key: string): boolean {
   return Boolean(sanitizeWallpaperKey(key) && key.includes('/compress/'));
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const rawKey = searchParams.get('key');
@@ -71,4 +72,8 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export function GET(request: NextRequest) {
+  return observeApiRequest(request, () => handleGET(request));
 }

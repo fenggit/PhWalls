@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
@@ -7,7 +8,7 @@ import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 
 // Headers measure work up to the response, not the subsequent body transfer.
 // Stream logs record bytes handed to the response; they cannot confirm a client save.
-export async function wallpaperDownload(request: NextRequest, errorMessage: string) {
+async function download(request: NextRequest, errorMessage: string) {
   const started = performance.now();
   const timings: Record<string, number> = {};
   let upstreamCache = 'UNKNOWN';
@@ -152,4 +153,8 @@ export async function wallpaperDownload(request: NextRequest, errorMessage: stri
       request.signal.aborted ? 'REQUEST_ABORTED' : errorCode);
     return NextResponse.json({ error: errorMessage }, { status: 500, headers: headers() });
   }
+}
+
+export function wallpaperDownload(request: NextRequest, errorMessage: string) {
+  return observeApiRequest(request, () => download(request, errorMessage));
 }

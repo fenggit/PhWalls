@@ -294,7 +294,7 @@ function fixture({ production = false, dataSource = 'd1', failingDb = false, sam
       async all() { const results = statement.all(...values); calls.push({ sql, values, rows: results.length }); return { results }; },
     };
   } };
-  const env = { DB: db, WALLPAPER_DATA_SOURCE: dataSource };
+  const env = { DB: db, WALLPAPER_DATA_SOURCE: dataSource, API_MONITOR_ENABLED: 'false' };
   const entries = new Map();
   let now = 0;
   let host = 'phwalls.test';
@@ -324,7 +324,7 @@ function fixture({ production = false, dataSource = 'd1', failingDb = false, sam
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true, jsx: ts.JsxEmit.ReactJSX },
     }).outputText;
     runInNewContext(source, {
-      module, exports: module.exports, Request, Response, Headers, URL, TextEncoder, TextDecoder, Error,
+      module, exports: module.exports, Request, Response, Headers, URL, TextEncoder, TextDecoder, Error, performance,
       process: { env: { NODE_ENV: production ? 'production' : 'development' } },
       caches: { default: edgeCache },
       console: { error: (...args) => logs.push(args), warn: (...args) => logs.push(args) },
