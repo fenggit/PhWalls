@@ -9,8 +9,10 @@ import { trackAnalyticsEvent } from '@/lib/analytics';
 import VideoWallpaperPlayer from '@/components/VideoWallpaperPlayer';
 import WallpaperActionsSheet from '@/components/WallpaperActionsSheet';
 import { createLongPress } from '@/lib/long-press';
+import WallpaperTags from '@/components/WallpaperTags';
 
 interface WallpaperItem {
+  tags?: string[];
   name: string;
   type: string;
   size: string;
@@ -37,7 +39,7 @@ export default function WallpaperPreviewDownload({
   categoryName
 }: WallpaperPreviewDownloadProps) {
   // 使用 useLanguage hook 获取当前语言和多语言文本
-  const { texts } = useLanguage();
+  const { texts, language } = useLanguage();
   
   const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true); // 初始状态设为true，确保显示loading
@@ -743,6 +745,9 @@ export default function WallpaperPreviewDownload({
                 <span>{currentWallpaper?.size}</span>
                 <span>•</span>
                 <span>{currentWallpaper?.type}</span>
+              </div>
+              <div className="max-h-24 overflow-y-auto">
+                <WallpaperTags tags={currentWallpaper?.tags || (currentWallpaper?.tag ? [currentWallpaper.tag] : [])} language={language} dark />
               </div>
               </div>
             </div>

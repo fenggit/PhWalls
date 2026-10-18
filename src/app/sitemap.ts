@@ -13,6 +13,8 @@ import { getLiveTabData, buildLiveWallpaperDetailPath } from '@/lib/live-data'
 import { LIVE_WALLPAPERS_PATH, buildLiveCategoryPath } from '@/lib/live-paths'
 import { loadLiveIndex } from '@/lib/live-data-server'
 import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media'
+import { WALLPAPER_THEMES, themePath } from '@/lib/wallpaper-themes'
+import { loadThemeWallpapers } from '@/lib/wallpaper-theme-db'
 import {
   buildWallpaperDetailPath,
   parseWallpaperDate,
@@ -154,10 +156,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const uniqueRoutes = Array.from(new Map(
     [...routes, ...detailRoutes, ...desktopDetailRoutes, ...liveDetailRoutes].map((route) => [route.url, route])
   ).values());
-  return uniqueRoutes.flatMap((route) =>
+  const themeRoutes = (await Promise.all(WALLPAPER_THEMES.map(async theme => {
+    const items = await loadThemeWallpapers(theme);
+    if (!items.length) return [];
+    const absolutePath = `${SITE_URL}/themes/${theme.slug}`;
+    return SUPPORTED_LANGUAGES.map(language => ({ url: `${SITE_URL}${themePath(theme, language)}`, alternates: buildLanguageAlternates(absolutePath),
+      lastModified: new Date(Math.max(...items.map(item => item.updatedAt))),
+      changeFrequency: 'monthly' as const, priority: 0.7 }));
+  }))).flat();
+  return [...uniqueRoutes.flatMap((route) =>
     SUPPORTED_LANGUAGES.map((language) => ({
       ...route,
       url: withLanguageUrl(route.url, language),
     }))
-  )
+  ), ...themeRoutes]
 }

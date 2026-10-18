@@ -1024,6 +1024,7 @@ export default function Header({
                         <Link
                           key={lang}
                           href={withLanguagePath(pathname, lang)}
+                          prefetch={false}
                           hrefLang={lang}
                           aria-current={currentLang === lang ? 'page' : undefined}
                           onClick={(event) => handleLanguageLinkClick(event, lang)}
@@ -1184,6 +1185,7 @@ export default function Header({
                   <Link
                     key={lang}
                     href={withLanguagePath(pathname, lang)}
+                    prefetch={false}
                     hrefLang={lang}
                     aria-current={currentLang === lang ? 'page' : undefined}
                     onClick={(event) => handleLanguageLinkClick(event, lang)}

@@ -1,4 +1,5 @@
 import { applyCollectionSeo } from '@/lib/collection-seo';
+import { buildCollectionIntro } from '@/lib/collection-intro';
 import { buildWallpaperListTitle, formatWallpaperDisplayName, localizeWallpaperCollectionName } from '@/lib/data';
 import { LanguageCode, type Language } from '@/types';
 import type { WallpaperCollection } from '@/lib/wallpaper-data';
@@ -124,7 +125,7 @@ export function buildWallpaperCollectionSeoCopy(
       collection.item.map((item) => item.type.trim().replace(/^image\//i, '').toUpperCase()).filter(Boolean)
     )).slice(0, 4),
     variantLabels: collectWallpaperVariantLabels(collection.name, collection.item.map((item) => item.name)),
-  }), collection);
+  }), { ...collection, description: buildCollectionIntro(language, collection) });
 }
 
 export function buildWallpaperDetailSeoCopy(

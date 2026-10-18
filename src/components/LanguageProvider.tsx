@@ -47,6 +47,11 @@ export function LanguageProvider({
 
   // 小程序二维码弹窗
   const [isMiniProgramOpen, setIsMiniProgramOpen] = useState(false);
+
+  useEffect(() => {
+    const pathLanguage = getLanguageFromPath(pathname);
+    if (pathLanguage) document.documentElement.lang = pathLanguage;
+  }, [pathname]);
   
   const persistLanguagePreference = useCallback((lang: Language) => {
     if (typeof window === 'undefined') return;
@@ -129,10 +134,13 @@ export function LanguageProvider({
     setIsMiniProgramOpen(false);
   };
   
-  const texts = getI18nTexts(language);
+  // Client navigation can change language without remounting the root provider.
+  // The current URL is the display language.
+  const currentLanguage = getLanguageFromPath(pathname) || language;
+  const texts = getI18nTexts(currentLanguage);
   
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: setLanguageAndPersist, texts, claimMiniProgramAutoOpen }}>
+    <LanguageContext.Provider value={{ language: currentLanguage, setLanguage: setLanguageAndPersist, texts, claimMiniProgramAutoOpen }}>
       <MiniProgramModal
         isOpen={isMiniProgramOpen}
         onClose={handleMiniProgramClose}

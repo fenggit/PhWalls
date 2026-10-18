@@ -9,6 +9,7 @@ import { isHomeCategoryVisible } from '@/lib/home-priority';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
 import { loadDbIndex } from '@/lib/wallpaper-db';
+import { loadThemeCards } from '@/lib/wallpaper-theme-db';
 import {
   buildWallpaperDetailPath,
   type WallpaperCollection,
@@ -32,7 +33,9 @@ const FEATURED_DESKTOP_CATEGORIES = [
 
 export default async function HomePage() {
   const language = await resolveMetadataLanguage();
-  const collectionsByCategory = await getHomeCollectionsByCategory(language);
+  const [collectionsByCategory, themes] = await Promise.all([
+    getHomeCollectionsByCategory(language), loadThemeCards(language),
+  ]);
   const now = new Date();
   const phoneCategories = BRAND_CATEGORIES
     .map((brand) => brand.slug)
@@ -75,5 +78,5 @@ export default async function HomePage() {
     }))
   );
 
-  return <HomeLanding latest={latest.map(toPhoneCard)} popular={popular} desktop={desktop} />;
+  return <HomeLanding latest={latest.map(toPhoneCard)} popular={popular} desktop={desktop} themes={themes} />;
 }

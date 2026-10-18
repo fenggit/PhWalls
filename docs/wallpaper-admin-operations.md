@@ -160,3 +160,22 @@ R2 删除失败时保留当前类型的全部记录和合集删除锁，标为�
 仓库不维护 Cloudflare WAF 的线上规则，以下为配置建议，尚不能据此认定线上已经启用：在公开站点为 `/api/files/` 请求配置按 IP 的限速规则；初始可按批量签名 30 次/分钟、下载 60 次/分钟观察后调整，避免误伤共享出口和连续下载。让签名、下载请求在查询 D1 前接受限速检查；对超限返回 429。后台登录失败限速沿用前文规则。正式启用前核对 Cloudflare 套餐允许的计数窗口与动作，结合实际访问日志确定阈值；不要把单次 key 上限视为每 IP 限流，也不要用进程内计数冒充分布式限流。
 
 2026-10-02 已通过 Wrangler 现有 OAuth 凭据尝试只读核验：区域可读取，但 `http_ratelimit` 规则入口返回 403（错误码 10000），当前凭据不足以确认 WAF 规则，未改动线上配置。需要在 Cloudflare 控制台或具备对应规则读取权限的凭据下完成核验。回归验证可使用 `node --experimental-transform-types --test tests/*.test.mjs`；Node 22 运行既有 TypeScript 路由测试时需要该转换参数。
+
+## 合集场景文案与主题试点
+
+网页导语由实时张数、实际原始尺寸和后台 `description` 拼接。后台填写画面内容、风格、型号范围及适配场景即可，不必重复张数；图片增减后，张数与尺寸随公开数据重新计算。手机、折叠屏、平板、桌面与视频分别说明适配条件，不统一声称 4K、无裁切或所有设备均可设置动态壁纸。
+
+整理旧通用描述：
+
+```bash
+npx wrangler d1 export phwalls --remote --output /tmp/phwalls-before-scenes.sql
+node scripts/backfill-collection-scenes.mjs --snapshot /tmp/phwalls-before-scenes.sql --out /tmp/phwalls-scenes
+```
+
+脚本生成 `.sql`、`.rollback.sql`、`.changes.json`、`.preserved.json` 和 `.audit.json`，先在 SQLite 副本逐行核对写入、幂等和完整回滚。仅更新可识别的旧模板和缺少的语言；保留人工介绍、名称与 SEO 标题，不变更发布状态、素材或尺寸。更新校验旧描述、修改时间、设备状态和素材版本指纹；并发编辑优先保留。回滚仅匹配仍为本次写入结果的行，后续人工编辑不会被覆盖。审核输出后可分别用 `npx wrangler d1 execute phwalls --remote --file <更新.sql>` 和对应回滚文件执行；重新运行脚本不等于重复应用旧 SQL。
+
+2026-10-17 本次整理覆盖 1,299 个已发布静态／动态合集，已更新 6,302 条语言描述并保留 193 条独立介绍；备份、变更清单、条件回滚与核验材料位于本次工作目录的 `tmp/seo-discovery-2026-10-17/`。写后快照逐条核验与更新计划一致，设备、素材、品牌及删除状态数据保持原值；对写后快照重新生成计划为零条待更新。线上数据整理与网页代码部署是两个独立操作。
+
+主题试点保持十个主题，同时支持 en、zh、ja、vi、zh-hant，地址为 `/{lang}/themes/{slug}`，共五十个语言 URL；切换语言保留当前主题，标题、介绍、标签和来源链接同步本地化。素材仍由 D1 读取，精选配置只保存稳定素材 ID，不复制图片和壁纸内容 JSON。替换精选需审图并修改 `src/lib/theme-selections.ts`，动态素材、下架、删除及标签不再匹配的图片自动排除，不自动补入未审核的新图片。新增主题或额外语言须单独决定，不按标签组合扩量。
+
+验证生产预览：`node scripts/check-discovery.mjs http://localhost:<端口>`，检查十个主题的五十个语言页面、五语言共十五个示例详情、正文与元描述一致性、兄弟链接、标签、语言跳转、未知主题 404、首页入口和五语言主题 sitemap。完整策略及观察口径见[主题与内链说明](wallpaper-discovery-seo.md)。
