@@ -20,7 +20,7 @@ import { withLanguagePath } from '@/lib/language';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { getWallpaperCategoryLabel, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { SITE_URL } from '@/lib/seo';
-import { trackAnalyticsEvent } from '@/lib/analytics';
+import { analyticsAttributes, getWallpaperAnalyticsParams, trackAnalyticsEvent } from '@/lib/analytics';
 
 type DeviceItem = WallpaperAsset;
 type DeviceData = WallpaperCollection;
@@ -69,6 +69,18 @@ export default function DeviceWallpaperGrid({
   const pathname = usePathname();
   const sharedWallpaper = useSearchParams().get('wallpaper');
   const openedShareRef = useRef('');
+  const analyticsContext = useMemo(() => ({
+    brand_slug: category, collection_id: deviceData.deviceId,
+    collection_slug: deviceData.slug, media_type: deviceData.mediaType || 'static',
+    device_type: /\/desktop(?:\/|$)/.test(pathname) ? 'desktop' : 'phone', entry_point: 'collection_grid',
+  }), [category, deviceData.deviceId, deviceData.slug, deviceData.mediaType, pathname]);
+  const viewedCollection = useRef('');
+  useEffect(() => {
+    const key = `${pathname}:${deviceData.deviceId}:${deviceData.mediaType}`;
+    if (viewedCollection.current === key) return;
+    viewedCollection.current = key;
+    trackAnalyticsEvent('w_collection_view', { ...analyticsContext, wallpaper_count: deviceData.item.length });
+  }, [analyticsContext, deviceData.deviceId, deviceData.item.length, deviceData.mediaType, pathname]);
 
   useEffect(() => {
     setMounted(true);
@@ -190,6 +202,7 @@ export default function DeviceWallpaperGrid({
   const openPreview = useCallback((index: number) => {
     const wallpaper = deviceData.item[index];
     trackAnalyticsEvent('w_preview_wallpaper', {
+      ...getWallpaperAnalyticsParams(wallpaper, analyticsContext),
       action: 'open',
       category_name: displayDeviceName,
       wallpaper_name: wallpaper?.name,
@@ -198,7 +211,7 @@ export default function DeviceWallpaperGrid({
     setPreviewWallpapers(deviceData.item);
     setPreviewIndex(index);
     setIsPreviewOpen(true);
-  }, [deviceData, displayDeviceName, pathname]);
+  }, [analyticsContext, deviceData, displayDeviceName, pathname]);
 
   useEffect(() => {
     if (!sharedWallpaper) { openedShareRef.current = ''; return; }
@@ -216,13 +229,14 @@ export default function DeviceWallpaperGrid({
 
   const closePreview = useCallback(() => {
     trackAnalyticsEvent('w_preview_wallpaper', {
+      ...getWallpaperAnalyticsParams(deviceData.item[previewIndex], analyticsContext),
       action: 'close',
       category_name: displayDeviceName,
       wallpaper_name: deviceData.item[previewIndex]?.name,
       page_path: pathname,
     });
     setIsPreviewOpen(false);
-  }, [deviceData, displayDeviceName, pathname, previewIndex]);
+  }, [analyticsContext, deviceData, displayDeviceName, pathname, previewIndex]);
 
   const getWallpaperKind = useCallback((item: DeviceItem): WallpaperKind => {
     const name = item.name.toLowerCase();
@@ -403,7 +417,8 @@ export default function DeviceWallpaperGrid({
                     ? `${item.width} × ${item.height}` : null;
 
                   return (
-                    <article key={imageKey} className="group w-full">
+                    <article key={imageKey} className="group w-full"
+                      {...analyticsAttributes({ ...getWallpaperAnalyticsParams(item, analyticsContext), position: index + 1 }, 'w_wallpaper_impression')}>
                       <button
                         type="button"
                         onClick={() => openPreview(index)}
@@ -488,6 +503,7 @@ export default function DeviceWallpaperGrid({
       </main>
 
       <WallpaperPreviewDownload
+        analyticsContext={analyticsContext}
         isOpen={isPreviewOpen}
         onClose={closePreview}
         wallpapers={previewWallpapers}

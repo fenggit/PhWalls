@@ -15,6 +15,9 @@ export async function wallpaperDownload(request: NextRequest, errorMessage: stri
   let upstreamStatus: number | null = null;
   let phase = 'validation';
   let errorCode = 'PUBLICATION_CHECK';
+  const suppliedRequestId = request.nextUrl.searchParams.get('download_request_id');
+  const downloadRequestId = suppliedRequestId && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(suppliedRequestId)
+    ? suppliedRequestId : undefined;
   const headers = () => ({
     'Cache-Control': DOWNLOAD_CACHE_CONTROL,
     'Server-Timing': [
@@ -26,6 +29,7 @@ export async function wallpaperDownload(request: NextRequest, errorMessage: stri
   const log = (outcome: string, bytes: number, headersMs: number, failureCode?: string) => {
     const entry = JSON.stringify({
       event: 'wallpaper_download', outcome, bytes,
+      download_request_id: downloadRequestId,
       validation_ms: timings.validation, source_ms: timings.source,
       upstream_ms: timings.upstream, headers_ms: headersMs,
       total_ms: Number((performance.now() - started).toFixed(2)),
@@ -40,6 +44,7 @@ export async function wallpaperDownload(request: NextRequest, errorMessage: stri
   try {
     const rawKey = request.nextUrl.searchParams.get('key');
     if (!rawKey) {
+      log('rejected', 0, performance.now() - started, 'MISSING_KEY');
       return NextResponse.json({ error: 'Key is required' }, { status: 400, headers: headers() });
     }
 
@@ -53,6 +58,7 @@ export async function wallpaperDownload(request: NextRequest, errorMessage: stri
       timings.validation = performance.now() - validationStarted;
     }
     if (!key || !published) {
+      log('rejected', 0, performance.now() - started, 'INVALID_KEY');
       return NextResponse.json({ error: 'Invalid key' }, { status: 400, headers: headers() });
     }
 

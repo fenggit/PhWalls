@@ -802,3 +802,7 @@ npm run indexnow -- https://phwalls.com/zh/wallpapers/huawei/huawei-matebook-fol
 ### 壁纸发现与主题 SEO
 
 机型详情展示兄弟合集内链、完整五语言标签，并根据当前已发布素材实时生成张数与原始尺寸导语，后台维护画面及设备场景说明。十个主题提供五语言页面，从既有 D1 素材精选，首页、标签与来源机型相互连接，不按标签组合批量生成页面。主题清单、维护和观察门槛见 [壁纸发现与主题 SEO](docs/wallpaper-discovery-seo.md)，文案整理与条件回滚见 [后台运维](docs/wallpaper-admin-operations.md#合集场景文案与主题试点)。
+
+### Google Analytics 产品统计
+
+网站使用 GA4 记录搜索需求、内容曝光与预览、下载启动、推荐、分享和体验事件。全部事件 Key、参数、漏斗口径、GA4 后台配置及验证步骤见 [Google Analytics 统计 Key](docs/google_analytics_key.md)。下载启动不等于客户端保存完成；单次下载关联与服务端日志见 [下载性能与排障](docs/download-performance.md)。

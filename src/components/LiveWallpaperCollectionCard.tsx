@@ -5,8 +5,10 @@ import { useEffect, useState } from 'react';
 import { Images } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 import WallpaperPlayIndicator from '@/components/WallpaperPlayIndicator';
+import { analyticsAttributes, type AnalyticsEventParams } from '@/lib/analytics';
 
 type Props = {
+  analyticsParams?: AnalyticsEventParams;
   href: string;
   title: string;
   date: string;
@@ -19,7 +21,7 @@ type Props = {
 };
 
 export default function LiveWallpaperCollectionCard({
-  href, title, date, count, imageUrl, headingLevel = 'h2', eager = false, priority = false, onImageLoad,
+  href, title, date, count, imageUrl, headingLevel = 'h2', eager = false, priority = false, onImageLoad, analyticsParams,
 }: Props) {
   const { texts } = useLanguage();
   const [imageError, setImageError] = useState(false);
@@ -27,7 +29,7 @@ export default function LiveWallpaperCollectionCard({
   const Heading = headingLevel;
 
   return (
-    <article className="group w-full">
+    <article className="group w-full" {...(analyticsParams ? analyticsAttributes(analyticsParams, 'w_collection_impression') : {})}>
       <Link href={href} prefetch={false} aria-label={`${title} ${texts.preview}`}
         className="block w-full rounded-2xl text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600">
         <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-lg motion-reduce:transform-none motion-reduce:transition-none">

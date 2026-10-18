@@ -33,6 +33,7 @@ import {
 import { withLanguagePath } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
 import { filterHomeTabs, sortHomeTabsByPriority } from '@/lib/home-priority';
+import { analyticsAttributes } from '@/lib/analytics';
 
 // requestIdleCallback 在部分浏览器/TS DOM lib 中缺失类型，这里做最小化声明
 type IdleWindow = Window & {
@@ -577,10 +578,15 @@ export default function Home({
                     // 首屏首个分类的前几张作为 LCP 候选，固定 eager + high，避免依赖不可靠的 UA 嗅探
                     const isAboveFold = index === 0 && listIndex < 4;
                     const isLcpCandidate = index === 0 && listIndex < 2;
+                    const cardAnalytics = { brand_slug: categoryType, collection_id: item.deviceId,
+                      collection_slug: item.slug, media_type: isLive ? 'dynamic' : 'static',
+                      device_type: forceDesktopCards ? 'desktop' : 'phone',
+                      entry_point: 'category_section', position: listIndex + 1 };
 
                     if (collectionCardVariant === 'live' && detailHref) {
                       return <div key={itemKey} id={itemId} className="scroll-mt-24">
                         <LiveWallpaperCollectionCard href={detailHref} title={itemTitle} date={item.date}
+                          analyticsParams={cardAnalytics}
                           count={itemCount} imageUrl={imageUrls[cardImageKey]} headingLevel="h3"
                           eager={isAboveFold} priority={isLcpCandidate}
                           onImageLoad={() => handleImageLoad(cardImageKey)} />
@@ -593,7 +599,8 @@ export default function Home({
                         id={itemId} 
                         className="scroll-mt-24"
                       >
-                        <article className={`group relative bg-white ${cardStyle.cardClass} ${cardStyle.shadowClass} transition-transform duration-200 ease-out hover:-translate-y-1 overflow-hidden`}>
+                        <article {...analyticsAttributes(cardAnalytics, 'w_collection_impression')}
+                          className={`group relative bg-white ${cardStyle.cardClass} ${cardStyle.shadowClass} transition-transform duration-200 ease-out hover:-translate-y-1 overflow-hidden`}>
                           {detailHref ? (
                             <Link
                               href={detailHref}
@@ -752,6 +759,7 @@ export default function Home({
                     <div className="mt-6 flex justify-center">
                       <Link
                         href={categoryHref}
+                        {...analyticsAttributes({ brand_slug: categoryType, entry_point: 'category_view_all' }, undefined, 'w_navigation_click')}
                         className="inline-flex items-center rounded-full border border-blue-200 bg-white px-5 py-2 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-50"
                       >
                         {viewAllText}
@@ -777,6 +785,7 @@ export default function Home({
                   const slug = normalizeCategoryType(brand.type);
                   return (
                     <Link key={slug} href={withLanguagePath(`${categoryPathPrefix}/${slug}`, currentLang)} prefetch={false}
+                      {...analyticsAttributes({ brand_slug: slug, entry_point: 'category_directory' }, 'w_navigation_impression')}
                       className="group flex min-h-14 min-w-0 items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                       <span className="flex h-8 w-9 shrink-0 items-center justify-center">
                         <Image src={`/brand-icons/${slug}.svg`} alt="" width={32} height={28} className="object-contain" />

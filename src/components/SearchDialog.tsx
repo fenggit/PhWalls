@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { normalizeAnalyticsSearch, trackAnalyticsEvent } from '@/lib/analytics';
 import { ArrowRight, Monitor, Play, Search, Smartphone, X } from 'lucide-react';
 import { getTabData, localizeWallpaperCollectionName } from '@/lib/data';
 import { getDesktopTabData, buildDesktopWallpaperDetailPath } from '@/lib/desktop-data';
@@ -46,6 +47,14 @@ export default function SearchDialog({ language, onClose }: { language: Language
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const openedRef = useRef(false);
+  const reportedQueryRef = useRef('');
+
+  useEffect(() => {
+    if (openedRef.current) return;
+    openedRef.current = true;
+    trackAnalyticsEvent('w_search_open', { entry_point: 'header_search' });
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,6 +73,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         console.error('Search index unavailable:', error);
+        trackAnalyticsEvent('w_search_error', { error_code: 'search_index_load' });
         setLoadState('error');
       });
     return () => controller.abort();
@@ -165,10 +175,28 @@ export default function SearchDialog({ language, onClose }: { language: Language
         date: entry.date,
       });
     }
-    return found.sort((a, b) => b.score - a.score || b.date.localeCompare(a.date)).slice(0, 40);
+    return found.sort((a, b) => b.score - a.score || b.date.localeCompare(a.date));
   }, [query, entries, phoneTabs, desktopTabs, liveTabs, categoryLabels, language, texts.phoneNavShortLabel, texts.desktopNavShortLabel, texts.liveWallpapersNavLabel, texts.liveNavShortLabel]);
 
-  const visibleResults: SearchResult[] = query.trim() ? results : phoneTabs.slice(0, 6).map((tab) => ({
+  const reportSearch = useCallback(() => {
+    if (loadState !== 'ready' || !query.trim()) return;
+    const queryKey = normalizeSearchText(query);
+    if (reportedQueryRef.current === queryKey) return;
+    reportedQueryRef.current = queryKey;
+    const searchTerm = normalizeAnalyticsSearch(query);
+    const params = { search_term: searchTerm, query_redacted: searchTerm === undefined,
+      result_count: results.length, visible_count: Math.min(results.length, 40), entry_point: 'header_search' };
+    trackAnalyticsEvent('w_search_results', params);
+    if (!results.length) trackAnalyticsEvent('w_search_no_results', params);
+  }, [loadState, query, results.length]);
+
+  useEffect(() => {
+    if (!query.trim()) reportedQueryRef.current = '';
+    const timer = setTimeout(reportSearch, 600);
+    return () => clearTimeout(timer);
+  }, [query, reportSearch]);
+
+  const visibleResults: SearchResult[] = query.trim() ? results.slice(0, 40) : phoneTabs.slice(0, 6).map((tab) => ({
     href: withLanguagePath(buildBrandPath(tab.type), language),
     title: tab.title,
     category: texts.phoneNavShortLabel,
@@ -208,8 +236,18 @@ export default function SearchDialog({ language, onClose }: { language: Language
           {loadState === 'loading' && query.trim() && <p className="px-3 py-6 text-sm text-gray-600">{texts.loading}</p>}
           {loadState === 'error' && <p className="px-3 py-6 text-sm text-gray-600">{texts.searchUnavailable}</p>}
           {loadState === 'ready' && query.trim() && visibleResults.length === 0 && <p className="px-3 py-6 text-sm text-gray-600">{texts.noSearchResults}</p>}
-          {visibleResults.map((result) => (
-            <Link key={result.href} href={result.href} onClick={onClose} className="group flex min-h-14 items-center gap-3 rounded-md px-3 py-2 text-gray-900 hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600">
+          {visibleResults.map((result, position) => (
+            <Link key={result.href} href={result.href} onClick={() => {
+              reportSearch();
+              const searchTerm = normalizeAnalyticsSearch(query);
+              trackAnalyticsEvent('w_search_result_click', {
+                search_term: searchTerm, query_redacted: Boolean(query.trim()) && searchTerm === undefined,
+                position: position + 1, target: result.href, entry_point: 'header_search',
+                result_type: query.trim() ? 'search' : 'suggestion',
+                device_type: result.desktop ? 'desktop' : 'phone', media_type: result.live ? 'dynamic' : 'static',
+              });
+              onClose();
+            }} className="group flex min-h-14 items-center gap-3 rounded-md px-3 py-2 text-gray-900 hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600">
               {result.live ? <Play className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" /> : result.desktop ? <Monitor className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" /> : <Smartphone className="h-4 w-4 shrink-0 text-gray-500" aria-hidden="true" />}
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{result.title}</span>

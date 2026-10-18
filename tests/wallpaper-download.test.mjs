@@ -24,14 +24,32 @@ function setup(t, { published = true, upstream } = {}) {
   });
   return {
     logs, checks, fetches,
-    get(path, objectKey = key) {
+    get(path, objectKey = key, requestId) {
       return load(`src/app/${path}/route.ts`).GET(new NextRequest(
-        `https://phwalls.com/${path}?key=${encodeURIComponent(objectKey)}`,
+        `https://phwalls.com/${path}?key=${encodeURIComponent(objectKey)}${requestId ? `&download_request_id=${encodeURIComponent(requestId)}` : ''}`,
         { headers: { 'CF-Ray': 'def-SEA' } },
       ));
     },
   };
 }
+
+test('download logs correlate a single attempt without accepting arbitrary input as a request ID', async (t) => {
+  const r = setup(t);
+  const id = '8cc40223-2e0f-4b21-838e-6691fc1c03fe';
+  await (await r.get(paths[0], key, id)).text();
+  assert.equal(JSON.parse(r.logs[0][0]).download_request_id, id);
+  await (await r.get(paths[0], key, 'secret@example.com')).text();
+  assert.equal(JSON.parse(r.logs[1][0]).download_request_id, undefined);
+});
+
+test('unpublished download rejections are counted without fetching files', async (t) => {
+  const r = setup(t, { published: false });
+  assert.equal((await r.get(paths[0])).status, 400);
+  assert.equal(r.fetches.length, 0);
+  const entry = JSON.parse(r.logs[0][0]);
+  assert.equal(entry.outcome, 'rejected');
+  assert.equal(entry.error_code, 'INVALID_KEY');
+});
 
 for (const path of paths) {
   test(`${path} reports validation/upstream timing and streams the original attachment`, async (t) => {

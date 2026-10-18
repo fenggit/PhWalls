@@ -70,7 +70,7 @@ export default async function ThemePage({ params }: Props) {
           <p className="text-gray-400">{texts.updated} <time dateTime={updated}>{updated.slice(0, 10)}</time></p>
         </div>
       </header>
-      <ThemeWallpaperGallery wallpapers={wallpapers} title={copy.title} language={language} />
+      <ThemeWallpaperGallery wallpapers={wallpapers} title={copy.title} language={language} themeSlug={theme.slug} />
       <section className="mt-14" aria-labelledby="theme-preview-notice">
         <h2 id="theme-preview-notice" className="text-lg font-semibold">{texts.previewHeading}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-600">{texts.previewNote}</p>

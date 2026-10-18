@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { LanguageProvider } from '@/components/LanguageProvider';
 import { ShareProvider } from '@/components/ShareProvider';
+import AnalyticsObserver from '@/components/AnalyticsObserver';
 import Script from 'next/script';
 import { Inter } from 'next/font/google';
 import { SITE_URL } from '@/lib/seo';
@@ -146,7 +147,7 @@ export default async function RootLayout({
         />
         <Script
           id="google-tag-init"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -210,6 +211,7 @@ export default async function RootLayout({
       <body className={`${inter.className} antialiased bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen`}>
         <LanguageProvider initialLanguage={currentLanguage}>
           <ShareProvider>
+            <AnalyticsObserver />
             <div id="__next">
               {children}
             </div>

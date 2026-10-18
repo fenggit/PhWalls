@@ -6,6 +6,7 @@ import { collectionDetailPath } from '@/lib/wallpaper-discovery';
 import { fillDiscovery, getDiscoveryTexts } from '@/lib/discovery-i18n';
 import { getI18nTexts } from '@/lib/i18n';
 import { withLanguagePath } from '@/lib/language';
+import { analyticsAttributes } from '@/lib/analytics';
 
 export default async function RelatedWallpapers({ category, collection, language, brandPath, brandLabel }: {
   category: string; collection: WallpaperCollection; language: Language; brandPath: string; brandLabel: string;
@@ -18,8 +19,11 @@ export default async function RelatedWallpapers({ category, collection, language
       {collection.mediaType === 'dynamic' ? texts.relatedLive : texts.related}
     </h2>
     <ul className="mt-5 grid grid-cols-2 gap-x-5 gap-y-2 lg:grid-cols-3">
-      {rows.map(row => <li key={row.deviceId}>
+      {rows.map((row, position) => <li key={row.deviceId}>
         <Link prefetch={false} href={withLanguagePath(collectionDetailPath(category, row.slug, collection.mediaType), language)}
+          {...analyticsAttributes({ brand_slug: category, collection_id: row.deviceId, collection_slug: row.slug,
+            source_collection_id: collection.deviceId, media_type: collection.mediaType || 'static',
+            entry_point: 'related_collections', position: position + 1 }, 'w_related_impression')}
           className="block rounded-lg py-3 pr-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
           <span className="text-sm font-medium text-gray-900 hover:text-blue-600">{row.name}</span>
           <span className="mt-1 block text-xs leading-5 text-gray-500">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import WallpaperPreviewDownload from '@/components/WallpaperPreviewDownload';
@@ -10,20 +10,24 @@ import { wallpaperResolution } from '@/lib/collection-intro';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { withLanguagePath } from '@/lib/language';
 import type { ThemeWallpaper } from '@/lib/wallpaper-theme-db';
-import { trackAnalyticsEvent } from '@/lib/analytics';
+import { analyticsAttributes, getWallpaperAnalyticsParams, trackAnalyticsEvent } from '@/lib/analytics';
 import type { Language } from '@/types';
 import { getI18nTexts } from '@/lib/i18n';
 import { Scan } from 'lucide-react';
 
-export default function ThemeWallpaperGallery({ wallpapers, title, language }: { wallpapers: ThemeWallpaper[]; title: string; language: Language }) {
+export default function ThemeWallpaperGallery({ wallpapers, title, language, themeSlug }: { wallpapers: ThemeWallpaper[]; title: string; language: Language; themeSlug: string }) {
   const [index, setIndex] = useState<number | null>(null);
+  const analyticsContext = useMemo(() => ({ theme_slug: themeSlug, entry_point: 'theme_gallery' }), [themeSlug]);
   const open = (position: number) => {
     setIndex(position);
-    trackAnalyticsEvent('theme_wallpaper_preview', { theme: title, wallpaper_id: wallpapers[position].id });
+    trackAnalyticsEvent('theme_wallpaper_preview', { ...getWallpaperAnalyticsParams(wallpapers[position], analyticsContext),
+      theme: title, position: position + 1 });
   };
   return <>
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
-      {wallpapers.map((item, position) => <article key={item.id} className="group min-w-0 overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200/80 transition-shadow hover:shadow-md motion-reduce:transition-none">
+      {wallpapers.map((item, position) => <article key={item.id}
+        {...analyticsAttributes({ ...getWallpaperAnalyticsParams(item, analyticsContext), position: position + 1 }, 'w_wallpaper_impression')}
+        className="group min-w-0 overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200/80 transition-shadow hover:shadow-md motion-reduce:transition-none">
         <button type="button" onClick={() => open(position)} className="relative block w-full focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-blue-600"
           aria-label={`${getI18nTexts(language).preview} ${formatWallpaperDisplayName(item.name)}`}>
           <div className="relative aspect-[4/5] overflow-hidden bg-gray-100">
@@ -37,7 +41,7 @@ export default function ThemeWallpaperGallery({ wallpapers, title, language }: {
         <div className="p-3 sm:p-3.5">
         <h3 className="text-sm font-medium leading-5 text-gray-900">
           <Link href={withLanguagePath(item.sourcePath, language)} prefetch={false}
-            onClick={() => trackAnalyticsEvent('theme_source_click', { theme: title, source: item.sourcePath })}
+            onClick={() => trackAnalyticsEvent('theme_source_click', { ...getWallpaperAnalyticsParams(item, analyticsContext), theme: title, source: item.sourcePath })}
             className="block truncate hover:text-blue-700 hover:underline" title={item.sourceName}>{item.sourceName}</Link>
         </h3>
         <p className="mt-1.5 text-xs tabular-nums text-gray-500">{wallpaperResolution(item)}</p>
@@ -46,6 +50,7 @@ export default function ThemeWallpaperGallery({ wallpapers, title, language }: {
       </article>)}
     </div>
     <WallpaperPreviewDownload isOpen={index !== null} onClose={() => setIndex(null)} wallpapers={wallpapers}
+      analyticsContext={analyticsContext}
       currentIndex={index ?? 0} onIndexChange={setIndex} categoryName={title} />
   </>;
 }

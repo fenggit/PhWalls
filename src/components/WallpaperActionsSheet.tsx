@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Download, Share2 } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { getShareTexts } from '@/lib/share';
+import { trackAnalyticsEvent, type AnalyticsEventParams } from '@/lib/analytics';
 
 type Props = {
+  analyticsParams?: AnalyticsEventParams;
   title: string;
   previewImageUrl?: string;
   shareUrl: string;
@@ -15,7 +17,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function WallpaperActionsSheet({ title, previewImageUrl, shareUrl, downloadDisabled, isDownloading, onDownload, onClose }: Props) {
+export default function WallpaperActionsSheet({ title, previewImageUrl, shareUrl, downloadDisabled, isDownloading, onDownload, onClose, analyticsParams }: Props) {
   const { language, texts } = useLanguage();
   const shareTexts = getShareTexts(language);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -36,22 +38,29 @@ export default function WallpaperActionsSheet({ title, previewImageUrl, shareUrl
   const share = async () => {
     if (sharingRef.current) return;
     sharingRef.current = true;
+    const params = { ...analyticsParams, share_source: 'wallpaper' };
+    trackAnalyticsEvent('w_share_click', params);
     try {
       if (typeof navigator.share === 'function') {
         try {
           await navigator.share({ title, url: shareUrl });
+          trackAnalyticsEvent('w_share_result', { ...params, share_method: 'native', outcome: 'resolved' });
           onClose();
           return;
         } catch (error) {
-          if (error instanceof DOMException && error.name === 'AbortError') return;
+          const cancelled = error instanceof DOMException && error.name === 'AbortError';
+          trackAnalyticsEvent('w_share_result', { ...params, share_method: 'native', outcome: cancelled ? 'cancelled' : 'error' });
+          if (cancelled) return;
         }
       }
       setShowLink(true);
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
+        trackAnalyticsEvent('w_share_result', { ...params, share_method: 'clipboard', outcome: 'copied' });
         setShareStatus(shareTexts.copiedLink);
-      }
+      } else trackAnalyticsEvent('w_share_result', { ...params, share_method: 'manual', outcome: 'displayed' });
     } catch {
+      trackAnalyticsEvent('w_share_result', { ...params, share_method: 'clipboard', outcome: 'error' });
       setShareStatus(texts.copyFailed);
     } finally {
       sharingRef.current = false;
