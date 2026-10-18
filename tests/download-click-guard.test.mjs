@@ -3,16 +3,21 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import { test } from 'node:test';
+import { webcrypto } from 'node:crypto';
 
 const require = createRequire(import.meta.url);
 const React = require('react');
 const ts = require('typescript');
+const analyticsModule = { exports: {} };
+runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/analytics.ts', import.meta.url), 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText, { module: analyticsModule, exports: analyticsModule.exports, URL });
 const code = ts.transpileModule(readFileSync(new URL('../src/components/WallpaperPreviewDownload.tsx', import.meta.url), 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
 }).outputText;
 
 function setup({ video = false, fetchFile, clickDownload } = {}) {
-  const state = [], refs = [], timers = [], events = [];
+  const state = [], refs = [], timers = [], events = [], eventDetails = [];
   let stateCursor = 0, refCursor = 0, downloads = 0;
   const downloadLinks = [];
   const module = { exports: {} };
@@ -33,7 +38,9 @@ function setup({ video = false, fetchFile, clickDownload } = {}) {
         wallpaperActions: 'Actions',
       } }) };
       if (name === '@/lib/data') return { formatWallpaperDisplayName: value => value };
-      if (name === '@/lib/analytics') return { trackAnalyticsEvent: name => events.push(name) };
+      if (name === '@/lib/analytics') return { ...analyticsModule.exports, trackAnalyticsEvent: (name, params) => {
+        events.push(name); eventDetails.push({ name, params });
+      } };
       if (name === '@/lib/long-press') return { createLongPress: () => ({ cancel() {} }) };
       if (name.startsWith('@/')) return { __esModule: true, default: () => null };
       return require(name);
@@ -43,7 +50,7 @@ function setup({ video = false, fetchFile, clickDownload } = {}) {
       body: { appendChild() {}, removeChild() {} },
     },
     window: { location: { href: 'https://phwalls.com/live/test' }, URL: { createObjectURL: () => 'blob:test', revokeObjectURL() {} } },
-    URL, fetch: fetchFile, setTimeout: (callback, delay) => { timers.push({ callback, delay }); },
+    URL, crypto: webcrypto, fetch: fetchFile, setTimeout: (callback, delay) => { timers.push({ callback, delay }); },
     alert() {}, console: { error() {} },
   });
   const render = () => {
@@ -66,7 +73,7 @@ function setup({ video = false, fetchFile, clickDownload } = {}) {
       return find(render(), node => typeof node.props?.onDownload === 'function');
     },
     finishTimers: () => { timers.splice(0).forEach(timer => timer.callback()); },
-    downloads: () => downloads, downloadLinks, events,
+    downloads: () => downloads, downloadLinks, events, eventDetails,
   };
 }
 
@@ -80,6 +87,11 @@ test('video download always requests the original file and never the browser pre
   assert.equal(url.pathname, '/api/files/download');
   assert.equal(url.searchParams.get('key'), 'wallpapers/test/origin/movie.mp4');
   assert.equal(url.searchParams.get('key').includes('/preview/'), false);
+  const requestId = url.searchParams.get('download_request_id');
+  assert.match(requestId, /^[0-9a-f-]{36}$/);
+  const details = preview.eventDetails.filter(event => event.name.startsWith('w_wallpaper_download_'));
+  assert.equal(details.length, 2);
+  assert.ok(details.every(event => event.params.download_request_id === requestId));
 });
 
 test('video download shows a spinner and blocks repeated clicks until its startup cooldown ends', async () => {

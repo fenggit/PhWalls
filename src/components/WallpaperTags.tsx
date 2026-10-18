@@ -5,6 +5,7 @@ import type { Language } from '@/types';
 import { fillDiscovery, getDiscoveryTexts, localizeWallpaperTag } from '@/lib/discovery-i18n';
 import { themePathForTag } from '@/lib/wallpaper-themes';
 import { trackAnalyticsEvent } from '@/lib/analytics';
+import { readAnalyticsParams } from '@/lib/analytics-dom';
 
 export default function WallpaperTags({ tags = [], language, limit, dark = false, onMore }: {
   tags?: string[]; language: Language; limit?: number; dark?: boolean; onMore?: () => void;
@@ -20,7 +21,8 @@ export default function WallpaperTags({ tags = [], language, limit, dark = false
       const href = themePathForTag(tag, language);
       return href ? <Link key={tag} href={href} prefetch={false}
         className={`${style} hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600`}
-        onClick={() => trackAnalyticsEvent('wallpaper_theme_click', { tag, target: href })}>
+        onClick={(event) => trackAnalyticsEvent('wallpaper_theme_click', { ...readAnalyticsParams(event.currentTarget),
+          tag, target: href, theme_slug: href.split('/').pop(), entry_point: 'wallpaper_tag' })}>
         {localizeWallpaperTag(tag, language)}
       </Link> : <span key={tag} className={style}>{localizeWallpaperTag(tag, language)}</span>;
     })}

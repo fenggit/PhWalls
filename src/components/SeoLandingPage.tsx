@@ -20,6 +20,7 @@ import { buildPublicR2Url } from '@/lib/r2-public-url';
 import { buildWallpaperDetailPath, slugifyWallpaperName, type WallpaperCategory } from '@/lib/wallpaper-data';
 import { SITE_URL } from '@/lib/seo';
 import { withLanguagePath, withLanguageUrl } from '@/lib/language';
+import { analyticsAttributes, trackAnalyticsEvent } from '@/lib/analytics';
 
 type LandingCard = {
   deviceId?: string;
@@ -189,13 +190,20 @@ export default function SeoLandingPage({
               const cardDisplayName = card.deviceId ? card.name : localizeWallpaperCollectionName(currentLang, card.name);
               const cardTitle = buildWallpaperListTitle(cardDisplayName,
                 isLive ? texts.liveWallpapersNavLabel : texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+              const cardAnalytics = { brand_slug: resolvedDetailCategory, collection_id: card.deviceId,
+                collection_slug: card.slug, media_type: isLive ? 'dynamic' : 'static',
+                device_type: /\/desktop(?:\/|$)/.test(pathname) ? 'desktop' : 'phone',
+                entry_point: 'category_list', position: index + 1 };
               if (collectionCardVariant === 'live') {
                 return <LiveWallpaperCollectionCard key={`${card.name}:dynamic`} href={detailHref} title={cardTitle}
+                  analyticsParams={cardAnalytics}
                   date={card.date} count={card.count} imageUrl={card.imageKey ? buildCardImageUrl(card.imageKey) : null}
                   eager={index < 4} priority={index < 2} />;
               }
               return (
-                <article key={`${card.name}:${isLive ? 'dynamic' : 'static'}`} className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
+                <article key={`${card.name}:${isLive ? 'dynamic' : 'static'}`}
+                  {...analyticsAttributes(cardAnalytics, 'w_collection_impression')}
+                  className="group w-full" style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 220px' }}>
                   <Link href={detailHref} prefetch={pageSize ? false : undefined} className="block w-full text-left" aria-label={cardTitle}>
                     <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-lg">
                       <div className={`${cardAspect} overflow-hidden`}>
@@ -244,7 +252,12 @@ export default function SeoLandingPage({
               {hasMore && (
                 <button
                   type="button"
-                  onClick={() => setPageCount((previous) => previous + 1)}
+                  onClick={() => {
+                    trackAnalyticsEvent('w_load_more', { brand_slug: resolvedDetailCategory,
+                      visible_count: visibleCards.length, total_count: cards.length, page_number: pageCount + 1,
+                      entry_point: 'category_list' });
+                    setPageCount((previous) => previous + 1);
+                  }}
                   className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
                 >
                   {texts.loadMoreCollections}

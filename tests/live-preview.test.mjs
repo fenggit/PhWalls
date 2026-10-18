@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import { test } from 'node:test';
+import { createTsLoader } from '../scripts/tests/load-ts.mjs';
+const monitor = createTsLoader({ '@cloudflare/next-on-pages': { getOptionalRequestContext: () => undefined } })('src/lib/api-monitor.ts');
 const require = createRequire(import.meta.url);
 const ts = require('typescript');
 const { NextRequest, NextResponse } = require('next/server');
@@ -25,6 +27,7 @@ function fixture(published = true, upstreamStatus = 206, transientFailures = 0, 
         'content-length': '5', 'accept-ranges': 'bytes' },
     }); },
     require(name) {
+      if (name === '@/lib/api-monitor') return monitor;
       if (name === 'next/server') return { NextResponse };
       if (name === '@/lib/wallpaper-key') return keyModule.exports;
       if (name === '@/lib/wallpaper-db') return { isPublishedWallpaperKey: async () => published };

@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { getTabData } from '@/lib/data';
 import {
@@ -12,7 +13,7 @@ import {
 export const runtime = 'edge';
 
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   try {
     const searchLang = request.nextUrl.searchParams.get('lang');
     const hasExplicitLanguagePreference =
@@ -41,4 +42,8 @@ export async function GET(request: NextRequest) {
       { status: 500, headers: { 'Cache-Control': 'no-store' } }
     );
   }
+}
+
+export function GET(request: NextRequest) {
+  return observeApiRequest(request, () => handleGET(request));
 }

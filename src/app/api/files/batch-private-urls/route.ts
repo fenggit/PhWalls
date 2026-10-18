@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
@@ -7,7 +8,7 @@ import { getPublishedWallpaperKeys } from '@/lib/wallpaper-db';
 export const runtime = 'edge';
 const SIGNING_CONCURRENCY = 8;
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     let body: { keys?: unknown };
     try {
@@ -173,4 +174,8 @@ export async function GET() {
     },
     { status: 405 }
   );
+}
+
+export function POST(request: NextRequest) {
+  return observeApiRequest(request, () => handlePOST(request));
 }

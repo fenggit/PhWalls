@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
@@ -6,7 +7,7 @@ import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   try {
     const key = sanitizeWallpaperDownloadKey(request.nextUrl.searchParams.get('key'));
     if (!key || !/\.(mp4|webm)$/i.test(key) || !await isPublishedWallpaperKey(key, true)) {
@@ -58,4 +59,8 @@ export async function GET(request: NextRequest) {
     console.error('Video preview failed:', error);
     return NextResponse.json({ error: 'Video preview unavailable' }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
   }
+}
+
+export function GET(request: NextRequest) {
+  return observeApiRequest(request, () => handleGET(request));
 }

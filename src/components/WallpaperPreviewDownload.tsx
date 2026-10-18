@@ -5,13 +5,20 @@ import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, Ref
 import { useLanguage } from '@/components/LanguageProvider';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
-import { trackAnalyticsEvent } from '@/lib/analytics';
+import { analyticsAttributes, buildAnalyticsShareUrl, getWallpaperAnalyticsParams, trackAnalyticsEvent, type AnalyticsEventParams } from '@/lib/analytics';
 import VideoWallpaperPlayer from '@/components/VideoWallpaperPlayer';
 import WallpaperActionsSheet from '@/components/WallpaperActionsSheet';
 import { createLongPress } from '@/lib/long-press';
 import WallpaperTags from '@/components/WallpaperTags';
 
 interface WallpaperItem {
+  id?: string;
+  category?: string;
+  brand?: string;
+  sourcePath?: string;
+  collectionId?: string;
+  width?: number | null;
+  height?: number | null;
   tags?: string[];
   name: string;
   type: string;
@@ -22,6 +29,7 @@ interface WallpaperItem {
 }
 
 interface WallpaperPreviewDownloadProps {
+  analyticsContext?: AnalyticsEventParams;
   isOpen: boolean;
   onClose: () => void;
   wallpapers: WallpaperItem[];
@@ -36,7 +44,8 @@ export default function WallpaperPreviewDownload({
   wallpapers,
   currentIndex,
   onIndexChange,
-  categoryName
+  categoryName,
+  analyticsContext,
 }: WallpaperPreviewDownloadProps) {
   // 使用 useLanguage hook 获取当前语言和多语言文本
   const { texts, language } = useLanguage();
@@ -60,6 +69,45 @@ export default function WallpaperPreviewDownload({
   const preloadedUrlsRef = useRef<Record<string, string>>({});
 
   const currentWallpaper = wallpapers[currentIndex];
+  const analyticsParams = useMemo(() => currentWallpaper ? {
+    ...getWallpaperAnalyticsParams(currentWallpaper, analyticsContext), position: currentIndex + 1,
+  } : analyticsContext || {}, [currentWallpaper, analyticsContext, currentIndex]);
+  const previewStartedAt = useRef(0);
+  const previewReady = useRef(false);
+  const handleMediaReady = useCallback(() => {
+    if (previewReady.current) return;
+    previewReady.current = true;
+    trackAnalyticsEvent('w_preview_ready', { ...analyticsParams,
+      load_ms: Math.round(performance.now() - previewStartedAt.current) });
+  }, [analyticsParams]);
+
+  useEffect(() => {
+    if (!isOpen || !currentWallpaper) return;
+    previewStartedAt.current = performance.now();
+    previewReady.current = false;
+    trackAnalyticsEvent('w_preview_view', analyticsParams);
+    let visibleAt = document.visibilityState === 'visible' ? performance.now() : null;
+    let visibleMs = 0;
+    let ended = false;
+    const visibility = () => {
+      if (visibleAt !== null) visibleMs += performance.now() - visibleAt;
+      visibleAt = document.visibilityState === 'visible' ? performance.now() : null;
+    };
+    const end = () => {
+      if (ended) return;
+      ended = true;
+      if (visibleAt !== null) visibleMs += performance.now() - visibleAt;
+      trackAnalyticsEvent('w_preview_end', { ...analyticsParams, duration_ms: Math.round(visibleMs),
+        preview_loaded: previewReady.current });
+    };
+    document.addEventListener('visibilitychange', visibility);
+    window.addEventListener('pagehide', end);
+    return () => {
+      end();
+      document.removeEventListener('visibilitychange', visibility);
+      window.removeEventListener('pagehide', end);
+    };
+  }, [isOpen, currentWallpaper, analyticsParams]);
   const displayCategoryName = formatWallpaperDisplayName(categoryName);
   const displayWallpaperName = currentWallpaper ? formatWallpaperDisplayName(currentWallpaper.name) : '';
   const isVideo = Boolean(currentWallpaper && (currentWallpaper.type.startsWith('video/') || /\.(mp4|webm)$/i.test(currentWallpaper.originPath)));
@@ -71,7 +119,7 @@ export default function WallpaperPreviewDownload({
     const url = new URL(window.location.href);
     url.searchParams.set('wallpaper', currentWallpaper.name);
     url.hash = '';
-    return url.toString();
+    return buildAnalyticsShareUrl(url.toString(), 'wallpaper');
   }, [isOpen, currentWallpaper]);
 
   useEffect(() => {
@@ -227,6 +275,9 @@ export default function WallpaperPreviewDownload({
       if (cancelled) return;
 
       if (!url) {
+        if (!currentWallpaper.type.startsWith('video/')) trackAnalyticsEvent('w_media_error', {
+          ...analyticsParams, media_location: 'preview', error_code: 'preview_url',
+        });
         setImageError(true);
         setIsLoading(false);
         return;
@@ -241,33 +292,35 @@ export default function WallpaperPreviewDownload({
     return () => {
       cancelled = true;
     };
-  }, [currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
+  }, [analyticsParams, currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls]);
 
   // 切换到上一张
   const goToPrevious = useCallback(() => {
     if (currentIndex > 0) {
       const nextIndex = currentIndex - 1;
       trackAnalyticsEvent('w_preview_navigate', {
+        ...getWallpaperAnalyticsParams(wallpapers[nextIndex], analyticsContext), position: nextIndex + 1,
         direction: 'previous',
         category_name: categoryName,
         wallpaper_name: wallpapers[nextIndex]?.name,
       });
       onIndexChange(nextIndex);
     }
-  }, [categoryName, currentIndex, onIndexChange, wallpapers]);
+  }, [analyticsContext, categoryName, currentIndex, onIndexChange, wallpapers]);
 
   // 切换到下一张
   const goToNext = useCallback(() => {
     if (currentIndex < wallpapers.length - 1) {
       const nextIndex = currentIndex + 1;
       trackAnalyticsEvent('w_preview_navigate', {
+        ...getWallpaperAnalyticsParams(wallpapers[nextIndex], analyticsContext), position: nextIndex + 1,
         direction: 'next',
         category_name: categoryName,
         wallpaper_name: wallpapers[nextIndex]?.name,
       });
       onIndexChange(nextIndex);
     }
-  }, [categoryName, currentIndex, onIndexChange, wallpapers]);
+  }, [analyticsContext, categoryName, currentIndex, onIndexChange, wallpapers]);
 
   // 实际执行下载
   const downloadWallpaper = useCallback(async () => {
@@ -276,16 +329,20 @@ export default function WallpaperPreviewDownload({
     // Lock synchronously so rapid clicks cannot race React's state update.
     downloadInProgressRef.current = true;
     setIsDownloading(true);
+    let downloadRequestId: string | undefined;
+    try { downloadRequestId = globalThis.crypto?.randomUUID?.(); } catch { /* Correlation must not block downloads. */ }
 
     try {
       trackAnalyticsEvent('w_wallpaper_download_click', {
+        ...analyticsParams,
+        download_request_id: downloadRequestId,
         category_name: categoryName,
         wallpaper_name: currentWallpaper.name,
         file_type: currentWallpaper.type,
         file_size: currentWallpaper.size,
       });
       // 使用服务器端代理下载，避免CORS问题
-      const downloadUrl = `/api/files/download?key=${encodeURIComponent(currentWallpaper.originPath)}`;
+      const downloadUrl = `/api/files/download?key=${encodeURIComponent(currentWallpaper.originPath)}${downloadRequestId ? `&download_request_id=${downloadRequestId}` : ''}`;
 
       // Hand off inside the click gesture: the browser streams originals to disk,
       // shows its download progress and avoids buffering large images in mobile memory.
@@ -302,6 +359,8 @@ export default function WallpaperPreviewDownload({
       // A browser-managed download has no completion callback. Record the handoff
       // without claiming that the file has finished downloading or been saved.
       trackAnalyticsEvent('w_wallpaper_download_started', {
+        ...analyticsParams,
+        download_request_id: downloadRequestId,
         category_name: categoryName,
         wallpaper_name: currentWallpaper.name,
         file_type: currentWallpaper.type,
@@ -311,6 +370,8 @@ export default function WallpaperPreviewDownload({
     } catch (error) {
       console.error('Download failed:', error);
       trackAnalyticsEvent('w_wallpaper_download_fail', {
+        ...analyticsParams, error_code: 'download_handoff',
+        download_request_id: downloadRequestId,
         category_name: categoryName,
         wallpaper_name: currentWallpaper.name,
         file_type: currentWallpaper.type,
@@ -322,6 +383,7 @@ export default function WallpaperPreviewDownload({
       setIsDownloading(false);
     }
   }, [
+    analyticsParams,
     categoryName,
     currentWallpaper,
     texts.downloadFailed,
@@ -345,37 +407,41 @@ export default function WallpaperPreviewDownload({
   const handleZoomIn = useCallback(() => {
     const nextZoom = Math.min(zoomLevel + 0.5, 3);
     trackAnalyticsEvent('w_preview_zoom', {
+      ...analyticsParams,
       action: 'zoom_in',
       zoom_level: nextZoom,
       wallpaper_name: currentWallpaper?.name,
     });
     setZoomLevel(nextZoom);
-  }, [currentWallpaper, zoomLevel]);
+  }, [analyticsParams, currentWallpaper, zoomLevel]);
 
   const handleZoomOut = useCallback(() => {
     const nextZoom = Math.max(zoomLevel - 0.5, 0.5);
     trackAnalyticsEvent('w_preview_zoom', {
+      ...analyticsParams,
       action: 'zoom_out',
       zoom_level: nextZoom,
       wallpaper_name: currentWallpaper?.name,
     });
     setZoomLevel(nextZoom);
-  }, [currentWallpaper, zoomLevel]);
+  }, [analyticsParams, currentWallpaper, zoomLevel]);
 
   const handleResetZoom = useCallback(() => {
     trackAnalyticsEvent('w_preview_zoom', {
+      ...analyticsParams,
       action: 'reset',
       zoom_level: 1,
       wallpaper_name: currentWallpaper?.name,
     });
     setZoomLevel(1);
-  }, [currentWallpaper]);
+  }, [analyticsParams, currentWallpaper]);
 
   // 刷新当前图片
   const handleRefreshImage = useCallback(async () => {
     if (!currentWallpaper || !isOpen) return;
 
     trackAnalyticsEvent('w_preview_refresh', {
+      ...analyticsParams,
       category_name: categoryName,
       wallpaper_name: currentWallpaper.name,
     });
@@ -403,7 +469,7 @@ export default function WallpaperPreviewDownload({
     mergePreloadedUrls({ [displayPath]: refreshedUrl });
     setCurrentImageUrl(refreshedUrl);
     setIsLoading(false);
-  }, [categoryName, currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls, isVideo]);
+  }, [analyticsParams, categoryName, currentWallpaper, isOpen, mergePreloadedUrls, resolveImageUrls, isVideo]);
 
   // 键盘事件处理
   useEffect(() => {
@@ -474,7 +540,8 @@ export default function WallpaperPreviewDownload({
   if (!isOpen) return null;
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={displayCategoryName} className="fixed inset-0 z-50 bg-black">
+    <div role="dialog" aria-modal="true" aria-label={displayCategoryName} className="fixed inset-0 z-50 bg-black"
+      {...analyticsAttributes(analyticsParams)}>
       {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 bg-black"
@@ -657,6 +724,7 @@ export default function WallpaperPreviewDownload({
           }`}>
             {isVideo ? (
               <VideoWallpaperPlayer key={`${videoUrl}-${videoRefreshToken}`} url={videoUrl} poster={currentImageUrl}
+                analyticsParams={analyticsParams} onReady={handleMediaReady}
                 label={displayWallpaperName} refreshToken={videoRefreshToken} immersive={isVideoImmersive}
                 onToggleImmersive={() => setIsVideoImmersive(value => !value)} />
             ) : isLoading ? (
@@ -695,7 +763,11 @@ export default function WallpaperPreviewDownload({
                   opacity: 1,
                   animation: 'imageFadeIn 0.3s ease-out'
                 }}
-                onError={() => setImageError(true)}
+                onLoad={handleMediaReady}
+                onError={() => {
+                  setImageError(true);
+                  trackAnalyticsEvent('w_media_error', { ...analyticsParams, media_location: 'preview', error_code: 'image_load' });
+                }}
               />
             ) : (
               <div className="flex items-center justify-center w-full h-full">
@@ -803,6 +875,7 @@ export default function WallpaperPreviewDownload({
       </div>
       {isActionsOpen && currentWallpaper && (
         <WallpaperActionsSheet title={displayWallpaperName} previewImageUrl={currentImageUrl} shareUrl={shareUrl}
+          analyticsParams={analyticsParams}
           downloadDisabled={isDownloading || (!isVideo && (!currentImageUrl || isLoading || imageError))}
           isDownloading={isDownloading}
           onDownload={handleDownloadClick} onClose={closeActions} />

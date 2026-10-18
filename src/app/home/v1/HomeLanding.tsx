@@ -19,6 +19,7 @@ import { SITE_URL } from '@/lib/seo';
 import type { I18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
 import type { ThemeCard } from '@/lib/wallpaper-theme-db';
+import { analyticsAttributes } from '@/lib/analytics';
 
 type CollectionCard = {
   deviceId?: string;
@@ -57,6 +58,8 @@ function PhoneCard({
   priority = false,
   headingLevel = 3,
   className = '',
+  entryPoint,
+  position,
 }: {
   item: PhoneCollectionCard;
   language: Language;
@@ -64,6 +67,8 @@ function PhoneCard({
   priority?: boolean;
   headingLevel?: 3 | 4;
   className?: string;
+  entryPoint: string;
+  position: number;
 }) {
   const displayName = item.deviceId ? item.name : localizeWallpaperCollectionName(language, item.name);
   const title = buildWallpaperListTitle(displayName,
@@ -72,6 +77,9 @@ function PhoneCard({
   return (
     <Link
       href={withLanguagePath(item.href, language)}
+      {...analyticsAttributes({ brand_slug: item.category, collection_id: item.deviceId,
+        media_type: item.isLive ? 'dynamic' : 'static', device_type: 'phone',
+        entry_point: entryPoint, position }, 'w_collection_impression')}
       aria-label={`${title} ${texts.preview}`}
       prefetch={false}
       className={`group block min-w-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${className}`}
@@ -112,6 +120,7 @@ function CategoryLink({ label, slug, language }: { label: string; slug: string; 
   return (
     <Link
       href={withLanguagePath(buildBrandPath(slug), language)}
+      {...analyticsAttributes({ brand_slug: slug, entry_point: 'home_brands' }, 'w_navigation_impression')}
       className="group flex min-h-14 min-w-0 items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:border-blue-400 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
     >
       <span className="flex h-8 w-9 shrink-0 items-center justify-center">
@@ -179,6 +188,8 @@ export default function HomeLanding({ latest, popular, desktop, themes }: HomeLa
                   language={language}
                   texts={texts}
                   priority={index < 4}
+                  entryPoint="home_latest"
+                  position={index + 1}
                 />
               ))}
             </div>
@@ -205,6 +216,8 @@ export default function HomeLanding({ latest, popular, desktop, themes }: HomeLa
                         language={language}
                         texts={texts}
                         headingLevel={4}
+                        entryPoint="home_popular"
+                        position={index + 1}
                         className={BRAND_PREVIEW_VISIBILITY[index] ?? 'hidden'}
                       />
                     ))}
@@ -237,6 +250,9 @@ export default function HomeLanding({ latest, popular, desktop, themes }: HomeLa
                 <Link
                   key={`${item.category}:${item.name}:${item.isLive ? 'dynamic' : 'static'}`}
                   href={withLanguagePath(item.href, language)}
+                  {...analyticsAttributes({ brand_slug: item.category, collection_id: item.deviceId,
+                    media_type: item.isLive ? 'dynamic' : 'static', device_type: 'desktop',
+                    entry_point: 'home_desktop', position: index + 1 }, 'w_collection_impression')}
                   className={`group min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-blue-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${index >= 2 ? 'hidden sm:block' : ''}`}
                 >
                   <div className="relative aspect-video overflow-hidden bg-gray-100">

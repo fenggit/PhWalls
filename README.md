@@ -542,6 +542,7 @@ GET  /api/admin/session     # 查询登录状态
 ### 后台管理 API
 
 ```
+GET /api/admin/api-monitor?range=24h           # 管理员查看接口流量与来源线索
 GET/POST /api/admin/brands                     # 品牌列表与新增品牌
 GET/POST/PATCH /api/admin/devices              # 设备列表、新建与编辑
 GET/POST/PATCH/DELETE /api/admin/wallpapers    # 壁纸列表、新建、编辑及删除记录和 R2 文件
@@ -802,3 +803,12 @@ npm run indexnow -- https://phwalls.com/zh/wallpapers/huawei/huawei-matebook-fol
 ### 壁纸发现与主题 SEO
 
 机型详情展示兄弟合集内链、完整五语言标签，并根据当前已发布素材实时生成张数与原始尺寸导语，后台维护画面及设备场景说明。十个主题提供五语言页面，从既有 D1 素材精选，首页、标签与来源机型相互连接，不按标签组合批量生成页面。主题清单、维护和观察门槛见 [壁纸发现与主题 SEO](docs/wallpaper-discovery-seo.md)，文案整理与条件回滚见 [后台运维](docs/wallpaper-admin-operations.md#合集场景文案与主题试点)。
+
+### Google Analytics 产品统计
+
+网站使用 GA4 记录搜索需求、内容曝光与预览、下载启动、推荐、分享和体验事件。全部事件 Key、参数、漏斗口径、GA4 后台配置及验证步骤见 [Google Analytics 统计 Key](docs/google_analytics_key.md)。下载启动不等于客户端保存完成；单次下载关联与服务端日志见 [下载性能与排障](docs/download-performance.md)。
+
+
+### 公开 API 访问监控
+
+后台“接口监控”支持最近 1 小时、24 小时与 7 天的请求趋势、来源/接口/IP 排行及异常分钟窗口；可识别匹配自有微信 AppID、其他微信、站内、外站及未知来源线索。现有小程序无需修改，不自动封禁。上线前需应用 `0017_api_access_events.sql`，按需配置 `API_MONITOR_ENABLED`、`API_MONITOR_MINI_APP_ID`；异步全量记录增加 D1 写入量，保留最近 7 天并随新请求清理。完整部署顺序、字段、统计口径及 Cloudflare 边缘分析的补充范围见 [API 监控说明](docs/api-monitoring.md)。

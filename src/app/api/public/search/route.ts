@@ -1,10 +1,11 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { loadDbSearchIndex } from '@/lib/wallpaper-db';
 import { DEFAULT_LANGUAGE, isLanguage } from '@/lib/language';
 
 export const runtime = 'edge';
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const language = request.nextUrl.searchParams.get('lang') || DEFAULT_LANGUAGE;
   if (!isLanguage(language)) {
     return NextResponse.json({ error: 'Invalid language' }, { status: 400 });
@@ -19,4 +20,8 @@ export async function GET(request: NextRequest) {
       status: 503, headers: { 'Cache-Control': 'no-store' },
     });
   }
+}
+
+export function GET(request: NextRequest) {
+  return observeApiRequest(request, () => handleGET(request));
 }

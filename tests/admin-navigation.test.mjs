@@ -14,7 +14,7 @@ const { adminTabHref, resolveAdminTab } = module.exports;
 
 test('sidebar links restore the selected view after reload and preserve other URL state', () => {
   const current = new URL('https://a.phwalls.com/manager?context=brand&tab=devices#queue');
-  for (const tab of ['brands', 'devices', 'i18n', 'wallpapers', 'upload']) {
+  for (const tab of ['brands', 'devices', 'i18n', 'wallpapers', 'upload', 'api-monitor']) {
     const next = new URL(adminTabHref(current, tab), current);
     assert.equal(next.pathname, '/manager');
     assert.equal(next.searchParams.get('context'), 'brand');

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from '@/components/LanguageProvider';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 interface MiniProgramModalProps {
   isOpen: boolean;
@@ -21,6 +22,10 @@ export default function MiniProgramModal({
   const { texts } = useLanguage();
   const [countdown, setCountdown] = useState(autoCloseDelay / 1000);
   const countdownSuffix = texts.autoCloseSuffix;
+
+  useEffect(() => {
+    if (isOpen) trackAnalyticsEvent('w_mini_program_view', { entry_point: 'mini_program_modal', view_mode: autoClose ? 'auto' : 'manual' });
+  }, [isOpen, autoClose]);
 
   useEffect(() => {
     if (isOpen && autoClose) {

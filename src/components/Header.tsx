@@ -32,6 +32,7 @@ import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
 import { getShareTexts } from '@/lib/share';
+import { buildAnalyticsShareUrl, trackAnalyticsEvent } from '@/lib/analytics';
 import { Language, LanguageCode, TabInfo } from '@/types';
 
 const SearchDialog = dynamic(() => import('@/components/SearchDialog'), { ssr: false });
@@ -565,13 +566,20 @@ export default function Header({
       images: [],
     };
     setSharePayload(payload);
+    const sharedUrl = buildAnalyticsShareUrl(payload.url, 'page');
+    const shareParams = { share_source: 'page', entry_point: 'header_share' };
+    if (shareInProgressRef.current) return;
+    trackAnalyticsEvent('w_share_click', shareParams);
 
     if (typeof navigator.share === 'function') {
       if (shareInProgressRef.current) return;
       shareInProgressRef.current = true;
       void navigator
-        .share({ title: payload.title, text: payload.brand || texts.siteName, url: payload.url })
+        .share({ title: payload.title, text: payload.brand || texts.siteName, url: sharedUrl })
+        .then(() => trackAnalyticsEvent('w_share_result', { ...shareParams, share_method: 'native', outcome: 'resolved' }))
         .catch((error: unknown) => {
+          trackAnalyticsEvent('w_share_result', { ...shareParams, share_method: 'native',
+            outcome: error instanceof DOMException && error.name === 'AbortError' ? 'cancelled' : 'error' });
           if (
             error instanceof DOMException &&
             (error.name === 'AbortError' || error.name === 'InvalidStateError')
@@ -587,12 +595,16 @@ export default function Header({
     }
 
     if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(payload.url).catch((error: unknown) => {
+      navigator.clipboard.writeText(sharedUrl)
+        .then(() => trackAnalyticsEvent('w_share_result', { ...shareParams, share_method: 'clipboard', outcome: 'copied' }))
+        .catch((error: unknown) => {
+        trackAnalyticsEvent('w_share_result', { ...shareParams, share_method: 'clipboard', outcome: 'error' });
         console.error('Copy share link failed:', error);
       });
       return;
     }
-    window.prompt(shareTexts.share, payload.url);
+    window.prompt(shareTexts.share, sharedUrl);
+    trackAnalyticsEvent('w_share_result', { ...shareParams, share_method: 'manual', outcome: 'displayed' });
   }, [closeMenus, setSharePayload, sharePayload, shareTexts.share, texts.siteName]);
 
   const handleMiniProgramClick = () => {
@@ -603,6 +615,10 @@ export default function Header({
     setIsDeviceMenuOpen(false);
     setOpenPrimaryMenu(null);
   };
+
+  useEffect(() => {
+    if (isMiniProgramMenuOpen) trackAnalyticsEvent('w_mini_program_view', { entry_point: 'header_qr' });
+  }, [isMiniProgramMenuOpen]);
 
   useEffect(() => {
     if (!isMiniProgramMenuOpen) return;

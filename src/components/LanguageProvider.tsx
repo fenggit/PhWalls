@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getI18nTexts } from '@/lib/i18n';
 import type { Language } from '@/types';
 import MiniProgramModal from '@/components/MiniProgramModal';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_COOKIE_NAME,
@@ -66,6 +67,8 @@ export function LanguageProvider({
   }, []);
 
   const setLanguageAndPersist = useCallback((lang: Language) => {
+    const fromLanguage = getLanguageFromPath(pathname) || language;
+    if (fromLanguage !== lang) trackAnalyticsEvent('w_language_change', { from_language: fromLanguage, to_language: lang });
     setLanguage(lang);
     persistLanguagePreference(lang);
     if (!isInitialized) {
@@ -78,7 +81,7 @@ export function LanguageProvider({
         router.replace(`${targetPath}${search}`);
       }
     }
-  }, [isInitialized, pathname, persistLanguagePreference, router]);
+  }, [isInitialized, language, pathname, persistLanguagePreference, router]);
 
   // 初始化语言设置（仅在客户端执行一次）
   useEffect(() => {

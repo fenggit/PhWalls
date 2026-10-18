@@ -179,3 +179,10 @@ node scripts/backfill-collection-scenes.mjs --snapshot /tmp/phwalls-before-scene
 主题试点保持十个主题，同时支持 en、zh、ja、vi、zh-hant，地址为 `/{lang}/themes/{slug}`，共五十个语言 URL；切换语言保留当前主题，标题、介绍、标签和来源链接同步本地化。素材仍由 D1 读取，精选配置只保存稳定素材 ID，不复制图片和壁纸内容 JSON。替换精选需审图并修改 `src/lib/theme-selections.ts`，动态素材、下架、删除及标签不再匹配的图片自动排除，不自动补入未审核的新图片。新增主题或额外语言须单独决定，不按标签组合扩量。
 
 验证生产预览：`node scripts/check-discovery.mjs http://localhost:<端口>`，检查十个主题的五十个语言页面、五语言共十五个示例详情、正文与元描述一致性、兄弟链接、标签、语言跳转、未知主题 404、首页入口和五语言主题 sitemap。完整策略及观察口径见[主题与内链说明](wallpaper-discovery-seo.md)。
+
+
+## 公开接口调用监控
+
+后台“接口监控”查看最近 1 小时、24 小时或 7 天的请求趋势、来源、IP 与接口排行、异常分钟窗口和近期请求。现有微信小程序继续匿名访问；AppID 匹配只是来源线索，不用空 Referer 或共享 IP 直接判定盗用。不自动封禁或发送通知。
+
+上线需先备份并核对待执行迁移，再应用 `0017_api_access_events.sql`、部署代码和核对 `API_MONITOR_ENABLED` / `API_MONITOR_MINI_APP_ID`。不回填历史流量；记录失败不影响业务。表保存完整客户端 IP 与截断 User-Agent，仅管理员可查看；最近 7 天以外的数据随新请求渐进清理，无流量或停采时不主动清理。全量采集增加 D1 写入成本，可通过开关暂停。完整上线步骤、监控盲区、阈值及排查方法见 [公开 API 调用监控](api-monitoring.md)。

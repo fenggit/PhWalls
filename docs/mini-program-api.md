@@ -123,3 +123,10 @@ npm run build
 ```
 
 接口测试使用 Node 内置测试、TypeScript 已有编译器、Python 标准库 SQLite，以真实迁移构建隔离 fixture，检查 SQL 查询与实际 NextRequest/NextResponse，不读写线上 D1。
+
+
+## 调用监控与现有小程序兼容
+
+服务端新增访问统计后，现有 `wx.request` / `downloadFile` 的 URL、参数、响应、缓存语义和匿名调用方式保持一致，不需要增加 API Key 或重新发布客户端。微信来源中 `https://servicewechat.com/<AppID>/...` 与服务端 `API_MONITOR_MINI_APP_ID`（项目配置 `wxa64dd85e9a157ffd`）匹配时标为“匹配自有 AppID”，无来源时标为“未知”，两者都不改变权限与限流。
+
+监控使用 Cloudflare 后台任务异步写 D1；采集失败不影响请求。只记录执行到 API 函数的调用，不覆盖外层 CDN 命中或 WAF 拦截。响应耗时不代表下载完成；高频与批量下载只在管理后台提示，不自动封禁微信或其他来源。详情与上线步骤见 [API 监控说明](api-monitoring.md)。

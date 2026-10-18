@@ -1,3 +1,4 @@
+import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
@@ -6,7 +7,7 @@ import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const body = (await request.json()) as { key?: string };
     const { key: rawKey } = body;
@@ -56,4 +57,8 @@ export async function POST(request: NextRequest) {
       { status: 500, headers: { 'Cache-Control': 'no-store' } }
     );
   }
+}
+
+export function POST(request: NextRequest) {
+  return observeApiRequest(request, () => handlePOST(request));
 }

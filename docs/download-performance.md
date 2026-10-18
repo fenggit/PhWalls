@@ -23,12 +23,14 @@
 
 Cloudflare Functions 日志中的 JSON 事件 `wallpaper_download` 包含：
 
-- `outcome`：`complete`、`cancelled` 或 `error`。
+- `outcome`：`complete`、`cancelled`、`error` 或 `rejected`；`rejected` 表示缺少 key、非法或未发布资源在取图前被拒绝。
+- `download_request_id`：网站单次下载尝试生成的随机 UUID v4，同时出现在 GA4 下载点击／启动／交接失败事件与请求参数中；服务端只接受合法 UUID，旧客户端未传时省略，不用于识别用户。
 - `validation_ms`、`source_ms`、`upstream_ms`、`headers_ms`、`total_ms`：已执行阶段的耗时与请求总耗时。
 - `bytes`：从上游读出并交给响应流的字节数；尚未开始取图的错误为 0。
 - `request_ray`、`upstream_ray`：Cloudflare 请求标识及节点后缀，用于关联请求和执行／取图位置。
 - `upstream_cache`：上游缓存状态。
 - `phase`、`error_code`、`upstream_status`：失败阶段、固定错误分类与上游 HTTP 状态；尚未取得上游响应时状态为空。`PUBLICATION_CHECK`、`SOURCE_URL`、`UPSTREAM_FETCH`、`UPSTREAM_HTTP`、`UPSTREAM_BODY_MISSING`、`TRANSFER_STREAM`、`REQUEST_ABORTED` 分别区分查询、URL 构造、连接、HTTP 错误、缺失响应体、断流与取消，不输出异常原文中的签名地址。
+- 验证拒绝的 `error_code` 为 `MISSING_KEY` 或 `INVALID_KEY`，HTTP 状态仍为原有 400；拒绝、用户取消与服务端错误应分别统计。完整事件与参数清单见 [Google Analytics 统计 Key](google_analytics_key.md)。
 
 流按下游读取节奏逐块转发，取消会传递给上游；不会为统计预读或缓存完整文件。`total_ms - headers_ms` 包含读上游和下游背压等待，不能直接解释为纯 R2 读取耗时。`complete` 仅表示响应流已读完，不证明客户端已成功保存。日志不记录原图 URL、签名、凭据或用户 IP。
 

@@ -11,7 +11,7 @@ import { WALLPAPER_THEMES } from '@/lib/wallpaper-themes';
 import { buildPublicR2Url } from '@/lib/r2-public-url';
 
 export type ThemeWallpaper = WallpaperAsset & {
-  id: string; sourceName: string; sourcePath: string; brand: string; updatedAt: number;
+  id: string; collectionId: string; sourceName: string; sourcePath: string; brand: string; updatedAt: number;
 };
 
 export type ThemeCard = {
@@ -67,7 +67,7 @@ export async function loadThemeWallpapers(theme: WallpaperTheme, language: Langu
       const asset = toWallpaperAsset(row);
       if (!matchesTheme(theme, asset)) return [];
       keys.add(row.origin_key);
-      return [{ ...asset, id: row.id, sourceName: row.source_name, brand: row.brand_name,
+      return [{ ...asset, id: row.id, collectionId: row.device_id, sourceName: row.source_name, brand: row.brand_name,
         sourcePath: collectionDetailPath(row.brand_name, row.device_slug), updatedAt: row.changed_at }];
     });
   });
