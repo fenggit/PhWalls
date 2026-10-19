@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -476,6 +479,98 @@ test('home index filters brands before ranking published wallpapers', async (t) 
   assert.ok(f.calls[0].values.includes('["samsung"]'), 'selected brands must be bound into SQL');
   const plan = f.sqlite.prepare('EXPLAIN QUERY PLAN ' + f.calls[0].sql).all(...f.calls[0].values);
   assert.ok(plan.some((row) => /SEARCH d USING INDEX/.test(row.detail)), 'ranking should start from the selected brands');
+});
+
+test('collection index preserves media covers and field-level language fallback in one query', async (t) => {
+  const f = fixture(); t.after(() => f.sqlite.close());
+  f.add('mixed', 'samsung'); f.add('other', 'xiaomi');
+  f.sqlite.exec(`INSERT INTO w_wallpapers(id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,media_type,category,is_primary,status,create_date,updated_date)
+    VALUES ('static-cover','mixed','primary','image/png',2048,'primary.png','primary.webp','png','static','phone',1,'published',10,10),
+      ('motion','mixed','motion','video/mp4',1024,'motion.mp4','motion.webp','mp4','dynamic','phone',1,'published',2,2);
+    INSERT INTO w_device_i18n(id,device_id,language,display_name,seo_title,description,create_date,updated_date)
+    VALUES ('en','mixed','en','English name','English SEO','English description',1,1),
+      ('zh','mixed','zh',NULL,'中文标题',NULL,1,1);
+    INSERT INTO w_live_device_i18n(id,device_id,language,display_name,description,create_date,updated_date)
+    VALUES ('live-en','mixed','en','English motion','Motion description',1,1),
+      ('live-zh','mixed','zh','中文动态','动态描述',1,1);`);
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    for (const media of [null, 'static', 'dynamic']) {
+      const before = f.calls.length;
+      const index = await f.service.loadDbIndex(['samsung', 'missing'], language, media);
+      assert.equal(f.calls.length - before, 1);
+      assert.equal(index.missing.length, 0);
+      assert.equal(index.samsung.length, media ? 1 : 2);
+      for (const collection of index.samsung) {
+        if (collection.mediaType === 'static') {
+          assert.equal(collection.count, 2);
+          assert.equal(collection.item[0].name, 'primary');
+          assert.equal(collection.name, 'English name');
+          assert.equal(collection.description, 'English description');
+          assert.equal(collection.seoTitle, language === 'zh' ? '中文标题' : language === 'en' ? 'English SEO' : null);
+        } else {
+          assert.equal(collection.count, 1);
+          assert.equal(collection.item[0].name, 'motion');
+          assert.equal(collection.name, language === 'zh' ? '中文动态' : 'English motion');
+        }
+      }
+    }
+  }
+});
+
+test('collection index preserves legacy-schema results with substantially less SQLite work', async (t) => {
+  const f = fixture(); t.after(() => f.sqlite.close());
+  for (let i = 0; i < 80; i++) f.add(String(i), i % 2 ? 'samsung' : 'xiaomi');
+  f.sqlite.exec(`WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n<24)
+    INSERT INTO w_wallpapers(id,device_id,name,mime_type,origin_key,compress_key,file_format,media_type,category,status,create_date,updated_date)
+    SELECT 'extra-' || d.id || '-' || n, d.id, 'extra-' || n,
+      CASE WHEN n%3=0 THEN 'video/mp4' ELSE 'image/png' END,
+      'origin/' || d.id || '/' || n, 'compress/' || d.id || '/' || n,
+      CASE WHEN n%3=0 THEN 'mp4' ELSE 'png' END,
+      CASE WHEN n%3=0 THEN 'dynamic' ELSE 'static' END, 'phone', 'published', n+1, n+1
+    FROM w_devices d CROSS JOIN seq;
+    DROP TABLE w_collection_deletions;`);
+  await f.service.loadDbIndex(['samsung'], 'zh');
+  const legacy = `WITH ranked AS (
+    SELECT w.device_id,w.media_type,w.name,w.mime_type,w.size_bytes,w.origin_key,w.compress_key,w.tags,
+      COUNT(*) OVER (PARTITION BY w.device_id,w.media_type) AS count,
+      ROW_NUMBER() OVER (PARTITION BY w.device_id,w.media_type ORDER BY w.is_primary DESC,w.create_date,w.name) AS rank
+    FROM w_devices d JOIN w_wallpapers w ON w.device_id=d.id
+    WHERE d.brand_name IN (SELECT value FROM json_each(?)) AND d.status='published' AND w.status='published'
+      AND (? IS NULL OR w.media_type=?))
+    SELECT d.id,d.brand_name,d.device_name,d.device_slug,d.release_date,
+      COALESCE(local.display_name,live_local.display_name,english.display_name,live_english.display_name,d.device_name) AS display_name,
+      COALESCE(local.seo_title,live_local.seo_title) AS seo_title,
+      COALESCE(local.description,live_local.description,english.description,live_english.description) AS description,
+      w.count,w.media_type,w.name,w.mime_type,w.size_bytes,w.origin_key,w.compress_key,w.tags
+    FROM w_devices d JOIN ranked w ON w.device_id=d.id AND w.rank=1
+    LEFT JOIN w_device_i18n local ON local.device_id=d.id AND local.language=? AND w.media_type='static'
+    LEFT JOIN w_device_i18n english ON english.device_id=d.id AND english.language='en' AND w.media_type='static'
+    LEFT JOIN w_live_device_i18n live_local ON live_local.device_id=d.id AND live_local.language=? AND w.media_type='dynamic'
+    LEFT JOIN w_live_device_i18n live_english ON live_english.device_id=d.id AND live_english.language='en' AND w.media_type='dynamic'
+    WHERE d.status='published' ORDER BY d.release_date DESC,d.device_name,w.media_type DESC`;
+  const directory = mkdtempSync(join(tmpdir(), 'phwalls-read-query-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const snapshot = join(directory, 'fixture.sqlite');
+  f.sqlite.prepare('VACUUM INTO ?').run(snapshot);
+  const measured = JSON.parse(execFileSync('python3', ['-c', `
+import sqlite3,json,sys
+c=sqlite3.connect(sys.argv[1]);statements=json.load(sys.stdin);results=[]
+for statement in statements:
+ steps=[0]
+ def tick():
+  steps[0]+=100
+  return 0
+ c.set_progress_handler(tick,100)
+ rows=c.execute(statement['sql'],statement['values']).fetchall()
+ c.set_progress_handler(None,0)
+ results.append({'steps':steps[0],'rows':rows})
+print(json.dumps(results))
+`, snapshot], { encoding: 'utf8', input: JSON.stringify([
+    { sql: legacy, values: ['["samsung"]', null, null, 'zh', 'zh'] }, f.calls[0],
+  ]) }));
+  assert.deepEqual(measured[1].rows, measured[0].rows);
+  assert.ok(measured[1].steps < measured[0].steps * 0.75,
+    `SQLite work must drop by at least 25%: ${measured[0].steps} -> ${measured[1].steps}`);
 });
 
 test('batch signing rejects more than 100 keys without hitting the database', async (t) => {

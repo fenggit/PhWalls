@@ -173,13 +173,19 @@ export type WallpaperSearchEntry = {
 export async function loadDbSearchIndex(language: Language = 'en'): Promise<WallpaperSearchEntry[]> {
   return withWallpaperQueryCache(['search-index-media-i18n', language], async () => {
     const { results } = await getWallpaperDb().prepare(
-      `SELECT d.brand_name, d.device_category, d.device_slug, d.release_date, ${mixedLocalizedFields},
-        w.media_type, COUNT(*) AS count, GROUP_CONCAT(w.name || ' ' || w.tags, ' ') AS keywords
-       FROM w_devices d JOIN w_wallpapers w ON w.device_id = d.id ${mixedTranslationJoins}
-       WHERE d.status = 'published' AND w.status = 'published'
-         AND d.deletion_state = 'none' AND w.deletion_state = 'none'
-         AND NOT EXISTS (SELECT 1 FROM w_collection_deletions c WHERE c.device_id = d.id AND c.media_type = w.media_type)
-       GROUP BY d.id, w.media_type ORDER BY d.release_date DESC, d.device_slug, w.media_type`
+      `WITH summaries AS (
+         SELECT w.device_id, w.media_type, COUNT(*) AS count,
+           GROUP_CONCAT(w.name || ' ' || w.tags, ' ') AS keywords
+         FROM w_devices d JOIN w_wallpapers w ON w.device_id = d.id
+         WHERE d.status = 'published' AND w.status = 'published'
+           AND d.deletion_state = 'none' AND w.deletion_state = 'none'
+           AND NOT EXISTS (SELECT 1 FROM w_collection_deletions c WHERE c.device_id = d.id AND c.media_type = w.media_type)
+         GROUP BY w.device_id, w.media_type
+       )
+       SELECT d.brand_name, d.device_category, d.device_slug, d.release_date, ${mixedLocalizedFields},
+         w.media_type, w.count, w.keywords
+       FROM summaries w JOIN w_devices d ON d.id = w.device_id ${mixedTranslationJoins}
+       ORDER BY d.release_date DESC, d.device_slug, w.media_type`
     ).bind(language, language).all<{
       brand_name: string; device_category: DeviceCategory; device_slug: string; release_date: string;
       display_name: string; media_type: WallpaperMediaType; count: number; keywords: string;
@@ -267,21 +273,25 @@ async function queryDbIndex(brands: string[], language: Language, media: Wallpap
   const db = getWallpaperDb();
   const index: Record<string, WallpaperCollection[]> = Object.fromEntries(brands.map((brand) => [brand, []]));
   const { results } = await db.prepare(
-    `WITH ranked AS (
-       SELECT w.device_id, w.media_type, w.name, w.mime_type, w.size_bytes, w.origin_key, w.compress_key, w.tags,
-         COUNT(*) OVER (PARTITION BY w.device_id, w.media_type) AS count,
-         ROW_NUMBER() OVER (PARTITION BY w.device_id, w.media_type ORDER BY w.is_primary DESC, w.create_date ASC, w.name ASC) AS rank
+    `WITH summaries AS (
+       SELECT w.device_id, w.media_type, COUNT(*) AS count
        FROM w_devices d JOIN w_wallpapers w ON w.device_id = d.id
        WHERE d.brand_name IN (SELECT value FROM json_each(?))
          AND d.status = 'published' AND w.status = 'published'
-         AND (? IS NULL OR w.media_type = ?)
+         ${media !== null ? 'AND w.media_type = ?' : ''}
+       GROUP BY w.device_id, w.media_type
      )
      SELECT d.id, d.brand_name, d.device_name, d.device_slug, d.release_date, ${media ? localizedFields : mixedLocalizedFields},
-       w.count, w.media_type, w.name, w.mime_type, w.size_bytes, w.origin_key, w.compress_key, w.tags
-     FROM w_devices d JOIN ranked w ON w.device_id = d.id AND w.rank = 1 ${media ? collectionTranslationJoins(media) : mixedTranslationJoins}
+       s.count, w.media_type, w.name, w.mime_type, w.size_bytes, w.origin_key, w.compress_key, w.tags
+     FROM summaries s JOIN w_devices d ON d.id = s.device_id
+     JOIN w_wallpapers w ON w.rowid = (
+       SELECT cover.rowid FROM w_wallpapers cover
+       WHERE cover.device_id = s.device_id AND cover.media_type = s.media_type AND cover.status = 'published'
+       ORDER BY cover.is_primary DESC, cover.create_date ASC, cover.name ASC LIMIT 1
+     ) ${media ? collectionTranslationJoins(media) : mixedTranslationJoins}
      WHERE d.status = 'published'
      ORDER BY d.release_date DESC, d.device_name, w.media_type DESC`
-  ).bind(JSON.stringify(brands), media, media, language, ...(media ? [] : [language])).all<Pick<LocalizedDeviceRow, 'id' | 'brand_name' | 'display_name' | 'seo_title' | 'description' | 'device_slug' | 'release_date'> &
+  ).bind(JSON.stringify(brands), ...(media !== null ? [media] : []), language, ...(media ? [] : [language])).all<Pick<LocalizedDeviceRow, 'id' | 'brand_name' | 'display_name' | 'seo_title' | 'description' | 'device_slug' | 'release_date'> &
     Pick<WallpaperRow, 'media_type' | 'name' | 'mime_type' | 'size_bytes' | 'origin_key' | 'compress_key' | 'tags'> & { count: number }>();
   for (const row of results) {
     if (!Object.prototype.hasOwnProperty.call(index, row.brand_name)) continue;
