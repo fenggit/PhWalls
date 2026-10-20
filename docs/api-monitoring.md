@@ -48,7 +48,7 @@
 
 Cloudflare 请求环境配置优先于本地 process 环境值。生产需核对 Pages 生产 / 预览环境变量实际值。数据保留最近 7 天；每次新记录插入时渐进删除过期数据。无流量、停采或积压较大时旧数据可能暂时留在库中，但查询不会展示 7 天之外的数据。不依赖新增 Cron，不保证在到期时刻立即物理删除。
 
-本次代码不执行生产迁移或部署。正式上线按以下顺序，经确认后执行：
+代码推送不会自动应用生产数据库迁移。首次上线按以下顺序执行；2026-10-20 已补齐生产监控迁移，故障与核验记录见 [后台运维说明](wallpaper-admin-operations.md#2026-10-20-监控不可用恢复)：
 
 1. 导出 D1 备份：`npx wrangler d1 export phwalls --remote --output <备份路径>`。
 2. 用 `npx wrangler d1 migrations list phwalls --remote` 核对全部待执行迁移，特别确认 `0017_api_access_events.sql`。不要在未知待迁移列表上直接批量应用。

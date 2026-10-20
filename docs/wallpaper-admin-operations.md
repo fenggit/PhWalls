@@ -186,3 +186,11 @@ node scripts/backfill-collection-scenes.mjs --snapshot /tmp/phwalls-before-scene
 后台“接口监控”查看最近 1 小时、24 小时或 7 天的请求趋势、来源、IP 与接口排行、异常分钟窗口和近期请求。现有微信小程序继续匿名访问；AppID 匹配只是来源线索，不用空 Referer 或共享 IP 直接判定盗用。不自动封禁或发送通知。
 
 上线需先备份并核对待执行迁移，再应用 `0017_api_access_events.sql`、部署代码和核对 `API_MONITOR_ENABLED` / `API_MONITOR_MINI_APP_ID`。不回填历史流量；记录失败不影响业务。表保存完整客户端 IP 与截断 User-Agent，仅管理员可查看；最近 7 天以外的数据随新请求渐进清理，无流量或停采时不主动清理。全量采集增加 D1 写入成本，可通过开关暂停。完整上线步骤、监控盲区、阈值及排查方法见 [公开 API 调用监控](api-monitoring.md)。
+
+### 2026-10-20 监控不可用恢复
+
+生产页面显示“监控暂不可用”，原因为监控代码已发布，但 D1 唯一待执行迁移 `0017_api_access_events.sql` 尚未应用，`w_api_access_events`、相关索引及清理触发器均不存在。
+
+完整导出备份并在隔离 SQLite 中验证备份可恢复、预演迁移后，已应用唯一待执行的 `0017` 迁移；没有修改应用代码或重新部署。备份路径为 `/Users/fenghe/.codex/backups/PhWalls/api-monitor-20261020/phwalls-before-0017.sql`，大小 11,268,979 字节，SHA-256 为 `3a614e525b2b78124dfa333dff4096a24a3a29d3b0db514ec169f99fa806d605`。
+
+迁移前后核对设备 1217 条、壁纸 11586 条、静态翻译 6085 条、动态翻译 660 条，均未改变；远端迁移列表已无待执行项。线上后台最近 1 小时、24 小时、7 天统计均恢复；小程序品牌接口返回 200，单次带 `PhWalls-Monitor-Verification/1.0` 客户端标识的验证请求已成功采集，空来源按预期归类为未知。自然搜索、预览与下载请求也开始入库。迁移前未采集的历史流量不能补回。
