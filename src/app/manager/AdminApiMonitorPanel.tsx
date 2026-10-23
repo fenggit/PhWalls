@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { getApiMonitorTexts } from '@/lib/i18n';
-import type { ApiMonitorRange, ApiMonitorReport, ApiSource } from '@/lib/api-monitor-types';
+import type { ApiMonitorRange, ApiMonitorReport, ApiSource, ApiMonitorClientsPage, ApiMonitorClient } from '@/lib/api-monitor-types';
 
 const texts = getApiMonitorTexts('zh');
 const buttonClass = 'inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d8dfdb] bg-white px-3 text-sm font-medium hover:bg-[#f4f7f4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560] disabled:opacity-50';
@@ -15,17 +15,30 @@ const time = (value: number) => new Date(value).toLocaleString('zh-CN', {
 });
 const count = (value: number) => value.toLocaleString('zh-CN');
 
-function MonitorTable({ title, columns, children, empty }: {
-  title: string; columns: string[]; children: ReactNode; empty?: boolean;
+function MonitorTable({ title, columns, children, empty, footer, wide }: {
+  title: string; columns: string[]; children: ReactNode; empty?: boolean; footer?: ReactNode; wide?: boolean;
 }) {
   return <section className="min-w-0 overflow-hidden rounded-lg border border-[#dfe6df] bg-white">
     <h3 className="border-b border-[#e3e9e4] px-4 py-3 text-sm font-semibold">{title}</h3>
-    <div className="overflow-x-auto"><table className="w-full text-left text-xs [&_td]:px-4 [&_td]:py-3 [&_td]:align-top [&_th]:whitespace-nowrap [&_th]:px-4 [&_th]:py-3 [&_tr]:border-b [&_tr]:border-[#ebefeb]">
+    <div className="overflow-x-auto"><table className={`${wide ? 'min-w-[880px]' : ''} w-full text-left text-xs [&_td]:px-4 [&_td]:py-3 [&_td]:align-top [&_th]:whitespace-nowrap [&_th]:px-4 [&_th]:py-3 [&_tr]:border-b [&_tr]:border-[#ebefeb]`}>
       <caption className="sr-only">{title}</caption>
       <thead className="bg-[#f8faf8] text-[#5e7065]"><tr>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr></thead>
       <tbody className="tabular-nums">{empty ? <tr><td colSpan={columns.length} className="text-[#66746b]">{texts.empty}</td></tr> : children}</tbody>
-    </table></div>
+    </table></div>{footer}
   </section>;
+}
+
+function ClientSignals({ row, thresholds }: { row: ApiMonitorClient; thresholds: ApiMonitorReport['thresholds'] }) {
+  const flags = [
+    row.peak_requests >= thresholds.requests ? `${texts.highRequests} (${row.peak_requests}/min)` : '',
+    row.peak_downloads >= thresholds.downloads ? `${texts.bulkDownloads} (${row.peak_downloads}/min)` : '',
+    row.peak_targets >= thresholds.targets ? `${texts.resourceScan} (${row.peak_targets}/min)` : '',
+  ].filter(Boolean);
+  return <div className="flex min-w-36 flex-wrap gap-1">
+    {flags.map((flag) => <span key={flag} className="rounded border border-amber-200 bg-amber-50 px-2 py-1 text-amber-900">{flag}</span>)}
+    {row.errors > 0 && <span className="rounded border border-red-200 bg-red-50 px-2 py-1 text-red-800">{texts.httpErrors} ({row.errors})</span>}
+    {!flags.length && !row.errors && <span className="text-[#66746b]">{texts.noSignals}</span>}
+  </div>;
 }
 
 type Payload = { data: ApiMonitorReport; enabled: boolean; miniAppId: string | null };
@@ -36,9 +49,17 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
   const [payload, setPayload] = useState<Payload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [moreError, setMoreError] = useState('');
+  const requestEpoch = useRef(0);
+  const moreController = useRef<AbortController | null>(null);
+  const morePending = useRef(false);
 
   useEffect(() => {
     const controller = new AbortController();
+    const epoch = ++requestEpoch.current;
+    moreController.current?.abort(); morePending.current = false;
+    setLoadingMore(false); setMoreError('');
     setLoading(true); setError(''); setPayload(null);
     void (async () => {
       try {
@@ -54,8 +75,41 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
         if (!controller.signal.aborted) setLoading(false);
       }
     })();
-    return () => controller.abort();
+    return () => { controller.abort(); moreController.current?.abort(); requestEpoch.current = epoch + 1; };
   }, [range, revision, refreshKey]);
+
+  const loadMore = async () => {
+    if (!payload || payload.data.range !== range || loading || morePending.current || !payload.data.client_pagination.has_more) return;
+    const epoch = requestEpoch.current;
+    const snapshot = payload.data;
+    const controller = new AbortController();
+    moreController.current = controller; morePending.current = true;
+    setLoadingMore(true); setMoreError('');
+    try {
+      const query = new URLSearchParams({ range: snapshot.range, view: 'clients',
+        page: String(snapshot.client_pagination.page + 1), until: String(snapshot.until) });
+      const response = await fetch(`/api/admin/api-monitor?${query}`, {
+        credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
+      });
+      const result = await response.json() as { data?: ApiMonitorClientsPage; error?: string };
+      if (!response.ok || !result.data) throw new Error(result.error === 'SNAPSHOT_EXPIRED' ? texts.snapshotExpired : texts.moreFailed);
+      const next = result.data;
+      if (controller.signal.aborted || epoch !== requestEpoch.current) return;
+      setPayload((current) => {
+        if (!current || current.data.until !== snapshot.until || current.data.range !== snapshot.range) return current;
+        const seen = new Set(current.data.clients.map((client) => client.client_ip));
+        return { ...current, data: { ...current.data,
+          clients: [...current.data.clients, ...next.clients.filter((client) => !seen.has(client.client_ip))],
+          client_pagination: next.pagination } };
+      });
+    } catch (cause) {
+      if (!controller.signal.aborted && epoch === requestEpoch.current) {
+        setMoreError(cause instanceof Error && cause.message === texts.snapshotExpired ? texts.snapshotExpired : texts.moreFailed);
+      }
+    } finally {
+      if (epoch === requestEpoch.current) { morePending.current = false; setLoadingMore(false); }
+    }
+  };
 
   const report = payload?.data;
   const peak = Math.max(1, ...(report?.trend.map((bucket) => bucket.requests) || []));
@@ -89,8 +143,9 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
         {([
           [texts.requests, count(report.summary.requests)], [texts.clients, count(report.summary.clients)],
           [texts.downloads, count(report.summary.downloads)], [texts.errors, count(report.summary.errors)],
-          [texts.external, count(report.summary.external)], [texts.avgLatency, `${report.summary.avg_ms} ms`],
-        ] as const).map(([label, value]) => <div key={label} className="rounded-lg border border-[#dfe6df] bg-white p-4">
+          [texts.external, count(report.summary.external)], [texts.anomalousClients, count(report.summary.anomalous_clients)], [texts.avgLatency, `${report.summary.avg_ms} ms`],
+        ] as const).map(([label, value]) => <div key={label} className={`rounded-lg border p-4 ${label === texts.anomalousClients && report.summary.anomalous_clients > 0
+          ? 'border-amber-300 bg-amber-50 text-amber-950' : label === texts.errors && report.summary.errors > 0 ? 'border-red-300 bg-red-50 text-red-900' : 'border-[#dfe6df] bg-white'}`}>
           <p className="text-xs text-[#66746b]">{label}</p><p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight">{value}</p>
         </div>)}
       </div>
@@ -110,7 +165,7 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
         <h3 className="text-sm font-semibold">{texts.alerts}</h3><p className="text-xs leading-5 text-amber-900">{thresholdHint}<br />{texts.normalHint}</p>
         {report.alerts.length ? <MonitorTable title={texts.alerts}
           columns={[texts.time, texts.ip, texts.requestsMinute, texts.downloadsMinute, texts.targetsMinute]}>
-          {report.alerts.map((row) => <tr key={`${row.client_ip}:${row.minute}`}>
+          {report.alerts.map((row) => <tr key={`${row.client_ip}:${row.minute}`} className="bg-amber-50/60">
             <td className="whitespace-nowrap">{time(row.minute)}</td><td className="font-mono">{row.client_ip}</td>
             <td>{count(row.requests)}</td><td>{count(row.downloads)}</td><td>{count(row.targets)}</td>
           </tr>)}
@@ -128,12 +183,22 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
           </tr>)}
         </MonitorTable>
       </div>
-      <MonitorTable title={texts.topClients} columns={[texts.ip, texts.requests, texts.downloads, texts.targets, texts.errors, texts.time]} empty={!report.clients.length}>
-        {report.clients.map((row) => <tr key={row.client_ip}><td className="font-mono">{row.client_ip}</td><td>{count(row.requests)}</td>
-          <td>{count(row.downloads)}</td><td>{count(row.targets)}</td><td>{count(row.errors)}</td><td className="whitespace-nowrap">{time(row.last_seen)}</td></tr>)}
+      <MonitorTable wide title={texts.topClients} columns={[texts.ip, texts.signals, texts.requests, texts.downloads, texts.targets, texts.errors, texts.time]} empty={!report.clients.length}
+        footer={<div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e3e9e4] p-4" aria-busy={loadingMore}>
+          <p role="status" className="text-xs tabular-nums text-[#66746b]">{texts.loadedClients.replace('{loaded}', count(report.clients.length))
+            .replace('{total}', count(report.client_pagination.total))}</p>
+          {report.client_pagination.has_more ? <button className={buttonClass} disabled={loadingMore || moreError === texts.snapshotExpired} onClick={() => void loadMore()}>
+            {loadingMore ? texts.loadingMore : texts.loadMore}</button> : <span className="text-xs text-[#66746b]">{texts.allLoaded}</span>}
+          {moreError && <div role="alert" className="flex w-full flex-wrap items-center gap-3 text-sm text-red-800"><p>{moreError}</p>
+            {moreError === texts.snapshotExpired && <button className={buttonClass} onClick={() => setRevision((value) => value + 1)}>{texts.refresh}</button>}</div>}
+        </div>}>
+        {report.clients.map((row) => <tr key={row.client_ip} className={row.alert_minutes > 0 ? 'bg-amber-50/60' : row.errors > 0 ? 'bg-red-50/50' : ''}>
+          <td className="font-mono">{row.client_ip}</td><td><ClientSignals row={row} thresholds={report.thresholds} /></td><td>{count(row.requests)}</td>
+          <td>{count(row.downloads)}</td><td>{count(row.targets)}</td><td className={row.errors ? 'font-semibold text-red-700' : ''}>{count(row.errors)}</td>
+          <td className="whitespace-nowrap">{time(row.last_seen)}</td></tr>)}
       </MonitorTable>
-      <MonitorTable title={texts.recent} columns={[texts.time, texts.endpoint, texts.ip, texts.country, texts.source, texts.userAgent, texts.status, texts.duration]} empty={!report.recent.length}>
-        {report.recent.map((row) => <tr key={row.id}>
+      <MonitorTable wide title={texts.recent} columns={[texts.time, texts.endpoint, texts.ip, texts.country, texts.source, texts.userAgent, texts.status, texts.duration]} empty={!report.recent.length}>
+        {report.recent.map((row) => <tr key={row.id} className={row.status >= 400 ? 'bg-red-50/50' : ''}>
           <td className="whitespace-nowrap">{time(row.created_at)}</td><td className="break-all font-mono">{row.method} {row.endpoint}</td>
           <td className="font-mono">{row.client_ip || texts.unknown}</td><td>{row.country || texts.unknown}</td>
           <td><p className="whitespace-nowrap">{sourceLabels[row.source]}</p><p className="mt-1 break-all text-[#758278]">{row.source_host || '—'}</p></td>

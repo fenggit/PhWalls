@@ -26,7 +26,17 @@
 
 阈值位于 `src/lib/api-monitor-report.ts`。所有来源均适用，不对白名单来源跳过异常识别。共享出口 IP、重试、视频分段与正常批量操作可能触发；低速或分布式爬取也可能不触发。这里只提示排查，不自动封禁、挑战或发送外部消息。先积累基线，再在 Cloudflare 结合来源、IP、访问节奏设置针对性限流，避免给全部 API 加浏览器挑战而阻断微信客户端。
 
-排行只展示前 20 个接口、前 20 个 IP、前 30 组来源；异常最多 30 个分钟窗口，按最近时间排序。汇总指标和趋势统计整个所选时段，不受这些展示数量限制。错误为 HTTP 状态码 ≥ 400；平均耗时截至响应头返回，不包括响应体传输。
+IP 排行首批显示 20 个，点击“加载更多 IP”每次追加 20 个，并显示已加载数量与总数；接口仍展示前 20 个、来源前 30 组，异常窗口最多 30 条，按最近时间排序。汇总指标和趋势统计整个所选时段，不受这些展示数量限制。错误为 HTTP 状态码 ≥ 400；平均耗时截至响应头返回，不包括响应体传输。
+
+## IP 追加分页与异常标记
+
+IP 按请求数降序、IP 文本升序稳定排序，每页 20 条。追加沿用首次响应的截止时间，新产生的请求不进入当前排行窗口；刷新或切换时段重新从首批开始，取消未完成的追加请求。追加失败保留已有行，可点击同一按钮重试；全部加载完毕后显示完成提示。
+
+截止时间有效期为 15 分钟，超时提示刷新统计。数据库没有保存跨请求的一致性快照：迟到的异步日志或 7 天保留清理可能影响既有窗口，因此客户端按 IP 去重，所有分页都不查询当前 7 天保留期之外的数据；需要最新完整排序时重新刷新。
+
+“异常 IP”汇总卡片统计所选时段内达到现有分钟阈值的不同 IP 数量，不受当前 IP 页数或异常窗口前 30 条的限制。IP 行新增请求过密、批量下载、资源遍历标签，附上对应分钟峰值并以黄色标记；三个峰值可能来自不同分钟。异常分钟数与标记根据全部匹配分钟计算，不从已截断的异常窗口列表推断。
+
+任意 HTTP 状态码 ≥ 400 在 IP 行显示“有错误请求”标签和错误数；仅有错误的行及近期错误请求用红色标记，错误汇总卡片同时高亮。HTTP 错误本身不会计入流量异常 IP 数量，也不代表盗用；站外或未知来源不会仅凭来源被判异常。不改变匿名访问权限，也不自动限流或封禁。
 
 ## 采集覆盖与成本
 
@@ -34,7 +44,7 @@
 
 在 Cloudflare 请求生命周期内使用 `ctx.waitUntil` 异步写入 `DB` 绑定；不克隆或读取响应体，不改变响应正文、状态、缓存策略或原图下载链路。记录的是到达函数的每次调用，列表内部的 Cache API 命中仍然计数。若整个响应由浏览器或 Cloudflare CDN 命中、WAF 在前置阶段拦截，或直接访问 `static.phwalls.com`，不会执行该采集器；完整边缘流量应结合 Cloudflare 请求分析，字段、采样和保留期由套餐决定。
 
-每次采集新增一次 D1 INSERT，触发器另外使用时间索引查找并最多删除 100 条过期记录。后台每次刷新执行 7 条受时间范围约束的聚合 / 明细查询；7 天流量很大时扫描和 DISTINCT 统计会增加 D1 读取量。记录失败不会阻断业务，也不保证日志零丢失；关注 Pages 日志中的 `API monitor write unavailable` / `API monitor scheduling unavailable`。持续大流量或攻击时可用停采开关止损，并考虑独立分析存储或 Cloudflare 日志产品。
+每次采集新增一次 D1 INSERT，触发器另外使用时间索引查找并最多删除 100 条过期记录。后台每次刷新执行 8 条受时间范围约束的聚合 / 明细查询；IP 追加页只执行 2 条查询，不重新加载趋势、来源或近期请求。页内分钟峰值仅对本页 IP 按连接 IP / 时间索引读取；7 天流量很大时扫描和 DISTINCT 统计会增加 D1 读取量。记录失败不会阻断业务，也不保证日志零丢失；关注 Pages 日志中的 `API monitor write unavailable` / `API monitor scheduling unavailable`。持续大流量或攻击时可用停采开关止损，并考虑独立分析存储或 Cloudflare 日志产品。
 
 只读 Cloudflare 注入的 `CF-Connecting-IP` 和 `CF-IPCountry`，不从 X-Forwarded-For 补 IP；本地通常显示未知。来源只保存域名和微信 AppID，User-Agent 最长 256 字符；不保存完整 URL、Cookie、Authorization、请求体、搜索词或原图 key。资源指纹为 SHA-256，仅用于统计不同资源。明细可见 IP、国家、来源、User-Agent，应只向后台管理员开放。
 
@@ -61,9 +71,19 @@ Cloudflare 请求环境配置优先于本地 process 环境值。生产需核对
 
 ## 管理查询 API
 
-`GET /api/admin/api-monitor?range=1h|24h|7d`，默认 `24h`。返回 `{ data, enabled, miniAppId }`；`data` 包括 `range/since/until/bucket_ms`、`summary`、`trend`、`endpoints`、`sources`、`clients`、`alerts`、`recent`、`thresholds`。所有响应禁止缓存。
+`GET /api/admin/api-monitor?range=1h|24h|7d`，默认 `24h`。返回 `{ data, enabled, miniAppId }`；`data` 包括 `range/since/until/bucket_ms`、`summary`、`trend`、`endpoints`、`sources`、`clients`、`client_pagination`、`alerts`、`recent`、`thresholds`。所有响应禁止缓存。
+
+IP 追加查询：`GET /api/admin/api-monitor?view=clients&range=24h&page=2&until=<首次响应的until>`，只返回 `{ data: { clients, pagination } }`。`pagination` 包含 `page/page_size/total/has_more/until`；完整报告中的 `client_pagination` 使用相同结构。每页固定 20 条，页码为 1–10000 的整数；超出最后一页返回空数组及真实总数。`until` 必须是非未来的有效 Unix 毫秒时间戳，且距当前时间不超过 15 分钟。缺失或无效参数返回 400 `INVALID_PAGINATION`，截止时间过期返回 400 `SNAPSHOT_EXPIRED`，无效视图返回 400 `INVALID_VIEW`。
+
+每个 `clients` 条目另含 `peak_requests/peak_downloads/peak_targets`（单分钟峰值）、`alert_minutes`（达到阈值的分钟数）；`summary.anomalous_clients` 为达到流量阈值的不同 IP 总数。上述均为计算字段，不新增 D1 字段或迁移。
 
 非管理域名返回 404；未登录返回 401；无效时间范围返回 400 `INVALID_RANGE`；未迁移、DB 绑定缺失或查询失败返回 503 `MONITOR_UNAVAILABLE`，不向客户端返回内部异常信息。不提供公开查询入口。
+
+## 追加分页验证（2026-10-23）
+
+监控、后台导航、下载、预览及小程序 API 共 54 项相关测试通过，`npm run lint` 与 `npm run build` 通过。新增 SQL fixture 覆盖稳定分页及末页、追加期间新增请求、异常窗口前 30 条之外的 IP 标记、分页认证和参数校验。
+
+使用实际 React 面板、编译后的 Tailwind 样式与真实 SQL 生成的 45 个合成 IP，在临时本地页面验证 20 → 40 → 45 条追加、失败保留后重试、刷新重置、延迟追加时切换时段、四类标记、桌面及 390px 手机布局；手机宽表限制在表格容器内横向滚动，未产生整页溢出，最终验证无新增控制台错误。此为隔离界面验证，未发布生产版本或使用生产请求做压测。
 
 
 ## 本次本地验证（2026-10-18）

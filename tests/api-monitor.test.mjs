@@ -216,3 +216,85 @@ test('monitor admin API requires the admin host and signed session, validates ra
   assert.equal(unavailable.status, 503);
   assert.deepEqual(await unavailable.json(), { error: 'MONITOR_UNAVAILABLE' });
 });
+
+test('IP ranking appends stable pages within the original cutoff and returns a complete final page', async (t) => {
+  const f = fixture(t);
+  const sql = `INSERT INTO w_api_access_events(id,created_at,endpoint,method,status,duration_ms,client_ip,source)
+    VALUES(?,?,'/api/public/search','GET',200,1,?,'unknown')`;
+  const ips = Array.from({ length: 45 }, (_, i) => `203.0.113.${String(i + 1).padStart(3, '0')}`);
+  f.db.seed(ips.map((ip, i) => ({ sql, params: [String(i), now - 60000, ip] })));
+  const service = f.load('src/lib/api-monitor-report.ts');
+  const initial = await service.loadApiMonitorReport(f.db, '24h', now);
+  assert.equal(initial.clients.length, 20);
+  assert.equal(initial.client_pagination.page, 1);
+  assert.equal(initial.client_pagination.total, 45);
+  assert.equal(initial.client_pagination.has_more, true);
+  assert.equal(initial.client_pagination.until, now);
+  f.db.seed(Array.from({ length: 200 }, (_, i) => ({ sql, params: [`new-${i}`, now + 1000, '198.51.100.1'] })));
+  const second = await service.loadApiMonitorClients(f.db, '24h', now, 2);
+  const third = await service.loadApiMonitorClients(f.db, '24h', now, 3);
+  const beyond = await service.loadApiMonitorClients(f.db, '24h', now, 4);
+  assert.equal(second.clients.length, 20);
+  assert.equal(third.clients.length, 5);
+  assert.equal(third.pagination.has_more, false);
+  assert.equal(beyond.clients.length, 0);
+  assert.equal(beyond.pagination.total, 45);
+  assert.deepEqual([...initial.clients, ...second.clients, ...third.clients].map((row) => row.client_ip), ips);
+  for (const page of [0, -1, 1.5, 10001, NaN]) {
+    await assert.rejects(() => service.loadApiMonitorClients(f.db, '24h', now, page), /pagination/i);
+  }
+});
+
+test('IP anomaly markers include minutes omitted from the capped alert list and distinguish HTTP errors', async (t) => {
+  const f = fixture(t);
+  const minute = Math.floor(now / 60000) * 60000 - 60000;
+  const sql = `INSERT INTO w_api_access_events(id,created_at,endpoint,method,status,duration_ms,client_ip,source,target_hash)
+    VALUES(?,?,?,?,?,1,?,'own_mini',?)`;
+  const rows = [];
+  for (let m = 0; m < 35; m++) for (let i = 0; i < 20; i++) {
+    rows.push({ sql, params: [`busy-${m}-${i}`, minute - m * 60000 + i, '/api/files/download', 'GET', 200, '203.0.113.1', String(i)] });
+  }
+  for (let ip = 2; ip <= 21; ip++) for (let i = 0; i < 22; i++) {
+    rows.push({ sql, params: [`normal-${ip}-${i}`, minute - i * 60000, '/api/public/search', 'GET', 200, `203.0.113.${ip}`, null] });
+  }
+  for (let i = 0; i < 21; i++) {
+    rows.push({ sql, params: [`hidden-${i}`, minute - 40 * 60000 + i, '/api/files/download', 'GET', 200, '203.0.113.99', String(i)] });
+  }
+  rows.push({ sql, params: ['failed', minute, '/api/public/search', 'GET', 503, '203.0.113.100', null] });
+  f.db.seed(rows);
+  const service = f.load('src/lib/api-monitor-report.ts');
+  const report = await service.loadApiMonitorReport(f.db, '1h', now);
+  assert.equal(report.alerts.length, 30);
+  assert.equal(report.alerts.some((row) => row.client_ip === '203.0.113.99'), false);
+  assert.equal(report.summary.anomalous_clients, 2);
+  const next = await service.loadApiMonitorClients(f.db, '1h', now, 2);
+  const hidden = next.clients.find((row) => row.client_ip === '203.0.113.99');
+  assert.equal(hidden.alert_minutes, 1);
+  assert.equal(hidden.peak_downloads, 21);
+  assert.equal(hidden.peak_requests, 21);
+  const failed = next.clients.find((row) => row.client_ip === '203.0.113.100');
+  assert.equal(failed.errors, 1);
+  assert.equal(failed.alert_minutes, 0);
+});
+
+test('client-only admin pages validate snapshot/page and retain authentication and no-store', async (t) => {
+  const f = fixture(t);
+  f.env.ADMIN_SESSION_SECRET = 'test-only-monitor-pagination-session-key-32-chars';
+  const token = await f.load('src/lib/admin-auth.ts').createAdminSession();
+  const route = f.load('src/app/api/admin/api-monitor/route.ts');
+  const headers = { Cookie: `phwalls_admin_session=${token}` };
+  const get = (query, auth = true) => route.GET(new NextRequest(`https://a.phwalls.com/api/admin/api-monitor?${query}`, auth ? { headers } : {}));
+  const response = await get(`view=clients&range=24h&page=2&until=${now}`);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  const body = await response.json();
+  assert.equal(body.data.pagination.page, 2);
+  assert.deepEqual(body.data.clients, []);
+  assert.equal(Object.hasOwn(body.data, 'trend'), false);
+  assert.equal((await get(`view=clients&page=2&until=${now}`, false)).status, 401);
+  for (const query of [`view=clients&page=0&until=${now}`, `view=clients&page=1.2&until=${now}`,
+    `view=clients&page=10001&until=${now}`, 'view=clients&page=2', 'view=clients&page=2&until=not-a-number',
+    `view=clients&page=2&until=${Date.now() + 60000}`, `view=clients&page=2&until=${now - 3600000}`, 'view=invalid']) {
+    assert.equal((await get(query)).status, 400, query);
+  }
+});
