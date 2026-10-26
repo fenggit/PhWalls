@@ -75,6 +75,9 @@ function normalizePublicPath(pathname: string): string {
   if (pathname === '/desktop/google-aluminium-os') {
     return '/desktop/google-os';
   }
+  if (pathname === '/desktop/wallpapers/microsoft-windows/microsoft-surface-duo-2') {
+    return '/desktop/wallpapers/microsoft-surface/microsoft-surface-duo-2';
+  }
   if (pathname === '/desktop/wallpapers/google-aluminium-os/google-aluminium-os') {
     return '/desktop/wallpapers/google-os/google-aluminium-os';
   }

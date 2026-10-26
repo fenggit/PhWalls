@@ -8,12 +8,13 @@ const require = createRequire(import.meta.url);
 const ts = require('typescript');
 const i18nModule = { exports: {} };
 runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/i18n.ts', import.meta.url), 'utf8'), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
 }).outputText, { module: i18nModule, exports: i18nModule.exports, require: specifier => {
   assert.ok(specifier.startsWith('@/data/') && specifier.endsWith('.json'));
   return JSON.parse(readFileSync(new URL(`../src/${specifier.slice(2)}`, import.meta.url), 'utf8'));
 } });
 const requirePathModule = (specifier) => {
+  if (specifier === '@/data/desktopwalls/tab.json') return JSON.parse(readFileSync(new URL('../src/data/desktopwalls/tab.json', import.meta.url), 'utf8'));
   assert.equal(specifier, '@/lib/i18n');
   return i18nModule.exports;
 };
@@ -24,7 +25,7 @@ runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload
 const { uploadAdminBatch } = module.exports;
 const pathModule = { exports: {} };
 runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-path.ts', import.meta.url), 'utf8'), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
 }).outputText, { module: pathModule, exports: pathModule.exports, require: requirePathModule });
 
 test('upload directories reuse one static history target and disclose legacy dynamic paths', () => {
@@ -45,7 +46,7 @@ test('upload directories reuse one static history target and disclose legacy dyn
 test('multiple static historical directories require one explicit target for either media', () => {
   const device = { device_category: 'desktop', brand_name: 'windows', device_name: 'Windows 11', device_slug: 'windows-11' };
   const files = [
-    { media_type: 'static', origin_key: 'desktopwalls/Windows/Windows 11/origin/a.png' },
+    { media_type: 'static', origin_key: 'desktopwalls/windows/Windows 11/origin/a.png' },
     { media_type: 'static', origin_key: 'desktopwalls/windows/windows-11/origin/b.png' },
   ];
   const still = pathModule.exports.getAdminUploadDirectories(device, 'static', files);
@@ -97,7 +98,7 @@ test('selected upload media validates the original and always requires an image 
 test('default upload directories share static and MP4 storage for the same device or system', () => {
   const pathModule = { exports: {} };
   runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-path.ts', import.meta.url), 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
   }).outputText, { module: pathModule, exports: pathModule.exports, require: requirePathModule });
   const device = { device_category: 'os', brand_name: 'xiaomi', device_slug: 'miui-13' };
   assert.equal(pathModule.exports.deviceR2Prefix(device, 'static'), 'xiaomi/miui-13');

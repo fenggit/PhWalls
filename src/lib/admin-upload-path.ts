@@ -1,5 +1,18 @@
 import type { DeviceRow, WallpaperMediaType, WallpaperRow } from '@/lib/wallpaper-db';
-import { getI18nTexts } from '@/lib/i18n';
+import { getAdminMixedUploadTexts, getI18nTexts } from '@/lib/i18n';
+import desktopBrands from '@/data/desktopwalls/tab.json';
+
+type StorageDevice = Pick<DeviceRow, 'device_category' | 'brand_name'>;
+const desktopBrandSlugs = new Set(desktopBrands.filter(brand => !('link' in brand)).map(brand => brand.type.toLowerCase().trim().replace(/\s+/g, '-')));
+const brandSlug = (device: StorageDevice) => device.brand_name.toLowerCase().trim().replace(/\s+/g, '-');
+const usesDesktopStorage = (device: StorageDevice) => device.device_category === 'desktop' || desktopBrandSlugs.has(brandSlug(device));
+
+export function assertAdminUploadPrefixNamespace(device: StorageDevice, prefix: string): void {
+  const namespace = `desktopwalls/${brandSlug(device)}/`;
+  if (usesDesktopStorage(device) && (!prefix.startsWith(namespace) || prefix.length === namespace.length)) {
+    throw new Error(getAdminMixedUploadTexts('zh').prefixNamespaceInvalid.replace('{prefix}', namespace));
+  }
+}
 
 export type AdminUploadDirectories = { prefix: string; directories: string[]; source: 'existing' | 'default' | 'multiple' | 'configured'; configured: boolean; historical_directories: string[] };
 export type AdminUploadRole = 'origin' | 'compress' | 'preview';
@@ -16,12 +29,17 @@ export function getAdminUploadDirectories(
     if (!match) continue;
     try {
       const path = normalizeAdminR2Prefix(match[1]); historical.add(path);
+      assertAdminUploadPrefixNamespace(device, path);
       if (file.media_type === 'static' && !/^live\//i.test(path)) staticPaths.add(path);
     } catch { /* Invalid legacy keys are never upload targets. */ }
   }
   const paths = Array.from(staticPaths).sort();
   const common = { configured: Boolean(device.upload_prefix), historical_directories: Array.from(historical).sort() };
-  if (device.upload_prefix) return { ...common, prefix: normalizeAdminR2Prefix(device.upload_prefix), directories: paths, source: 'configured' };
+  if (device.upload_prefix) {
+    const prefix = normalizeAdminR2Prefix(device.upload_prefix);
+    assertAdminUploadPrefixNamespace(device, prefix);
+    return { ...common, prefix, directories: paths, source: 'configured' };
+  }
   if (paths.length) return { ...common, prefix: paths.length === 1 ? paths[0] : '', directories: paths, source: paths.length === 1 ? 'existing' : 'multiple' };
   let folderName = device.device_slug;
   try { if (!device.device_name.includes('/')) folderName = normalizeAdminR2Prefix(device.device_name); } catch { /* Use safe slug. */ }
@@ -51,8 +69,8 @@ export function assertAdminUploadMime(mime: string, role: AdminUploadRole, media
 
 // Media is accepted for caller compatibility; new storage is always device-wide.
 export function deviceR2Prefix(device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>): string {
-  return device.device_category === 'desktop'
-    ? `desktopwalls/${device.brand_name}/${device.device_slug}`
+  return usesDesktopStorage(device)
+    ? `desktopwalls/${brandSlug(device)}/${device.device_slug}`
     : `${device.brand_name}/${device.device_slug}`;
 }
 

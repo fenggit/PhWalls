@@ -14,6 +14,15 @@ class LocalSyncTests(unittest.TestCase):
   self.local.execute("INSERT INTO w_devices(id,brand_name,device_name,device_slug,device_category,status,create_date,updated_date) VALUES(?,?,?,?, 'phone',?,1,1)",(id,brand,name,slug,status))
  def asset(self,id,device,key,name,status='draft',primary=0,tags='[]'):
   self.local.execute("INSERT INTO w_wallpapers(id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,media_type,category,is_primary,tags,status,create_date,updated_date) VALUES(?,?,?,'image/jpeg',100,?,?,'jpg','static','phone',?,?,?,1,1)",(id,device,name,key,key.replace('/origin/','/compress/').replace('.jpg','.webp'),primary,tags,status))
+ def test_new_device_and_asset_can_replay_without_duplicate_prefix_or_placeholder_names(self):
+  self.device('new-device','new-device','Huawei New');self.asset('new-asset','new-device','huawei/New/origin/a.jpg','original',primary=1)
+  self.local.execute("UPDATE w_devices SET upload_prefix='huawei/New' WHERE id='new-device'")
+  device=dict(self.local.execute("SELECT * FROM w_devices WHERE id='new-device'").fetchone());asset=dict(self.local.execute("SELECT * FROM w_wallpapers WHERE id='new-asset'").fetchone())
+  self.local.execute('DELETE FROM w_wallpapers');self.local.execute('DELETE FROM w_devices')
+  plan={'changes':[{'table':'w_devices','before':None,'after':device},{'table':'w_wallpapers','before':None,'after':asset}],'issues':[],'summary':{}}
+  self.module.simulate(self.local,plan)
+  for _ in range(2):self.module.execute_sql(self.local,self.module.build_sql(plan['changes']))
+  self.assertEqual(dict(self.local.execute("SELECT * FROM w_wallpapers").fetchone()),asset)
  def test_different_ids_merge_confirmed_originals_preserves_local_text_and_unknown_assets(self):
   self.device('local-main','model','Huawei Model (Pro)');self.device('local-alt','model-2','Huawei Model Pro',status='published');self.device('local-private','private','My device','private')
   self.asset('local-a','local-main','huawei/Old/origin/a.jpg','authored-a',tags='["local"]')

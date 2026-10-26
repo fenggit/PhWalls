@@ -4,6 +4,26 @@ import tempfile, unittest
 spec=importlib.util.spec_from_file_location('catalog', Path(__file__).parents[1]/'catalog-normalization.py')
 catalog=importlib.util.module_from_spec(spec);spec.loader.exec_module(catalog)
 class CatalogTests(unittest.TestCase):
+ def test_unindexed_desktop_brands_use_the_registry_slug(self):
+  saved=dict(catalog.PREFIX_OVERRIDES);catalog.PREFIX_OVERRIDES.clear()
+  try:
+   for source in ['desktopwalls/Microsoft Surface/Surface Duo 2/origin/A.JPG','microsoft-surface/Surface Duo 2/origin/A.JPG']:
+    self.assertEqual(catalog.normalize_path(source),'desktopwalls/microsoft-surface/Surface Duo 2/origin/a.jpg')
+   self.assertEqual(catalog.normalize_path('Live/Microsoft Surface/Surface Duo 2/origin/A.MP4'),'desktopwalls/microsoft-surface/Surface Duo 2/origin/a.mp4')
+   self.assertEqual(catalog.normalize_path('desktopwalls/Windows/Windows 11/compress/A.WEBP'),'desktopwalls/microsoft-windows/Windows 11/compress/a.webp')
+   self.assertEqual(catalog.normalize_path('desktopwalls/Unknown Vendor/Model/origin/A.JPG'),'desktopwalls/Unknown Vendor/Model/origin/a.jpg')
+   self.assertEqual(catalog.normalize_path('macOS/Sonoma/origin/A.JPG'),'macos/Sonoma/origin/a.jpg')
+  finally:catalog.PREFIX_OVERRIDES.clear();catalog.PREFIX_OVERRIDES.update(saved)
+ def test_surface_storage_does_not_change_foldable_form_factor(self):
+  import sqlite3
+  saved=dict(catalog.PREFIX_OVERRIDES)
+  db=sqlite3.connect(':memory:');db.row_factory=sqlite3.Row
+  try:
+   db.executescript("CREATE TABLE w_devices(id TEXT,brand_name TEXT,device_name TEXT,device_slug TEXT,device_category TEXT,create_date INTEGER); INSERT INTO w_devices VALUES('surface','microsoft-surface','Surface Duo 2','surface-duo-2','phone_fold',1); CREATE TABLE w_wallpapers(device_id TEXT,origin_key TEXT,compress_key TEXT); INSERT INTO w_wallpapers VALUES('surface','microsoft-surface/Surface Duo 2/origin/a.jpg',NULL)")
+   catalog.configure_prefixes(db)
+   self.assertEqual(catalog.normalize_path('microsoft-surface/Surface Duo 2/origin/a.jpg'),'desktopwalls/microsoft-surface/Surface Duo 2/origin/a.jpg')
+   self.assertEqual(db.execute('SELECT device_category FROM w_devices').fetchone()[0],'phone_fold')
+  finally:db.close();catalog.PREFIX_OVERRIDES.clear();catalog.PREFIX_OVERRIDES.update(saved)
  def test_unindexed_live_inputs_use_the_same_model_directory(self):
   saved=dict(catalog.PREFIX_OVERRIDES);catalog.PREFIX_OVERRIDES.clear()
   try:

@@ -58,7 +58,7 @@
 | `brand_name` | TEXT | 所属品牌标识，如 `xiaomi`、`google-pixel`、`microsoft-windows`；取自内置品牌配置或 `w_brands.slug`，不是数据库固定枚举，也未设置品牌外键 |
 | `device_name` | TEXT | 品牌下的设备或系统版本标准名称，用于后台识别、归一化查重和翻译缺失时的兜底，如 `xiaomi 14`、`Google Pixel 11`、`iOS 14`、`Android 17` |
 | `device_slug` | TEXT | 稳定的设备/系统版本 URL slug；创建时生成，名称变更时保持不变 |
-| `upload_prefix` | TEXT NULL DEFAULT NULL | 设备后续统一上传的 R2 相对目录，静态与动态共用；NULL 表示尚未配置，不影响历史对象读取。非空值唯一，最长 300 字符，不能包含角色子目录或非法路径；改名不自动改变此值 |
+| `upload_prefix` | TEXT NULL DEFAULT NULL | 设备后续统一上传的 R2 相对目录，静态与动态共用；NULL 表示尚未配置，不影响历史对象读取。非空值唯一，最长 300 字符，不能包含角色子目录或非法路径；桌面品牌或 desktop 设备须位于 `desktopwalls/<品牌 slug>/` 下；改名不自动改变此值 |
 | `device_category` | TEXT | 目标分类枚举：`phone`、`phone_fold`、`pad`、`desktop`、`os` |
 | `theme` | TEXT NULL DEFAULT NULL | 设备整套壁纸的主要视觉风格，保存单个英文枚举：`dark`、`gradient`、`minimal_geometric`、`anime`、`abstract`、`nature`、`photography`、`floral`、`technology`、`illustration`；`NULL` 表示未分类，各语言通过文案映射展示 |
 | `is_popular_brand` | INTEGER NOT NULL DEFAULT 0 | 是否为热门品牌，布尔值 `0/1` |
@@ -161,6 +161,7 @@
 
 - `Phone Fold` 使用 `device_category=phone_fold`，不与 `phone` 混为一个无法区分的自由文本标签。
 - `device_name` 是目标名称，不限定为物理设备。操作系统壁纸使用 `device_category=os`，例如 `brand_name=apple, device_name=iOS 14`，或 `brand_name=android, device_name=Android 17`；不新增 OS 专用表或版本字段。
+- 存储归属与设备形态分别判断：内置桌面品牌（`src/data/desktopwalls/tab.json` 中不含外链的条目）或 `device_category=desktop` 的设备，后续上传目录统一为 `desktopwalls/<品牌 slug>/<型号或自定义目录>`。例如 Microsoft Surface Duo 2 的 `phone_fold` 分类保持不变，但存储在 `desktopwalls/microsoft-surface/` 下；不属于该命名空间的历史目录仅展示，不作为上传建议。已配置错误目录须先修正；上传授权与后台保存目录都会拒绝跨命名空间目标。未知桌面品牌继续使用其自身 slug，不推断为其他品牌。
 - `w_wallpapers.category` 表示壁纸自身面向的设备分类，不要求等于 `w_devices.device_category`。上传时可默认采用设备分类，再由管理员调整；例如 phone 设备可关联一张 `category=pad` 的壁纸。
 - `is_primary=1` 表示该壁纸是设备在对应分类下的首张主展示图；后台切换主展示图时，在同一数据库操作中清除该设备该分类其他壁纸的标记。发布包含壁纸的设备分类前，要求至少有一张已发布壁纸设为主展示图。
 - 自定义品牌的展示名称、标识与手机/桌面类型放在 `w_brands`；设备的所属品牌标识、设备名称与设备分类放在 `w_devices`；内置品牌定义继续来自配置。单张壁纸的明暗、媒体类型、格式与 tags 放在 `w_wallpapers`。

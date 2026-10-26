@@ -60,6 +60,7 @@ test('历史桌面列表与 Aluminium OS 地址永久迁移到有效页面', () 
     ['/desktop/wallpapers', '/desktop'],
     ['/desktop/google-aluminium-os', '/desktop/google-os'],
     ['/desktop/wallpapers/google-aluminium-os/google-aluminium-os', '/desktop/wallpapers/google-os/google-aluminium-os'],
+    ['/desktop/wallpapers/microsoft-windows/microsoft-surface-duo-2', '/desktop/wallpapers/microsoft-surface/microsoft-surface-duo-2'],
   ];
   for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
     for (const [oldPath, newPath] of migrations) {

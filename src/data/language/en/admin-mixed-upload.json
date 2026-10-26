@@ -61,5 +61,6 @@
   "unpublished": "Draft / unpublished",
   "expiredUploaded": "Upload grants expired after files were uploaded. Reconcile the object list below with database references before cleanup. Use new filenames for a new upload.",
   "targetChange": "Changing the upload target clears this queue and its grants. Select files and check them again. Continue?",
-  "outsideRoles": "Assets must be directly inside origin, compress or preview. Only notes and system files outside these folders are ignored."
+  "outsideRoles": "Assets must be directly inside origin, compress or preview. Only notes and system files outside these folders are ignored.",
+  "prefixNamespaceInvalid": "Uploads for this desktop brand must use {prefix}. Update the device upload directory first."
 }

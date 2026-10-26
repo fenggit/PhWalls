@@ -61,5 +61,6 @@
   "unpublished": "草稿 / 已下架",
   "expiredUploaded": "上传授权已过期且已有文件上传。请核对下方对象清单与数据库引用后再处理；如重新上传，请使用新文件名。",
   "targetChange": "切换上传目标会清空当前队列和授权，需重新选择文件并预检。继续吗？",
-  "outsideRoles": "素材须直接放在 origin、compress 或 preview 子目录；其他位置仅忽略来源说明及系统文件。"
+  "outsideRoles": "素材须直接放在 origin、compress 或 preview 子目录；其他位置仅忽略来源说明及系统文件。",
+  "prefixNamespaceInvalid": "桌面品牌的上传目录须位于 {prefix} 下，请先修正设备上传目录。"
 }
