@@ -58,7 +58,7 @@ export default function LiveWallpaperCollectionCard({
           </Link>
         </Heading>
       </div>
-      {date && <p className="mt-1 text-xs text-gray-500">{date} {texts.updatedLabel}</p>}
+      {date?.trim() ? <p className="mt-1 text-xs text-gray-500">{date} {texts.updatedLabel}</p> : null}
     </article>
   );
 }

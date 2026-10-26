@@ -22,7 +22,7 @@ Pride 2025 中有 6 张手机壁纸与桌面版的文件主名相同；保持 R2
 
 壁纸标签沿用已逐图核验的 PHWalls 英文词表。明暗字段根据官方 DM／LM、Dark／Light 或明确的合集版本命名填写，其他图片使用 normal。设备视觉主题与明暗字段分别维护。
 
-11 个 Microsoft Store 主题采用官方完整 SKU 的 FirstAvailableDate，Surface Laptop 3 采用已有核实的设备日期；其余 21 个合集暂留空日期，未以下载或上传日期冒充发布时间。
+11 个 Microsoft Store 主题采用官方完整 SKU 的 FirstAvailableDate，Surface Laptop 3 采用已有核实的设备日期；其余 21 个合集在初次导入时留空，随后按用户授权补入估算年月，见下方补录记录。
 
 ## 实现范围
 
@@ -54,3 +54,37 @@ Pride 2025 中有 6 张手机壁纸与桌面版的文件主名相同；保持 R2
 用户明确确认“上线”后，先备份本批 33 个合集与 228 张素材的当前完整行，再生成仅匹配这些记录 ID、草稿状态、更新时间和正常删除状态的发布 SQL。壁纸先发布、合集后发布；发布后 261 条记录逐字段核验通过，仅状态和更新时间改变。
 
 本次执行文件为备份目录中的 `publish-current.sql`；`pre-publication-20261026.json`、`post-publication-20261026.json` 和 `live-publication-verification.json` 记录发布前后状态与线上五语言、下载及设备分组核验。需要恢复草稿时，`unpublish-current.sql` 仅匹配本次发布时间且仍未被后续编辑的记录，不修改素材文件或其他品牌。
+
+## 2026-10-26 估算年月补录
+
+用户明确要求补齐空日期，并允许估算月份。本次仅为 Microsoft Design 的 21 个空日期合集补入 `YYYY/MM`，保留原有 12 个已填写日期；未扩展到其他品牌。生产回读核对 33 个合集均有日期，21 行仅 `release_date` 和 `updated_date` 改变。
+
+19 个合集参考 [Microsoft Design 官方壁纸页](https://microsoft.design/wallpapers/)下载链接中的上传年月。该年月可能来自资源重新上传，不等于已核实的首次发布日期；其余 Copilot App 与 Horizons 没有直接年月证据，按用户授权统一估算为同页旧合集集中上传的 `2025/08`。本批所有新增值均是估算年月，不补造具体日期。
+
+| 合集 | 补录年月 | 依据 |
+| --- | --- | --- |
+| Microsoft 365 Vision | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/Microsoft365_Vision.zip) |
+| Microsoft Abstract Dreamscapes | 2024/12 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2024/12/Abstract-Dreamscapes.zip) |
+| Microsoft Abstract Dreamscapes Mobile | 2024/12 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2024/12/Abstract-Dreamscapes-Mobile.zip) |
+| Microsoft Copilot App | 2025/08 | 用户授权估算，低置信度 |
+| Microsoft Ethereal Motion Dark Mode | 2025/02 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/02/Ethereal-Motion-Dark-Mode.zip) |
+| Microsoft Ethereal Motion Light Mode | 2025/02 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/02/Ethereal-Motion-Light-Mode.zip) |
+| Microsoft Fluent UI | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/Design_to_Code-1.zip) |
+| Microsoft Fluid Textures | 2025/01 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/01/Fluid-Textures.zip) |
+| Microsoft Horizons | 2025/08 | 用户授权估算，低置信度 |
+| Microsoft Icon Systems Celebration | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/Icon_Celebration.zip) |
+| Microsoft Immersive Hues | 2025/02 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/02/Wallpapers-Pack-3.zip) |
+| Microsoft Nostalgic Scenes | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/microsoft_nostalgic.zip) |
+| Microsoft Opaline | 2025/12 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/12/Opaline.zip) |
+| Microsoft Pride 2025 | 2025/06 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/06/Pride-2025.zip) |
+| Microsoft Windows 11 Themes | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/windows-color-waves.zip) |
+| Microsoft Windows Fluent Emoji | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/fluent_emoji-1.zip) |
+| Microsoft Windows From Around The World | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/windows-wallpaper-expeditions.zip) |
+| Microsoft Windows Insider 12th-year anniversary | 2026/10 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2026/10/wip12-wallpaper.zip) |
+| Microsoft Windows Insider Program 10-year Anniversary | 2025/08 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/08/wip10year-all.zip) |
+| Microsoft Windows Insider Program 11-year Anniversary | 2025/10 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/10/WIP-11th-Anniversary-1.zip) |
+| Microsoft's 50th Anniversary | 2025/04 | [官方下载路径年月](https://microsoft.design/wp-content/uploads/2025/04/50th_Windows_Wallpapers.zip) |
+
+补录证据与回退文件：`/Users/fenghe/.codex/backups/PhWalls/microsoft-design-dates-20261026/`，包含 `before.json`、`plan.json`、`apply.sql`、`apply-result.json`、`after-raw.json`、`verification.json` 和 `rollback.sql`。写入前已验证更新、重复执行幂等和完整回退；正式 SQL 同时匹配 ID、品牌、原日期、原修改时间、状态及正常删除状态。回退只匹配本次写入日期和修改时间，后续人工修改会被跳过。
+
+前端分类列表、首页、动态合集卡片和详情统一隐藏空日期或纯空格日期对应的日期标签、更新文案及分隔符；有日期时继续展示原值。代码已通过 lint、生产构建和实际组件渲染回归，待部署后生效。数据库补录已直接生效，不需要迁移或上传素材。

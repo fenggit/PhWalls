@@ -686,16 +686,16 @@ export default function Home({
                                 {/* 日期和数量一行显示 */}
                                 <div className="flex items-center justify-center space-x-2 text-xs text-gray-500">
                                   {/* 日期 */}
-                                  {item.date && (
+                                  {item.date?.trim() ? (
                                     <div>
                                       {item.date}
                                     </div>
-                                  )}
+                                  ) : null}
                                   
                                   {/* 分隔符 */}
-                                  {item.date && (
+                                  {item.date?.trim() ? (
                                     <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                                  )}
+                                  ) : null}
                                   
                                   {/* 数量 */}
                                   <div className="font-medium">

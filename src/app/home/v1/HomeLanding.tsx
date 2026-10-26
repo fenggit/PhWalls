@@ -102,8 +102,10 @@ function PhoneCard({
         <div className="space-y-1 p-3 text-center">
           <div role="heading" aria-level={headingLevel} className="truncate text-sm font-semibold leading-tight text-gray-900">{title}</div>
           <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-            <span>{item.date}</span>
-            <span className="h-1 w-1 rounded-full bg-gray-300" aria-hidden="true" />
+            {item.date?.trim() ? <>
+              <span>{item.date}</span>
+              <span className="h-1 w-1 rounded-full bg-gray-300" aria-hidden="true" />
+            </> : null}
             <span className="font-medium">{item.count} {texts.count}</span>
           </div>
         </div>
