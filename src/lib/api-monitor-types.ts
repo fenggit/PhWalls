@@ -22,6 +22,10 @@ export type ApiMonitorClient = {
 };
 export type ApiClientPagination = { page: number; page_size: number; total: number; has_more: boolean; until: number };
 export type ApiMonitorClientsPage = { clients: ApiMonitorClient[]; pagination: ApiClientPagination };
+export type ApiMonitorDetailKind = 'errors' | 'external' | 'anomalous';
+export type ApiMonitorDetailsPage = {
+  events: ApiAccessEvent[]; clients: ApiMonitorClient[]; pagination: ApiClientPagination;
+};
 
 export type ApiMonitorReport = {
   range: ApiMonitorRange;

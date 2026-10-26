@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { ArrowUpRight, RefreshCw, X } from 'lucide-react';
 import { getApiMonitorTexts } from '@/lib/i18n';
-import type { ApiMonitorRange, ApiMonitorReport, ApiSource, ApiMonitorClientsPage, ApiMonitorClient } from '@/lib/api-monitor-types';
+import type { ApiMonitorRange, ApiMonitorReport, ApiSource, ApiMonitorClientsPage, ApiMonitorClient, ApiMonitorDetailKind, ApiMonitorDetailsPage } from '@/lib/api-monitor-types';
 
 const texts = getApiMonitorTexts('zh');
 const buttonClass = 'inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#d8dfdb] bg-white px-3 text-sm font-medium hover:bg-[#f4f7f4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560] disabled:opacity-50';
@@ -41,11 +41,95 @@ function ClientSignals({ row, thresholds }: { row: ApiMonitorClient; thresholds:
   </div>;
 }
 
+const detailLabels: Record<ApiMonitorDetailKind, string> = {
+  errors: texts.errors, external: texts.external, anomalous: texts.anomalousClients,
+};
+
+function MonitorDetails({ kind, report, onClose }: {
+  kind: ApiMonitorDetailKind; report: ApiMonitorReport; onClose: () => void;
+}) {
+  const { range, until } = report;
+  const [data, setData] = useState<ApiMonitorDetailsPage | null>(null);
+  const [page, setPage] = useState(1);
+  const [retry, setRetry] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const panel = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    panel.current?.focus({ preventScroll: true });
+    panel.current?.scrollIntoView({ block: 'nearest' });
+  }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true); setError('');
+    void (async () => {
+      try {
+        const query = new URLSearchParams({ view: 'details', kind, range, until: String(until), page: String(page) });
+        const response = await fetch(`/api/admin/api-monitor?${query}`, {
+          credentials: 'same-origin', cache: 'no-store', signal: controller.signal,
+        });
+        const result = await response.json() as { data?: ApiMonitorDetailsPage; error?: string };
+        if (!response.ok || !result.data) throw new Error(result.error === 'SNAPSHOT_EXPIRED' ? texts.snapshotExpired : texts.detailsFailed);
+        if (controller.signal.aborted) return;
+        const next = result.data;
+        setData((current) => {
+          if (!current || page === 1) return next;
+          const eventIds = new Set(current.events.map((row) => row.id));
+          const ips = new Set(current.clients.map((row) => row.client_ip));
+          return { pagination: next.pagination,
+            events: [...current.events, ...next.events.filter((row) => !eventIds.has(row.id))],
+            clients: [...current.clients, ...next.clients.filter((row) => !ips.has(row.client_ip))] };
+        });
+      } catch (cause) {
+        if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : texts.detailsFailed);
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, [kind, range, until, page, retry]);
+  const isClients = kind === 'anomalous';
+  const loaded = data ? (isClients ? data.clients.length : data.events.length) : 0;
+  return <section ref={panel} id="api-monitor-details" tabIndex={-1} aria-label={`${detailLabels[kind]} · ${texts.details}`}
+    className="min-w-0 space-y-3 rounded-lg border border-[#247560] bg-[#f4f7f4] p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560]">
+    <div className="flex items-center justify-between gap-3">
+      <h3 className="text-sm font-semibold">{detailLabels[kind]} · {texts.details}</h3>
+      <button type="button" className={buttonClass} onClick={onClose}><X size={14} />{texts.closeDetails}</button>
+    </div>
+    <p className="text-xs text-[#66746b]">{time(report.since)} – {time(until)} · {isClients ? texts.normalHint : texts.detailsHint}</p>
+    {loading && <p role="status" className="text-sm text-[#66746b]">{texts.loadingMore}</p>}
+    {error && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm text-red-800">
+      <p>{error}</p>{error !== texts.snapshotExpired && <button type="button" className={buttonClass} onClick={() => setRetry((value) => value + 1)}>{texts.retryDetails}</button>}
+    </div>}
+    {data && <MonitorTable wide title={detailLabels[kind]} empty={!loaded}
+      columns={isClients ? [texts.ip, texts.signals, texts.requests, texts.downloads, texts.targets, texts.errors, texts.time]
+        : [texts.time, texts.endpoint, texts.ip, texts.country, texts.source, texts.userAgent, texts.status, texts.duration]}
+      footer={<div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e3e9e4] p-4" aria-busy={loading}>
+        <p role="status" className="text-xs text-[#66746b]">{texts.loadedDetails.replace('{loaded}', count(loaded)).replace('{total}', count(data.pagination.total))}</p>
+        {data.pagination.has_more && <button type="button" className={buttonClass} disabled={loading || !!error} onClick={() => setPage(data.pagination.page + 1)}>{texts.loadMoreDetails}</button>}
+      </div>}>
+      {isClients ? data.clients.map((row) => <tr key={row.client_ip} className="bg-amber-50/60">
+        <td className="font-mono">{row.client_ip}</td><td><ClientSignals row={row} thresholds={report.thresholds} /></td>
+        <td>{count(row.requests)}</td><td>{count(row.downloads)}</td><td>{count(row.targets)}</td><td>{count(row.errors)}</td>
+        <td className="whitespace-nowrap">{time(row.last_seen)}</td>
+      </tr>) : data.events.map((row) => <tr key={row.id} className={row.status >= 400 ? 'bg-red-50/50' : ''}>
+        <td className="whitespace-nowrap">{time(row.created_at)}</td><td className="break-all font-mono">{row.method} {row.endpoint}</td>
+        <td className="font-mono">{row.client_ip || texts.unknown}</td><td>{row.country || texts.unknown}</td>
+        <td><p className="whitespace-nowrap">{sourceLabels[row.source]}</p><p className="mt-1 break-all text-[#758278]">{row.source_host || '—'}</p>
+          {row.mini_app_id && <p className="mt-1 break-all font-mono">{row.mini_app_id}</p>}</td>
+        <td><span className="block w-44 break-all text-[#66746b]">{row.user_agent || texts.unknown}</span></td>
+        <td className={row.status >= 400 ? 'font-medium text-red-700' : ''}>{row.status}</td><td className="whitespace-nowrap">{row.duration_ms} ms</td>
+      </tr>)}
+    </MonitorTable>}
+  </section>;
+}
+
 type Payload = { data: ApiMonitorReport; enabled: boolean; miniAppId: string | null };
 
 export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: number }) {
   const [range, setRange] = useState<ApiMonitorRange>('24h');
   const [revision, setRevision] = useState(0);
+  const [detail, setDetail] = useState<ApiMonitorDetailKind | null>(null);
   const [payload, setPayload] = useState<Payload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -59,7 +143,7 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
     const controller = new AbortController();
     const epoch = ++requestEpoch.current;
     moreController.current?.abort(); morePending.current = false;
-    setLoadingMore(false); setMoreError('');
+    setLoadingMore(false); setMoreError(''); setDetail(null);
     setLoading(true); setError(''); setPayload(null);
     void (async () => {
       try {
@@ -141,14 +225,28 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
     {report && <>
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
         {([
-          [texts.requests, count(report.summary.requests)], [texts.clients, count(report.summary.clients)],
-          [texts.downloads, count(report.summary.downloads)], [texts.errors, count(report.summary.errors)],
-          [texts.external, count(report.summary.external)], [texts.anomalousClients, count(report.summary.anomalous_clients)], [texts.avgLatency, `${report.summary.avg_ms} ms`],
-        ] as const).map(([label, value]) => <div key={label} className={`rounded-lg border p-4 ${label === texts.anomalousClients && report.summary.anomalous_clients > 0
-          ? 'border-amber-300 bg-amber-50 text-amber-950' : label === texts.errors && report.summary.errors > 0 ? 'border-red-300 bg-red-50 text-red-900' : 'border-[#dfe6df] bg-white'}`}>
-          <p className="text-xs text-[#66746b]">{label}</p><p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight">{value}</p>
-        </div>)}
+          { label: texts.requests, value: count(report.summary.requests) },
+          { label: texts.clients, value: count(report.summary.clients) },
+          { label: texts.downloads, value: count(report.summary.downloads) },
+          { label: texts.errors, value: count(report.summary.errors), kind: 'errors' },
+          { label: texts.external, value: count(report.summary.external), kind: 'external' },
+          { label: texts.anomalousClients, value: count(report.summary.anomalous_clients), kind: 'anomalous' },
+          { label: texts.avgLatency, value: `${report.summary.avg_ms} ms` },
+        ] as { label: string; value: string; kind?: ApiMonitorDetailKind }[]).map(({ label, value, kind }) => {
+          const className = `rounded-lg border p-4 text-left ${kind === 'anomalous' && report.summary.anomalous_clients > 0
+            ? 'border-amber-300 bg-amber-50 text-amber-950' : kind === 'errors' && report.summary.errors > 0
+              ? 'border-red-300 bg-red-50 text-red-900' : 'border-[#dfe6df] bg-white'}`;
+          const content = <><span className="flex items-center justify-between gap-2 text-xs text-[#66746b]">{label}
+            {kind && <ArrowUpRight size={14} aria-hidden="true" />}</span><span className="mt-2 block text-2xl font-semibold tabular-nums tracking-tight">{value}</span></>;
+          return kind ? <button key={label} id={`api-monitor-${kind}`} type="button" aria-label={`${label} · ${texts.viewDetails}`}
+            aria-expanded={detail === kind} aria-controls={detail === kind ? 'api-monitor-details' : undefined}
+            onClick={() => setDetail(kind)} className={`${className} cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#247560] ${detail === kind ? 'ring-2 ring-[#247560]' : ''}`}>{content}</button>
+            : <div key={label} className={className}>{content}</div>;
+        })}
       </div>
+      {detail && <MonitorDetails key={`${detail}:${report.until}`} kind={detail} report={report} onClose={() => {
+        setDetail(null); document.getElementById(`api-monitor-${detail}`)?.focus();
+      }} />}
       {!report.summary.requests && <p role="status" className="rounded-md border border-[#dfe6df] bg-white p-4 text-sm text-[#66746b]">{texts.empty}</p>}
       <figure className="rounded-lg border border-[#dfe6df] bg-white p-4">
         <figcaption className="mb-5 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold">

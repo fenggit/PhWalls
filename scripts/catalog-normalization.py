@@ -36,6 +36,8 @@ def normalize_label(value):
  value=value.replace('_',' ').replace(':',' and ')
  value=re.sub(r'\(\s*\+\s*\)', ' Plus',value)
  value=value.replace('(',' ').replace(')',' ')
+ value=re.sub(r'^(?:nubia\s+)?red\s*magic(?=\s|$)', 'Red Magic', value, flags=re.I)
+ if value.startswith('Red Magic '):value=re.sub(r'(?<=\d)s\b', 'S', value)
  for prefix,canonical in PREFIX_CASE.items():
   value=re.sub(r'^'+re.escape(prefix)+r'(?=\s|$)',canonical,value,flags=re.I)
  return re.sub(r'\s+',' ',value).strip()
@@ -55,6 +57,7 @@ def normalize_filename(value):
  stem,ext=os.path.splitext(value)
  stem=stem.lower().replace('+','-plus-')
  stem=re.sub(r'[^\w-]+','-',stem,flags=re.UNICODE).replace('_','-')
+ stem=re.sub(r'^(?:nubia-)?red-?magic(?=-|$)', 'red-magic', stem)
  return re.sub('-+','-',stem).strip('-')+ext.lower()
 
 def normalize_path(value):

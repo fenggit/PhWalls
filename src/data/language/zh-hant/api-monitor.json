@@ -65,5 +65,13 @@
   "moreFailed": "追加載入失敗，已載入的 IP 已保留，請重試。",
   "snapshotExpired": "本次排行已過期，請重新整理統計後繼續載入。",
   "loadedClients": "已顯示 {loaded} / {total} 個 IP",
-  "allLoaded": "已顯示全部 IP"
+  "allLoaded": "已顯示全部 IP",
+  "details": "詳情",
+  "viewDetails": "查看詳情",
+  "closeDetails": "收起詳情",
+  "retryDetails": "重試",
+  "loadMoreDetails": "載入更多記錄",
+  "loadedDetails": "已顯示 {loaded} / {total} 筆記錄",
+  "detailsFailed": "詳情載入失敗，已載入記錄會保留，請重試。",
+  "detailsHint": "按目前時段篩選全部請求，每次載入 20 筆。"
 }

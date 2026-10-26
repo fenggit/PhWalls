@@ -1,5 +1,5 @@
 import 'server-only';
-import type { ApiAccessEvent, ApiMonitorRange, ApiMonitorReport, ApiClientPagination, ApiMonitorClient, ApiMonitorClientsPage } from '@/lib/api-monitor-types';
+import type { ApiAccessEvent, ApiMonitorRange, ApiMonitorReport, ApiClientPagination, ApiMonitorClient, ApiMonitorClientsPage, ApiMonitorDetailKind, ApiMonitorDetailsPage } from '@/lib/api-monitor-types';
 
 const RANGES = { '1h': 3600000, '24h': 86400000, '7d': 604800000 };
 const THRESHOLDS = { requests: 120, downloads: 20, targets: 60 };
@@ -47,14 +47,18 @@ function clientsStatement(db: D1Database, since: number, until: number, page: nu
   );
 }
 
-export async function loadApiMonitorClients(db: D1Database, range: string, until: number, page = 1): Promise<ApiMonitorClientsPage> {
+function snapshotSince(range: string, until: number, page: number): number {
   const duration = rangeDuration(range);
   const now = Date.now();
   if (!Number.isSafeInteger(page) || page < 1 || page > 10000 || !Number.isSafeInteger(until) || until <= 0 || until > now) {
     throw new ApiMonitorPaginationError('INVALID_PAGINATION');
   }
   if (now - until > SNAPSHOT_MAX_AGE) throw new ApiMonitorPaginationError('SNAPSHOT_EXPIRED');
-  const since = Math.max(until - duration, now - RANGES['7d']);
+  return Math.max(until - duration, now - RANGES['7d']);
+}
+
+export async function loadApiMonitorClients(db: D1Database, range: string, until: number, page = 1): Promise<ApiMonitorClientsPage> {
+  const since = snapshotSince(range, until, page);
   const results = await db.batch([
     db.prepare(`SELECT COUNT(DISTINCT client_ip) AS total FROM w_api_access_events WHERE ${TIME_WINDOW}`).bind(since, until),
     clientsStatement(db, since, until, page),
@@ -62,6 +66,43 @@ export async function loadApiMonitorClients(db: D1Database, range: string, until
   if (results.some((result) => !result.success)) throw new Error('Monitor query unavailable');
   const total = (results[0].results[0] as { total: number }).total;
   return { clients: results[1].results as ApiMonitorClient[], pagination: pagination(total, until, page) };
+}
+
+export async function loadApiMonitorDetails(db: D1Database, range: string, until: number,
+  kind: ApiMonitorDetailKind, page = 1): Promise<ApiMonitorDetailsPage> {
+  const since = snapshotSince(range, until, page);
+  const offset = (page - 1) * CLIENT_PAGE_SIZE;
+  let statements: D1PreparedStatement[];
+  if (kind === 'anomalous') {
+    statements = [
+      db.prepare(`WITH minutes AS (${MINUTE_COUNTS}) SELECT COUNT(DISTINCT client_ip) AS total
+        FROM minutes WHERE ${EXCEEDS_THRESHOLD}`).bind(since, until),
+      db.prepare(`WITH minutes AS (${MINUTE_COUNTS}), signals AS (
+        SELECT client_ip,MAX(requests) AS peak_requests,MAX(downloads) AS peak_downloads,
+          MAX(targets) AS peak_targets,SUM(CASE WHEN ${EXCEEDS_THRESHOLD} THEN 1 ELSE 0 END) AS alert_minutes
+        FROM minutes GROUP BY client_ip HAVING alert_minutes > 0
+      ) SELECT a.client_ip,COUNT(*) AS requests,SUM(a.${DOWNLOAD}) AS downloads,SUM(a.status >= 400) AS errors,
+        COUNT(DISTINCT a.target_hash) AS targets,MAX(a.created_at) AS last_seen,
+        s.peak_requests,s.peak_downloads,s.peak_targets,s.alert_minutes
+        FROM signals s JOIN w_api_access_events a ON a.client_ip=s.client_ip
+        WHERE a.created_at >= ? AND a.created_at <= ? GROUP BY a.client_ip
+        ORDER BY requests DESC,a.client_ip LIMIT ? OFFSET ?`).bind(since, until, since, until, CLIENT_PAGE_SIZE, offset),
+    ];
+  } else {
+    if (kind !== 'errors' && kind !== 'external') throw new Error('Invalid monitor detail kind');
+    const filter = kind === 'errors' ? 'status >= 400' : "source='external'";
+    statements = [
+      db.prepare(`SELECT COUNT(*) AS total FROM w_api_access_events WHERE ${TIME_WINDOW} AND ${filter}`).bind(since, until),
+      db.prepare(`SELECT * FROM w_api_access_events WHERE ${TIME_WINDOW} AND ${filter}
+        ORDER BY created_at DESC,id LIMIT ? OFFSET ?`).bind(since, until, CLIENT_PAGE_SIZE, offset),
+    ];
+  }
+  const results = await db.batch(statements);
+  if (results.some((result) => !result.success)) throw new Error('Monitor query unavailable');
+  const total = (results[0].results[0] as { total: number }).total;
+  return { events: kind === 'anomalous' ? [] : results[1].results as ApiAccessEvent[],
+    clients: kind === 'anomalous' ? results[1].results as ApiMonitorClient[] : [],
+    pagination: pagination(total, until, page) };
 }
 
 export async function loadApiMonitorReport(db: D1Database, range: string, now = Date.now()): Promise<ApiMonitorReport> {
