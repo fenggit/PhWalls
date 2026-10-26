@@ -108,7 +108,7 @@ export async function listR2DirectoryPage(prefix: string, cursor?: string): Prom
   return response.text();
 }
 
-type UploadBinding = { deviceId: string; role: 'origin' | 'compress' | 'preview'; prefix: string };
+export type UploadBinding = { deviceId: string; role: 'origin' | 'compress' | 'preview'; prefix: string; groupId: string; media: 'static' | 'dynamic' };
 type UploadGrant = { key: string; size: number; mimeType: string; expires: number } & Partial<UploadBinding>;
 
 async function grantSignature(encoded: string): Promise<string> {
@@ -131,6 +131,6 @@ export async function verifyUploadGrant(value: string): Promise<UploadGrant> {
   if (!encoded || !signature || signature !== await grantSignature(encoded)) throw new Error('上传授权无效');
   const bytes = Uint8Array.from(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0));
   const grant = JSON.parse(new TextDecoder().decode(bytes)) as UploadGrant;
-  if (!grant.key || !grant.size || !grant.mimeType || grant.expires < Date.now()) throw new Error('上传授权已过期');
+  if (!grant.key || !Number.isSafeInteger(grant.size) || grant.size < 1 || !grant.mimeType || !Number.isFinite(grant.expires) || grant.expires < Date.now() || !grant.deviceId || !grant.groupId || !grant.prefix || !['static', 'dynamic'].includes(grant.media || '') || !['origin', 'compress', 'preview'].includes(grant.role || '')) throw new Error('上传授权已过期');
   return grant;
 }

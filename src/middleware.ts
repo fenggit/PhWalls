@@ -105,6 +105,10 @@ function normalizePublicPath(pathname: string): string {
 }
 
 function normalizeLegacyWallpaperPath(pathname: string): string {
+  // Duplicate catalog entries were merged into their original stable identities.
+  const mergedHuawei = pathname.match(/^\/wallpapers\/huawei\/(huawei-enjoy-10-plus|huawei-nova-5-pro)-2\/?$/);
+  if (mergedHuawei) return `/wallpapers/huawei/${mergedHuawei[1]}`;
+
   const vivoMatch = pathname.match(/^\/wallpapers\/vivo\/([^/]+)\/?$/i);
   if (vivoMatch) {
     const slug = vivoMatch[1].toLowerCase();

@@ -263,8 +263,9 @@ test('custom SEO copy appears in metadata, summaries and galleries without repla
     const collection = { name: '设备一', slug: 'device-one', date: '', item: [], seoTitle: '设备一原装壁纸', description: '自定义描述' };
     const mobile = load(`${root}src/lib/wallpaper-seo.ts`).buildWallpaperCollectionSeoCopy('zh', collection, '测试');
     assert.equal(mobile.title, '设备一原装壁纸 | PhWalls');
-    assert.equal(mobile.description, '自定义描述');
-    assert.equal(mobile.summaryDescription, '自定义描述');
+    assert.ok(mobile.description.includes('自定义描述'));
+    assert.ok(mobile.summaryDescription.includes('自定义描述'));
+    assert.ok(mobile.summaryDescription.includes('0 张'), 'summary includes the current asset count');
     assert.equal(mobile.galleryName, '设备一原装壁纸');
     const desktop = load(`${root}src/lib/desktop-seo.ts`).buildDesktopDetailSeoCopy('zh', {
       collectionName: collection.name, categoryLabel: '测试', count: 0, seoTitle: collection.seoTitle, description: collection.description,
@@ -318,7 +319,7 @@ test('migrates existing SEO copy verbatim and preserves identifiers and timestam
   } finally { sqlite.close(); }
 });
 
-test('detail HTML uses the exact authored title and description with the device name in breadcrumbs', () => {
+test('detail HTML preserves authored title and introduction alongside live counts and device breadcrumbs', () => {
   const React = require('react');
   const { renderToStaticMarkup } = require('react-dom/server');
   let texts;
@@ -337,7 +338,7 @@ test('detail HTML uses the exact authored title and description with the device 
       category: 'xiaomi', deviceData: { name: '设备一', seoTitle: '设备一背景免费下载', description: '独立编写的合集说明', date: '', item: [] },
     }));
     assert.match(html, /<h1[^>]*>设备一背景免费下载<\/h1>/);
-    assert.match(html, /<p[^>]*>独立编写的合集说明<\/p>/);
+    assert.match(html, /<p[^>]*>[^<]*独立编写的合集说明[^<]*<\/p>/);
     const breadcrumb = html.match(/<nav[^>]*>.*?<\/nav>/s)[0];
     assert.match(breadcrumb, /设备一<\/span>/);
     assert.ok(!breadcrumb.includes('设备一背景免费下载'));

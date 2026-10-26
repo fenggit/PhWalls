@@ -3,10 +3,12 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { assertText, createAdminWallpaper } from '@/lib/admin-data';
 import { getWallpaperDb, type DeviceRow } from '@/lib/wallpaper-db';
 import { createR2UploadUrl, createUploadGrant, headR2Object, verifyUploadGrant } from '@/lib/r2-upload';
-import { assertAdminUploadMime, deviceR2Prefix, normalizeAdminUploadFileName } from '@/lib/admin-upload-path';
+import { assertAdminUploadMime, normalizeAdminR2Prefix, normalizeAdminUploadFileName } from '@/lib/admin-upload-path';
 import { getAdminUploadStorage, resolveAdminUploadStorage } from '@/lib/admin-upload-storage';
 import { parseWallpaperMedia } from '@/lib/wallpaper-media';
 import { getI18nTexts } from '@/lib/i18n';
+import { verifyAdminUploadContent } from '@/lib/admin-upload-content';
+import { assertAdminUploadPrefixOwnership } from '@/lib/admin-upload-storage';
 import { readR2OriginMetadata } from '@/lib/admin-origin-metadata';
 
 export const runtime = 'edge';
@@ -20,9 +22,7 @@ export async function GET(request: NextRequest) {
     const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
     if (!device) throw new Error('设备不存在');
     if (device.deletion_state !== 'none') throw new Error(getI18nTexts('zh').adminDeviceDeletionPending);
-    await assertCollectionAvailable(deviceId, media);
-    const { prefix, directories, source } = await getAdminUploadStorage(device, media);
-    const data = { prefix, directories, source };
+    const data = await getAdminUploadStorage(device, media);
     return NextResponse.json({ data }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : '目录加载失败' },
@@ -40,9 +40,34 @@ export async function POST(request: NextRequest) {
     const device = await getWallpaperDb().prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
     if (!device) throw new Error('设备不存在');
     if (device.deletion_state !== 'none') throw new Error(getI18nTexts('zh').adminDeviceDeletionPending);
-    const base = deviceR2Prefix(device);
+
+
+    if (action === 'reconcile') {
+      const grant = await verifyUploadGrant(assertText(input.upload_token, '上传授权', 6000));
+      if (grant.deviceId !== deviceId || !grant.groupId ||
+          (grant.media !== 'static' && grant.media !== 'dynamic') ||
+          (grant.role !== 'origin' && grant.role !== 'compress' && grant.role !== 'preview') ||
+          !grant.prefix || normalizeAdminR2Prefix(grant.prefix) !== grant.prefix ||
+          !grant.key.startsWith(`${grant.prefix}/${grant.role}/`)) {
+        throw new Error('文件与设备、素材组或授权角色不匹配');
+      }
+      assertText(grant.groupId, '素材组 ID', 80);
+      assertAdminUploadMime(grant.mimeType, grant.role, grant.media);
+      normalizeAdminUploadFileName(grant.key.slice(`${grant.prefix}/${grant.role}/`.length), grant.mimeType);
+      await assertCollectionAvailable(deviceId, grant.media);
+      await assertAdminUploadPrefixOwnership(deviceId, grant.prefix);
+      if (await getWallpaperDb().prepare('SELECT 1 FROM w_deleted_wallpaper_files WHERE object_key = ?').bind(grant.key).first()) {
+        throw new Error('该文件名已删除并受保护，请使用新的文件名');
+      }
+      const info = await headR2Object(grant.key);
+      if (!info) return NextResponse.json({ data: { uploaded: false } }, { headers: { 'Cache-Control': 'no-store' } });
+      if (info.size !== grant.size || info.mimeType !== grant.mimeType) throw new Error('R2 文件与授权信息不一致');
+      await verifyAdminUploadContent(grant.key, info);
+      return NextResponse.json({ data: { uploaded: true } }, { headers: { 'Cache-Control': 'no-store' } });
+    }
 
     if (action === 'authorize') {
+      const groupId = assertText(input.group_id, '素材组 ID', 80);
       const role = input.role;
       if (role !== 'origin' && role !== 'compress' && role !== 'preview') throw new Error('文件角色无效');
       const mime = assertText(input.mime_type, '文件类型', 100);
@@ -58,9 +83,10 @@ export async function POST(request: NextRequest) {
       const target = await resolveAdminUploadStorage(device, media, input);
       const key = `${target}/${role}/${fileName}`;
       if (key.length > 500) throw new Error(getI18nTexts('zh').adminUploadFileNameInvalid);
+      if (await getWallpaperDb().prepare('SELECT 1 FROM w_deleted_wallpaper_files WHERE object_key = ?').bind(key).first()) throw new Error('该文件名已删除并受保护，请使用新的文件名');
       if (await headR2Object(key)) throw new Error(getI18nTexts('zh').adminUploadFileExists.replace('{name}', fileName));
       return NextResponse.json({ key, url: await createR2UploadUrl(key, mime, true), headers: { 'If-None-Match': '*' },
-        token: await createUploadGrant(key, size, mime, { deviceId, role, prefix: target }) }, { headers: { 'Cache-Control': 'no-store' } });
+        token: await createUploadGrant(key, size, mime, { deviceId, role, prefix: target, groupId, media }) }, { headers: { 'Cache-Control': 'no-store' } });
     }
 
     if (action === 'complete') {
@@ -74,16 +100,20 @@ export async function POST(request: NextRequest) {
       assertAdminUploadMime(origin.mimeType, 'origin', media);
       assertAdminUploadMime(preview.mimeType, 'compress', media);
       if (videoPreview) assertAdminUploadMime(videoPreview.mimeType, 'preview', media);
-      const originBase = origin.prefix ?? base;
-      const previewBase = preview.prefix ?? base;
-      if (originBase !== previewBase || (origin.deviceId !== undefined && origin.deviceId !== deviceId) ||
-          (preview.deviceId !== undefined && preview.deviceId !== deviceId) ||
-          (origin.role !== undefined && origin.role !== 'origin') || (preview.role !== undefined && preview.role !== 'compress') ||
-          !origin.key.startsWith(`${originBase}/origin/`) || !preview.key.startsWith(`${previewBase}/compress/`)) {
-        throw new Error('文件与设备不匹配');
+      const originBase = origin.prefix;
+      if (!originBase || !origin.groupId || origin.media !== media ||
+          [origin, preview, ...(videoPreview ? [videoPreview] : [])].some(grant =>
+            grant.deviceId !== deviceId || grant.prefix !== originBase || grant.groupId !== origin.groupId || grant.media !== media) ||
+          origin.role !== 'origin' || preview.role !== 'compress' ||
+          !origin.key.startsWith(`${originBase}/origin/`) || !preview.key.startsWith(`${originBase}/compress/`)) {
+        throw new Error('文件与设备、素材组或授权角色不匹配');
       }
-      if (videoPreview && (videoPreview.deviceId !== deviceId || videoPreview.role !== 'preview' ||
-          videoPreview.prefix !== originBase || videoPreview.key !== origin.key.replace('/origin/', '/preview/'))) {
+      for (const grant of [origin, preview, ...(videoPreview ? [videoPreview] : [])]) {
+        const filename = grant.key.slice(`${originBase}/${grant.role}/`.length);
+        normalizeAdminUploadFileName(filename, grant.mimeType);
+      }
+      await assertAdminUploadPrefixOwnership(deviceId, originBase);
+      if (videoPreview && (videoPreview.role !== 'preview' || videoPreview.key !== origin.key.replace('/origin/', '/preview/'))) {
         throw new Error(getI18nTexts('zh').adminUploadVideoPreviewNameMismatch);
       }
       const [originInfo, previewInfo, videoPreviewInfo] = await Promise.all([
@@ -96,6 +126,10 @@ export async function POST(request: NextRequest) {
       if (videoPreview && (!videoPreviewInfo || videoPreviewInfo.size !== videoPreview.size || videoPreviewInfo.mimeType !== videoPreview.mimeType)) {
         throw new Error('R2 视频预览未上传完成或与授权信息不一致');
       }
+      await Promise.all([verifyAdminUploadContent(origin.key, originInfo), verifyAdminUploadContent(preview.key, previewInfo),
+        ...(videoPreview && videoPreviewInfo ? [verifyAdminUploadContent(videoPreview.key, videoPreviewInfo)] : [])]);
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify([deviceId, origin.groupId, originBase, media])));
+      const uploadId = 'upload-' + Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, '0')).join('');
       const metadata = await readR2OriginMetadata(origin.key, originInfo);
       const data = await createAdminWallpaper({
         device_id: deviceId,
@@ -110,7 +144,7 @@ export async function POST(request: NextRequest) {
         category: input.category || device.device_category,
         theme: input.theme || 'normal',
         tags: input.tags || [],
-      });
+      }, uploadId);
       return NextResponse.json({ data }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
     }
     throw new Error('操作无效');

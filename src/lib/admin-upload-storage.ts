@@ -1,53 +1,36 @@
 import { getWallpaperDb, type DeviceRow, type WallpaperMediaType, type WallpaperRow } from '@/lib/wallpaper-db';
 import { getAdminUploadDirectories, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
-import { findAdminBrand } from '@/lib/admin-brands';
-import { getI18nTexts } from '@/lib/i18n';
 
-async function getLiveBrandDirectory(brand: string): Promise<string> {
-  // Live 历史品牌目录不是 URL slug；Google、REDMAGIC 等也有独立的存储命名。
-  const row = await getWallpaperDb().prepare(
-    `SELECT w.origin_key FROM w_wallpapers w JOIN w_devices d ON d.id = w.device_id
-     WHERE d.brand_name = ? AND w.media_type = 'dynamic' AND w.origin_key LIKE 'live/%'
-       AND w.deletion_state = 'none' ORDER BY w.create_date, w.id LIMIT 1`
-  ).bind(brand).first<Pick<WallpaperRow, 'origin_key'>>();
-  const historical = row?.origin_key.split('/')[1];
-  const candidate = historical || (await findAdminBrand(brand))?.title || brand;
-  try { if (!candidate.includes('/')) return normalizeAdminR2Prefix(candidate); }
-  catch { /* 无效品牌显示名不能成为存储目录。 */ }
-  return brand;
+export async function assertAdminUploadPrefixOwnership(deviceId: string, prefix: string) {
+  const conflict = await getWallpaperDb().prepare(`SELECT id FROM w_devices WHERE id != ? AND upload_prefix = ?
+    UNION ALL SELECT device_id AS id FROM w_wallpapers WHERE device_id != ? AND
+    (substr(origin_key, 1, length(?) + 1) = ? || '/' OR substr(compress_key, 1, length(?) + 1) = ? || '/') LIMIT 1`)
+    .bind(deviceId, prefix, deviceId, prefix, prefix, prefix, prefix).first();
+  if (conflict) throw new Error('上传目录已属于其他设备，请选择其他目录');
 }
-
-export async function getAdminUploadStorage(device: DeviceRow, media: WallpaperMediaType) {
+export async function getAdminUploadStorage(device: DeviceRow, media: WallpaperMediaType = 'static') {
   const { results } = await getWallpaperDb().prepare(
     "SELECT media_type, origin_key FROM w_wallpapers WHERE device_id = ? AND deletion_state = 'none'"
   ).bind(device.id).all<Pick<WallpaperRow, 'media_type' | 'origin_key'>>();
-  const liveBrandDirectory = await getLiveBrandDirectory(device.brand_name);
-  return {
-    ...getAdminUploadDirectories(device, media, results, liveBrandDirectory),
-    otherDirectories: getAdminUploadDirectories(device, media === 'dynamic' ? 'static' : 'dynamic', results, liveBrandDirectory).directories,
-    liveBrandDirectory,
-  };
+  const storage = getAdminUploadDirectories(device, media, results);
+  return { ...storage, otherDirectories: [], liveBrandDirectory: device.brand_name };
 }
-
 export async function resolveAdminUploadStorage(device: DeviceRow, media: WallpaperMediaType, input: Record<string, unknown>) {
   const storage = await getAdminUploadStorage(device, media);
   const target = input.r2_prefix === undefined ? storage.prefix : normalizeAdminR2Prefix(input.r2_prefix);
-  if (!target) throw new Error('该类型已有多个 R2 目录，请先选择上传目录');
+  if (!target) throw new Error('该设备存在多个历史目录，请先设置统一上传目录');
   if (input.path_mode !== undefined && input.path_mode !== 'device' && input.path_mode !== 'custom') throw new Error('目录方式无效');
-  if (input.path_mode === 'device' && !(storage.directories.length ? storage.directories : [storage.prefix]).includes(target)) {
-    throw new Error('设备目录已变化，请重新选择上传目标');
-  }
-  if (storage.otherDirectories.includes(target) && !storage.directories.includes(target)) {
-    throw new Error('所选目录属于该设备的另一种壁纸类型，请重新选择');
-  }
-  // 兼容已经入库的历史路径；新目录必须按静态与 Live 分开。
-  if (!storage.directories.includes(target) && /^live\//i.test(target) !== (media === 'dynamic')) {
-    throw new Error('动态壁纸须存入 live/ 目录，静态壁纸须选择 live/ 以外的目录');
-  }
-  if (media === 'dynamic' && !storage.directories.includes(target)) {
-    const [root, brandFolder] = target.split('/');
-    if (root !== 'live' || (brandFolder.toLowerCase() === storage.liveBrandDirectory.toLowerCase() && brandFolder !== storage.liveBrandDirectory)) {
-      throw new Error(getI18nTexts('zh').adminUploadBrandDirectoryCase.replace('{path}', `live/${storage.liveBrandDirectory}/`));
+  if (device.upload_prefix && target !== device.upload_prefix) throw new Error('设备目录已变化，请重新选择上传目标');
+  if (/^live\//i.test(target)) throw new Error('新上传目录不能使用历史 live/ 命名空间');
+  await assertAdminUploadPrefixOwnership(device.id, target);
+  if (!device.upload_prefix) {
+    const result = await getWallpaperDb().prepare(`UPDATE w_devices SET upload_prefix = ?, updated_date = ? WHERE id = ?
+      AND upload_prefix IS NULL AND updated_date = ? AND deletion_state = 'none'
+      AND NOT EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = ? AND media_type = ?)`)
+      .bind(target, Math.max(Date.now(), device.updated_date + 1), device.id, device.updated_date, device.id, media).run();
+    if (result.meta.changes !== 1) {
+      const current = await getWallpaperDb().prepare('SELECT upload_prefix FROM w_devices WHERE id = ?').bind(device.id).first<DeviceRow>();
+      if (current?.upload_prefix !== target) throw new Error('设备目录已变化，请重新选择上传目标');
     }
   }
   return target;

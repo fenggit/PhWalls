@@ -14,7 +14,16 @@ const nextConfig = {
   // SEO 标签统一由 Metadata API 输出，浏览器和爬虫都等待 head metadata。
   htmlLimitedBots: /.*/,
 
-  webpack(config, { nextRuntime }) {
+  webpack(config, { nextRuntime, dev }) {
+    if (dev && !nextRuntime) {
+      const entryFilename = config.output.filename;
+      config.output.filename = (pathData, assetInfo) => {
+        const filename = typeof entryFilename === 'function' ? entryFilename(pathData, assetInfo) : entryFilename;
+        // Development and an older local preview can share the browser cache.
+        // Flight's manifest follows these versioned app entry filenames.
+        return pathData.chunk?.name?.startsWith('app/') ? filename.replace(/\.js$/, '-[fullhash].js') : filename;
+      };
+    }
     if (nextRuntime === 'edge') {
       // Next 15.5's Edge entry ignores htmlLimitedBots; narrowly fix that generated entry.
       // Keep the entry request intact: Next uses its prefix to generate client manifests.

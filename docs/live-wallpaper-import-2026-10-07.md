@@ -149,3 +149,7 @@ R2 存储在现有 `phwalls` 桶的 `live/` 前缀，保留品牌与机型目录
 | vivo/vivo X200s | 2025/04/21 | device-announcement | [来源](https://www.vivo.com.cn/brand/news/detail?id=1307&type=0) |
 | vivo/vivo X300 Ultra | 2026/03 | device-announcement-month | [来源](https://www.gsmarena.com/vivo_x300_ultra_5g-14388.php) |
 | vivo/vivo X90 | 2022/11/22 | device-announcement | [来源](https://www.vivo.com.cn/brand/news/detail?id=1108&type=0) |
+
+## 2026-10-26 上传目录兼容更新
+
+本文前述 `live/` 是历史导入布局。新后台按设备级 `upload_prefix` 统一接收静态图片与 MP4，媒体类型继续由 `w_wallpapers.media_type` 表达，播放及下载权限不依赖根目录名称。现存 key 可以继续读取；命名规范化时按哈希清单迁移原视频、封面与存在的 `/preview/` 视频，先复制校验再更新引用。详细接口、备份、目录合并与回退流程见[后台操作说明](wallpaper-admin-operations.md#同型号混合上传与独立发布2026-10-26)。

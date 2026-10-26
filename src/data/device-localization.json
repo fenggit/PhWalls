@@ -183,37 +183,6 @@
       }
     ]
   },
-  "huawei-matepad": {
-    "prefixes": [
-      "Huawei"
-    ],
-    "titles": {
-      "en": "HUAWEI MatePad",
-      "zh": "华为 MatePad",
-      "ja": "ファーウェイ MatePad",
-      "vi": "HUAWEI MatePad",
-      "zh-hant": "華為 MatePad"
-    },
-    "names": {
-      "en": "HUAWEI",
-      "zh": "华为",
-      "ja": "ファーウェイ",
-      "vi": "HUAWEI",
-      "zh-hant": "華為"
-    },
-    "special_prefixes": [
-      {
-        "from": "Huawei Enjoy",
-        "names": {
-          "en": "HUAWEI Enjoy",
-          "zh": "华为 畅享",
-          "ja": "ファーウェイ Enjoy",
-          "vi": "HUAWEI Enjoy",
-          "zh-hant": "華為 暢享"
-        }
-      }
-    ]
-  },
   "honor": {
     "prefixes": [
       "Honor"

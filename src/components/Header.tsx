@@ -116,7 +116,6 @@ const BRAND_ICON_PATHS: Record<string, string> = {
   poco: '/brand-icons/poco.svg',
   'transsion-tecno': '/brand-icons/transsion-tecno.svg',
   harmonyos: '/brand-icons/harmonyos.svg',
-  'huawei-matepad': '/brand-icons/huawei.svg',
   samsung: '/brand-icons/samsung.svg',
   smartisan: '/brand-icons/smartisan.svg',
   xiaomi: '/brand-icons/xiaomi.svg',

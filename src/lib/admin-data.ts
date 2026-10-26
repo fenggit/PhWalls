@@ -6,6 +6,8 @@ import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
 import { normalizeAdminReleaseDate } from '@/lib/admin-release-date';
 import { AdminDeviceNameConflictError, checkAdminDeviceNames, type AdminDeviceNameCandidate, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { getI18nTexts } from '@/lib/i18n';
+import { normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
+import { assertAdminUploadPrefixOwnership } from '@/lib/admin-upload-storage';
 import { DEVICE_THEMES, type DeviceTheme } from '@/lib/device-theme';
 
 const categories = new Set<DeviceCategory>(['phone', 'phone_fold', 'pad', 'desktop', 'os']);
@@ -87,11 +89,17 @@ export async function listAdminDevices(filters: URLSearchParams): Promise<AdminD
   const sql = `SELECT d.*, COALESCE(w.wallpaper_count, 0) AS wallpaper_count,
     COALESCE(w.static_count, 0) AS static_count, COALESCE(w.dynamic_count, 0) AS dynamic_count,
     COALESCE(w.pending_deletion_count, 0) AS pending_deletion_count,
+    COALESCE(w.static_published_count,0) AS static_published_count, COALESCE(w.dynamic_published_count,0) AS dynamic_published_count,
+    COALESCE(w.static_draft_count,0) AS static_draft_count, COALESCE(w.dynamic_draft_count,0) AS dynamic_draft_count,
     COALESCE(ds.deletion_state, 'none') AS static_deletion_state,
     COALESCE(dd.deletion_state, 'none') AS dynamic_deletion_state
     FROM w_devices d LEFT JOIN (SELECT device_id, COUNT(*) AS wallpaper_count,
       SUM(media_type = 'static') AS static_count, SUM(media_type = 'dynamic') AS dynamic_count,
-      SUM(deletion_state != 'none') AS pending_deletion_count FROM w_wallpapers GROUP BY device_id) w ON w.device_id = d.id
+      SUM(deletion_state != 'none') AS pending_deletion_count,
+      SUM(media_type = 'static' AND status = 'published' AND deletion_state = 'none') AS static_published_count,
+      SUM(media_type = 'dynamic' AND status = 'published' AND deletion_state = 'none') AS dynamic_published_count,
+      SUM(media_type = 'static' AND status = 'draft' AND deletion_state = 'none') AS static_draft_count,
+      SUM(media_type = 'dynamic' AND status = 'draft' AND deletion_state = 'none') AS dynamic_draft_count FROM w_wallpapers GROUP BY device_id) w ON w.device_id = d.id
     LEFT JOIN w_collection_deletions ds ON ds.device_id = d.id AND ds.media_type = 'static'
     LEFT JOIN w_collection_deletions dd ON dd.device_id = d.id AND dd.media_type = 'dynamic'
     ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''} ORDER BY d.updated_date DESC, d.device_name ${nameKey ? '' : 'LIMIT 1500'}`;
@@ -173,6 +181,14 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
       throw new Error('品牌类型与设备分类不匹配');
     }
   }
+  const uploadPrefix = input.upload_prefix === undefined ? previous.upload_prefix ?? null : input.upload_prefix === null ? null : normalizeAdminR2Prefix(input.upload_prefix);
+  if (input.upload_prefix !== undefined) {
+    if (input.expected_updated_date !== undefined && input.expected_updated_date !== previous.updated_date) throw new Error('设备已变更，请刷新后重试');
+    if (uploadPrefix) {
+      if (/^live\//i.test(uploadPrefix)) throw new Error('新上传目录不能使用历史 live/ 命名空间');
+      await assertAdminUploadPrefixOwnership(id, uploadPrefix);
+    }
+  }
   const nextStatus = input.status === undefined ? previous.status : status(input.status);
   const releaseDate = input.release_date === undefined ? previous.release_date : normalizeAdminReleaseDate(input.release_date, true);
   const theme = input.theme === undefined ? previous.theme : deviceTheme(input.theme);
@@ -182,65 +198,28 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   if (input.publish_drafts !== undefined && typeof input.publish_drafts !== 'boolean') {
     throw new Error('草稿发布选项无效');
   }
-  const publishDrafts = nextStatus === 'published' && input.publish_drafts === true;
-  const now = Date.now();
-  let drafts: WallpaperRow[] = [];
-  if (publishDrafts) {
-    const { results } = await db.prepare(
-      "SELECT * FROM w_wallpapers WHERE device_id = ? AND status IN ('draft', 'published') AND deletion_state = 'none'"
-    ).bind(id).all<WallpaperRow>();
-    if (!results.some((wallpaper) => wallpaper.is_primary)) throw new Error('请先设置一张主展示壁纸');
-    drafts = results.filter((wallpaper) => wallpaper.status === 'draft');
-    for (const wallpaper of drafts) {
-      if (!wallpaper.compress_key) throw new Error(`壁纸“${wallpaper.name}”缺少预览图或视频封面`);
-      const [originInfo, previewInfo] = await Promise.all([
-        headR2Object(wallpaper.origin_key), headR2Object(wallpaper.compress_key),
-      ]);
-      if (!originInfo || !previewInfo) throw new Error(`壁纸“${wallpaper.name}”的 R2 原图或预览文件不存在`);
-      if (originInfo.size !== wallpaper.size_bytes) throw new Error(`壁纸“${wallpaper.name}”的原图大小与 R2 不一致`);
+  if (input.publish_drafts === true) throw new Error('请明确选择素材并通过合集发布检查后发布');
+  const now = Math.max(Date.now(), previous.updated_date + 1);
+  if (nextStatus === 'published' && previous.status !== 'published') {
+    const { results: published } = await db.prepare("SELECT * FROM w_wallpapers WHERE device_id = ? AND status = 'published' AND deletion_state = 'none'").bind(id).all<WallpaperRow>();
+    if (!published.length || published.some(row => !published.some(primary => primary.category === row.category && primary.media_type === row.media_type && primary.is_primary === 1))) {
+      throw new Error('主图标记不会自动发布壁纸，请先选择素材并通过合集发布检查');
     }
-  } else if (nextStatus === 'published' && previous.status !== 'published') {
-    const check = await db.prepare(
-      `SELECT COUNT(*) AS count FROM w_wallpapers WHERE device_id = ? AND status = 'published' AND is_primary = 1 AND deletion_state = 'none'`
-    ).bind(id).first<{ count: number }>();
-    if (!check?.count) throw new Error('主图标记不会自动发布壁纸，请勾选“一并发布草稿壁纸”，或先将主展示壁纸设为已发布');
+    if (new Set(published.map(row => row.media_type)).size > 1 && input.acknowledge_other_media_visibility !== true) {
+      throw new Error('请确认静态与动态合集的已发布素材均将恢复可见');
+    }
   }
   try {
     const update = db.prepare(
       `UPDATE w_devices SET device_name = ?, name_key = ?, device_category = ?, brand_logo = ?, device_splash_url = ?,
-        release_date = ?, theme = ?, status = ?, updated_date = ? WHERE id = ? AND deletion_state = 'none'${publishDrafts ? `
-        AND updated_date = ?
-        AND EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'published' AND is_primary = 1 AND deletion_state = 'none')
-        AND NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = w_devices.id AND status = 'draft' AND deletion_state = 'none')` : ''}`
+        release_date = ?, theme = ?, status = ?, upload_prefix = ?, updated_date = ? WHERE id = ? AND deletion_state = 'none' AND updated_date = ? AND NOT EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = w_devices.id)`
     ).bind(name, nameKey === previousNameKey ? previous.name_key : nameKey, selectedCategory,
       input.brand_logo === undefined ? previous.brand_logo : input.brand_logo || null,
       input.device_splash_url === undefined ? previous.device_splash_url : input.device_splash_url || null,
       releaseDate, theme,
-      nextStatus, now, id, ...(publishDrafts ? [previous.updated_date] : []));
-    if (publishDrafts) {
-      // 所有草稿都必须仍匹配 R2 核验时的快照，避免发布并发编辑或刚上传的未核验文件。
-      const publish = db.prepare(
-        `UPDATE w_wallpapers SET status = 'published', updated_date = ?
-         WHERE device_id = ? AND status = 'draft' AND deletion_state = 'none'
-         AND EXISTS (SELECT 1 FROM w_devices WHERE id = ? AND updated_date = ?)
-         AND EXISTS (SELECT 1 FROM w_wallpapers primary_wallpaper WHERE primary_wallpaper.device_id = ?
-           AND primary_wallpaper.is_primary = 1 AND primary_wallpaper.status IN ('draft', 'published') AND primary_wallpaper.deletion_state = 'none')
-         AND NOT EXISTS (
-           SELECT 1 FROM w_wallpapers draft WHERE draft.device_id = ? AND draft.status = 'draft' AND draft.deletion_state = 'none'
-           AND NOT EXISTS (SELECT 1 FROM json_each(?) checked
-             WHERE json_extract(checked.value, '$.id') = draft.id
-               AND json_extract(checked.value, '$.updated_date') = draft.updated_date
-               AND json_extract(checked.value, '$.origin_key') = draft.origin_key
-               AND json_extract(checked.value, '$.compress_key') = draft.compress_key
-               AND json_extract(checked.value, '$.size_bytes') = draft.size_bytes))`
-      ).bind(now, id, id, previous.updated_date, id, id, JSON.stringify(drafts.map(({ id, updated_date, origin_key, compress_key, size_bytes }) =>
-        ({ id, updated_date, origin_key, compress_key, size_bytes }))));
-      const results = await db.batch([publish, update]);
-      if (results[1].meta.changes !== 1) throw new Error('设备或壁纸在发布期间发生变化，请刷新后重试');
-    } else {
-      const result = await update.run();
-      if (result.meta.changes !== 1) throw new Error('设备已进入删除流程，请刷新后重试');
-    }
+      nextStatus, uploadPrefix, now, id, previous.updated_date);
+    const result = await update.run();
+    if (result.meta.changes !== 1) throw new Error('设备已变更或进入删除流程，请刷新后重试');
   } catch (error) {
     if (isUniqueConstraintError(error)) throw new Error('该品牌下设备或系统已存在');
     throw error;
@@ -286,7 +265,7 @@ export async function listAdminWallpapers(filters: URLSearchParams): Promise<{
   return { rows: results, total, page, pageSize };
 }
 
-export async function createAdminWallpaper(input: Record<string, unknown>): Promise<WallpaperRow> {
+export async function createAdminWallpaper(input: Record<string, unknown>, uploadId?: string): Promise<WallpaperRow> {
   const db = getWallpaperDb();
   const deviceId = assertText(input.device_id, '设备 ID', 80);
   const device = await db.prepare('SELECT * FROM w_devices WHERE id = ?').bind(deviceId).first<DeviceRow>();
@@ -304,17 +283,29 @@ export async function createAdminWallpaper(input: Record<string, unknown>): Prom
   if (!Number.isSafeInteger(size) || size < 0) throw new Error('文件大小无效');
   const extension = origin.split('.').pop()!.toLowerCase();
   const now = Date.now();
-  const id = crypto.randomUUID();
-  const inserted = await db.prepare(
+  const id = uploadId || crypto.randomUUID();
+  const replay = async () => {
+    const row = await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>();
+    if (!row) return null;
+    if (row.device_id !== deviceId || row.name !== name || row.origin_key !== origin || row.compress_key !== preview || row.media_type !== media || row.mime_type !== input.mime_type || row.size_bytes !== size || row.category !== selectedCategory || row.theme !== selectedTheme || row.tags !== tags(input.tags || []) || row.width !== (input.width || null) || row.height !== (input.height || null) || row.deletion_state !== 'none') throw new Error('上传组已被其他文件使用或记录已变更');
+    return row;
+  };
+  if (uploadId) { const existing = await replay(); if (existing) return existing; }
+  let inserted;
+  try { inserted = await db.prepare(
     `INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,width,height,file_format,
       theme,media_type,category,is_primary,tags,status,create_date,updated_date)
      SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,
        CASE WHEN NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE device_id = ? AND category = ? AND media_type = ?) THEN 1 ELSE 0 END,
-       ?,'draft',?,? WHERE ${availableFilesClause}`
+       ?,'draft',?,? WHERE ${availableFilesClause} AND EXISTS (SELECT 1 FROM w_devices WHERE id = ? AND deletion_state = 'none') AND NOT EXISTS (SELECT 1 FROM w_collection_deletions WHERE device_id = ? AND media_type = ?)${uploadId ? ` AND NOT EXISTS (SELECT 1 FROM w_wallpapers WHERE origin_key IN (?, ?) OR compress_key IN (?, ?))` : ''}`
   ).bind(id, deviceId, name, assertText(input.mime_type, 'MIME 类型', 100), size, origin, preview,
     input.width || null, input.height || null, extension, selectedTheme, media, selectedCategory,
-    deviceId, selectedCategory, media, tags(input.tags || []), now, now, origin, preview, origin, preview).run();
-  if (inserted.meta.changes !== 1) throw new Error('文件正在删除，无法创建引用这些文件的壁纸');
+    deviceId, selectedCategory, media, tags(input.tags || []), now, now, origin, preview, origin, preview, deviceId, deviceId, media, ...(uploadId ? [origin, preview, origin, preview] : [])).run();
+  } catch (error) { if (uploadId) { const existing = await replay(); if (existing) return existing; } throw error; }
+  if (inserted.meta.changes !== 1) {
+    if (uploadId) { const existing = await replay(); if (existing) return existing; }
+    throw new Error('文件已被引用或正在删除，无法创建壁纸');
+  }
   return (await db.prepare('SELECT * FROM w_wallpapers WHERE id = ?').bind(id).first<WallpaperRow>())!;
 }
 
@@ -325,12 +316,14 @@ export async function updateAdminWallpaper(input: Record<string, unknown>): Prom
   if (!previous) throw new Error('壁纸不存在');
   if (previous.deletion_state !== 'none') throw new Error('壁纸正在删除或等待重试，无法编辑或重新发布');
   const media = input.media_type || previous.media_type;
+  if (media !== previous.media_type) throw new Error('媒体类型只读，请通过新上传替换不同类型的原文件');
   if (!mediaTypes.has(media as string)) throw new Error('媒体类型无效');
   const origin = input.origin_key === undefined ? previous.origin_key : validKey(input.origin_key, 'origin', media as 'static' | 'dynamic');
   const preview = input.compress_key === undefined ? previous.compress_key
     : input.compress_key ? validKey(input.compress_key, 'compress', media as 'static' | 'dynamic') : null;
   const selectedCategory = input.category === undefined ? previous.category : category(input.category);
   const nextStatus = input.status === undefined ? previous.status : status(input.status);
+  if (nextStatus === 'published' && previous.status !== 'published') throw new Error('请通过合集发布检查选择并发布素材');
   const primary = input.is_primary === undefined ? previous.is_primary : input.is_primary;
   if (primary !== 0 && primary !== 1) throw new Error('主展示图标记无效');
   if (nextStatus === 'published' && (previous.status !== 'published' || origin !== previous.origin_key || preview !== previous.compress_key)) {
