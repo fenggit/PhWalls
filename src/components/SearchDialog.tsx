@@ -111,7 +111,7 @@ export default function SearchDialog({ language, onClose }: { language: Language
     () => getTabData(language).filter((tab) => !tab.link && !['design', 'desktop'].includes(normalizeCategoryType(tab.type))),
     [language]
   );
-  const desktopTabs = useMemo(() => getDesktopTabData().filter((tab) => !tab.link), []);
+  const desktopTabs = useMemo(() => getDesktopTabData(language).filter((tab) => !tab.link), [language]);
   const liveTabs = useMemo(() => getLiveTabData(language), [language]);
   const categoryLabels = useMemo(() => new Map(
     [...phoneTabs, ...desktopTabs, ...liveTabs].map((tab) => [normalizeCategoryType(tab.type), tab.title])

@@ -4,6 +4,10 @@
     "type": "microsoft-windows"
   },
   {
+    "title": "Microsoft Design",
+    "type": "microsoft-design"
+  },
+  {
     "title": "Microsoft Surface",
     "type": "microsoft-surface"
   },
