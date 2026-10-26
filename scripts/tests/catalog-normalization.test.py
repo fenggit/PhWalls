@@ -4,6 +4,27 @@ import tempfile, unittest
 spec=importlib.util.spec_from_file_location('catalog', Path(__file__).parents[1]/'catalog-normalization.py')
 catalog=importlib.util.module_from_spec(spec);spec.loader.exec_module(catalog)
 class CatalogTests(unittest.TestCase):
+ def test_shared_brand_registry_preserves_phone_paths_and_desktop_categories(self):
+  import json, sqlite3
+  from unittest.mock import patch
+  original_read=Path.read_text
+  def read_registry(path,*args,**kwargs):
+   if path==Path(catalog.__file__).resolve().parents[1]/'src/data/desktopwalls/tab.json':
+    return json.dumps([{'title':'Huawei','type':'huawei'},{'title':'Microsoft Surface','type':'microsoft-surface'}])
+   return original_read(path,*args,**kwargs)
+  shared=importlib.util.module_from_spec(spec)
+  with patch.object(Path,'read_text',read_registry):spec.loader.exec_module(shared)
+  self.assertEqual(shared.normalize_path('huawei/Huawei Mate 80/origin/A.JPG'),'huawei/Huawei Mate 80/origin/a.jpg')
+  self.assertEqual(shared.normalize_path('Live/Huawei/Huawei Mate 80/origin/A.MP4'),'huawei/Huawei Mate 80/origin/a.mp4')
+  self.assertEqual(shared.normalize_path('desktopwalls/Huawei/Huawei MateBook/origin/A.JPG'),'desktopwalls/huawei/Huawei MateBook/origin/a.jpg')
+  self.assertEqual(shared.normalize_path('microsoft-surface/Surface Duo/origin/A.JPG'),'desktopwalls/microsoft-surface/Surface Duo/origin/a.jpg')
+  db=sqlite3.connect(':memory:');db.row_factory=sqlite3.Row
+  try:
+   db.executescript("CREATE TABLE w_devices(id TEXT,brand_name TEXT,device_name TEXT,device_slug TEXT,device_category TEXT,create_date INTEGER); INSERT INTO w_devices VALUES('phone','huawei','Huawei Mate 80','mate-80','phone',1),('desktop','huawei','Huawei MateBook','matebook','desktop',1); CREATE TABLE w_wallpapers(device_id TEXT,origin_key TEXT,compress_key TEXT); INSERT INTO w_wallpapers VALUES('phone','huawei/Huawei Mate 80/origin/a.jpg',NULL),('desktop','huawei/Huawei MateBook/origin/a.jpg',NULL)")
+   shared.configure_prefixes(db)
+   self.assertEqual(shared.normalize_path('huawei/Huawei Mate 80/origin/a.jpg'),'huawei/Huawei Mate 80/origin/a.jpg')
+   self.assertEqual(shared.normalize_path('huawei/Huawei MateBook/origin/a.jpg'),'desktopwalls/huawei/Huawei MateBook/origin/a.jpg')
+  finally:db.close()
  def test_unindexed_desktop_brands_use_the_registry_slug(self):
   saved=dict(catalog.PREFIX_OVERRIDES);catalog.PREFIX_OVERRIDES.clear()
   try:

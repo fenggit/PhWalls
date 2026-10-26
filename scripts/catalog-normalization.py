@@ -16,6 +16,7 @@ PREFIX_CASE={'oppo':'OPPO','poco':'POCO','realme':'realme','vivo':'vivo','iqoo':
 LIVE_BRAND_SLUGS={name.replace(' ','-'):name.replace(' ','-') for name in BRANDS}
 LIVE_BRAND_SLUGS.update({'asus':'asus-rog-phone','black-shark':'black-shark','fairphone':'fairphone','lava':'lava','lenovo':'lenovo','meizu':'meizu','micromax':'micromax','nokia':'nokia','smartisan':'smartisan','sharp':'sharp'})
 DESKTOP_BRANDS={}
+MOBILE_BRAND_SLUGS={re.sub(r'\s+','-',brand['type'].strip().casefold()) for brand in json.loads((Path(__file__).resolve().parents[1]/'src/data/language/en/tab.json').read_text()) if not brand.get('link') and brand['type'].strip().casefold()!='desktop'}
 for _brand in json.loads((Path(__file__).resolve().parents[1]/'src/data/desktopwalls/tab.json').read_text()):
  if _brand.get('link'):continue
  _slug=re.sub(r'\s+','-',_brand['type'].strip().casefold())
@@ -24,6 +25,10 @@ for _brand in json.loads((Path(__file__).resolve().parents[1]/'src/data/desktopw
 
 def desktop_brand_slug(value):
  return DESKTOP_BRANDS.get(re.sub(r'\s+','-',value.strip().casefold()))
+
+def exclusive_desktop_brand_slug(value):
+ slug=desktop_brand_slug(value)
+ return slug if slug not in MOBILE_BRAND_SLUGS else None
 
 def normalize_label(value):
  value=re.sub(r'\s+',' ',value.strip())
@@ -69,17 +74,19 @@ def normalize_path(value):
   # Unindexed inputs still need the same physical layout. Publication remains
   # a separate operation; absence from D1 must not preserve a second Live tree.
   parts=(brand,model,parts[3].casefold(),parts[4])
- # Registry membership determines storage, independently of device form factor.
+ # Shared mobile/desktop brands require an explicit desktop path or D1 category.
+ # Exclusive desktop brands determine storage independently of device form factor.
  # Unindexed local/R2 input must not create a second desktop brand namespace.
  if parts and parts[0].casefold()=='desktopwalls':
   brand=desktop_brand_slug(parts[1]) if len(parts)>1 else None
   if brand:parts=('desktopwalls',brand,*parts[2:])
  elif parts:
-  brand=desktop_brand_slug(parts[0])
+  brand=exclusive_desktop_brand_slug(parts[0])
   if brand:parts=('desktopwalls',brand,*parts[1:])
  result=[]
  for i,p in enumerate(parts[:-1]):
   if p.lower() in ('origin','compress'):p=p.lower()
+  elif i==1 and parts[0].casefold()=='desktopwalls' and desktop_brand_slug(p):p=desktop_brand_slug(p)
   elif i==0 and p.lower()!='live' and p.lower()!='desktopwalls':p=re.sub(r'[^a-z0-9]+','-',p.casefold()).strip('-')
   else:p=normalize_label(p)
   result.append(p)
@@ -292,7 +299,7 @@ def configure_prefixes(db):
    for i,x in enumerate(parts):
     if x.lower() in ('origin','compress'):
      brand=desktop_brand_slug(d['brand_name'])
-     old_prefix='/'.join(parts[:i]);target=('desktopwalls/' if brand or d['device_category']=='desktop' else '')+(brand or d['brand_name'])+'/'+normalize_label(d['device_name'])
+     old_prefix='/'.join(parts[:i]);target=('desktopwalls/' if exclusive_desktop_brand_slug(d['brand_name']) or d['device_category']=='desktop' else '')+(brand or d['brand_name'])+'/'+normalize_label(d['device_name'])
      PREFIX_OVERRIDES[old_prefix]=target
      if old_prefix.startswith('live/'):PREFIX_OVERRIDES['Live/'+old_prefix[len('live/'):]]=target
      break

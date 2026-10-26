@@ -1,11 +1,14 @@
 import type { DeviceRow, WallpaperMediaType, WallpaperRow } from '@/lib/wallpaper-db';
 import { getAdminMixedUploadTexts, getI18nTexts } from '@/lib/i18n';
 import desktopBrands from '@/data/desktopwalls/tab.json';
+import mobileBrands from '@/data/language/en/tab.json';
 
 type StorageDevice = Pick<DeviceRow, 'device_category' | 'brand_name'>;
 const desktopBrandSlugs = new Set(desktopBrands.filter(brand => !('link' in brand)).map(brand => brand.type.toLowerCase().trim().replace(/\s+/g, '-')));
+const mobileBrandSlugs = new Set(mobileBrands.filter(brand => !('link' in brand) && brand.type !== 'desktop').map(brand => brand.type.toLowerCase().trim().replace(/\s+/g, '-')));
 const brandSlug = (device: StorageDevice) => device.brand_name.toLowerCase().trim().replace(/\s+/g, '-');
-const usesDesktopStorage = (device: StorageDevice) => device.device_category === 'desktop' || desktopBrandSlugs.has(brandSlug(device));
+const usesDesktopStorage = (device: StorageDevice) => device.device_category === 'desktop' ||
+  (desktopBrandSlugs.has(brandSlug(device)) && !mobileBrandSlugs.has(brandSlug(device)));
 
 export function assertAdminUploadPrefixNamespace(device: StorageDevice, prefix: string): void {
   const namespace = `desktopwalls/${brandSlug(device)}/`;

@@ -15,6 +15,7 @@ runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/i18n.ts', im
 } });
 const requirePathModule = (specifier) => {
   if (specifier === '@/data/desktopwalls/tab.json') return JSON.parse(readFileSync(new URL('../src/data/desktopwalls/tab.json', import.meta.url), 'utf8'));
+  if (specifier === '@/data/language/en/tab.json') return JSON.parse(readFileSync(new URL('../src/data/language/en/tab.json', import.meta.url), 'utf8'));
   assert.equal(specifier, '@/lib/i18n');
   return i18nModule.exports;
 };

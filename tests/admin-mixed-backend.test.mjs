@@ -32,6 +32,18 @@ test('Surface foldables use the desktop brand namespace and only disclose mispla
  assert.equal(device.device_category,'phone_fold');
  assert.throws(()=>p.getAdminUploadDirectories({...device,upload_prefix:'microsoft-surface/Surface Duo 2'},'static',[]),/desktopwalls\/microsoft-surface/);
 });
+test('shared mobile and desktop brands choose storage by device category',()=>{
+ const p=createTsLoader({'@/data/desktopwalls/tab.json':[
+  {title:'Huawei',type:'huawei'},{title:'Microsoft Surface',type:'microsoft-surface'},
+ ]})('src/lib/admin-upload-path.ts');
+ const phone={device_category:'phone',brand_name:'huawei',device_name:'Huawei Mate 80',device_slug:'huawei-mate-80'};
+ assert.equal(p.getAdminUploadDirectories(phone,'static',[]).prefix,'huawei/Huawei Mate 80');
+ assert.equal(p.getAdminUploadDirectories(phone,'dynamic',[{media_type:'static',origin_key:'huawei/Huawei Mate 80/origin/a.jpg'}]).prefix,'huawei/Huawei Mate 80');
+ assert.doesNotThrow(()=>p.assertAdminUploadPrefixNamespace(phone,'huawei/Huawei Mate 80'));
+ assert.equal(p.deviceR2Prefix({...phone,device_category:'desktop'}),'desktopwalls/huawei/huawei-mate-80');
+ assert.throws(()=>p.assertAdminUploadPrefixNamespace({...phone,device_category:'desktop'},'huawei/Huawei Mate 80'),/desktopwalls\/huawei/);
+ assert.equal(p.deviceR2Prefix({...phone,brand_name:'microsoft-surface',device_category:'phone_fold'}),'desktopwalls/microsoft-surface/huawei-mate-80');
+});
 test('Surface explicit uploads and device directory edits reject a different brand namespace',async t=>{
  const f=fixture(t);
  f.sqlite.exec("INSERT INTO w_brands(slug,title,kind,create_date,updated_date) VALUES('microsoft-surface','Microsoft Surface','desktop',1,1); UPDATE w_devices SET brand_name='microsoft-surface',device_name='Surface Duo 2',device_category='phone_fold'");
