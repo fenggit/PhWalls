@@ -396,9 +396,9 @@ export default function DeviceWallpaperGrid({
             <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-gray-200">
               {deviceData.item.length} {texts.wallpapers}
             </span>
-            <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-gray-200">
+            {deviceData.date?.trim() ? <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-gray-200">
               {deviceData.date}
-            </span>
+            </span> : null}
             <span className="inline-flex items-center rounded-full bg-green-50 px-3 py-1 font-medium text-green-600 ring-1 ring-green-100">
               {hdFreeLabel}
             </span>

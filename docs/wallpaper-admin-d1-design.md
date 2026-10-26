@@ -63,6 +63,7 @@
 | `theme` | TEXT NULL DEFAULT NULL | 设备整套壁纸的主要视觉风格，保存单个英文枚举：`dark`、`gradient`、`minimal_geometric`、`anime`、`abstract`、`nature`、`photography`、`floral`、`technology`、`illustration`；`NULL` 表示未分类，各语言通过文案映射展示 |
 | `is_popular_brand` | INTEGER NOT NULL DEFAULT 0 | 是否为热门品牌，布尔值 `0/1` |
 | `device_splash_url` | TEXT NULL | 设备宣传图 URL，可为空 |
+| `release_date` | TEXT NOT NULL DEFAULT '' | 设备、系统或壁纸合集的发布日期，支持 `YYYY`、`YYYY/MM`、`YYYY/MM/DD`，空字符串表示未填写；标准后台新建必填。经用户授权的历史合集可按月估算补录，估算依据与可信度保存在对应专题文档和补录清单中，不使用创建或修改时间替代 |
 | `status` | TEXT | `draft` 草稿（仅后台可见）；`published` 已发布（公开可见）；`unpublished` 已取消发布（保留记录，仅后台可见，可重新发布） |
 | `create_date` | INTEGER | 创建时间，64 位 Unix 毫秒时间戳 |
 | `updated_date` | INTEGER | 最近修改时间，64 位 Unix 毫秒时间戳 |

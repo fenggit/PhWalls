@@ -237,7 +237,7 @@ export default function SeoLandingPage({
                       </Link>
                     </h2>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">{card.date} {updatedLabel}</p>
+                  {card.date?.trim() ? <p className="mt-1 text-xs text-gray-500">{card.date} {updatedLabel}</p> : null}
                 </article>
               );
             })}
