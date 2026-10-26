@@ -19,6 +19,7 @@ export type BrandRow = {
 };
 
 export type DeviceRow = {
+  upload_prefix?: string | null;
   id: string;
   brand_logo: string | null;
   brand_name: string;
@@ -41,6 +42,10 @@ export type AdminDeviceListRow = DeviceRow & {
   static_count: number;
   dynamic_count: number;
   pending_deletion_count: number;
+  static_published_count?: number;
+  dynamic_published_count?: number;
+  static_draft_count?: number;
+  dynamic_draft_count?: number;
   static_deletion_state: DeviceRow['deletion_state'];
   dynamic_deletion_state: DeviceRow['deletion_state'];
 };

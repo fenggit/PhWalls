@@ -60,7 +60,7 @@ test('video keys preserve original extension capitalization in preview and fallb
   assert.equal(f.calls[1].url, `https://r2.test/${key}?signature=server-only`);
 });
 test('a missing preview falls back to the authorized original while preserving byte ranges', async () => {
-  for (const key of ['live/Huawei/Mate XT 2/origin/video.mp4', 'desktopwalls/Windows/origin/video.webm']) {
+  for (const key of ['live/Huawei/Mate XT 2/origin/video.mp4', 'huawei/Huawei Mate 80 Pro/origin/video.mp4', 'desktopwalls/Windows/origin/video.webm']) {
     const f = fixture(true, 206, 0, true);
     const response = await f.route.GET(new NextRequest(`https://phwalls.test/api/files/preview?key=${encodeURIComponent(key)}`, { headers: { range: 'bytes=0-4' } }));
     assert.equal(response.status, 206);

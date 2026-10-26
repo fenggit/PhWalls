@@ -9,7 +9,10 @@ const ts = require('typescript');
 const i18nModule = { exports: {} };
 runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/i18n.ts', import.meta.url), 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-}).outputText, { module: i18nModule, exports: i18nModule.exports });
+}).outputText, { module: i18nModule, exports: i18nModule.exports, require: specifier => {
+  assert.ok(specifier.startsWith('@/data/') && specifier.endsWith('.json'));
+  return JSON.parse(readFileSync(new URL(`../src/${specifier.slice(2)}`, import.meta.url), 'utf8'));
+} });
 const requirePathModule = (specifier) => {
   assert.equal(specifier, '@/lib/i18n');
   return i18nModule.exports;
@@ -24,7 +27,7 @@ runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText, { module: pathModule, exports: pathModule.exports, require: requirePathModule });
 
-test('upload directories reuse historical paths separately for each media type', () => {
+test('upload directories reuse one static history target and disclose legacy dynamic paths', () => {
   const device = { device_category: 'phone_fold', brand_name: 'huawei', device_name: 'Huawei Mate XT 2', device_slug: 'huawei-mate-xt-2' };
   const files = [
     { media_type: 'static', origin_key: 'huawei/Huawei Mate XT 2/origin/still.png' },
@@ -33,12 +36,13 @@ test('upload directories reuse historical paths separately for each media type',
   ];
   assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'static', files).prefix, 'huawei/Huawei Mate XT 2');
   const live = pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files, 'Huawei');
-  assert.equal(live.prefix, 'live/Huawei/Huawei Mate XT 2');
+  assert.equal(live.prefix, 'huawei/Huawei Mate XT 2');
+  assert.equal(live.historical_directories.length, 2);
   assert.equal(live.directories.length, 1);
   assert.equal(live.source, 'existing');
 });
 
-test('multiple historical directories require an explicit choice and new media uses a default', () => {
+test('multiple static historical directories require one explicit target for either media', () => {
   const device = { device_category: 'desktop', brand_name: 'windows', device_name: 'Windows 11', device_slug: 'windows-11' };
   const files = [
     { media_type: 'static', origin_key: 'desktopwalls/Windows/Windows 11/origin/a.png' },
@@ -48,22 +52,22 @@ test('multiple historical directories require an explicit choice and new media u
   assert.equal(still.prefix, '');
   assert.equal(still.directories.length, 2);
   assert.equal(still.source, 'multiple');
-  assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files).prefix, 'live/windows/Windows 11');
+  assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files).prefix, '');
 });
 
 test('malformed historical paths cannot become upload targets', () => {
   const device = { device_category: 'phone', brand_name: 'huawei', device_name: 'Mate', device_slug: 'mate' };
   const files = [{ media_type: 'dynamic', origin_key: 'live/../mate/origin/a.mp4' }];
-  assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files).prefix, 'live/huawei/Mate');
+  assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files).prefix, 'huawei/Mate');
 });
 
-test('first Live upload preserves the device name when only static files exist', () => {
+test('first MP4 upload reuses existing static storage', () => {
   const device = { device_category: 'phone_fold', brand_name: 'huawei', device_name: 'Huawei Mate XT 2', device_slug: 'huawei-mate-xt-2' };
   const files = [{ media_type: 'static', origin_key: 'huawei/Huawei Mate XT 2/origin/still.png' }];
   const live = pathModule.exports.getAdminUploadDirectories(device, 'dynamic', files);
-  assert.equal(live.prefix, 'live/huawei/Huawei Mate XT 2');
-  assert.equal(live.source, 'default');
-  assert.equal(live.directories.length, 0);
+  assert.equal(live.prefix, 'huawei/Huawei Mate XT 2');
+  assert.equal(live.source, 'existing');
+  assert.equal(live.directories.length, 1);
   assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'static', []).prefix, 'huawei/Huawei Mate XT 2');
 });
 
@@ -71,12 +75,14 @@ test('new desktop directories preserve display names and unsafe names fall back 
   const device = { device_category: 'desktop', brand_name: 'windows', device_name: 'Windows 11', device_slug: 'windows-11' };
   assert.equal(pathModule.exports.getAdminUploadDirectories(device, 'static', []).prefix, 'desktopwalls/windows/Windows 11');
   for (const device_name of ['../Windows', 'Windows/11', '/Windows/', 'Windows%2F11', 'origin']) {
-    assert.equal(pathModule.exports.getAdminUploadDirectories({ ...device, device_name }, 'dynamic', []).prefix, 'live/windows/windows-11');
+    assert.equal(pathModule.exports.getAdminUploadDirectories({ ...device, device_name }, 'dynamic', []).prefix, 'desktopwalls/windows/windows-11');
   }
 });
 
 test('selected upload media validates the original and always requires an image cover', () => {
   assert.doesNotThrow(() => pathModule.exports.assertAdminUploadMime('video/mp4', 'origin', 'dynamic'));
+  assert.throws(() => pathModule.exports.assertAdminUploadMime('video/webm', 'origin', 'dynamic'));
+  assert.throws(() => pathModule.exports.assertAdminUploadMime('video/webm', 'preview', 'dynamic'));
   assert.doesNotThrow(() => pathModule.exports.assertAdminUploadMime('image/webp', 'compress', 'dynamic'));
   assert.throws(() => pathModule.exports.assertAdminUploadMime('image/png', 'origin', 'dynamic'));
   assert.throws(() => pathModule.exports.assertAdminUploadMime('video/mp4', 'origin', 'static'));
@@ -88,14 +94,14 @@ test('selected upload media validates the original and always requires an image 
   assert.throws(() => pathModule.exports.assertAdminUploadMime('image/webp', 'preview', 'static'));
 });
 
-test('default upload directories separate static and Live files for the same device or system', () => {
+test('default upload directories share static and MP4 storage for the same device or system', () => {
   const pathModule = { exports: {} };
   runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/admin-upload-path.ts', import.meta.url), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText, { module: pathModule, exports: pathModule.exports, require: requirePathModule });
   const device = { device_category: 'os', brand_name: 'xiaomi', device_slug: 'miui-13' };
   assert.equal(pathModule.exports.deviceR2Prefix(device, 'static'), 'xiaomi/miui-13');
-  assert.equal(pathModule.exports.deviceR2Prefix(device, 'dynamic'), 'live/xiaomi/miui-13');
+  assert.equal(pathModule.exports.deviceR2Prefix(device, 'dynamic'), 'xiaomi/miui-13');
 });
 
 test('publication offer waits until every queued upload succeeds', async () => {

@@ -344,7 +344,9 @@ https://phwalls.com/{设备名称}
 - 在后台新增品牌，并将新品牌用于设备与壁纸管理
 - 按品牌、设备、分类和状态筛选管理 D1 壁纸数据
 - 新建设备、编辑设备与壁纸，并管理草稿、发布和下架状态
-- 原图与预览图配对上传到 R2；只选品牌时可由文件夹名称自动建立设备或系统草稿
+- 同型号图片与 MP4 视频混合上传，自动配对预览图、视频封面和可选网页预览
+- 每个型号设置统一上传目录，静态与动态分别维护主图、五语言文案、发布和下架
+- 发布时明确选择素材，历史草稿不会随新一批上传自动发布
 
 #### 访问方式
 
@@ -547,6 +549,9 @@ GET/POST /api/admin/brands                     # 品牌列表与新增品牌
 GET/POST/PATCH /api/admin/devices              # 设备列表、新建与编辑
 GET/POST/PATCH/DELETE /api/admin/wallpapers    # 壁纸列表、新建、编辑及删除记录和 R2 文件
 POST /api/admin/upload                        # 上传授权与入库
+GET /api/admin/device-check                   # 按明确素材 ID 或媒体类型检查发布/下架清单
+POST /api/admin/collections/publish            # 快照校验后只发布选中素材
+POST /api/admin/collections/unpublish          # 快照校验后下架指定媒体类型合集
 ```
 
 ### 文件访问 API

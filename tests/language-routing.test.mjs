@@ -41,6 +41,20 @@ const { NextRequest } = await import('next/server.js');
 const { resolveRequestLanguage } = await import('../src/lib/language.ts');
 const { middleware } = await import('../src/middleware.ts');
 
+test('合并重复华为机型后旧详情地址保留语言、参数和片段并跳转到保留的 slug', () => {
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    for (const slug of ['huawei-enjoy-10-plus', 'huawei-nova-5-pro']) {
+      const response = middleware(new NextRequest(`https://www.phwalls.com/${language}/wallpapers/huawei/${slug}-2/?source=share#gallery`));
+      assert.equal(response.status, 308);
+      assert.equal(response.headers.get('location'), `https://phwalls.com/${language}/wallpapers/huawei/${slug}?source=share#gallery`);
+      const canonical = middleware(new NextRequest(`https://phwalls.com/${language}/wallpapers/huawei/${slug}`));
+      assert.equal(canonical.headers.get('location'), null);
+    }
+  }
+  const unrelated = middleware(new NextRequest('https://phwalls.com/en/wallpapers/samsung/huawei-nova-5-pro-2'));
+  assert.equal(unrelated.headers.get('location'), null);
+});
+
 test('历史桌面列表与 Aluminium OS 地址永久迁移到有效页面', () => {
   const migrations = [
     ['/desktop/wallpapers', '/desktop'],

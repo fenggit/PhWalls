@@ -53,7 +53,7 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
     }).outputText;
     runInNewContext(source, {
-      module, exports: module.exports, crypto: globalThis.crypto, Date: options.fixedNow === undefined ? Date : class extends Date { static now() { return options.fixedNow; } }, Error, URL, TextEncoder,
+      module, exports: module.exports, Buffer, Uint8Array, DataView, crypto: globalThis.crypto, Date: options.fixedNow === undefined ? Date : class extends Date { static now() { return options.fixedNow; } }, Error, URL, TextEncoder,
       require(specifier) {
         if (specifier === '@/lib/wallpaper-db') return { getWallpaperDb: () => db };
         if (specifier === '@/lib/r2-upload') return {
@@ -66,6 +66,9 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
             const existing = sqlite.prepare('SELECT 1 FROM w_wallpapers WHERE origin_key = ? OR compress_key = ?').get(key, key);
             return missingFiles.has(key) || !existing ? null : { size: 100, mimeType: 'image/webp' };
           },
+          readR2ObjectRange: async (key) => storedObjects.get(key)?.bytes || (key.endsWith('.mp4')
+            ? Uint8Array.from([0,0,0,24,...Buffer.from('ftypisom'),0,0,0,0,...Buffer.from('isommp42')])
+            : key.endsWith('.png') ? Uint8Array.from([137,80,78,71,13,10,26,10]) : Uint8Array.from(Buffer.from('RIFF0000WEBP'))),
           deleteR2Object: async (key) => { await onDelete(key, sqlite); removedObjects.push(key); storedObjects.delete(key); },
         };
         if (specifier === '@/lib/admin-origin-metadata') return { readR2OriginMetadata: async (key, info) => {
@@ -86,11 +89,18 @@ function fixture(missingFiles = new Set(), onHead = () => {}, onDelete = () => {
     device_id: 'device-1', name, origin_key: `test/device/origin/${name}.webp`,
     compress_key: `test/device/compress/${name}.webp`, mime_type: 'image/webp', size_bytes: 100, ...patch,
   });
-  return { sqlite, service, upload, load, storedObjects, removedObjects };
+  const publishSelection = async (selected) => {
+    const ids = selected || sqlite.prepare("SELECT id FROM w_wallpapers WHERE status='draft' AND deletion_state='none'").all().map(row=>row.id);
+    const collections = load(`${root}src/lib/admin-collections.ts`);
+    const check = await collections.checkAdminCollection('device-1', {wallpaper_ids:ids});
+    await collections.publishAdminCollection({device_id:'device-1',wallpaper_ids:ids,snapshot:check.snapshot,make_device_visible:true});
+    return sqlite.prepare("SELECT * FROM w_devices WHERE id='device-1'").get();
+  };
+  return { sqlite, service, upload, load, storedObjects, removedObjects, publishSelection };
 }
 
 test('device themes round trip as one optional style without changing wallpaper light/dark themes', async () => {
-  const { sqlite, service, upload } = fixture();
+  const { sqlite, service, upload, publishSelection } = fixture();
   try {
     await upload('paired-dark', { theme: 'dark' });
     const created = await service.createAdminDevice({ brand_name: 'test', device_name: 'Device Two',
@@ -141,15 +151,15 @@ test('the database enforces the same device theme enum as the five-language labe
 test('the optional browser preview uses a video grant bound to the original filename and device', async () => {
   const { sqlite, load, storedObjects } = fixture();
   try {
-    const prefix = 'live/Test/Device One';
+    const prefix = 'test/Device One';
     const route = load(`${root}src/app/api/admin/upload/route.ts`);
     const request = (input) => route.POST(new Request('https://example.com/api/admin/upload', { method: 'POST', body: JSON.stringify(input) }));
-    const authorize = await request({ action: 'authorize', device_id: 'device-1', role: 'preview', media_type: 'dynamic',
+    const authorize = await request({ action: 'authorize', group_id: 'asset-group', device_id: 'device-1', role: 'preview', media_type: 'dynamic',
       mime_type: 'video/mp4', file_name: 'video.mp4', size_bytes: 50 });
     assert.equal(authorize.status, 200);
     assert.equal((await authorize.json()).key, `${prefix}/preview/video.mp4`);
     const grant = (role, file, mimeType, size = 100) => ({ key: `${prefix}/${role}/${file}`, mimeType, size,
-      deviceId: 'device-1', role, prefix });
+      deviceId: 'device-1', role, prefix, groupId: 'asset-group', media: 'dynamic' });
     const origin = grant('origin', 'video.mp4', 'video/mp4');
     const cover = grant('compress', 'video.webp', 'image/webp');
     const video = grant('preview', 'video.mp4', 'video/mp4', 50);
@@ -161,12 +171,20 @@ test('the optional browser preview uses a video grant bound to the original file
       assert.equal((await request({ ...input, video_preview_token: JSON.stringify(invalid) })).status, 400);
       assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 0);
     }
+    for (const invalid of [{ ...cover, groupId: 'other-group' }, { ...cover, media: 'static' }, { ...cover, role: 'origin' }]) {
+      assert.equal((await request({ ...input, preview_token: JSON.stringify(invalid) })).status, 400);
+      assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 0);
+    }
     const completed = await request({ ...input, video_preview_token: JSON.stringify(video) });
     assert.equal(completed.status, 201);
     const saved = (await completed.json()).data;
     assert.equal(saved.width, 1440);
     assert.equal(saved.height, 3200);
     assert.equal(saved.size_bytes, origin.size);
+    const replayed = await request({ ...input, video_preview_token: JSON.stringify(video) });
+    assert.equal(replayed.status, 201);
+    assert.equal((await replayed.json()).data.id, saved.id);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM w_wallpapers').get().count, 1);
     const row = saved;
     assert.equal(row.origin_key, origin.key);
     assert.equal(row.compress_key, cover.key);
@@ -178,8 +196,8 @@ test('completed static uploads save server-read original dimensions and ignore c
   const { sqlite, load, storedObjects } = fixture(new Set(), () => {}, () => {}, () => {}, { originWidth: 17, originHeight: 31 });
   try {
     const prefix = 'test/Device One';
-    const origin = { key: `${prefix}/origin/original.png`, prefix, deviceId: 'device-1', role: 'origin', size: 100, mimeType: 'image/png' };
-    const cover = { key: `${prefix}/compress/cover.webp`, prefix, deviceId: 'device-1', role: 'compress', size: 20, mimeType: 'image/webp' };
+    const origin = { key: `${prefix}/origin/original.png`, prefix, deviceId: 'device-1', groupId: 'asset-group', media: 'static', role: 'origin', size: 100, mimeType: 'image/png' };
+    const cover = { key: `${prefix}/compress/cover.webp`, prefix, deviceId: 'device-1', groupId: 'asset-group', media: 'static', role: 'compress', size: 20, mimeType: 'image/webp' };
     for (const grant of [origin, cover]) storedObjects.set(grant.key, { size: grant.size, mimeType: grant.mimeType });
     const route = load(`${root}src/app/api/admin/upload/route.ts`);
     const response = await route.POST(new Request('https://example.com/api/admin/upload', { method: 'POST', body: JSON.stringify({
@@ -197,8 +215,8 @@ test('unreadable original metadata blocks upload registration without leaving a 
   const { sqlite, load, storedObjects } = fixture(new Set(), () => {}, () => {}, () => {}, { metadataFailure: true });
   try {
     const prefix = 'test/Device One';
-    const origin = { key: `${prefix}/origin/broken.png`, prefix, size: 100, mimeType: 'image/png' };
-    const cover = { key: `${prefix}/compress/cover.webp`, prefix, size: 20, mimeType: 'image/webp' };
+    const origin = { key: `${prefix}/origin/broken.png`, prefix, deviceId: 'device-1', groupId: 'asset-group', media: 'static', role: 'origin', size: 100, mimeType: 'image/png' };
+    const cover = { key: `${prefix}/compress/cover.webp`, prefix, deviceId: 'device-1', groupId: 'asset-group', media: 'static', role: 'compress', size: 20, mimeType: 'image/webp' };
     for (const grant of [origin, cover]) storedObjects.set(grant.key, { size: grant.size, mimeType: grant.mimeType });
     const response = await load(`${root}src/app/api/admin/upload/route.ts`).POST(new Request('https://example.com/api/admin/upload', {
       method: 'POST', body: JSON.stringify({ action: 'complete', device_id: 'device-1', name: 'broken',
@@ -220,7 +238,7 @@ test('video deletion also cleans the derived browser preview and its deletion ma
   } finally { sqlite.close(); }
 });
 
-test('upload authorization reuses the selected media directory and rejects the other media directory', async () => {
+test('upload authorization shares a persisted directory across media and rejects stale targets', async () => {
   const { sqlite, upload, load } = fixture();
   try {
     await upload('still', { origin_key: 'test/Device One/origin/still.webp', compress_key: 'test/Device One/compress/still.webp' });
@@ -228,27 +246,27 @@ test('upload authorization reuses the selected media directory and rejects the o
       origin_key: 'live/Test/Device One/origin/live.mp4', compress_key: 'live/Test/Device One/compress/live.webp' });
     const route = load(`${root}src/app/api/admin/upload/route.ts`);
     const authorize = (patch = {}) => {
-      const input = { action: 'authorize', device_id: 'device-1', role: 'origin',
+      const input = { action: 'authorize', group_id: 'asset-group', device_id: 'device-1', role: 'origin',
         media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, ...patch };
       input.file_name ||= input.mime_type === 'video/mp4' ? 'new.mp4' : 'new.webp';
       return route.POST(new Request('https://example.com/api/admin/upload', { method: 'POST', body: JSON.stringify(input) }));
     };
     const response = await authorize();
     assert.equal(response.status, 200);
-    assert.ok((await response.json()).key.startsWith('live/Test/Device One/origin/'));
+    assert.ok((await response.json()).key.startsWith('test/Device One/origin/'));
     const cover = await authorize({ role: 'compress', mime_type: 'image/webp' });
     assert.equal(cover.status, 200);
-    assert.ok((await cover.json()).key.startsWith('live/Test/Device One/compress/'));
-    assert.equal((await authorize({ r2_prefix: 'test/Device One', path_mode: 'custom' })).status, 400);
+    assert.ok((await cover.json()).key.startsWith('test/Device One/compress/'));
+    assert.equal((await authorize({ r2_prefix: 'test/Device One', path_mode: 'custom' })).status, 200);
     assert.equal((await authorize({ mime_type: 'image/webp' })).status, 400);
     assert.equal((await authorize({ r2_prefix: 'live/test/device-one', path_mode: 'device' })).status, 400);
     assert.equal((await authorize({ r2_prefix: 'test/New Device', path_mode: 'custom' })).status, 400);
     assert.equal((await authorize({ media_type: 'static', mime_type: 'image/webp', r2_prefix: 'live/Other/Device', path_mode: 'custom' })).status, 400);
-    assert.equal((await authorize({ r2_prefix: 'live/Test/New Device', path_mode: 'custom' })).status, 200);
+    assert.equal((await authorize({ r2_prefix: 'live/Test/New Device', path_mode: 'custom' })).status, 400);
   } finally { sqlite.close(); }
 });
 
-test('upload directory API separates media, excludes deleting files, and exposes multiple choices', async () => {
+test('upload directory API shares media targets, excludes deleting files, and requires explicit ambiguous choices', async () => {
   const { sqlite, upload, load } = fixture();
   try {
     await upload('first', { origin_key: 'test/Device One/origin/first.webp', compress_key: 'test/Device One/compress/first.webp' });
@@ -261,19 +279,13 @@ test('upload directory API separates media, excludes deleting files, and exposes
     const response = await lookup('static');
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('Cache-Control'), 'no-store');
-    assert.deepEqual((await response.json()).data, { prefix: '',
-      directories: ['test/Device One', 'test/Second Directory'], source: 'multiple' });
-    assert.deepEqual((await (await lookup('dynamic')).json()).data,
-      { prefix: 'live/Test/Device One', directories: [], source: 'default' });
-    const firstLive = await route.POST(new Request('https://example.com/api/admin/upload', {
-      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
-        media_type: 'dynamic', mime_type: 'video/mp4', size_bytes: 100, path_mode: 'device',
-        r2_prefix: 'live/Test/Device One', file_name: 'first.mp4' }),
-    }));
-    assert.equal(firstLive.status, 200);
-    assert.ok((await firstLive.json()).key.startsWith('live/Test/Device One/origin/'));
+    const initial = (await response.json()).data;
+    assert.equal(initial.prefix, '');
+    assert.deepEqual(initial.directories, ['test/Device One', 'test/Second Directory']);
+    assert.equal(initial.source, 'multiple');
+    assert.deepEqual((await (await lookup('dynamic')).json()).data, initial);
     const authorize = (prefix) => route.POST(new Request('https://example.com/api/admin/upload', {
-      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin',
+      method: 'POST', body: JSON.stringify({ action: 'authorize', group_id: 'asset-group', device_id: 'device-1', role: 'origin',
         media_type: 'static', mime_type: 'image/webp', size_bytes: 100, path_mode: 'device', file_name: 'new.webp',
         ...(prefix ? { r2_prefix: prefix } : {}) }),
     }));
@@ -281,19 +293,22 @@ test('upload directory API separates media, excludes deleting files, and exposes
     const selected = await authorize('test/Second Directory');
     assert.equal(selected.status, 200);
     assert.ok((await selected.json()).key.startsWith('test/Second Directory/origin/'));
+    const resolved = (await (await lookup('dynamic')).json()).data;
+    assert.equal(resolved.prefix, 'test/Second Directory');
+    assert.equal(resolved.source, 'configured');
     assert.equal((await lookup('invalid')).status, 400);
   } finally { sqlite.close(); }
 });
 
-test('Huawei first Live upload uses the historical brand spelling and keeps the original filename', async () => {
+test('Huawei first MP4 upload uses the unified brand prefix and keeps the original filename', async () => {
   const { sqlite, load } = fixture();
   try {
     sqlite.exec("UPDATE w_devices SET brand_name='huawei',device_name='Huawei Mate XT 2' WHERE id='device-1'");
     const route = load(`${root}src/app/api/admin/upload/route.ts`);
     const { NextRequest } = require('next/server');
     const storage = await route.GET(new NextRequest('https://example.com/api/admin/upload?device_id=device-1&media_type=dynamic'));
-    assert.equal((await storage.json()).data.prefix, 'live/Huawei/Huawei Mate XT 2');
-    const input = { action: 'authorize', device_id: 'device-1', role: 'origin', media_type: 'dynamic',
+    assert.equal((await storage.json()).data.prefix, 'huawei/Huawei Mate XT 2');
+    const input = { action: 'authorize', group_id: 'asset-group', device_id: 'device-1', role: 'origin', media_type: 'dynamic',
       mime_type: 'video/mp4', size_bytes: 100, file_name: 'huawei-mate-xt-2-mountain-gold-shadow.mp4' };
     const authorize = (patch = {}) => route.POST(new Request('https://example.com/api/admin/upload', {
       method: 'POST', body: JSON.stringify({ ...input, ...patch }),
@@ -301,7 +316,7 @@ test('Huawei first Live upload uses the historical brand spelling and keeps the 
     const response = await authorize();
     assert.equal(response.status, 200);
     const grant = await response.json();
-    assert.equal(grant.key, 'live/Huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-mountain-gold-shadow.mp4');
+    assert.equal(grant.key, 'huawei/Huawei Mate XT 2/origin/huawei-mate-xt-2-mountain-gold-shadow.mp4');
     assert.deepEqual(grant.headers, { 'If-None-Match': '*' });
     assert.equal((await authorize({ path_mode: 'custom', r2_prefix: 'live/huawei/Huawei Mate XT 2' })).status, 400);
     for (const file_name of ['../outside.mp4', 'nested/video.mp4', 'bad\\video.mp4', 'video.webp', 'video%2Ffile.mp4', 'video\u0000.mp4', '']) {
@@ -316,7 +331,7 @@ test('upload authorization refuses an existing original filename instead of over
     await upload('first', { origin_key: 'test/Device One/origin/first.webp', compress_key: 'test/Device One/compress/first.webp' });
     const route = load(`${root}src/app/api/admin/upload/route.ts`);
     const response = await route.POST(new Request('https://example.com/api/admin/upload', {
-      method: 'POST', body: JSON.stringify({ action: 'authorize', device_id: 'device-1', role: 'origin', media_type: 'static',
+      method: 'POST', body: JSON.stringify({ action: 'authorize', group_id: 'asset-group', device_id: 'device-1', role: 'origin', media_type: 'static',
         mime_type: 'image/webp', size_bytes: 100, file_name: 'first.webp' }),
     }));
     assert.equal(response.status, 400);
@@ -387,14 +402,14 @@ test('uploading more wallpapers does not undo an explicitly cleared primary', as
   } finally { sqlite.close(); }
 });
 
-test('publishing a device with draft publication publishes its selected primary and all valid drafts', async () => {
-  const { sqlite, service, upload } = fixture();
+test('scoped publication publishes selected drafts and their selected primary', async () => {
+  const { sqlite, service, upload, publishSelection } = fixture();
   try {
     const first = await upload('first');
     const second = await upload('second');
     sqlite.prepare('UPDATE w_wallpapers SET is_primary = 0 WHERE id = ?').run(first.id);
     sqlite.prepare('UPDATE w_wallpapers SET is_primary = 1 WHERE id = ?').run(second.id);
-    const device = await service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true });
+    const device = await publishSelection();
     assert.equal(device.status, 'published');
     const rows = sqlite.prepare('SELECT status, is_primary FROM w_wallpapers ORDER BY name').all();
     assert.deepEqual(rows.map((row) => [row.status, row.is_primary]), [['published', 0], ['published', 1]]);
@@ -402,25 +417,25 @@ test('publishing a device with draft publication publishes its selected primary 
 });
 
 test('a missing R2 file prevents publication of both device and draft wallpapers', async () => {
-  const { sqlite, service, upload } = fixture(new Set(['test/device/compress/second.webp']));
+  const { sqlite, service, upload, publishSelection } = fixture(new Set(['test/device/compress/second.webp']));
   try {
     await upload('first');
     await upload('second');
-    await assert.rejects(() => service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true }), /R2/);
+    await assert.rejects(() => publishSelection(), /R2/);
     assert.equal(sqlite.prepare('SELECT status FROM w_devices').get().status, 'draft');
     assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM w_wallpapers WHERE status = 'published'").get().count, 0);
   } finally { sqlite.close(); }
 });
 
 test('publication skips unpublished or deleting wallpapers and never replaces the chosen primary', async () => {
-  const { sqlite, service, upload } = fixture(new Set(['test/device/origin/unpublished.webp', 'test/device/origin/deleting.webp']));
+  const { sqlite, service, upload, publishSelection } = fixture(new Set(['test/device/origin/unpublished.webp', 'test/device/origin/deleting.webp']));
   try {
     const first = await upload('first');
     const unpublished = await upload('unpublished');
     const deleting = await upload('deleting');
     sqlite.prepare("UPDATE w_wallpapers SET status = 'unpublished' WHERE id = ?").run(unpublished.id);
     sqlite.prepare("UPDATE w_wallpapers SET deletion_state = 'pending' WHERE id = ?").run(deleting.id);
-    await service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true });
+    await publishSelection();
     assert.equal(sqlite.prepare('SELECT status, is_primary FROM w_wallpapers WHERE id = ?').get(first.id).is_primary, 1);
     assert.equal(sqlite.prepare('SELECT status FROM w_wallpapers WHERE id = ?').get(unpublished.id).status, 'unpublished');
     assert.equal(sqlite.prepare('SELECT status FROM w_wallpapers WHERE id = ?').get(deleting.id).status, 'draft');
@@ -428,7 +443,7 @@ test('publication skips unpublished or deleting wallpapers and never replaces th
 });
 
 test('publishing without opting in still requires a separately published primary', async () => {
-  const { sqlite, service, upload } = fixture();
+  const { sqlite, service, upload, publishSelection } = fixture();
   try {
     await upload('first');
     await assert.rejects(() => service.updateAdminDevice({ id: 'device-1', status: 'published' }));
@@ -438,11 +453,11 @@ test('publishing without opting in still requires a separately published primary
 
 test('a missing preview or missing primary cannot be bypassed by publishing drafts', async () => {
   for (const patch of [{ compress_key: null }, { clearPrimary: true }]) {
-    const { sqlite, service, upload } = fixture();
+    const { sqlite, service, upload, publishSelection } = fixture();
     try {
       await upload('first', patch);
       if (patch.clearPrimary) sqlite.exec('UPDATE w_wallpapers SET is_primary = 0');
-      await assert.rejects(() => service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true }));
+      await assert.rejects(() => publishSelection());
       assert.equal(sqlite.prepare('SELECT status FROM w_devices').get().status, 'draft');
       assert.equal(sqlite.prepare('SELECT status FROM w_wallpapers').get().status, 'draft');
     } finally { sqlite.close(); }
@@ -450,7 +465,7 @@ test('a missing preview or missing primary cannot be bypassed by publishing draf
 });
 
 test('a concurrent file change prevents unchecked drafts from being published', async () => {
-  const { sqlite, service, upload } = fixture(new Set(), (key, sqlite) => {
+  const { sqlite, service, upload, publishSelection } = fixture(new Set(), (key, sqlite) => {
     if (key === 'test/device/compress/second.webp') {
       sqlite.exec("UPDATE w_wallpapers SET origin_key = 'test/device/origin/unchecked.webp', updated_date = updated_date + 1 WHERE name = 'second'");
     }
@@ -458,19 +473,19 @@ test('a concurrent file change prevents unchecked drafts from being published', 
   try {
     await upload('first');
     await upload('second');
-    await assert.rejects(() => service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true }), /刷新/);
+    await assert.rejects(() => publishSelection(), /变更|重新检查/);
     assert.equal(sqlite.prepare('SELECT status FROM w_devices').get().status, 'draft');
     assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM w_wallpapers WHERE status = 'published'").get().count, 0);
   } finally { sqlite.close(); }
 });
 
 test('a failed device update rolls back the associated wallpaper publication', async () => {
-  const { sqlite, service, upload } = fixture();
+  const { sqlite, service, upload, publishSelection } = fixture();
   try {
     await upload('first');
     sqlite.exec(`CREATE TRIGGER fail_device_publish BEFORE UPDATE OF status ON w_devices
       WHEN NEW.status = 'published' BEGIN SELECT RAISE(ABORT, 'device_write_failed'); END`);
-    await assert.rejects(() => service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true }), /device_write_failed/);
+    await assert.rejects(() => publishSelection(), /device_write_failed/);
     assert.equal(sqlite.prepare('SELECT status FROM w_devices').get().status, 'draft');
     assert.equal(sqlite.prepare('SELECT status FROM w_wallpapers').get().status, 'draft');
   } finally { sqlite.close(); }
@@ -481,10 +496,10 @@ test('concurrent device changes or clearing the primary leave the drafts unpubli
     'UPDATE w_devices SET updated_date = updated_date + 1',
     'UPDATE w_wallpapers SET is_primary = 0',
   ]) {
-    const { sqlite, service, upload } = fixture(new Set(), () => sqlite.exec(mutation));
+    const { sqlite, service, upload, publishSelection } = fixture(new Set(), () => sqlite.exec(mutation));
     try {
       await upload('first');
-      await assert.rejects(() => service.updateAdminDevice({ id: 'device-1', status: 'published', publish_drafts: true }));
+      await assert.rejects(() => publishSelection());
       assert.equal(sqlite.prepare('SELECT status FROM w_devices').get().status, 'draft');
       assert.equal(sqlite.prepare('SELECT status FROM w_wallpapers').get().status, 'draft');
     } finally { sqlite.close(); }
@@ -722,7 +737,7 @@ test('device deletion lists shared files as retained and only deletes the target
 });
 
 test('device list reports static, live and pending deletion counts and filters by media', async () => {
-  const { sqlite, service, upload } = fixture();
+  const { sqlite, service, upload, publishSelection } = fixture();
   try {
     await upload('static');
     await upload('live', { media_type: 'dynamic', origin_key: 'test/device/origin/live.mp4' });
@@ -1160,4 +1175,117 @@ test('legacy whole-device retries lock translation writes and recheck full trans
     await assert.rejects(() => translations.deleteAdminDeviceI18n({ device_id: 'device-1', language: 'en' }));
     assert.throws(() => sqlite.exec("UPDATE w_device_i18n SET display_name='Direct late edit'"));
   } finally { sqlite.close(); }
+});
+
+test('scoped publishing validates an existing published primary even when it is outside the selected batch', async () => {
+  const { sqlite, upload, load } = fixture(new Set(['test/device/origin/primary.webp']));
+  try {
+    const primary = await upload('primary'); const fresh = await upload('fresh');
+    sqlite.prepare("UPDATE w_wallpapers SET status='published' WHERE id=?").run(primary.id);
+    sqlite.exec("UPDATE w_devices SET status='published'");
+    const service = load(`${root}src/lib/admin-collections.ts`);
+    const check = await service.checkAdminCollection('device-1',{wallpaper_ids:[fresh.id]});
+    await assert.rejects(()=>service.publishAdminCollection({device_id:'device-1',wallpaper_ids:[fresh.id],snapshot:check.snapshot}),/主图|R2/);
+    assert.equal(sqlite.prepare('SELECT status FROM w_wallpapers WHERE id=?').get(fresh.id).status,'draft');
+    await service.publishAdminCollection({device_id:'device-1',wallpaper_ids:[fresh.id],snapshot:check.snapshot,primary_ids:[fresh.id]});
+    assert.equal(sqlite.prepare('SELECT is_primary FROM w_wallpapers WHERE id=?').get(fresh.id).is_primary,1);
+  } finally { sqlite.close(); }
+});
+
+test('device-wide upload metadata stays available while only the other media collection is locked', async () => {
+  const { sqlite, load } = fixture();
+  try {
+    sqlite.exec("UPDATE w_devices SET upload_prefix='test/Device One'; INSERT INTO w_collection_deletions(device_id,media_type,deletion_state,updated_date,lease_token) VALUES('device-1','static','pending',1,'test-lock')");
+    const route=load(`${root}src/app/api/admin/upload/route.ts`);
+    const response=await route.GET({nextUrl:new URL('https://example.test/api/admin/upload?device_id=device-1')});
+    assert.equal(response.status,200);
+    assert.equal((await response.json()).data.prefix,'test/Device One');
+    const request=(media)=>route.POST({json:async()=>({action:'authorize',device_id:'device-1',group_id:'asset-group',role:'origin',media_type:media,mime_type:media==='dynamic'?'video/mp4':'image/webp',size_bytes:100,file_name:media==='dynamic'?'movie.mp4':'still.webp'})});
+    assert.equal((await request('dynamic')).status,200);
+    assert.equal((await request('static')).status,400);
+  } finally { sqlite.close(); }
+});
+
+test('upload reconciliation confirms stored content and reports a missing object without writing records', async () => {
+  const { sqlite, load, storedObjects } = fixture();
+  try {
+    const prefix='test/Device One';
+    const grant={key:`${prefix}/origin/movie.mp4`,deviceId:'device-1',groupId:'asset-group',media:'dynamic',role:'origin',prefix,size:100,mimeType:'video/mp4',expires:Date.now()+60000};
+    const route=load(`${root}src/app/api/admin/upload/route.ts`);
+    const reconcile=(patch={})=>route.POST({json:async()=>({action:'reconcile',device_id:'device-1',upload_token:JSON.stringify({...grant,...patch})})});
+    let response=await reconcile(); assert.equal(response.status,200); assert.deepEqual((await response.json()).data,{uploaded:false});
+    storedObjects.set(grant.key,{size:100,mimeType:'video/mp4'});
+    response=await reconcile(); assert.equal(response.status,200); assert.deepEqual((await response.json()).data,{uploaded:true});
+    for(const patch of [{deviceId:'other-device'},{groupId:''},{role:'compress'},{prefix:'test/Other'},{media:'static'}]) assert.equal((await reconcile(patch)).status,400);
+    storedObjects.set(grant.key,{size:101,mimeType:'video/mp4'});assert.equal((await reconcile()).status,400);
+    storedObjects.set(grant.key,{size:100,mimeType:'video/webm'});assert.equal((await reconcile()).status,400);
+    assert.equal(sqlite.prepare('SELECT count(*) count FROM w_wallpapers').get().count,0);
+    assert.equal(sqlite.prepare('SELECT upload_prefix FROM w_devices').get().upload_prefix,null);
+  } finally { sqlite.close(); }
+});
+
+test('reconciliation rejects wrong content signatures and only the relevant deletion lock', async () => {
+  const { sqlite, load, storedObjects } = fixture();
+  try {
+    const prefix='test/Device One';
+    const grant={key:`${prefix}/origin/movie.mp4`,deviceId:'device-1',groupId:'asset-group',media:'dynamic',role:'origin',prefix,size:100,mimeType:'video/mp4',expires:Date.now()+60000};
+    const route=load(`${root}src/app/api/admin/upload/route.ts`);
+    const reconcile=(patch={})=>route.POST({json:async()=>({action:'reconcile',device_id:'device-1',upload_token:JSON.stringify({...grant,...patch})})});
+    storedObjects.set(grant.key,{size:100,mimeType:'video/mp4'});
+    sqlite.exec("INSERT INTO w_collection_deletions(device_id,media_type,deletion_state,updated_date,lease_token) VALUES('device-1','static','pending',1,'test-lock')");
+    assert.equal((await reconcile()).status,200);
+    sqlite.exec("INSERT INTO w_collection_deletions(device_id,media_type,deletion_state,updated_date,lease_token) VALUES('device-1','dynamic','pending',1,'dynamic-lock')");
+    assert.equal((await reconcile()).status,400);
+    sqlite.exec('DELETE FROM w_collection_deletions');
+    const fakeKey=`${prefix}/origin/renamed.png`;storedObjects.set(fakeKey,{size:100,mimeType:'image/png',bytes:Uint8Array.from(Buffer.from('RIFF0000WEBP'))});
+    assert.equal((await reconcile({key:fakeKey,mimeType:'image/png',media:'static'})).status,400);
+  } finally { sqlite.close(); }
+});
+
+test('first MP4 authorization persists a prefix while only the static collection is pending deletion', async () => {
+  const {sqlite,load,service}=fixture();
+  try {
+    sqlite.exec("INSERT INTO w_collection_deletions(device_id,media_type,deletion_state,updated_date,lease_token) VALUES('device-1','static','pending',1,'pending-static')");
+    const route=load(`${root}src/app/api/admin/upload/route.ts`);
+    const authorize=(media)=>route.POST({json:async()=>({action:'authorize',device_id:'device-1',group_id:'asset-group',role:'origin',media_type:media,mime_type:media==='dynamic'?'video/mp4':'image/webp',size_bytes:100,file_name:media==='dynamic'?'movie.mp4':'still.webp'})});
+    assert.equal((await authorize('static')).status,400);
+    assert.throws(()=>sqlite.exec("UPDATE w_devices SET upload_prefix='test/Bad',device_name='Changed',updated_date=updated_date+1"));
+    assert.throws(()=>sqlite.exec("UPDATE w_devices SET upload_prefix='test/Bad',status='published',updated_date=updated_date+1"));
+    assert.equal(sqlite.prepare('SELECT upload_prefix FROM w_devices').get().upload_prefix,null);
+    assert.equal((await authorize('dynamic')).status,200);
+    assert.equal(sqlite.prepare('SELECT upload_prefix FROM w_devices').get().upload_prefix,'test/Device One');
+    await assert.rejects(()=>service.updateAdminDevice({id:'device-1',upload_prefix:'test/Changed'}));
+    assert.throws(()=>sqlite.exec("UPDATE w_devices SET upload_prefix='test/Changed'"));
+    assert.throws(()=>sqlite.exec("UPDATE w_devices SET device_name='Changed'"));
+    assert.throws(()=>sqlite.exec("UPDATE w_devices SET status='published'"));
+  } finally {sqlite.close();}
+});
+
+test('initial prefix persistence during another active collection deletion does not strand its finalizer', async () => {
+  let notify,release;
+  const started=new Promise(resolve=>{notify=resolve});const held=new Promise(resolve=>{release=resolve});
+  let paused=false;
+  const {sqlite,load,upload,storedObjects}=fixture(new Set(),()=>{},async()=>{if(!paused){paused=true;notify();await held}});
+  let deletion;
+  try {
+    await upload('still');
+    const service=load(`${root}src/lib/admin-device-deletion.ts`);
+    const preview=await service.previewAdminDeviceDeletion('device-1','static');
+    deletion=service.deleteAdminDevice({id:'device-1',media_type:'static',snapshot:preview.snapshot});
+    await started;
+    assert.equal(sqlite.prepare('SELECT deletion_state FROM w_collection_deletions').get().deletion_state,'processing');
+    const route=load(`${root}src/app/api/admin/upload/route.ts`);
+    const response=await route.POST({json:async()=>({action:'authorize',device_id:'device-1',group_id:'asset-group',role:'origin',media_type:'dynamic',mime_type:'video/mp4',size_bytes:100,file_name:'movie.mp4'})});
+    assert.equal(response.status,200);
+    const prefix=sqlite.prepare('SELECT upload_prefix FROM w_devices').get().upload_prefix;
+    const grant=(role,file,mimeType)=>({key:`${prefix}/${role}/${file}`,deviceId:'device-1',groupId:'asset-group',media:'dynamic',role,prefix,size:100,mimeType});
+    const origin=grant('origin','movie.mp4','video/mp4'),cover=grant('compress','movie.webp','image/webp');
+    for(const item of [origin,cover])storedObjects.set(item.key,{size:item.size,mimeType:item.mimeType});
+    const completed=await route.POST({json:async()=>({action:'complete',device_id:'device-1',name:'movie',origin_token:JSON.stringify(origin),preview_token:JSON.stringify(cover)})});
+    assert.equal(completed.status,201);
+    release();const result=await deletion;
+    assert.equal(result.device_deleted,false);
+    assert.equal(sqlite.prepare('SELECT count(*) n FROM w_collection_deletions').get().n,0);
+    assert.equal(sqlite.prepare('SELECT media_type FROM w_wallpapers').get().media_type,'dynamic');
+  } finally {release();if(deletion)await deletion.catch(()=>{});sqlite.close();}
 });

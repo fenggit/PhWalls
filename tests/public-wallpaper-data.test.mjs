@@ -130,7 +130,8 @@ test('live detail metadata and content use the independently authored localized 
   const props = { params: Promise.resolve({category:'samsung',slug:'samsung-galaxy-s25'}) };
   const metadata = await route.generateMetadata(props);
   assert.equal(metadata.title, '三星 Galaxy S25动态壁纸免费下载 | PhWalls');
-  assert.equal(metadata.description, '播放视频预览，免费下载原始 MP4 动态壁纸。');
+  assert.ok(metadata.description.includes('播放视频预览，免费下载原始 MP4 动态壁纸。'));
+  assert.ok(metadata.description.includes('1 段'), 'metadata includes the current published video count');
   const page = await route.default(props);
   assert.equal(page.props.children[1].props.deviceData.seoTitle, '三星 Galaxy S25动态壁纸免费下载');
 });
@@ -166,8 +167,8 @@ test('a model with static and dynamic wallpapers produces two independent recent
   f.add('iqoo16', 'iqoo', { date: '2026-09-29' });
   f.sqlite.exec(`UPDATE w_devices SET device_name = 'iQOO 16', device_slug = 'iqoo-16' WHERE id = 'iqoo16';
     INSERT INTO w_wallpapers (id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,media_type,category,is_primary,status,create_date,updated_date)
-    VALUES ('motion1','iqoo16','motion1','video/mp4',2048,'live/iQOO/iQOO 16/origin/movie.mp4','live/iQOO/iQOO 16/compress/movie.webp','mp4','dynamic','phone',1,'published',2,2),
-      ('motion2','iqoo16','motion2','video/mp4',2048,'live/iQOO/iQOO 16/origin/movie2.mp4','live/iQOO/iQOO 16/compress/movie2.webp','mp4','dynamic','phone',0,'published',3,3);`);
+    VALUES ('motion1','iqoo16','motion1','video/mp4',2048,'iqoo/iqoo16/origin/movie.mp4','iqoo/iqoo16/compress/movie.webp','mp4','dynamic','phone',1,'published',2,2),
+      ('motion2','iqoo16','motion2','video/mp4',2048,'iqoo/iqoo16/origin/movie2.mp4','iqoo/iqoo16/compress/movie2.webp','mp4','dynamic','phone',0,'published',3,3);`);
   const page = await f.load(`${root}src/app/home/v1/HomePage.tsx`).default();
   assert.equal(page.props.latest.length, 2, 'both categories must survive even when the video is the primary wallpaper');
   const cards = page.props.latest;
@@ -187,6 +188,32 @@ test('a model with static and dynamic wallpapers produces two independent recent
   const liveDetail = await f.load(`${root}src/lib/live-data-server.ts`).loadLiveCollection('iqoo', 'iqoo-16', 'zh');
   assert.equal(liveDetail.item.length, 2);
   assert.ok(liveDetail.item.every(item => item.type === 'video/mp4'));
+});
+
+test('a unified model directory keeps all five languages and static/live translations independent', async (t) => {
+  for (const language of ['en', 'zh', 'ja', 'vi', 'zh-hant']) {
+    const f = fixture({ language }); t.after(() => f.sqlite.close());
+    f.add('unified', 'huawei');
+    f.sqlite.exec(`INSERT INTO w_wallpapers(id,device_id,name,mime_type,size_bytes,origin_key,compress_key,file_format,media_type,category,is_primary,status,create_date,updated_date)
+      VALUES('unified-live','unified','movie','video/mp4',2048,'huawei/unified/origin/movie.mp4','huawei/unified/compress/movie.webp','mp4','dynamic','phone',1,'published',2,2)`);
+    f.sqlite.prepare('INSERT INTO w_device_i18n(id,device_id,language,display_name,description,create_date,updated_date) VALUES(?,?,?,?,?,1,1)')
+      .run(`static-${language}`, 'unified', language, `Static ${language}`, `Still introduction ${language}`);
+    f.sqlite.prepare('INSERT INTO w_live_device_i18n(id,device_id,language,display_name,description,create_date,updated_date) VALUES(?,?,?,?,?,1,1)')
+      .run(`live-${language}`, 'unified', language, `Live ${language}`, `Motion introduction ${language}`);
+    const still = await f.service.loadDbCollection('huawei', 'device-unified', language, 'static');
+    const live = await f.service.loadDbCollection('huawei', 'device-unified', language, 'dynamic');
+    assert.equal(still.name, `Static ${language}`);
+    assert.equal(live.name, `Live ${language}`);
+    assert.equal(still.description, `Still introduction ${language}`);
+    assert.equal(live.description, `Motion introduction ${language}`);
+    assert.equal(still.item.length, 1);
+    assert.equal(live.item.length, 1);
+    assert.ok(live.item[0].originPath.startsWith('huawei/unified/origin/'));
+    const index = await f.service.loadDbSearchIndex(language);
+    assert.equal(index.length, 2);
+    assert.equal(index.find(row => row.live).name, `Live ${language}`);
+    assert.equal(index.find(row => !row.live).name, `Static ${language}`);
+  }
 });
 
 test('all site services read D1 even when a legacy JSON data-source setting remains', async (t) => {
@@ -335,7 +362,7 @@ function fixture({ production = false, dataSource = 'd1', failingDb = false, sam
         if (specifier === 'server-only') return {};
         if (specifier === './HomeLanding') return load(`${root}src/app/home/v1/HomeLanding.tsx`);
         if (specifier === '@/components/LiveWallpaperCollectionCard') return load(`${root}src/components/LiveWallpaperCollectionCard.tsx`);
-        if (['@/components/Header', '@/components/Footer', '@/components/ShareRegistration', '@/components/WallpaperPreviewDownload'].includes(specifier)) return { default: () => null, __esModule: true };
+        if (['@/components/Header', '@/components/Footer', '@/components/ShareRegistration', '@/components/WallpaperPreviewDownload', '@/components/RelatedWallpapers'].includes(specifier)) return { default: () => null, __esModule: true };
         if (specifier === 'next/navigation') return { usePathname: () => `/${language}/desktop`, useSearchParams: () => new URLSearchParams(), notFound: () => { throw new Error('NOT_FOUND'); } };
         if (specifier === 'next/link') return { __esModule: true, default: ({ href, children, prefetch, ...props }) => require('react').createElement('a', { ...props, href }, children) };
         if (specifier === '@/components/LanguageProvider') return { useLanguage: () => ({ language, setLanguage() {}, texts: load(`${root}src/lib/i18n.ts`).getI18nTexts(language) }) };

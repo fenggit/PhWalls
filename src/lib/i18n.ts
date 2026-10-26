@@ -3,6 +3,11 @@ import apiMonitor1 from '@/data/language/en/api-monitor.json';
 import apiMonitor2 from '@/data/language/ja/api-monitor.json';
 import apiMonitor3 from '@/data/language/vi/api-monitor.json';
 import apiMonitor4 from '@/data/language/zh-hant/api-monitor.json';
+import mixedUpload0 from '@/data/language/zh/admin-mixed-upload.json';
+import mixedUpload1 from '@/data/language/en/admin-mixed-upload.json';
+import mixedUpload2 from '@/data/language/ja/admin-mixed-upload.json';
+import mixedUpload3 from '@/data/language/vi/admin-mixed-upload.json';
+import mixedUpload4 from '@/data/language/zh-hant/admin-mixed-upload.json';
 import type { Language } from '@/types';
 
 export type { Language } from '@/types';
@@ -550,16 +555,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadDynamicLabel: "动态壁纸",
     adminUploadMediaHint: "同一设备的静态与动态壁纸分别上传，并沿用各自的存储目录。",
     adminUploadAutoDirectory: "默认设备目录",
-    adminUploadLoadingDirectory: "正在读取该类型的存储目录…",
+    adminUploadLoadingDirectory: "正在读取设备的上传目录…",
     adminUploadDirectoryFailed: "目录读取失败，请重试后再上传。",
     adminUploadRetryDirectory: "重新读取目录",
     adminUploadChooseExisting: "选择已有目录",
-    adminUploadMultipleDirectories: "该类型已有多个目录，请选择本次上传位置。",
+    adminUploadMultipleDirectories: "设备存在多个历史静态目录，请选择并保存统一上传目录。",
     adminUploadExistingHint: "将沿用该类型已有的存储目录，保留原始大小写和空格。",
     adminUploadDefaultHint: "“{name}”暂无{type}。选择文件后，点击“{action}”或“开始上传”，将使用上方目录上传文件并创建合集。",
     adminUploadCreateStaticCollection: "创建静态合集",
     adminUploadCreateDynamicCollection: "创建动态合集",
-    adminUploadAddFilesFirst: "请先选择包含 origin 和 compress 的文件夹，或添加原文件与封面，再创建合集。",
+    adminUploadAddFilesFirst: "请先选择包含 origin 和 compress 的文件夹，或添加原文件与封面。",
     adminUploadFileNameInvalid: "上传文件名无效：须保留与文件类型匹配的扩展名，且不能包含路径或特殊路径字符。",
     adminUploadFileExists: "同名文件“{name}”已存在，请先检查已有文件，避免覆盖。",
     adminUploadBrandDirectoryCase: "品牌目录区分大小写，请使用 {path}，避免重复创建品牌目录。",
@@ -1035,16 +1040,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadDynamicLabel: "Live wallpapers",
     adminUploadMediaHint: "Upload static and live wallpapers separately for the same device, using their own storage directories.",
     adminUploadAutoDirectory: "Default device directory",
-    adminUploadLoadingDirectory: "Reading storage directories for this type…",
+    adminUploadLoadingDirectory: "Reading the device upload directory…",
     adminUploadDirectoryFailed: "Could not read directories. Retry before uploading.",
     adminUploadRetryDirectory: "Reload directories",
     adminUploadChooseExisting: "Choose an existing directory",
-    adminUploadMultipleDirectories: "This type has multiple directories. Choose the upload destination.",
+    adminUploadMultipleDirectories: "This device has multiple historical static directories. Select and save the shared upload directory.",
     adminUploadExistingHint: "Reuse this type’s existing directory, preserving capitalization and spaces.",
     adminUploadDefaultHint: "“{name}” has no {type} yet. Select files, then click “{action}” or start uploading to upload files and create the collection in the directory above.",
     adminUploadCreateStaticCollection: "Create static collection",
     adminUploadCreateDynamicCollection: "Create live collection",
-    adminUploadAddFilesFirst: "Select a folder containing origin and compress, or add originals and covers, before creating the collection.",
+    adminUploadAddFilesFirst: "Choose a folder with origin and compress, or add originals and covers first.",
     adminUploadFileNameInvalid: "Invalid filename: keep the extension matching the file type and exclude paths or reserved path characters.",
     adminUploadFileExists: "“{name}” already exists. Check the existing file to avoid overwriting it.",
     adminUploadBrandDirectoryCase: "Brand directories are case-sensitive. Use {path} to avoid creating a duplicate brand directory.",
@@ -1520,16 +1525,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadDynamicLabel: "ライブ壁紙",
     adminUploadMediaHint: "同じ端末の静止画とライブ壁紙を、それぞれの保存先に分けてアップロードします。",
     adminUploadAutoDirectory: "端末の既定フォルダー",
-    adminUploadLoadingDirectory: "この種類の保存先を読み込み中…",
+    adminUploadLoadingDirectory: "端末のアップロード先を読み込み中…",
     adminUploadDirectoryFailed: "保存先を読み込めませんでした。アップロード前に再試行してください。",
     adminUploadRetryDirectory: "保存先を再読み込み",
     adminUploadChooseExisting: "既存フォルダーを選択",
-    adminUploadMultipleDirectories: "保存先が複数あります。今回のアップロード先を選択してください。",
+    adminUploadMultipleDirectories: "過去の静止画保存先が複数あります。共通アップロード先を選択して保存してください。",
     adminUploadExistingHint: "大文字・小文字と空白を保ち、この種類の既存フォルダーを使用します。",
     adminUploadDefaultHint: "「{name}」にはまだ{type}がありません。ファイルを選択し、「{action}」またはアップロード開始をクリックすると、上記フォルダーにアップロードしてコレクションを作成します。",
     adminUploadCreateStaticCollection: "静止画コレクションを作成",
     adminUploadCreateDynamicCollection: "ライブコレクションを作成",
-    adminUploadAddFilesFirst: "作成前に origin と compress を含むフォルダーを選択するか、元ファイルとカバーを追加してください。",
+    adminUploadAddFilesFirst: "origin と compress を含むフォルダーを選択するか、元ファイルとカバーを追加してください。",
     adminUploadFileNameInvalid: "ファイル名が無効です。種類に一致する拡張子を保ち、パスや予約文字を含めないでください。",
     adminUploadFileExists: "「{name}」は既に存在します。上書きを防ぐため、既存ファイルを確認してください。",
     adminUploadBrandDirectoryCase: "ブランドフォルダーは大文字・小文字を区別します。重複を防ぐため {path} を使用してください。",
@@ -2005,16 +2010,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadDynamicLabel: "Hình nền động",
     adminUploadMediaHint: "Tải riêng hình nền tĩnh và động của cùng thiết bị vào thư mục tương ứng.",
     adminUploadAutoDirectory: "Thư mục mặc định của thiết bị",
-    adminUploadLoadingDirectory: "Đang đọc thư mục lưu trữ của loại này…",
+    adminUploadLoadingDirectory: "Đang đọc thư mục tải lên của thiết bị…",
     adminUploadDirectoryFailed: "Không thể đọc thư mục. Hãy thử lại trước khi tải lên.",
     adminUploadRetryDirectory: "Đọc lại thư mục",
     adminUploadChooseExisting: "Chọn thư mục hiện có",
-    adminUploadMultipleDirectories: "Loại này có nhiều thư mục. Hãy chọn nơi tải lên.",
+    adminUploadMultipleDirectories: "Thiết bị có nhiều thư mục tĩnh cũ. Chọn và lưu thư mục tải lên chung.",
     adminUploadExistingHint: "Dùng thư mục hiện có, giữ nguyên chữ hoa, chữ thường và khoảng trắng.",
     adminUploadDefaultHint: "“{name}” chưa có {type}. Chọn tệp, rồi nhấn “{action}” hoặc bắt đầu tải lên để tải tệp và tạo bộ sưu tập trong thư mục phía trên.",
     adminUploadCreateStaticCollection: "Tạo bộ sưu tập tĩnh",
     adminUploadCreateDynamicCollection: "Tạo bộ sưu tập động",
-    adminUploadAddFilesFirst: "Hãy chọn thư mục có origin và compress, hoặc thêm tệp gốc và ảnh bìa trước khi tạo bộ sưu tập.",
+    adminUploadAddFilesFirst: "Chọn thư mục có origin và compress, hoặc thêm bản gốc và ảnh bìa trước.",
     adminUploadFileNameInvalid: "Tên tệp không hợp lệ: giữ phần mở rộng đúng loại tệp và không chứa đường dẫn hay ký tự dành riêng.",
     adminUploadFileExists: "“{name}” đã tồn tại. Hãy kiểm tra tệp hiện có để tránh ghi đè.",
     adminUploadBrandDirectoryCase: "Thư mục thương hiệu phân biệt chữ hoa và chữ thường. Dùng {path} để tránh tạo thư mục trùng lặp.",
@@ -2463,16 +2468,16 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     adminUploadDynamicLabel: "動態桌布",
     adminUploadMediaHint: "同一裝置的靜態與動態桌布分別上傳，並沿用各自的儲存目錄。",
     adminUploadAutoDirectory: "預設裝置目錄",
-    adminUploadLoadingDirectory: "正在讀取該類型的儲存目錄…",
+    adminUploadLoadingDirectory: "正在讀取裝置的上傳目錄…",
     adminUploadDirectoryFailed: "目錄讀取失敗，請重試後再上傳。",
     adminUploadRetryDirectory: "重新讀取目錄",
     adminUploadChooseExisting: "選擇既有目錄",
-    adminUploadMultipleDirectories: "該類型已有多個目錄，請選擇本次上傳位置。",
+    adminUploadMultipleDirectories: "裝置有多個歷史靜態目錄，請選擇並儲存統一上傳目錄。",
     adminUploadExistingHint: "將沿用該類型既有的儲存目錄，保留原始大小寫與空格。",
     adminUploadDefaultHint: "「{name}」尚無{type}。選擇檔案後，點擊「{action}」或「開始上傳」，將使用上方目錄上傳檔案並建立合集。",
     adminUploadCreateStaticCollection: "建立靜態合集",
     adminUploadCreateDynamicCollection: "建立動態合集",
-    adminUploadAddFilesFirst: "請先選擇包含 origin 和 compress 的資料夾，或新增原檔案與封面，再建立合集。",
+    adminUploadAddFilesFirst: "請先選擇包含 origin 和 compress 的資料夾，或新增原檔與封面。",
     adminUploadFileNameInvalid: "上傳檔名無效：須保留與檔案類型匹配的副檔名，且不能包含路徑或特殊路徑字元。",
     adminUploadFileExists: "同名檔案「{name}」已存在，請先檢查既有檔案，避免覆寫。",
     adminUploadBrandDirectoryCase: "品牌目錄區分大小寫，請使用 {path}，避免重複建立品牌目錄。",
@@ -2916,4 +2921,15 @@ const apiMonitorTexts: Record<Language, typeof apiMonitor0> = {
 
 export function getApiMonitorTexts(language: Language) {
   return apiMonitorTexts[language];
+}
+
+const adminMixedUploadTexts: Record<Language, typeof mixedUpload0> = {
+  'zh': mixedUpload0,
+  'en': mixedUpload1,
+  'ja': mixedUpload2,
+  'vi': mixedUpload3,
+  'zh-hant': mixedUpload4
+};
+export function getAdminMixedUploadTexts(language: Language) {
+  return adminMixedUploadTexts[language];
 }

@@ -39,6 +39,11 @@ test('search renders a renamed model using its stable slug instead of a new mode
     if (specifier === '@/lib/wallpaper-data') return { buildWallpaperDetailPath: (category, name) => `/wallpapers/${category}/${name.toLowerCase().replace(/\s+/g, '-')}` };
     if (specifier === '@/lib/brands') return { buildBrandPath: (type) => `/${type}`, normalizeCategoryType: (type) => type };
     if (specifier === '@/lib/language') return { withLanguagePath: (path) => `/en${path}` };
+    if (specifier === '@/lib/analytics') {
+      const analytics = { exports: {} };
+      runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/analytics.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, { module: analytics, exports: analytics.exports, URL });
+      return analytics.exports;
+    }
     if (specifier === '@/lib/i18n') return { getI18nTexts: () => ({ search: 'Search' }) };
     return require(specifier);
   } });

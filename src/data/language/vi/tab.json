@@ -17,7 +17,7 @@
     "type": "desktop"
   },
   {
-    "title": "Vivo",
+    "title": "vivo",
     "type": "vivo"
   },
   {
@@ -37,7 +37,7 @@
     "type": "android"
   },
   {
-    "title": "Realme",
+    "title": "realme",
     "type": "realme"
   },
   {
@@ -95,10 +95,6 @@
   {
     "title": "HarmonyOS",
     "type": "harmonyos"
-  },
-  {
-    "title": "Huawei MatePad",
-    "type": "huawei-matepad"
   },
   {
     "title": "Smartisan",

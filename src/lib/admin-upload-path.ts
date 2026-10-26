@@ -1,45 +1,37 @@
 import type { DeviceRow, WallpaperMediaType, WallpaperRow } from '@/lib/wallpaper-db';
 import { getI18nTexts } from '@/lib/i18n';
 
-export type AdminUploadDirectories = { prefix: string; directories: string[]; source: 'existing' | 'default' | 'multiple' };
+export type AdminUploadDirectories = { prefix: string; directories: string[]; source: 'existing' | 'default' | 'multiple' | 'configured'; configured: boolean; historical_directories: string[] };
 export type AdminUploadRole = 'origin' | 'compress' | 'preview';
 
 export function getAdminUploadDirectories(
-  device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_name' | 'device_slug'>,
-  media: WallpaperMediaType,
+  device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_name' | 'device_slug' | 'upload_prefix'>,
+  _media: WallpaperMediaType,
   files: Pick<WallpaperRow, 'media_type' | 'origin_key'>[],
-  liveBrandDirectory: string = device.brand_name,
 ): AdminUploadDirectories {
-  const directories = new Set<string>();
+  const historical = new Set<string>();
+  const staticPaths = new Set<string>();
   for (const file of files) {
-    if (file.media_type !== media) continue;
     const match = file.origin_key.match(/^(.+)\/origin\/[^/]+$/);
     if (!match) continue;
-    try { directories.add(normalizeAdminR2Prefix(match[1])); }
-    catch { /* 旧数据中的无效路径不能用作上传目录。 */ }
-  }
-  const paths = Array.from(directories).sort();
-  if (!paths.length) {
-    let folderName = device.device_slug;
     try {
-      // 设备名称作为单层目录保留大小写和空格；不适合作目录的名称回退到 slug。
-      if (!device.device_name.includes('/')) folderName = normalizeAdminR2Prefix(device.device_name);
-    } catch { /* 设备名称中的路径保留字符不能用于新目录。 */ }
-    let brandFolder = device.brand_name;
-    if (media === 'dynamic') {
-      try {
-        if (!liveBrandDirectory.includes('/')) brandFolder = normalizeAdminR2Prefix(liveBrandDirectory);
-      } catch { /* 品牌显示名不适合作目录时，回退到品牌标识。 */ }
-    }
-    return { prefix: deviceR2Prefix({ ...device, brand_name: brandFolder, device_slug: folderName }, media), directories: [], source: 'default' };
+      const path = normalizeAdminR2Prefix(match[1]); historical.add(path);
+      if (file.media_type === 'static' && !/^live\//i.test(path)) staticPaths.add(path);
+    } catch { /* Invalid legacy keys are never upload targets. */ }
   }
-  return { prefix: paths.length === 1 ? paths[0] : '', directories: paths, source: paths.length === 1 ? 'existing' : 'multiple' };
+  const paths = Array.from(staticPaths).sort();
+  const common = { configured: Boolean(device.upload_prefix), historical_directories: Array.from(historical).sort() };
+  if (device.upload_prefix) return { ...common, prefix: normalizeAdminR2Prefix(device.upload_prefix), directories: paths, source: 'configured' };
+  if (paths.length) return { ...common, prefix: paths.length === 1 ? paths[0] : '', directories: paths, source: paths.length === 1 ? 'existing' : 'multiple' };
+  let folderName = device.device_slug;
+  try { if (!device.device_name.includes('/')) folderName = normalizeAdminR2Prefix(device.device_name); } catch { /* Use safe slug. */ }
+  return { ...common, prefix: deviceR2Prefix({ ...device, device_slug: folderName }), directories: [], source: 'default' };
 }
 
 export function normalizeAdminUploadFileName(value: unknown, mime: string): string {
   const extensions: Record<string, string[]> = {
     'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'],
-    'image/avif': ['avif'], 'image/gif': ['gif'], 'video/mp4': ['mp4'], 'video/webm': ['webm'],
+    'image/avif': ['avif'], 'image/gif': ['gif'], 'video/mp4': ['mp4'],
   };
   if (typeof value !== 'string' || !value || value.length > 255 || value.includes('..') ||
       /[\\/:%?#\u0000-\u001f\u007f]/.test(value) ||
@@ -51,15 +43,14 @@ export function normalizeAdminUploadFileName(value: unknown, mime: string): stri
 
 export function assertAdminUploadMime(mime: string, role: AdminUploadRole, media: WallpaperMediaType): void {
   const image = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'].includes(mime);
-  const video = ['video/mp4', 'video/webm'].includes(mime);
+  const video = mime === 'video/mp4';
   if (role === 'preview' ? media !== 'dynamic' || !video : role === 'compress' ? !image : media === 'dynamic' ? !video : !image) {
-    throw new Error('文件类型与所选壁纸类型不匹配：动态原文件须为 MP4/WebM，静态原文件与封面须为图片');
+    throw new Error('文件类型与所选壁纸类型不匹配：动态原文件须为 MP4，静态原文件与封面须为图片');
   }
 }
 
-// 保留基于 slug 的旧授权路径；新上传目录由 getAdminUploadDirectories 按设备名称生成。
-export function deviceR2Prefix(device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>, media: WallpaperMediaType = 'static'): string {
-  if (media === 'dynamic') return `live/${device.brand_name}/${device.device_slug}`;
+// Media is accepted for caller compatibility; new storage is always device-wide.
+export function deviceR2Prefix(device: Pick<DeviceRow, 'device_category' | 'brand_name' | 'device_slug'>): string {
   return device.device_category === 'desktop'
     ? `desktopwalls/${device.brand_name}/${device.device_slug}`
     : `${device.brand_name}/${device.device_slug}`;

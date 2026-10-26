@@ -32,6 +32,7 @@ function fixture(xml, status = 200) {
       async fetch(url, options) { requests.push({ url: new URL(url), options }); return new Response(xml, { status }); },
       require(specifier) {
         if (specifier === '@cloudflare/next-on-pages') return { getOptionalRequestContext: () => ({ env }) };
+        if (specifier.endsWith('.json') && specifier.startsWith('@/')) return JSON.parse(readFileSync(`${root}src/${specifier.slice(2)}`, 'utf8'));
         if (specifier.startsWith('@/')) return load(`${root}src/${specifier === '@/types' ? 'types/index' : specifier.slice(2)}.ts`);
         return require(specifier);
       },

@@ -58,6 +58,7 @@
 | `brand_name` | TEXT | 所属品牌标识，如 `xiaomi`、`google-pixel`、`microsoft-windows`；取自内置品牌配置或 `w_brands.slug`，不是数据库固定枚举，也未设置品牌外键 |
 | `device_name` | TEXT | 品牌下的设备或系统版本标准名称，用于后台识别、归一化查重和翻译缺失时的兜底，如 `xiaomi 14`、`Google Pixel 11`、`iOS 14`、`Android 17` |
 | `device_slug` | TEXT | 稳定的设备/系统版本 URL slug；创建时生成，名称变更时保持不变 |
+| `upload_prefix` | TEXT NULL DEFAULT NULL | 设备后续统一上传的 R2 相对目录，静态与动态共用；NULL 表示尚未配置，不影响历史对象读取。非空值唯一，最长 300 字符，不能包含角色子目录或非法路径；改名不自动改变此值 |
 | `device_category` | TEXT | 目标分类枚举：`phone`、`phone_fold`、`pad`、`desktop`、`os` |
 | `theme` | TEXT NULL DEFAULT NULL | 设备整套壁纸的主要视觉风格，保存单个英文枚举：`dark`、`gradient`、`minimal_geometric`、`anime`、`abstract`、`nature`、`photography`、`floral`、`technology`、`illustration`；`NULL` 表示未分类，各语言通过文案映射展示 |
 | `is_popular_brand` | INTEGER NOT NULL DEFAULT 0 | 是否为热门品牌，布尔值 `0/1` |
@@ -69,6 +70,8 @@
 约束：`UNIQUE(brand_name, device_name)`、`UNIQUE(brand_name, device_slug)`；`brand_name`、`device_name` 使用 TEXT 保存；`device_category`、`status` 限定为上述固定值；`is_popular_brand` 限定为 `0/1`。同一 `brand_name` 下的设备记录必须保持 `is_popular_brand` 一致，后台切换时批量更新该品牌的设备行。时间字段统一使用 Unix 毫秒时间戳。
 
 `theme` 通过 `0015_device_theme.sql` 新增，非空值限制为无首尾空白的 1–40 字符文本；`0016_device_theme_enum.sql` 的插入与更新触发器进一步限定上述十个枚举，非法值拒绝写入。它不是翻译文本或字符串数组，也不代表单张壁纸的明暗版本。类型与枚举统一维护在 `src/lib/device-theme.ts`，五语言标签位于 `src/lib/i18n.ts`；完整对照和存量数据说明见[设备主色调与壁纸标签](device-themes.md)。后台创建时省略该字段默认 `NULL`，更新时省略保留原值，显式 `null` 或空字符串清除分类。
+
+`upload_prefix` 通过 `0018_device_upload_prefix.sql` 新增。数据库 CHECK 限制非空值长度 1–300、无首尾空白/斜杠、无空层级、`..`、冒号或反斜杠；唯一部分索引 `idx_devices_upload_prefix` 覆盖所有非 NULL 值。应用额外拒绝控制字符、URL 保留字符和 `origin`/`compress`/`preview` 层级，并检查历史素材的跨设备目录归属。新目录不再使用 `live/` 命名空间；已有文件仍按记录的 key 读取。迁移不回填、不搬动文件，旧记录保持 NULL；后台保存或首次有效授权时确定统一目录。目录修改需校验设备版本，后续上传使用新值；之前仍有效的已签发授权可完成入库，但仍受设备、合集删除锁及对象归属校验。
 
 ### 4.2 `w_wallpapers`：壁纸条目
 
@@ -87,17 +90,17 @@
 | `theme` | TEXT NOT NULL DEFAULT 'normal' | 明暗主题：`dark`、`light`、`normal`；没有明确暗黑或明亮变体时使用 `normal` |
 | `media_type` | TEXT | 媒体类型：`static` 静态壁纸或 `dynamic` 动态壁纸 |
 | `category` | TEXT | 壁纸自身分类：`phone`、`phone_fold`、`pad`、`desktop`、`os`；可与所属设备分类不同 |
-| `is_primary` | INTEGER NOT NULL DEFAULT 0 | 是否为该设备该分类的主展示壁纸，布尔值 `0/1`；每个设备分类最多一张 |
+| `is_primary` | INTEGER NOT NULL DEFAULT 0 | 是否为该设备、分类及媒体类型的主展示壁纸，布尔值 `0/1`；静态和动态分别设置 |
 | `tags` | TEXT NOT NULL DEFAULT '[]' | 风格与画面相关标签的小写英文 JSON 数组，例如 `["abstract","gradient","fluid art"]`；英文同时作为英文展示与五语言 JSON 的匹配键，不以品牌或机型代替画面标签 |
 | `status` | TEXT | `draft` 草稿（仅后台可见）；`published` 已发布（公开可见）；`unpublished` 已取消发布（保留记录，仅后台可见，可重新发布） |
 | `create_date` | INTEGER | 创建时间，64 位 Unix 毫秒时间戳 |
 | `updated_date` | INTEGER | 最近修改时间，64 位 Unix 毫秒时间戳 |
 
-约束：`device_id` 外键使用 `ON DELETE RESTRICT`；同一设备内 `name` 唯一；`media_type`、`category`、`theme` 与 `status` 限定为上述固定值；`is_primary` 限定为 `0/1`，并通过 `(device_id, category)` 唯一部分索引保证每个设备分类最多一张主展示壁纸；`tags` 使用 `json_valid` 校验。时间字段统一使用 Unix 毫秒时间戳。
+约束：`device_id` 外键使用 `ON DELETE RESTRICT`；`(device_id, media_type, name)` 唯一；`media_type`、`category`、`theme` 与 `status` 限定为上述固定值；`is_primary` 限定为 `0/1`，并通过 `(device_id, category, media_type)` 唯一部分索引保证每个设备分类及媒体类型最多一张主展示壁纸；`tags` 使用 `json_valid` 校验。时间字段统一使用 Unix 毫秒时间戳。
 
 `tags` 的数据库约束同时要求 JSON 数组，现有应用写入限制为最多 20 个、每个不超过 40 字符的非空标签。本次把存量中文标签转换为小写英文，不修改列结构或在线接口处理；后续写入请使用词表中的英文原值。小程序直接返回英文 `tags`，不增加额外键字段；五语言翻译只在 JSON 中维护，按英文名称匹配。全部 94 个英文标签与中文说明、存量转换及回滚步骤见[壁纸英文标签说明](wallpaper-tags.md)。
 
-可按数据访问路径建立少量索引：设备 `(brand_name, device_category, status)`、壁纸 `(device_id, status, category)`；另为 `is_primary=1` 建立按 `(device_id, category)` 唯一的部分索引。初版未建立独立品牌表，后续后台新增品牌功能已通过 `0002_admin_brands.sql` 引入 `w_brands`；仍不建立独立标签、上传任务、用户或文件资产表。
+可按数据访问路径建立少量索引：设备 `(brand_name, device_category, status)`、壁纸 `(device_id, status, category)`；另为 `is_primary=1` 建立按 `(device_id, category, media_type)` 唯一的部分索引。初版未建立独立品牌表，后续后台新增品牌功能已通过 `0002_admin_brands.sql` 引入 `w_brands`；仍不建立独立标签、上传任务、用户或文件资产表。
 
 ### 4.3 `w_device_i18n`：设备与壁纸合集多语言内容
 
@@ -274,3 +277,13 @@
 索引：`idx_api_access_created(created_at)`、`idx_api_access_ip_created(client_ip, created_at)`。无外键、不关联管理员或壁纸业务表。
 
 触发器 `api_access_retention` 在插入后按新事件时间删除早于 7 天的最旧记录，每次最多 100 条；无新流量时不触发。查询仅展示最近 7 天。到期不是立即物理删除承诺；停采、无流量及积压时需按运维策略另行清理。迁移为空表初始化，无历史回填；旧应用忽略此表，新应用在缺表时不影响公开请求但无法采集。生产先备份并核对迁移，再应用迁移及发布应用。字段口径、成本和操作见 [API 监控说明](api-monitoring.md)。
+
+### 首次目录设置与另一类型删除锁兼容
+
+`0019_initial_upload_prefix_during_collection_deletion.sql` 调整 `prevent_deleting_collection_device_update`：存在合集删除任务时，只允许 `upload_prefix` 从 NULL 首次设置为非 NULL，设备整体删除状态仍须为 `none`，`updated_date` 必须递增，其他身份、分类、主题、发布日期、可见状态和创建时间必须逐字段保持一致。修改已有目录及常规设备编辑仍受原有全设备锁保护。授权服务另行检查本次媒体类型的删除锁，允许未锁定类型首次上传。该迁移不新增字段、不回填、不改变已有记录。
+
+目录首次设置会使尚未认领的旧删除确认快照失效，需要刷新清单；已认领任务按独占 lease 完成，不因设备时间变化遗留删除锁。此分支有活跃删除与动态上传并行的回归测试。
+
+### 已删除视频预览的引用保护
+
+`0020_deleted_video_preview_reference_guard.sql` 增加 `prevent_deleted_wallpaper_preview_insert` 与 `prevent_deleted_wallpaper_preview_update`。动态素材插入或修改 `origin_key`/`media_type` 时，按原图 key 推导的 `/preview/` key 若已登记在 `w_deleted_wallpaper_files` 则拒绝写入；原有原图/封面引用保护继续生效。静态素材不受视频预览规则影响，既有普通元数据编辑保持兼容。不新增字段或回填数据；用于规范化清理后的迟到写入保护。
