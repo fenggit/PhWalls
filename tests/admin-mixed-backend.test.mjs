@@ -20,6 +20,44 @@ test('static and MP4 use the same device target, preferring a stored prefix',()=
  assert.equal(p.getAdminUploadDirectories({...d,upload_prefix:'test/Pinned'},'static',[]).prefix,'test/Pinned');
  assert.throws(()=>p.assertAdminUploadMime('video/webm','origin','dynamic'));
 });
+test('Surface foldables use the desktop brand namespace and only disclose misplaced history',()=>{
+ const p=createTsLoader()('src/lib/admin-upload-path.ts');
+ const device={device_category:'phone_fold',brand_name:'microsoft-surface',device_name:'Surface Duo 2',device_slug:'surface-duo-2'};
+ const files=[{media_type:'static',origin_key:'microsoft-surface/Surface Duo 2/origin/a.jpg'}];
+ const storage=p.getAdminUploadDirectories(device,'dynamic',files);
+ assert.equal(storage.prefix,'desktopwalls/microsoft-surface/Surface Duo 2');
+ assert.deepEqual(storage.directories,[]);
+ assert.deepEqual(storage.historical_directories,['microsoft-surface/Surface Duo 2']);
+ assert.equal(p.deviceR2Prefix(device),'desktopwalls/microsoft-surface/surface-duo-2');
+ assert.equal(device.device_category,'phone_fold');
+ assert.throws(()=>p.getAdminUploadDirectories({...device,upload_prefix:'microsoft-surface/Surface Duo 2'},'static',[]),/desktopwalls\/microsoft-surface/);
+});
+test('shared mobile and desktop brands choose storage by device category',()=>{
+ const p=createTsLoader({'@/data/desktopwalls/tab.json':[
+  {title:'Huawei',type:'huawei'},{title:'Microsoft Surface',type:'microsoft-surface'},
+ ]})('src/lib/admin-upload-path.ts');
+ const phone={device_category:'phone',brand_name:'huawei',device_name:'Huawei Mate 80',device_slug:'huawei-mate-80'};
+ assert.equal(p.getAdminUploadDirectories(phone,'static',[]).prefix,'huawei/Huawei Mate 80');
+ assert.equal(p.getAdminUploadDirectories(phone,'dynamic',[{media_type:'static',origin_key:'huawei/Huawei Mate 80/origin/a.jpg'}]).prefix,'huawei/Huawei Mate 80');
+ assert.doesNotThrow(()=>p.assertAdminUploadPrefixNamespace(phone,'huawei/Huawei Mate 80'));
+ assert.equal(p.deviceR2Prefix({...phone,device_category:'desktop'}),'desktopwalls/huawei/huawei-mate-80');
+ assert.throws(()=>p.assertAdminUploadPrefixNamespace({...phone,device_category:'desktop'},'huawei/Huawei Mate 80'),/desktopwalls\/huawei/);
+ assert.equal(p.deviceR2Prefix({...phone,brand_name:'microsoft-surface',device_category:'phone_fold'}),'desktopwalls/microsoft-surface/huawei-mate-80');
+});
+test('Surface explicit uploads and device directory edits reject a different brand namespace',async t=>{
+ const f=fixture(t);
+ f.sqlite.exec("INSERT INTO w_brands(slug,title,kind,create_date,updated_date) VALUES('microsoft-surface','Microsoft Surface','desktop',1,1); UPDATE w_devices SET brand_name='microsoft-surface',device_name='Surface Duo 2',device_category='phone_fold'");
+ const device=f.sqlite.prepare('SELECT * FROM w_devices').get();
+ const storage=f.load('src/lib/admin-upload-storage.ts');
+ for(const prefix of ['microsoft-surface/Surface Duo 2','desktopwalls/microsoft-windows/Surface Duo 2','desktopwalls/Microsoft Surface/Surface Duo 2']) {
+  await assert.rejects(()=>storage.resolveAdminUploadStorage(device,'static',{r2_prefix:prefix,path_mode:'custom'}),/desktopwalls\/microsoft-surface/);
+  await assert.rejects(()=>f.admin.updateAdminDevice({id:'device',upload_prefix:prefix,expected_updated_date:1}),/desktopwalls\/microsoft-surface/);
+ }
+ assert.equal(f.sqlite.prepare('SELECT upload_prefix FROM w_devices').get().upload_prefix,null);
+ const target='desktopwalls/microsoft-surface/Surface Duo 2';
+ assert.equal(await storage.resolveAdminUploadStorage(device,'dynamic',{r2_prefix:target,path_mode:'custom'}),target);
+ assert.equal(f.sqlite.prepare('SELECT device_category FROM w_devices').get().device_category,'phone_fold');
+});
 test('actual signatures distinguish MP4, AVIF and forged image content',()=>{
  const p=createTsLoader({'@/lib/r2-upload':{}})('src/lib/admin-upload-content.ts');
  const mp4=Uint8Array.from([0,0,0,24,...Buffer.from('ftypisom'),0,0,0,0,...Buffer.from('isommp42')]);

@@ -271,3 +271,19 @@ node scripts/backfill-collection-scenes.mjs --snapshot /tmp/phwalls-before-scene
 补充清单位于 `tmp/mixed-wallpaper-2026-10-26/live-remainder/`。26 个文件已分别归入 `oneplus/OnePlus 16` 与 `samsung/Samsung Galaxy A22`，全部 SHA-256 校验一致。26 个 R2 目标核验通过，其中 OnePlus 六个既有对象与本地内容一致，Galaxy A22 二十个规范目标已从本地源文件补齐。十条本地素材记录的原文件/封面引用及准确大小已同步；生产素材发布状态未修改。源目录中的 `Live/`、大小写别名 `live/` 和根 AppleDouble 侧车已清理，原件位于主隔离目录下的 `live-remainder/`。该补充批次应先回退，再回退主批次，不能套用主批次旧目录映射。
 
 本地运行使用 `http://localhost:3100/zh` 与 `http://localhost:3100/manager`。曾出现 `AnalyticsObserver` 的 Webpack factory 未定义错误，独立新地址正常、既有 localhost 浏览器缓存复现，确认是旧入口脚本与新模块引用不匹配。开发客户端的 App 入口文件名现包含构建哈希，Flight 清单使用对应新路径；不移除统计组件，不清除登录状态，生产构建命名保持原有规则。3100 端口上传 OPTIONS 已核验通过；不使用未配置上传跨域的新端口。
+
+### 2026-10-26 Surface 桌面目录纠正与 CF 清理
+
+发现 Surface Duo / Duo 2 的九张素材受 `phone_fold` 形态字段影响，被旧规则写到桶根 `microsoft-surface/`；另外五张 Duo 2 素材误归 Windows 品牌。目录选择现同时参考桌面品牌清单与设备分类，Surface 无论设备形态如何都使用 `desktopwalls/microsoft-surface/<型号>`。错误历史路径仅作为历史位置展示，不能继续作为上传目标；配置目录、显式上传授权和设备目录编辑均校验桌面品牌命名空间。脚本还会统一未入库来源的 `desktopwalls/Microsoft Surface` 别名以及 `Live/Microsoft Surface` 视频输入。
+
+生产迁移保留实际设备形态、素材 ID、原始文件、发布状态及 canonical Surface 文案，将五张误归 Windows 的素材合并到既有 Surface Duo 2，并保留唯一主图；旧 Windows 设备的五语言文案存入变更清单，空缺字段才补入 Surface 文案。Surface 的 17 个设备均配置规范上传目录，生产目录共有 62 条素材。对旧 Windows Duo 2 静态详情 URL 增加五语言 308 跳转代码，需随本次修复代码发布生效。
+
+本地两个错误目录中的 28 个文件已合并到 `desktopwalls/microsoft-surface`，SHA-256 核验一致；本地库独立同步相关素材及缺少的 Duo 设备和翻译，保留本地已有字段和设备 ID。本地 SQL 对新增行的重放使用经前置整行守卫验证的主键更新，避免重复目录约束和临时占位名称，已验证写入、幂等重放、完整回滚与外键。
+
+证据位于 `tmp/surface-storage-2026-10-26/`：`before.sql`、`manifest.json`、`apply.sql`、`rollback.sql`、`local-plan.json`、本地回退 SQL 和 `r2-journal.jsonl`。共 67 个旧 R2 对象已先备份核验，再检查生产/本地引用并登记删除标记，按 ETag 条件清理；其中 39 个旧大小写目录对象没有任何数据库引用。用户明确要求保留回退备份，故 `_catalog-backups/` 不在删除范围。
+
+旧的 `microsoft-surface/`、`desktopwalls/Microsoft Surface/` 及 `microsoft-windows/Microsoft Surface Duo 2/` 命名空间清理后应为空；规范 Surface 命名空间仅保存当前被引用素材。最终目录和线上核验见本次 `verification.json`、`r2-prefixes-after.json`。文件原件隔离于 `/Users/fenghe/web-project/source/phonewalls-catalog-backup-2026-10-26/surface-storage`；回退需先恢复 R2 老 key、清除本批删除标记，再回退数据库与本地文件，不覆盖后续人工修改。
+
+在 Surface 清理后，还扫描了整个 R2 桶的 40,289 个对象（其中 16,406 个为明确保留的回退备份），联合线上/本地全部状态的素材、推导视频预览及设备资源引用，核对本项目目录。另有 222 个无引用旧素材：180 个修改时间超过一天，42 个为本轮整理日志能按 ETag 和大小证明的中间副本；没有将无法证明来源的新上传纳入删除。全部先核验、备份、登记删除标记，再按 ETag 条件清理；备份继续保留，不以文件数量变化宣称释放备份占用空间。清单、备份哈希、删除日志与标记回滚 SQL 位于本次 `global-unused/`。共计清理旧位置 289 个对象（Surface 67 个加其他遗留 222 个）；不删除外部站点目录、非壁纸资源或备份命名空间。
+
+同次严格检查还发现 Huawei MateBook Fold 的 36 条桌面素材使用了大写品牌段 `desktopwalls/Huawei/`。已按相同流程迁移并校验 72 个文件到 `desktopwalls/huawei/`，同步本地/生产引用及设备上传目录，保留手机 Huawei 的根目录与实际分类。旧大写命名空间清理后为空；本地通过临时目录改名核对实际存储大小写，不能用大小写不敏感卷上的 `exists()` 判断是否仍有重复目录。本批独立清单、37 项引用/配置变更、备份及回退 SQL 在 `desktop-case/`。本次三个清理批次合计移除 361 个旧位置对象（67＋222＋72），回退备份全部保留。桌面品牌同时拥有手机入口时，手机类别继续使用手机目录，只有实际桌面设备进入桌面目录；独立桌面品牌 Surface 的折叠设备仍归桌面存储。

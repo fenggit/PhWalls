@@ -39,7 +39,7 @@ export async function generateMetadata({ params, mediaType = 'static' }: Desktop
     return {};
   }
 
-  const categoryLabel = getDesktopWallpaperCategoryLabel(category);
+  const categoryLabel = getDesktopWallpaperCategoryLabel(category, language);
   const seoCopy = buildDesktopDetailSeoCopy(language, {
     mediaType,
     collectionName: collection.name,
@@ -97,7 +97,7 @@ export default async function DesktopWallpaperDetailPage({ params, mediaType = '
 
   const detailPath = buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, mediaType);
   const canonicalUrl = withLanguageUrl(`${SITE_URL}${detailPath}`, language);
-  const categoryLabel = getDesktopWallpaperCategoryLabel(category);
+  const categoryLabel = getDesktopWallpaperCategoryLabel(category, language);
   const publishedDate = parseWallpaperDate(collection.date)?.toISOString().slice(0, 10);
   const seoCopy = buildDesktopDetailSeoCopy(language, {
     mediaType,

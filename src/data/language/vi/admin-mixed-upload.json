@@ -61,5 +61,6 @@
   "unpublished": "Bản nháp / chưa xuất bản",
   "expiredUploaded": "Quyền đã hết hạn sau khi tải tệp. Đối chiếu danh sách bên dưới với dữ liệu tham chiếu trước khi xử lý. Dùng tên tệp mới nếu tải lại.",
   "targetChange": "Đổi đích tải lên sẽ xóa hàng đợi và quyền hiện tại. Cần chọn và kiểm tra tệp lại. Tiếp tục?",
-  "outsideRoles": "Nội dung phải nằm trực tiếp trong origin, compress hoặc preview. Ngoài các thư mục này chỉ bỏ qua ghi chú và tệp hệ thống."
+  "outsideRoles": "Nội dung phải nằm trực tiếp trong origin, compress hoặc preview. Ngoài các thư mục này chỉ bỏ qua ghi chú và tệp hệ thống.",
+  "prefixNamespaceInvalid": "Thư mục tải lên của thương hiệu máy tính này phải nằm trong {prefix}. Hãy sửa thư mục tải lên của thiết bị trước."
 }

@@ -1,5 +1,5 @@
 import { getWallpaperDb, type DeviceRow, type WallpaperMediaType, type WallpaperRow } from '@/lib/wallpaper-db';
-import { getAdminUploadDirectories, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
+import { assertAdminUploadPrefixNamespace, getAdminUploadDirectories, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
 
 export async function assertAdminUploadPrefixOwnership(deviceId: string, prefix: string) {
   const conflict = await getWallpaperDb().prepare(`SELECT id FROM w_devices WHERE id != ? AND upload_prefix = ?
@@ -19,6 +19,7 @@ export async function resolveAdminUploadStorage(device: DeviceRow, media: Wallpa
   const storage = await getAdminUploadStorage(device, media);
   const target = input.r2_prefix === undefined ? storage.prefix : normalizeAdminR2Prefix(input.r2_prefix);
   if (!target) throw new Error('该设备存在多个历史目录，请先设置统一上传目录');
+  assertAdminUploadPrefixNamespace(device, target);
   if (input.path_mode !== undefined && input.path_mode !== 'device' && input.path_mode !== 'custom') throw new Error('目录方式无效');
   if (device.upload_prefix && target !== device.upload_prefix) throw new Error('设备目录已变化，请重新选择上传目标');
   if (/^live\//i.test(target)) throw new Error('新上传目录不能使用历史 live/ 命名空间');

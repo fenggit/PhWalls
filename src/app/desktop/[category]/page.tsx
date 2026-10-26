@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: DesktopCategoryPageProps): Pr
  const { category } = await params;
  if (!isDesktopWallpaperCategory(category)) return {};
  const language = await resolveMetadataLanguage();
- const label = getDesktopWallpaperCategoryLabel(category);
+ const label = getDesktopWallpaperCategoryLabel(category, language);
  const seoCopy = getDesktopCategorySeoCopy(language, category, label);
  const canonicalUrl = withLanguageUrl(`${SITE_URL}/desktop/${category}`, language);
  const title = `${seoCopy.metadataTitle} | PhWalls`;
@@ -45,8 +45,8 @@ export async function generateMetadata({ params }: DesktopCategoryPageProps): Pr
 export default async function DesktopCategoryPage({ params }: DesktopCategoryPageProps) {
  const { category } = await params;
  if (!isDesktopWallpaperCategory(category)) notFound();
- const label = getDesktopWallpaperCategoryLabel(category);
   const language = await resolveMetadataLanguage();
+ const label = getDesktopWallpaperCategoryLabel(category, language);
  const collections = sortByDateDesc(await loadDesktopWallpaperCollectionIndex(category, language));
  const cards = collections.map((c) => ({
   deviceId: c.deviceId,

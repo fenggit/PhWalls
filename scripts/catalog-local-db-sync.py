@@ -170,7 +170,11 @@ def quote(value):
  return "'"+str(value).replace("'","''")+"'"
 def where(row):return ' AND '.join('"'+key+'" IS '+quote(value)for key,value in row.items())
 def exists(table,row):return 'EXISTS (SELECT 1 FROM '+table+' WHERE '+where(row)+')'
-def insert(table,row):return 'INSERT INTO '+table+' ('+','.join('"'+k+'"'for k in row)+') VALUES ('+','.join(quote(v)for v in row.values())+');'
+def insert(table,row):
+ # Preflight has proved an existing ID equals the planned final row. Restore
+ # its temporarily vacated name/primary on replay, rather than inserting twice.
+ assignments=','.join('"'+k+'"=excluded."'+k+'"'for k in row if k!='id')
+ return 'INSERT INTO '+table+' ('+','.join('"'+k+'"'for k in row)+') VALUES ('+','.join(quote(v)for v in row.values())+') ON CONFLICT(id) DO UPDATE SET '+assignments+';'
 def update(table,row):return 'UPDATE '+table+' SET '+','.join('"'+k+'"='+quote(v)for k,v in row.items()if k!='id')+' WHERE id='+quote(row['id'])+';'
 def build_sql(changes):
  out=['PRAGMA foreign_keys=ON;','BEGIN IMMEDIATE;','CREATE TEMP TABLE IF NOT EXISTS local_catalog_sync_guard (ok INTEGER NOT NULL CHECK (ok=1));','DELETE FROM local_catalog_sync_guard;']

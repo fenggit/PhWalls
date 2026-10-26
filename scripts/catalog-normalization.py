@@ -15,6 +15,20 @@ FORMAT_OVERRIDES={}
 PREFIX_CASE={'oppo':'OPPO','poco':'POCO','realme':'realme','vivo':'vivo','iqoo':'iQOO','nio':'NIO','nubia':'nubia','tecno':'TECNO','infinix':'Infinix','redmagic':'REDMAGIC','honor':'Honor','huawei':'Huawei','nothing':'Nothing','oneplus':'OnePlus','samsung':'Samsung'}
 LIVE_BRAND_SLUGS={name.replace(' ','-'):name.replace(' ','-') for name in BRANDS}
 LIVE_BRAND_SLUGS.update({'asus':'asus-rog-phone','black-shark':'black-shark','fairphone':'fairphone','lava':'lava','lenovo':'lenovo','meizu':'meizu','micromax':'micromax','nokia':'nokia','smartisan':'smartisan','sharp':'sharp'})
+DESKTOP_BRANDS={}
+MOBILE_BRAND_SLUGS={re.sub(r'\s+','-',brand['type'].strip().casefold()) for brand in json.loads((Path(__file__).resolve().parents[1]/'src/data/language/en/tab.json').read_text()) if not brand.get('link') and brand['type'].strip().casefold()!='desktop'}
+for _brand in json.loads((Path(__file__).resolve().parents[1]/'src/data/desktopwalls/tab.json').read_text()):
+ if _brand.get('link'):continue
+ _slug=re.sub(r'\s+','-',_brand['type'].strip().casefold())
+ for _alias in [_brand['type'],_brand['title']]:
+  DESKTOP_BRANDS[re.sub(r'\s+','-',_alias.strip().casefold())]=_slug
+
+def desktop_brand_slug(value):
+ return DESKTOP_BRANDS.get(re.sub(r'\s+','-',value.strip().casefold()))
+
+def exclusive_desktop_brand_slug(value):
+ slug=desktop_brand_slug(value)
+ return slug if slug not in MOBILE_BRAND_SLUGS else None
 
 def normalize_label(value):
  value=re.sub(r'\s+',' ',value.strip())
@@ -52,7 +66,7 @@ def normalize_path(value):
  if parts and parts[0].casefold()=='live':
   if len(parts)!=5 or parts[3].casefold() not in ('origin','compress','preview'):
    raise ValueError('Live 输入须为品牌/型号/origin、compress 或 preview/文件')
-  brand=LIVE_BRAND_SLUGS.get(re.sub(r'\s+','-',parts[1].strip().casefold()))
+  brand=LIVE_BRAND_SLUGS.get(re.sub(r'\s+','-',parts[1].strip().casefold())) or desktop_brand_slug(parts[1])
   if brand is None:raise ValueError('无法识别 Live 品牌，须明确设置对应品牌目录：'+parts[1])
   model=normalize_label(parts[2])
   if brand=='google' and re.search(r'\bpixel\b',model,re.I):brand='google-pixel'
@@ -60,9 +74,19 @@ def normalize_path(value):
   # Unindexed inputs still need the same physical layout. Publication remains
   # a separate operation; absence from D1 must not preserve a second Live tree.
   parts=(brand,model,parts[3].casefold(),parts[4])
+ # Shared mobile/desktop brands require an explicit desktop path or D1 category.
+ # Exclusive desktop brands determine storage independently of device form factor.
+ # Unindexed local/R2 input must not create a second desktop brand namespace.
+ if parts and parts[0].casefold()=='desktopwalls':
+  brand=desktop_brand_slug(parts[1]) if len(parts)>1 else None
+  if brand:parts=('desktopwalls',brand,*parts[2:])
+ elif parts:
+  brand=exclusive_desktop_brand_slug(parts[0])
+  if brand:parts=('desktopwalls',brand,*parts[1:])
  result=[]
  for i,p in enumerate(parts[:-1]):
   if p.lower() in ('origin','compress'):p=p.lower()
+  elif i==1 and parts[0].casefold()=='desktopwalls' and desktop_brand_slug(p):p=desktop_brand_slug(p)
   elif i==0 and p.lower()!='live' and p.lower()!='desktopwalls':p=re.sub(r'[^a-z0-9]+','-',p.casefold()).strip('-')
   else:p=normalize_label(p)
   result.append(p)
@@ -274,7 +298,8 @@ def configure_prefixes(db):
    parts=Path(w[f]).parts
    for i,x in enumerate(parts):
     if x.lower() in ('origin','compress'):
-     old_prefix='/'.join(parts[:i]);target=('desktopwalls/' if d['device_category']=='desktop' else '')+d['brand_name']+'/'+normalize_label(d['device_name'])
+     brand=desktop_brand_slug(d['brand_name'])
+     old_prefix='/'.join(parts[:i]);target=('desktopwalls/' if exclusive_desktop_brand_slug(d['brand_name']) or d['device_category']=='desktop' else '')+(brand or d['brand_name'])+'/'+normalize_label(d['device_name'])
      PREFIX_OVERRIDES[old_prefix]=target
      if old_prefix.startswith('live/'):PREFIX_OVERRIDES['Live/'+old_prefix[len('live/'):]]=target
      break

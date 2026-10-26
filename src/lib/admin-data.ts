@@ -6,7 +6,7 @@ import { deleteR2Object, headR2Object } from '@/lib/r2-upload';
 import { normalizeAdminReleaseDate } from '@/lib/admin-release-date';
 import { AdminDeviceNameConflictError, checkAdminDeviceNames, type AdminDeviceNameCandidate, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { getI18nTexts } from '@/lib/i18n';
-import { normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
+import { assertAdminUploadPrefixNamespace, normalizeAdminR2Prefix } from '@/lib/admin-upload-path';
 import { assertAdminUploadPrefixOwnership } from '@/lib/admin-upload-storage';
 import { DEVICE_THEMES, type DeviceTheme } from '@/lib/device-theme';
 
@@ -185,6 +185,7 @@ export async function updateAdminDevice(input: Record<string, unknown>): Promise
   if (input.upload_prefix !== undefined) {
     if (input.expected_updated_date !== undefined && input.expected_updated_date !== previous.updated_date) throw new Error('设备已变更，请刷新后重试');
     if (uploadPrefix) {
+      assertAdminUploadPrefixNamespace({ ...previous, device_category: selectedCategory }, uploadPrefix);
       if (/^live\//i.test(uploadPrefix)) throw new Error('新上传目录不能使用历史 live/ 命名空间');
       await assertAdminUploadPrefixOwnership(id, uploadPrefix);
     }

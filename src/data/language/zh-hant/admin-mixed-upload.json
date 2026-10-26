@@ -61,5 +61,6 @@
   "unpublished": "草稿 / 已下架",
   "expiredUploaded": "上傳授權已過期且已有檔案上傳。請核對下方物件清單與資料庫引用後再處理；重新上傳請使用新檔名。",
   "targetChange": "切換上傳目標會清空目前佇列與授權，須重新選擇檔案並預檢。繼續嗎？",
-  "outsideRoles": "素材須直接放在 origin、compress 或 preview 子目錄；其他位置僅忽略來源說明與系統檔案。"
+  "outsideRoles": "素材須直接放在 origin、compress 或 preview 子目錄；其他位置僅忽略來源說明與系統檔案。",
+  "prefixNamespaceInvalid": "桌面品牌的上傳目錄須位於 {prefix} 下，請先修正裝置上傳目錄。"
 }

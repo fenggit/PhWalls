@@ -151,6 +151,7 @@ const BRAND_ICON_PATHS: Record<string, string> = {
   zte: '/brand-icons/zte.svg',
   android: '/brand-icons/android.svg',
   'microsoft-windows': '/brand-icons/microsoft.svg',
+  'microsoft-design': '/brand-icons/microsoft.svg',
   'microsoft-surface': '/brand-icons/microsoft.svg',
   ubuntu: '/brand-icons/ubuntu.svg',
   'omarchy-linux': '/brand-icons/omarchy-linux.svg',
@@ -276,8 +277,8 @@ export default function Header({
     [currentLang]
   );
   const desktopTabs = useMemo(
-    () => getDesktopTabData().filter((tab) => !tab.link?.trim()),
-    []
+    () => getDesktopTabData(currentLang).filter((tab) => !tab.link?.trim()),
+    [currentLang]
   );
   const liveTabs = useMemo(() => getLiveTabData(currentLang), [currentLang]);
   const popularLiveTabs = useMemo(
