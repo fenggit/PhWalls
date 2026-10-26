@@ -4,6 +4,12 @@ import tempfile, unittest
 spec=importlib.util.spec_from_file_location('catalog', Path(__file__).parents[1]/'catalog-normalization.py')
 catalog=importlib.util.module_from_spec(spec);spec.loader.exec_module(catalog)
 class CatalogTests(unittest.TestCase):
+ def test_red_magic_model_names_use_the_selected_brand_spelling(self):
+  for original,expected in [('nubia RedMagic 11 Pro','Red Magic 11 Pro'),('nubia Red Magic 5G','Red Magic 5G'),('REDMAGIC 11 Air','Red Magic 11 Air'),('Red Magic 6s Pro','Red Magic 6S Pro')]:
+   self.assertEqual(catalog.normalize_label(original),expected)
+  self.assertEqual(catalog.normalize_label('nubia Z80 Ultra'),'nubia Z80 Ultra')
+  self.assertEqual(catalog.normalize_filename('nubia-redmagic-11-pro-BLUE.JPG'),'red-magic-11-pro-blue.jpg')
+  self.assertEqual(catalog.normalize_path('redmagic/nubia RedMagic 11 Pro/preview/A.MP4'),'redmagic/Red Magic 11 Pro/preview/a.mp4')
  def test_shared_brand_registry_preserves_phone_paths_and_desktop_categories(self):
   import json, sqlite3
   from unittest.mock import patch
