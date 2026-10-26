@@ -40,7 +40,7 @@ interface DeviceWallpaperGridProps {
   wallpaperGroupLabelOverride?: string;
 }
 
-type WallpaperKind = 'phone' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
+type WallpaperKind = 'phone' | 'fold' | 'tablet-portrait' | 'tablet-landscape' | 'desktop' | 'watch';
 
 export default function DeviceWallpaperGrid({
   relatedContent,
@@ -244,6 +244,10 @@ export default function DeviceWallpaperGrid({
     const combined = `${name} ${path}`;
 
     if (combined.includes('watch')) return 'watch';
+    if (item.category === 'phone') return 'phone';
+    if (item.category === 'phone_fold') return 'fold';
+    if (item.category === 'desktop') return 'desktop';
+    if (item.category === 'pad') return item.width && item.height && item.width < item.height ? 'tablet-portrait' : 'tablet-landscape';
     if (combined.includes('desktopwalls/') || combined.includes('mac') || combined.includes('imac') || combined.includes('macos/')) return 'desktop';
     if (combined.includes('iphone') || combined.includes('ios/')) return 'phone';
     if (combined.includes('landscape')) return 'tablet-landscape';
@@ -254,6 +258,8 @@ export default function DeviceWallpaperGrid({
 
   const getAspectRatioByKind = useCallback((kind: WallpaperKind) => {
     switch (kind) {
+      case 'fold':
+        return 'aspect-[3/2]';
       case 'desktop':
         return 'aspect-[16/10]';
       case 'tablet-landscape':
@@ -272,6 +278,7 @@ export default function DeviceWallpaperGrid({
     switch (kind) {
       case 'desktop':
         return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+      case 'fold':
       case 'tablet-landscape':
       case 'tablet-portrait':
         return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
@@ -285,6 +292,7 @@ export default function DeviceWallpaperGrid({
 
   const getGroupTitle = useCallback((kind: WallpaperKind) => {
     if (kind === 'phone') return texts.phoneWallpapersGroupTitle;
+    if (kind === 'fold') return texts.foldWallpapersGroupTitle;
     if (kind === 'tablet-portrait') return texts.ipadPortraitWallpapersGroupTitle;
     if (kind === 'tablet-landscape') return texts.ipadLandscapeWallpapersGroupTitle;
     if (kind === 'desktop') return categoryLabelOverride || texts.desktopWallpapersGroupTitle;
@@ -347,7 +355,7 @@ export default function DeviceWallpaperGrid({
 
   const groupedWallpapers = useMemo(
     () =>
-      (['phone', 'tablet-portrait', 'tablet-landscape', 'desktop', 'watch'] as WallpaperKind[])
+      (['phone', 'fold', 'tablet-portrait', 'tablet-landscape', 'desktop', 'watch'] as WallpaperKind[])
         .map((kind) => ({
           kind,
           title: getGroupTitle(kind),

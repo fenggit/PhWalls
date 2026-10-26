@@ -417,6 +417,8 @@ export interface I18nTexts {
   wallpapers: string;
   allWallpapers: string;
   phoneWallpapersGroupTitle: string;
+  foldWallpapersGroupTitle: string;
+  microsoftDesignCategoryLabel: string;
   ipadPortraitWallpapersGroupTitle: string;
   ipadLandscapeWallpapersGroupTitle: string;
   desktopWallpapersGroupTitle: string;
@@ -904,6 +906,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpapers: '张壁纸',
     allWallpapers: '全部壁纸',
     phoneWallpapersGroupTitle: '手机壁纸',
+    foldWallpapersGroupTitle: '折叠屏壁纸',
+    microsoftDesignCategoryLabel: '微软设计',
     ipadPortraitWallpapersGroupTitle: 'iPad 壁纸',
     ipadLandscapeWallpapersGroupTitle: 'iPad 壁纸',
     desktopWallpapersGroupTitle: 'Mac 壁纸',
@@ -1389,6 +1393,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpapers: 'Wallpapers',
     allWallpapers: 'All Wallpapers',
     phoneWallpapersGroupTitle: 'Phone Wallpapers',
+    foldWallpapersGroupTitle: 'Foldable Wallpapers',
+    microsoftDesignCategoryLabel: 'Microsoft Design',
     ipadPortraitWallpapersGroupTitle: 'iPad Wallpapers',
     ipadLandscapeWallpapersGroupTitle: 'iPad Wallpapers',
     desktopWallpapersGroupTitle: 'Mac Wallpapers',
@@ -1874,6 +1880,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpapers: '壁紙',
     allWallpapers: 'すべての壁紙',
     phoneWallpapersGroupTitle: 'スマホ壁紙',
+    foldWallpapersGroupTitle: '折りたたみ壁紙',
+    microsoftDesignCategoryLabel: 'Microsoft Design',
     ipadPortraitWallpapersGroupTitle: 'iPad 壁紙',
     ipadLandscapeWallpapersGroupTitle: 'iPad 壁紙',
     desktopWallpapersGroupTitle: 'Mac 壁紙',
@@ -2332,6 +2340,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpapers: 'Hình nền',
     allWallpapers: 'Tất cả hình nền',
     phoneWallpapersGroupTitle: 'Hình nền điện thoại',
+    foldWallpapersGroupTitle: 'Hình nền màn hình gập',
+    microsoftDesignCategoryLabel: 'Microsoft Design',
     ipadPortraitWallpapersGroupTitle: 'Hình nền iPad',
     ipadLandscapeWallpapersGroupTitle: 'Hình nền iPad',
     desktopWallpapersGroupTitle: 'Hình nền Mac',
@@ -2817,6 +2827,8 @@ export const i18nTexts: Record<Language, I18nTexts> = {
     wallpapers: '張壁紙',
     allWallpapers: '全部壁紙',
     phoneWallpapersGroupTitle: '手機壁紙',
+    foldWallpapersGroupTitle: '摺疊螢幕桌布',
+    microsoftDesignCategoryLabel: '微軟設計',
     ipadPortraitWallpapersGroupTitle: 'iPad 壁紙',
     ipadLandscapeWallpapersGroupTitle: 'iPad 壁紙',
     desktopWallpapersGroupTitle: 'Mac 壁紙',

@@ -87,8 +87,8 @@ export default async function DesktopPage() {
 
   return (
     <Home
-      contentTabs={getDesktopTabData()}
-      navigationTabs={getDesktopTabData()}
+      contentTabs={getDesktopTabData(language)}
+      navigationTabs={getDesktopTabData(language)}
       initialImageUrls={buildInitialDesktopImageUrls(collections)}
       isMobilePriority={isMobileRequest}
       contentCollectionsByCategory={collections}
