@@ -298,3 +298,68 @@ test('client-only admin pages validate snapshot/page and retain authentication a
     assert.equal((await get(query)).status, 400, query);
   }
 });
+
+test('card details filter the full snapshot before pagination, including errors beyond recent requests', async (t) => {
+  const f = fixture(t);
+  const sql = `INSERT INTO w_api_access_events(id,created_at,endpoint,method,status,duration_ms,client_ip,source,source_host)
+    VALUES(?,?,'/api/public/search','GET',?,5,?,?,?)`;
+  f.db.seed([
+    ...Array.from({ length: 55 }, (_, i) => ({ sql, params: [`normal-${i}`, now - 1000, 200, '203.0.113.1', 'site', 'phwalls.com'] })),
+    ...Array.from({ length: 25 }, (_, i) => ({ sql, params: [`error-${String(i).padStart(2, '0')}`, now - 60000, i ? 404 : 500, null, 'unknown', null] })),
+    { sql, params: ['outside', now - 60000, 200, '203.0.113.2', 'external', 'example.test'] },
+    { sql, params: ['too-old', now - 7200000, 500, '203.0.113.3', 'external', 'old.test'] },
+    { sql, params: ['future', now + 1000, 500, '203.0.113.4', 'external', 'new.test'] },
+  ]);
+  const service = f.load('src/lib/api-monitor-report.ts');
+  assert.equal(typeof service.loadApiMonitorDetails, 'function');
+  const first = await service.loadApiMonitorDetails(f.db, '1h', now, 'errors');
+  const second = await service.loadApiMonitorDetails(f.db, '1h', now, 'errors', 2);
+  assert.equal(first.pagination.total, 25);
+  assert.equal(first.events.length, 20);
+  assert.equal(second.events.length, 5);
+  assert.equal(second.pagination.has_more, false);
+  assert.equal(new Set([...first.events, ...second.events].map((row) => row.id)).size, 25);
+  assert.ok(first.events.every((row) => row.status >= 400 && row.client_ip === null));
+  const outside = await service.loadApiMonitorDetails(f.db, '1h', now, 'external');
+  assert.deepEqual(outside.events.map((row) => row.id), ['outside']);
+  assert.equal(outside.pagination.total, 1);
+  assert.deepEqual((await service.loadApiMonitorDetails(f.db, '1h', now, 'external', 2)).events, []);
+});
+
+test('anomalous card details include all matching IPs rather than the first client or alert page', async (t) => {
+  const f = fixture(t);
+  const minute = Math.floor(now / 60000) * 60000 - 60000;
+  const sql = `INSERT INTO w_api_access_events(id,created_at,endpoint,method,status,duration_ms,client_ip,source,target_hash)
+    VALUES(?,?,'/api/files/download','GET',200,1,?,'own_mini',?)`;
+  f.db.seed(Array.from({ length: 25 }, (_, ip) => Array.from({ length: 20 }, (_, i) => ({
+    sql, params: [`anomaly-${ip}-${i}`, minute + i, `203.0.113.${String(ip).padStart(3, '0')}`, String(i)],
+  }))).flat());
+  const service = f.load('src/lib/api-monitor-report.ts');
+  assert.equal(typeof service.loadApiMonitorDetails, 'function');
+  const first = await service.loadApiMonitorDetails(f.db, '1h', now, 'anomalous');
+  const second = await service.loadApiMonitorDetails(f.db, '1h', now, 'anomalous', 2);
+  assert.equal(first.pagination.total, 25);
+  assert.equal(first.clients.length, 20);
+  assert.equal(second.clients.length, 5);
+  assert.equal(second.clients[4].client_ip, '203.0.113.024');
+  assert.equal(second.clients[4].peak_downloads, 20);
+  assert.equal(second.clients[4].alert_minutes, 1);
+});
+
+test('detail queries require admin authentication and validate filters and snapshot parameters', async (t) => {
+  const f = fixture(t);
+  f.env.ADMIN_SESSION_SECRET = 'test-only-monitor-details-session-key-32-chars';
+  const token = await f.load('src/lib/admin-auth.ts').createAdminSession();
+  const route = f.load('src/app/api/admin/api-monitor/route.ts');
+  const headers = { Cookie: `phwalls_admin_session=${token}` };
+  const get = (query, authenticated = true) => route.GET(new NextRequest(`https://a.phwalls.com/api/admin/api-monitor?view=details&${query}`, authenticated ? { headers } : {}));
+  const response = await get(`kind=errors&until=${now}`);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.deepEqual((await response.json()).data.events, []);
+  assert.equal((await get(`kind=errors&until=${now}`, false)).status, 401);
+  for (const query of [`kind=invalid&until=${now}`, `until=${now}`, 'kind=errors',
+    `kind=external&page=0&until=${now}`, `kind=anomalous&until=${now - 3600000}`]) {
+    assert.equal((await get(query)).status, 400, query);
+  }
+});

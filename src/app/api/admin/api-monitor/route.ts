@@ -2,7 +2,7 @@ import { getOptionalRequestContext } from '@cloudflare/next-on-pages';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
 import { apiMonitoringEnabled, type ApiMonitorEnv } from '@/lib/api-monitor';
-import { ApiMonitorPaginationError, loadApiMonitorClients, loadApiMonitorReport } from '@/lib/api-monitor-report';
+import { ApiMonitorPaginationError, loadApiMonitorClients, loadApiMonitorDetails, loadApiMonitorReport } from '@/lib/api-monitor-report';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
@@ -19,10 +19,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'INVALID_RANGE' }, { status: 400, headers });
   }
   const view = request.nextUrl.searchParams.get('view');
-  if (view && view !== 'clients') return NextResponse.json({ error: 'INVALID_VIEW' }, { status: 400, headers });
+  if (view && view !== 'clients' && view !== 'details') return NextResponse.json({ error: 'INVALID_VIEW' }, { status: 400, headers });
+  const kind = request.nextUrl.searchParams.get('kind');
+  if (view === 'details' && kind !== 'errors' && kind !== 'external' && kind !== 'anomalous') {
+    return NextResponse.json({ error: 'INVALID_DETAIL_KIND' }, { status: 400, headers });
+  }
   try {
     const env = getOptionalRequestContext()?.env as ApiMonitorEnv | undefined;
     if (!env?.DB) throw new Error('Unavailable');
+    if (view === 'details' && (kind === 'errors' || kind === 'external' || kind === 'anomalous')) {
+      const page = Number(request.nextUrl.searchParams.get('page') || '1');
+      const until = Number(request.nextUrl.searchParams.get('until'));
+      return NextResponse.json({ data: await loadApiMonitorDetails(env.DB, range, until, kind, page) }, { headers });
+    }
     if (view === 'clients') {
       const page = Number(request.nextUrl.searchParams.get('page') || '1');
       const until = Number(request.nextUrl.searchParams.get('until'));

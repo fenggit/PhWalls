@@ -65,5 +65,13 @@
   "moreFailed": "Could not load more IPs. Existing rows are kept; please retry.",
   "snapshotExpired": "This ranking has expired. Refresh statistics to continue.",
   "loadedClients": "Showing {loaded} / {total} IPs",
-  "allLoaded": "All IPs loaded"
+  "allLoaded": "All IPs loaded",
+  "details": "Details",
+  "viewDetails": "View details",
+  "closeDetails": "Close details",
+  "retryDetails": "Retry",
+  "loadMoreDetails": "Load more records",
+  "loadedDetails": "Showing {loaded} / {total} records",
+  "detailsFailed": "Could not load details. Loaded records are kept; please retry.",
+  "detailsHint": "All requests are filtered within the selected period, 20 records at a time."
 }

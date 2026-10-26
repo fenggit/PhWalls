@@ -65,5 +65,13 @@
   "moreFailed": "Không tải được thêm IP. Các dòng đã tải vẫn được giữ; hãy thử lại.",
   "snapshotExpired": "Bảng xếp hạng đã hết hạn. Làm mới thống kê để tiếp tục.",
   "loadedClients": "Đang hiển thị {loaded} / {total} IP",
-  "allLoaded": "Đã tải toàn bộ IP"
+  "allLoaded": "Đã tải toàn bộ IP",
+  "details": "Chi tiết",
+  "viewDetails": "Xem chi tiết",
+  "closeDetails": "Đóng chi tiết",
+  "retryDetails": "Thử lại",
+  "loadMoreDetails": "Tải thêm bản ghi",
+  "loadedDetails": "Đang hiển thị {loaded} / {total} bản ghi",
+  "detailsFailed": "Không thể tải chi tiết. Các bản ghi đã tải được giữ lại; vui lòng thử lại.",
+  "detailsHint": "Lọc tất cả yêu cầu trong khoảng thời gian đã chọn, mỗi lần 20 bản ghi."
 }

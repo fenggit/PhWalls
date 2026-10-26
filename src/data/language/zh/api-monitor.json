@@ -65,5 +65,13 @@
   "moreFailed": "追加加载失败，已加载的 IP 已保留，请重试。",
   "snapshotExpired": "本次排行已过期，请刷新统计后继续加载。",
   "loadedClients": "已显示 {loaded} / {total} 个 IP",
-  "allLoaded": "已显示全部 IP"
+  "allLoaded": "已显示全部 IP",
+  "details": "详情",
+  "viewDetails": "查看详情",
+  "closeDetails": "收起详情",
+  "retryDetails": "重试",
+  "loadMoreDetails": "加载更多记录",
+  "loadedDetails": "已显示 {loaded} / {total} 条记录",
+  "detailsFailed": "详情加载失败，已加载记录会保留，请重试。",
+  "detailsHint": "按当前时段筛选全部请求，每次加载 20 条。"
 }
