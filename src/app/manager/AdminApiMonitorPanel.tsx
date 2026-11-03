@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowUpRight, RefreshCw, X } from 'lucide-react';
+import { ApiBlocklistProvider, MonitorIp } from './AdminApiBlocklist';
 import { getApiMonitorTexts } from '@/lib/i18n';
 import type { ApiMonitorRange, ApiMonitorReport, ApiSource, ApiMonitorClientsPage, ApiMonitorClient, ApiMonitorDetailKind, ApiMonitorDetailsPage } from '@/lib/api-monitor-types';
 
@@ -109,12 +110,12 @@ function MonitorDetails({ kind, report, onClose }: {
         {data.pagination.has_more && <button type="button" className={buttonClass} disabled={loading || !!error} onClick={() => setPage(data.pagination.page + 1)}>{texts.loadMoreDetails}</button>}
       </div>}>
       {isClients ? data.clients.map((row) => <tr key={row.client_ip} className="bg-amber-50/60">
-        <td className="font-mono">{row.client_ip}</td><td><ClientSignals row={row} thresholds={report.thresholds} /></td>
+        <td className="font-mono"><MonitorIp ip={row.client_ip} /></td><td><ClientSignals row={row} thresholds={report.thresholds} /></td>
         <td>{count(row.requests)}</td><td>{count(row.downloads)}</td><td>{count(row.targets)}</td><td>{count(row.errors)}</td>
         <td className="whitespace-nowrap">{time(row.last_seen)}</td>
       </tr>) : data.events.map((row) => <tr key={row.id} className={row.status >= 400 ? 'bg-red-50/50' : ''}>
         <td className="whitespace-nowrap">{time(row.created_at)}</td><td className="break-all font-mono">{row.method} {row.endpoint}</td>
-        <td className="font-mono">{row.client_ip || texts.unknown}</td><td>{row.country || texts.unknown}</td>
+        <td className="font-mono"><MonitorIp ip={row.client_ip} /></td><td>{row.country || texts.unknown}</td>
         <td><p className="whitespace-nowrap">{sourceLabels[row.source]}</p><p className="mt-1 break-all text-[#758278]">{row.source_host || '—'}</p>
           {row.mini_app_id && <p className="mt-1 break-all font-mono">{row.mini_app_id}</p>}</td>
         <td><span className="block w-44 break-all text-[#66746b]">{row.user_agent || texts.unknown}</span></td>
@@ -126,7 +127,7 @@ function MonitorDetails({ kind, report, onClose }: {
 
 type Payload = { data: ApiMonitorReport; enabled: boolean; miniAppId: string | null };
 
-export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: number }) {
+function MonitorContent({ refreshKey }: { refreshKey: number }) {
   const [range, setRange] = useState<ApiMonitorRange>('24h');
   const [revision, setRevision] = useState(0);
   const [detail, setDetail] = useState<ApiMonitorDetailKind | null>(null);
@@ -264,7 +265,7 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
         {report.alerts.length ? <MonitorTable title={texts.alerts}
           columns={[texts.time, texts.ip, texts.requestsMinute, texts.downloadsMinute, texts.targetsMinute]}>
           {report.alerts.map((row) => <tr key={`${row.client_ip}:${row.minute}`} className="bg-amber-50/60">
-            <td className="whitespace-nowrap">{time(row.minute)}</td><td className="font-mono">{row.client_ip}</td>
+            <td className="whitespace-nowrap">{time(row.minute)}</td><td className="font-mono"><MonitorIp ip={row.client_ip} /></td>
             <td>{count(row.requests)}</td><td>{count(row.downloads)}</td><td>{count(row.targets)}</td>
           </tr>)}
         </MonitorTable> : <p className="text-xs text-[#66746b]">{texts.alertsEmpty}</p>}
@@ -291,14 +292,14 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
             {moreError === texts.snapshotExpired && <button className={buttonClass} onClick={() => setRevision((value) => value + 1)}>{texts.refresh}</button>}</div>}
         </div>}>
         {report.clients.map((row) => <tr key={row.client_ip} className={row.alert_minutes > 0 ? 'bg-amber-50/60' : row.errors > 0 ? 'bg-red-50/50' : ''}>
-          <td className="font-mono">{row.client_ip}</td><td><ClientSignals row={row} thresholds={report.thresholds} /></td><td>{count(row.requests)}</td>
+          <td className="font-mono"><MonitorIp ip={row.client_ip} /></td><td><ClientSignals row={row} thresholds={report.thresholds} /></td><td>{count(row.requests)}</td>
           <td>{count(row.downloads)}</td><td>{count(row.targets)}</td><td className={row.errors ? 'font-semibold text-red-700' : ''}>{count(row.errors)}</td>
           <td className="whitespace-nowrap">{time(row.last_seen)}</td></tr>)}
       </MonitorTable>
       <MonitorTable wide title={texts.recent} columns={[texts.time, texts.endpoint, texts.ip, texts.country, texts.source, texts.userAgent, texts.status, texts.duration]} empty={!report.recent.length}>
         {report.recent.map((row) => <tr key={row.id} className={row.status >= 400 ? 'bg-red-50/50' : ''}>
           <td className="whitespace-nowrap">{time(row.created_at)}</td><td className="break-all font-mono">{row.method} {row.endpoint}</td>
-          <td className="font-mono">{row.client_ip || texts.unknown}</td><td>{row.country || texts.unknown}</td>
+          <td className="font-mono"><MonitorIp ip={row.client_ip} /></td><td>{row.country || texts.unknown}</td>
           <td><p className="whitespace-nowrap">{sourceLabels[row.source]}</p><p className="mt-1 break-all text-[#758278]">{row.source_host || '—'}</p></td>
           <td><span className="block w-44 truncate text-[#66746b]" title={row.user_agent}>{row.user_agent || texts.unknown}</span></td>
           <td className={row.status >= 400 ? 'font-medium text-red-700' : ''}>{row.status}</td><td className="whitespace-nowrap">{row.duration_ms} ms</td>
@@ -307,4 +308,8 @@ export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: numbe
       <p className="text-xs text-[#758278]">{texts.rowsLimited}</p>
     </>}
   </section>;
+}
+
+export default function AdminApiMonitorPanel({ refreshKey }: { refreshKey: number }) {
+  return <ApiBlocklistProvider refreshKey={refreshKey}><MonitorContent refreshKey={refreshKey} /></ApiBlocklistProvider>;
 }

@@ -289,3 +289,15 @@
 ### 已删除视频预览的引用保护
 
 `0020_deleted_video_preview_reference_guard.sql` 增加 `prevent_deleted_wallpaper_preview_insert` 与 `prevent_deleted_wallpaper_preview_update`。动态素材插入或修改 `origin_key`/`media_type` 时，按原图 key 推导的 `/preview/` key 若已登记在 `w_deleted_wallpaper_files` 则拒绝写入；原有原图/封面引用保护继续生效。静态素材不受视频预览规则影响，既有普通元数据编辑保持兼容。不新增字段或回填数据；用于规范化清理后的迟到写入保护。
+
+
+## 公开 API IP 黑名单（2026-11-03）
+
+迁移 `0021_api_ip_blocklist.sql` 创建 `w_api_ip_blocklist`，与采集开关、7 天日志清理独立，无外键。
+
+| 字段 | 类型、默认值与约束 | 用途 |
+| --- | --- | --- |
+| `ip` | TEXT PRIMARY KEY NOT NULL；无默认值 | 规范化 IPv4 / IPv6 单地址；IPv4 映射 IPv6 统一为 IPv4，不支持网段、端口、主机名或 zone ID |
+| `created_at` | INTEGER NOT NULL CHECK (created_at >= 0)；无默认值 | 首次拉黑时间，应用写入 Unix 毫秒；重复拉黑保持原值 |
+
+索引 `idx_api_ip_blocklist_created(created_at DESC, ip)` 支持后台分页。永久保留直到管理员解除，解除直接删除行；不做日志历史回填。旧版忽略新表，回滚应用会停止拦截但保留黑名单。先备份并应用迁移，再部署应用；有可信连接 IP 的公开请求在缺表或查询失败时返回 503，因此不能先发布代码再补迁移。上线与回滚步骤见 [API 监控说明](api-monitoring.md#手动-ip-拉黑)。

@@ -73,5 +73,20 @@
   "loadMoreDetails": "加载更多记录",
   "loadedDetails": "已显示 {loaded} / {total} 条记录",
   "detailsFailed": "详情加载失败，已加载记录会保留，请重试。",
-  "detailsHint": "按当前时段筛选全部请求，每次加载 20 条。"
+  "detailsHint": "按当前时段筛选全部请求，每次加载 20 条。",
+  "blocklist": "IP 黑名单",
+  "blockHint": "手动拉黑指定 IP，永久生效直至解除；仅拦截受监控的公开接口。共享 IP 可能影响其他用户。",
+  "blockIp": "拉黑",
+  "unblockIp": "解除拉黑",
+  "ipInput": "输入 IPv4 或 IPv6 地址",
+  "invalidIp": "请输入有效的 IPv4 或 IPv6 地址。",
+  "blockFailed": "操作失败，请重试。",
+  "blockUnavailable": "黑名单不可用，请检查 D1 绑定与黑名单迁移。",
+  "blockSuccess": "已拉黑 {ip}",
+  "unblockSuccess": "已解除拉黑 {ip}",
+  "blockEmpty": "暂无拉黑 IP。",
+  "blockLoading": "正在加载黑名单…",
+  "blockMore": "加载更多黑名单",
+  "blockCreated": "拉黑时间",
+  "blocked": "已拉黑"
 }
