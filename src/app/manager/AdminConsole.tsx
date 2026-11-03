@@ -9,6 +9,7 @@ import AdminDeviceI18nPanel from '@/app/manager/AdminDeviceI18nPanel';
 import AdminDeviceDeleteDialog from '@/app/manager/AdminDeviceDeleteDialog';
 import { listAdminDeviceCollectionRows, type AdminDeviceCollectionRow } from '@/lib/admin-device-collections';
 import { adminTabHref, resolveAdminTab, type AdminTab } from '@/lib/admin-navigation';
+import { mergeAdminUploadTags, readAdminUploadTags } from '@/lib/admin-upload-tags';
 import AdminUploadThumbnail from '@/app/manager/AdminUploadThumbnail';
 import AdminCollectionActionPanel from '@/app/manager/AdminCollectionActionPanel';
 import { adminUploadFileMime, adminUploadRetryPolicy, isAdminUploadIgnoredFile, pairAdminUploadFiles, successfulAdminUploadIds, type AdminUploadInput } from '@/lib/admin-mixed-upload';
@@ -642,15 +643,16 @@ export default function AdminConsole() {
     });
   };
 
-  const rebuildUploadQueue = (files: AdminUploadInput[], folderName = uploadFolderName) => {
+  const rebuildUploadQueue = (files: AdminUploadInput[], folderName = uploadFolderName, reportTags = new Map<string, string[]>()) => {
     const paired = pairAdminUploadFiles(files);
     setUploadFiles(files);
     setUploadRows(current => paired.items.map(item => {
       const previous = current.find(row => row.origin === item.origin && row.preview === item.preview && row.videoPreview === item.videoPreview);
-      if (previous) return { ...previous, issues: item.issues };
+      const tags = reportTags.get(item.origin.name);
+      if (previous) return { ...previous, issues: item.issues, tags: tags ? mergeAdminUploadTags(previous.tags, tags) : previous.tags };
       return { id: crypto.randomUUID(), stem: item.stem, name: item.stem, origin: item.origin, preview: item.preview,
         videoPreview: item.videoPreview, mediaType: item.mediaType, issues: item.issues,
-        theme: 'normal', tags: batchTags, category: '', folderName: folderName || undefined, state: 'ready', progress: 0 };
+        theme: 'normal', tags: tags ? mergeAdminUploadTags(batchTags, tags) : batchTags, category: '', folderName: folderName || undefined, state: 'ready', progress: 0 };
     }));
   };
 
@@ -692,6 +694,19 @@ export default function AdminConsole() {
       event.target.value = '';
       return;
     }
+    let reportTags = new Map<string, string[]>();
+    try {
+      if (!explicitRole) reportTags = await readAdminUploadTags(files, folderRoot);
+      // Validate before changing the queue so a bad report cannot partially apply.
+      for (const file of roleFiles.filter(file => file.webkitRelativePath.split('/')[1].toLowerCase() === 'origin')) {
+        const tags = reportTags.get(file.name);
+        if (tags) mergeAdminUploadTags(uploadRows.find(row => row.origin === file)?.tags ?? batchTags, tags);
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : '读取标签报告失败');
+      event.target.value = '';
+      return;
+    }
     if (!explicitRole && folderRoot) {
       setUploadFolderName(folderRoot);
       setCreatingUploadDevice(false);
@@ -703,7 +718,7 @@ export default function AdminConsole() {
     setError('');
     const additions = (explicitRole ? files : [...roleFiles, ...files.filter(file => !roleFiles.includes(file) && isAdminUploadIgnoredFile(file))]).map(file => ({ file,
       role: explicitRole || (isAdminUploadIgnoredFile(file) ? 'origin' : file.webkitRelativePath.split('/')[1].toLowerCase()) as AdminUploadRole }));
-    rebuildUploadQueue([...(uploadRows.length && uploadRows.every(row => row.state === 'done') ? [] : uploadFiles), ...additions], folderRoot || uploadFolderName);
+    rebuildUploadQueue([...(uploadRows.length && uploadRows.every(row => row.state === 'done') ? [] : uploadFiles), ...additions], folderRoot || uploadFolderName, reportTags);
     event.target.value = '';
     if (!explicitRole && folderRoot) await checkUploadFolder(folderRoot);
   };
