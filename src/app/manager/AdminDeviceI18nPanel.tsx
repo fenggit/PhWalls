@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Pencil, Search, X } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '@/lib/language';
-import { getDeviceBrandLabel } from '@/lib/device-brand-label';
 import type { Language } from '@/types';
 import type { DeviceRow, WallpaperMediaType } from '@/lib/wallpaper-db';
 import type { AdminDeviceI18nDirectoryRow, MissingDescriptionBrand } from '@/lib/admin-device-i18n';
 
-type Brand = { slug: string; title: string; label?: string };
+type Brand = { slug: string; title: string };
 type EditTranslation = (device: Pick<DeviceRow, 'id' | 'device_name'>, language: Language, media: WallpaperMediaType) => void;
 type Directory = { data: AdminDeviceI18nDirectoryRow[]; meta: { total: number; page: number; pageSize: number; missingBrands: MissingDescriptionBrand[] } };
 const languageLabels: Record<Language, string> = {
@@ -31,8 +30,7 @@ export function AdminDeviceI18nTable({ rows, brands, onEdit, loading = false, mi
         : rows.map((row) => <tr key={row.id} className="border-b border-[#ebefeb] align-top last:border-b-0 hover:bg-[#f8faf8]">
           <td className="w-48 px-4 py-4"><div className="font-medium text-gray-950">{row.device_name}</div>
             <div className="mt-1 text-xs font-medium text-[#247560]">{row.media_type === 'dynamic' ? '动态壁纸 · Live' : '静态壁纸'}</div>
-            <div className="mt-1 text-xs text-[#758278]">{getDeviceBrandLabel(row.brand_name, row.language,
-              brands.find((brand) => brand.slug === row.brand_name)?.title || row.brand_name)}</div>
+            <div className="mt-1 text-xs text-[#758278]">{brands.find((brand) => brand.slug === row.brand_name)?.title || row.brand_name}</div>
             {missing && <div className="mt-1 text-xs text-[#758278]">{row.wallpaper_count} 张壁纸</div>}</td>
           <td className="whitespace-nowrap px-4 py-4"><div>{languageLabels[row.language]}</div><div className="mt-1 font-mono text-xs text-[#758278]">{row.language}</div></td>
           <td className="w-44 px-4 py-4"><div className="break-words">{row.display_name || <span className="text-[#87918b]">未填写</span>}</div></td>
@@ -105,7 +103,7 @@ export default function AdminDeviceI18nPanel({ brands, refreshKey, onEdit }: {
         <input className={`${inputClass} pl-9`} aria-label="搜索多语言内容" placeholder="搜索设备名、SEO 标题或描述" maxLength={200} value={searchInput} onChange={(event) => setSearchInput(event.target.value)} /></div>
         {(brand || language || media || searchInput) && <button className={buttonClass} onClick={reset}><X size={15} />清除筛选</button>}</div>
       <div className="grid gap-3 sm:grid-cols-3"><select className={inputClass} aria-label="多语言品牌筛选" value={brand} onChange={(event) => { setBrand(event.target.value); setPage(0); }}>
-        <option value="">全部品牌</option>{brands.map((item) => <option key={item.slug} value={item.slug}>{item.label || item.title}</option>)}</select>
+        <option value="">全部品牌</option>{brands.map((item) => <option key={item.slug} value={item.slug}>{item.title}</option>)}</select>
         <select className={inputClass} aria-label="语言筛选" value={language} onChange={(event) => { setLanguage(event.target.value); setPage(0); }}>
           <option value="">全部语言</option>{SUPPORTED_LANGUAGES.map((value) => <option key={value} value={value}>{languageLabels[value]}</option>)}</select>
         <select className={inputClass} aria-label="多语言壁纸类型筛选" value={media} onChange={(event) => { setMedia(event.target.value); setPage(0); }}>
@@ -120,7 +118,7 @@ export default function AdminDeviceI18nPanel({ brands, refreshKey, onEdit }: {
       {directory?.meta.missingBrands.length ? <div className="mt-3 flex flex-wrap gap-2">
         {directory.meta.missingBrands.map((item) => <button key={item.brand_name} className={buttonClass}
           onClick={() => { setBrand(item.brand_name); setPage(0); }}>
-          {(() => { const entry = brands.find((brand) => brand.slug === item.brand_name); return entry?.label || entry?.title || item.brand_name; })()} · {item.device_count} 个合集 · {item.missing_count} 条缺失
+          {brands.find((entry) => entry.slug === item.brand_name)?.title || item.brand_name} · {item.device_count} 个合集 · {item.missing_count} 条缺失
         </button>)}
       </div> : <p className="mt-3 text-sm text-[#66746b]">当前筛选下，有壁纸的设备均已填写描述。</p>}
     </div>}
