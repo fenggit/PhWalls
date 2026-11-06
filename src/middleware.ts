@@ -31,6 +31,18 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com';
 const SITE_ORIGIN = new URL(SITE_URL);
 const BRAND_SLUGS = new Set(BRAND_CATEGORIES.map((brand) => brand.slug));
 
+// 历史外链/旧简称 301 到现行列表页，减少无效 404 对抓取预算的消耗。
+const LEGACY_CATEGORY_ALIASES: Record<string, string> = {
+  'asus-rog': '/asus-rog-phone',
+  'rog-phone': '/asus-rog-phone',
+  infinix: '/transsion-infinix',
+  tecno: '/transsion-tecno',
+  windows: '/desktop/microsoft-windows',
+  surface: '/desktop/microsoft-surface',
+  ubuntu: '/desktop/ubuntu',
+  chromeos: '/desktop/google-chromeos',
+};
+
 function resolveCanonicalHost(hostname: string): string | null {
   const incoming = hostname.toLowerCase();
   const canonical = SITE_ORIGIN.hostname.toLowerCase();
@@ -101,6 +113,11 @@ function normalizePublicPath(pathname: string): string {
     const normalized = normalizeCategoryType(safeDecodeURIComponent(segments[0]));
     if (BRAND_SLUGS.has(normalized)) {
       return `/${normalized}`;
+    }
+    // 旧品牌简称永久跳转到现行列表页，避免 Googlebot 反复抓取 404。
+    const alias = LEGACY_CATEGORY_ALIASES[normalized];
+    if (alias) {
+      return alias;
     }
   }
 

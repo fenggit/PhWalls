@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props) {
   return buildLiveMetadata(language, buildLiveWallpaperDetailPath(category, slug),
     getLiveSeoCopy(language, { category, name: collection.name, count: collection.item.length,
       seoTitle: collection.seoTitle, description: buildCollectionIntro(language, collection) }),
-    buildPublicR2Url(collection.item[0]?.compressPath || ''));
+    buildPublicR2Url(collection.item[0]?.compressPath || ''), { brand: category, count: collection.item.length });
 }
 
 export default async function LiveDetailPage({ params }: Props) {

@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/seo'
-import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, withLanguageUrl } from '@/lib/language'
+import { buildLanguageAlternates, SUPPORTED_LANGUAGES, withLanguageUrl } from '@/lib/language'
+import { getIndexableDetailLanguages } from '@/lib/seo-indexing'
+import type { Language } from '@/types'
 import { BRAND_CATEGORIES, buildBrandPath } from '@/lib/brands'
 import {
   buildDesktopWallpaperDetailPath,
@@ -19,6 +21,7 @@ import {
   buildWallpaperDetailPath,
   parseWallpaperDate,
   type WallpaperCategory,
+  type WallpaperCollection,
 } from '@/lib/wallpaper-data';
 
 // 新分类或迁移后的 URL 应标记真实上线时间，不能继续沿用旧设备的发布日期。
@@ -103,71 +106,62 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ]
 
-  const buildLanguageAlternates = (absolutePath: string) => ({
-    languages: Object.fromEntries(
-      SUPPORTED_LANGUAGES.map((language) => [language, withLanguageUrl(absolutePath, language)])
-    ),
-  })
+  // 每条路由记录可索引语言；sitemap 只列出这些语言的 URL，hreflang 也只互指这些版本。
+  type LocalizedRoute = Omit<MetadataRoute.Sitemap[number], 'url' | 'alternates'> & {
+    absolutePath: string;
+    languages: Language[];
+  }
+  const collectionCount = (collection: WallpaperCollection) => collection.count ?? collection.item.length
 
-  const routes: MetadataRoute.Sitemap = staticPaths.map((entry) => {
-    const absolutePath = `${SITE_URL}${entry.path}`
-    return {
-      url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
-      alternates: buildLanguageAlternates(absolutePath),
-      ...(entry.lastModified ? { lastModified: entry.lastModified } : {}),
-      changeFrequency: entry.changeFrequency,
-      priority: entry.priority,
-    }
-  })
+  const routes: LocalizedRoute[] = staticPaths.map((entry) => ({
+    absolutePath: `${SITE_URL}${entry.path}`,
+    languages: SUPPORTED_LANGUAGES,
+    ...(entry.lastModified ? { lastModified: entry.lastModified } : {}),
+    changeFrequency: entry.changeFrequency,
+    priority: entry.priority,
+  }))
 
-  const detailRoutes: MetadataRoute.Sitemap = allCollections.map(({ category, collection }) => {
-    const absolutePath = `${SITE_URL}${buildWallpaperDetailPath(category, collection.slug || collection.name)}`
-    return {
-      url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
-      alternates: buildLanguageAlternates(absolutePath),
-      lastModified:
-        latestDate(parseWallpaperDate(collection.date), MOBILE_ROUTE_UPDATED_AT[category]) ||
-        latestCollectionDate,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    }
-  })
+  const detailRoutes: LocalizedRoute[] = allCollections.map(({ category, collection }) => ({
+    absolutePath: `${SITE_URL}${buildWallpaperDetailPath(category, collection.slug || collection.name)}`,
+    languages: getIndexableDetailLanguages(category, collectionCount(collection)),
+    lastModified:
+      latestDate(parseWallpaperDate(collection.date), MOBILE_ROUTE_UPDATED_AT[category]) ||
+      latestCollectionDate,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
 
-  const desktopDetailRoutes: MetadataRoute.Sitemap = allDesktopCollections.map(({ category, collection }) => {
-    const absolutePath = `${SITE_URL}${buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, getWallpaperCollectionMedia(collection))}`
-    return {
-      url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE),
-      alternates: buildLanguageAlternates(absolutePath),
-      lastModified:
-        latestDate(parseWallpaperDate(collection.date), DESKTOP_ROUTE_UPDATED_AT[category]) ||
-        latestCollectionDate,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    }
-  })
+  const desktopDetailRoutes: LocalizedRoute[] = allDesktopCollections.map(({ category, collection }) => ({
+    absolutePath: `${SITE_URL}${buildDesktopWallpaperDetailPath(category, collection.slug || collection.name, getWallpaperCollectionMedia(collection))}`,
+    languages: getIndexableDetailLanguages(category, collectionCount(collection)),
+    lastModified:
+      latestDate(parseWallpaperDate(collection.date), DESKTOP_ROUTE_UPDATED_AT[category]) ||
+      latestCollectionDate,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
 
   // hreflang 替代链接不能代替各语言页面自身的 <url><loc> 条目。
-  const liveDetailRoutes: MetadataRoute.Sitemap = Object.entries(liveIndex).flatMap(([category, list]) => list.map((collection) => {
-    const absolutePath = `${SITE_URL}${buildLiveWallpaperDetailPath(category, collection.slug || collection.name)}`;
-    return { url: withLanguageUrl(absolutePath, DEFAULT_LANGUAGE), alternates: buildLanguageAlternates(absolutePath),
-      lastModified: liveUpdatedAt, changeFrequency: 'monthly' as const, priority: 0.8 };
-  }));
+  const liveDetailRoutes: LocalizedRoute[] = Object.entries(liveIndex).flatMap(([category, list]) => list.map((collection) => ({
+    absolutePath: `${SITE_URL}${buildLiveWallpaperDetailPath(category, collection.slug || collection.name)}`,
+    languages: getIndexableDetailLanguages(category, collectionCount(collection)),
+    lastModified: liveUpdatedAt, changeFrequency: 'monthly' as const, priority: 0.8,
+  })));
   // Legacy JSON can contain multiple collections with the same canonical slug.
   const uniqueRoutes = Array.from(new Map(
-    [...routes, ...detailRoutes, ...desktopDetailRoutes, ...liveDetailRoutes].map((route) => [route.url, route])
+    [...routes, ...detailRoutes, ...desktopDetailRoutes, ...liveDetailRoutes].map((route) => [route.absolutePath, route])
   ).values());
   const themeRoutes = (await Promise.all(WALLPAPER_THEMES.map(async theme => {
     const items = await loadThemeWallpapers(theme);
     if (!items.length) return [];
     const absolutePath = `${SITE_URL}/themes/${theme.slug}`;
-    return SUPPORTED_LANGUAGES.map(language => ({ url: `${SITE_URL}${themePath(theme, language)}`, alternates: buildLanguageAlternates(absolutePath),
+    const alternates = { languages: buildLanguageAlternates(absolutePath) };
+    return SUPPORTED_LANGUAGES.map(language => ({ url: `${SITE_URL}${themePath(theme, language)}`, alternates,
       lastModified: new Date(Math.max(...items.map(item => item.updatedAt))),
       changeFrequency: 'monthly' as const, priority: 0.7 }));
   }))).flat();
-  return [...uniqueRoutes.flatMap((route) =>
-    SUPPORTED_LANGUAGES.map((language) => ({
-      ...route,
-      url: withLanguageUrl(route.url, language),
-    }))
-  ), ...themeRoutes]
+  return [...uniqueRoutes.flatMap(({ absolutePath, languages, ...route }) => {
+    const alternates = { languages: buildLanguageAlternates(absolutePath, languages) }
+    return languages.map((language) => ({ ...route, url: withLanguageUrl(absolutePath, language), alternates }))
+  }), ...themeRoutes]
 }

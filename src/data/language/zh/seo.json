@@ -1,5 +1,10 @@
 {
   "brands": {
+    "google": {
+      "title": "Google 壁纸应用合集",
+      "metadataTitle": "Google 壁纸应用合集 - 原图免费下载",
+      "description": "收录 Google 壁纸应用中的主题合集，包括地球、风景、纹理、艺术与城市景观等，按主题浏览并免费下载原图。Pixel 各机型内置壁纸请查看 Google Pixel 分类。"
+    },
     "samsung": {
       "title": "三星 Galaxy内置壁纸",
       "metadataTitle": "三星 Galaxy内置壁纸 - 原图免费下载",

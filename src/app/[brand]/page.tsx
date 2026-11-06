@@ -4,13 +4,20 @@ import SeoLandingPage from '@/components/SeoLandingPage';
 import { buildBrandPath, getBrandCategoryBySlug } from '@/lib/brands';
 import { sortByDateDesc } from '@/lib/data';
 import { getWallpaperCollectionMedia } from '@/lib/wallpaper-media';
-import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
+import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguagePath, withLanguageUrl } from '@/lib/language';
 import { resolveMetadataLanguage } from '@/lib/metadata';
-import { getCategorySeoCopy, SITE_URL } from '@/lib/seo';
+import { getCategoryLabelForLanguage, getCategorySeoCopy, SITE_URL } from '@/lib/seo';
+import { fillDiscovery, getDiscoveryTexts } from '@/lib/discovery-i18n';
 import { loadWallpaperCollectionIndex } from '@/lib/wallpaper-data-server';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 export const runtime = 'edge';
+
+// 搜索意图相近但内容不同的品牌页互相链接：google 是 Google 壁纸应用主题合集，google-pixel 是按机型整理的内置壁纸。
+const RELATED_BRAND_LINKS: Record<string, string[]> = {
+  google: ['google-pixel'],
+  'google-pixel': ['google'],
+};
 
 type BrandLandingPageProps = {
   params: Promise<{
@@ -74,6 +81,15 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
     imageKey: collection.item?.[0]?.compressPath || collection.item?.[0]?.originPath || null,
   }));
   const seoCopy = getCategorySeoCopy(language, brandInfo.slug, cards.length);
+  const discoveryTexts = getDiscoveryTexts(language);
+  const brandLabel = getCategoryLabelForLanguage(language, brandInfo.slug);
+  const relatedLinks = (RELATED_BRAND_LINKS[brandInfo.slug] || [])
+    .map((slug) => getBrandCategoryBySlug(slug))
+    .filter((related): related is NonNullable<typeof related> => Boolean(related))
+    .map((related) => ({
+      href: withLanguagePath(buildBrandPath(related.type), language),
+      label: fillDiscovery(discoveryTexts.browse, { brand: getCategoryLabelForLanguage(language, related.slug) }),
+    }));
 
   return (
     <SeoLandingPage
@@ -89,6 +105,8 @@ export default async function BrandLandingPage({ params }: BrandLandingPageProps
       gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
       cards={cards}
       pageSize={10}
+      allCollectionsTitle={fillDiscovery(discoveryTexts.allCollections, { brand: brandLabel })}
+      relatedLinks={relatedLinks}
     />
   );
 }

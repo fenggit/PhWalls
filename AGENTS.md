@@ -108,7 +108,7 @@ IndexNow 使用运维脚本 `npm run indexnow` 提交线上 sitemap，验证文�
 
 1. 通过后台维护 D1 中的品牌、设备、壁纸与五语言合集文案，确保设备和素材已发布；原始分辨率记录在 `w_wallpapers.width`、`height`。
 2. 在 `src/data/language/<lang>/tab.json` 中登记分类，确保 `BRAND_CATEGORIES` 能识别。
-3. 在 `public/brand-icons/` 下新增以品牌 slug 命名的 SVG Logo（如 `smartisan.svg`），并在 `src/components/Header.tsx` 的 `BRAND_ICON_PATHS` 中登记映射；Logo 必须来源可靠、使用紧凑 `viewBox`，并在 Header 的桌面端与移动端图标位验证清晰度。
+3. 在 `public/brand-icons/` 下新增以品牌 slug 命名的 SVG Logo（如 `smartisan.svg`），并在 `src/lib/brand-navigation.ts` 的 `BRAND_ICON_PATHS` 中登记映射（前台 Header 与后台品牌选择共用）；需要调整前台导航顺序时修改同文件的 `PHONE_NAVIGATION_ORDER`，后台品牌顺序随之同步；Logo 必须来源可靠、使用紧凑 `viewBox`，并在 Header 的桌面端与移动端图标位验证清晰度。
 4. 页面路由 `[brand]` 与对应详情页从 D1 读取已发布内容并生成 SEO 元数据；无需新增壁纸 JSON 或运行本地索引生成脚本。
 
 ## 安全与注意事项

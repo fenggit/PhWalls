@@ -1,5 +1,10 @@
 {
   "brands": {
+    "google": {
+      "title": "Bộ sưu tập ứng dụng Hình nền Google",
+      "metadataTitle": "Bộ sưu tập ứng dụng Hình nền Google - Tải miễn phí",
+      "description": "Tải hình nền từ các bộ sưu tập theo chủ đề trong ứng dụng Hình nền của Google như Trái Đất, Phong cảnh, Kết cấu, Nghệ thuật và Thành phố. Hình nền gốc theo từng mẫu Pixel nằm trong mục Google Pixel."
+    },
     "samsung": {
       "title": "Hình nền gốc Samsung Galaxy",
       "metadataTitle": "Hình nền gốc Samsung Galaxy - Tải miễn phí",
@@ -61,9 +66,9 @@
       "description": "Tải hình nền gốc POCO dòng F, X và M. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
     },
     "huawei": {
-      "title": "Hình nền gốc Huawei",
-      "metadataTitle": "Hình nền gốc Huawei - Tải miễn phí",
-      "description": "Tải hình nền gốc Huawei dòng Mate, Pura, nova và các mẫu điện thoại gập. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+      "title": "Hình nền gốc HUAWEI",
+      "metadataTitle": "Hình nền gốc HUAWEI - Tải miễn phí",
+      "description": "Tải hình nền gốc HUAWEI dòng Mate, Pura, nova và các mẫu điện thoại gập. Chọn theo mẫu máy, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
     },
     "oppo": {
       "title": "Hình nền gốc OPPO",
@@ -103,7 +108,7 @@
     "harmonyos": {
       "title": "Hình nền gốc HarmonyOS",
       "metadataTitle": "Hình nền gốc HarmonyOS - Tải miễn phí",
-      "description": "Tải hình nền mặc định HarmonyOS 2.0 và 4.0 của Huawei. Duyệt theo phiên bản, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
+      "description": "Tải hình nền mặc định HarmonyOS 2.0 và 4.0 của HUAWEI. Duyệt theo phiên bản, xem trước và tải ảnh miễn phí ở độ phân giải gốc."
     }
   },
   "desktop": {

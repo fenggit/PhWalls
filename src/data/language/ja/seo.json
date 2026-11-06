@@ -1,5 +1,10 @@
 {
   "brands": {
+    "google": {
+      "title": "Google 壁紙アプリのコレクション",
+      "metadataTitle": "Google 壁紙アプリのコレクションを無料ダウンロード",
+      "description": "Google の壁紙アプリに収録された地球、風景、テクスチャ、アート、街並みなどのテーマ別コレクションを、元の画像で無料ダウンロードできます。Pixel 各機種の標準壁紙は Google Pixel カテゴリにあります。"
+    },
     "samsung": {
       "title": "Galaxy 標準壁紙",
       "metadataTitle": "Galaxy 標準壁紙を無料ダウンロード",
