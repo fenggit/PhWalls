@@ -24,8 +24,8 @@ import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity'
 import { AdminDeviceNameConflictError, createWithAdminNameConfirmation, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { assertAdminUploadMime, type AdminUploadDirectories, type AdminUploadRole } from '@/lib/admin-upload-path';
 import { DEVICE_THEMES, DEVICE_THEME_LABEL_KEYS, type DeviceTheme } from '@/lib/device-theme';
-import { ADMIN_BRAND_GROUPS, adminBrandOptionText, adminBrandSecondaryName, sortAdminBrands, type AdminBrand } from '@/lib/admin-brand-catalog';
-import AdminBrandPicker, { AdminBrandMark } from '@/app/manager/AdminBrandPicker';
+import { ADMIN_BRAND_GROUPS, sortAdminBrands, type AdminBrand } from '@/lib/admin-brand-catalog';
+import AdminBrandPicker from '@/app/manager/AdminBrandPicker';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
 type UploadFileGrant = { key?: string; expiresAt?: number; url: string; token: string; headers?: Record<string, string> };
@@ -125,7 +125,7 @@ function BrandOptions({ brands }: { brands: AdminBrand[] }) {
   return <>{ADMIN_BRAND_GROUPS.map((group) => {
     const items = brands.filter((brand) => brand.group === group.key);
     return items.length ? <optgroup key={group.key} label={group.label}>
-      {items.map((brand) => <option key={brand.slug} value={brand.slug}>{adminBrandOptionText(brand)}</option>)}
+      {items.map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}
     </optgroup> : null;
   })}</>;
 }
@@ -386,7 +386,7 @@ export default function AdminConsole() {
   };
   const [brandRows, setBrands] = useState<AdminBrand[]>([]);
   const brands = useMemo(() => sortAdminBrands(brandRows), [brandRows]);
-  const brandLabel = (slug: string) => brands.find((brand) => brand.slug === slug)?.label || slug;
+  const brandLabel = (slug: string) => brands.find((brand) => brand.slug === slug)?.title || slug;
   const [devices, setDevices] = useState<AdminDeviceListRow[]>([]);
   const [deletingDevice, setDeletingDevice] = useState<AdminDeviceCollectionRow | null>(null);
   const [wallpapers, setWallpapers] = useState<WallpaperListRow[]>([]);
@@ -761,9 +761,9 @@ export default function AdminConsole() {
     return uploadDevice;
   };
 
-  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string): Promise<boolean> => {
+  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string): Promise<string | null> => {
     if (!row.origin || !row.preview) {
-      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return false;
+      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return null;
     }
     patchUpload(row.id, { state: 'uploading', progress: 0, error: undefined });
     try {
@@ -818,10 +818,10 @@ export default function AdminConsole() {
       });
       patchUpload(row.id, { state: 'done', wallpaperId: data.id, selected: true, progress: 100, isPrimary: !!data.is_primary, isPublished: false,
         originalDimensions: data.width && data.height ? { width: data.width, height: data.height } : undefined });
-      return true;
+      return data.id;
     } catch (cause) {
       patchUpload(row.id, { state: 'failed', error: cause instanceof Error ? cause.message : '上传失败' });
-      return false;
+      return null;
     }
   };
 
@@ -859,8 +859,17 @@ export default function AdminConsole() {
     if (uploadFolderName && pending.some(row => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
     const deviceId = await ensureUploadDevice();
     if (!uploadStoragePath || uploadStoragePathError) throw new Error(uploadStoragePathError || '请选择 R2 存储目录');
-    for (const row of pending) await uploadOne(row, deviceId, uploadStoragePath);
+    const uploadedIds: string[] = [];
+    let failed = uploadRows.some(row => row.state === 'failed' && !pending.includes(row));
+    for (const row of pending) {
+      const id = await uploadOne(row, deviceId, uploadStoragePath);
+      if (id) uploadedIds.push(id); else failed = true;
+    }
     setUploadDirectoryRevision(value => value + 1);
+    // 整批成功后直接打开“发布选中素材”弹窗，范围为本次及此前已入库但未发布的选中素材。
+    const publishIds = Array.from(new Set([...successfulAdminUploadIds(uploadRows), ...uploadedIds]));
+    const device = uploadDevices.find((item) => item.id === deviceId);
+    if (!failed && publishIds.length && device) setCollectionAction({ device, operation: 'publish', ids: publishIds });
   });
   const editingDeviceIsDesktop = brands.some((brand) => brand.slug === editingDevice?.brand_name && brand.kind === 'desktop');
   const changeFilters = (patch: Partial<typeof filters>) => {
@@ -976,8 +985,8 @@ export default function AdminConsole() {
           <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[600px]`}>
             <thead className={tableHeadClass}><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">分组</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
             <tbody>{loading ? <TableFeedback columns={5} loading message="" /> : brands.length === 0 ? <TableFeedback columns={5} loading={false} message="暂无品牌" /> : brands.map((brand) => <tr key={brand.slug} className={tableRowClass}>
-              <td className="px-4 py-3 font-medium text-gray-950"><div className="flex items-center gap-3"><AdminBrandMark brand={brand} /><div className="min-w-0"><div className="truncate">{brand.label}</div>{adminBrandSecondaryName(brand) && <div className="truncate text-xs font-normal text-[#758278]">{adminBrandSecondaryName(brand)}</div>}</div></div></td><td className="px-4 py-3 font-mono text-xs text-[#758278]">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{ADMIN_BRAND_GROUPS.find((group) => group.key === brand.group)?.label}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
-              <td className="px-4 py-3 text-right"><button className={rowButtonClass} title="上传到此品牌" aria-label={`上传到 ${brand.label}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} />上传</button></td>
+              <td className="px-4 py-3 font-medium text-gray-950">{brand.title}</td><td className="px-4 py-3 font-mono text-xs text-[#758278]">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{ADMIN_BRAND_GROUPS.find((group) => group.key === brand.group)?.label}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
+              <td className="px-4 py-3 text-right"><button className={rowButtonClass} title="上传到此品牌" aria-label={`上传到 ${brand.title}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} />上传</button></td>
             </tr>)}</tbody>
           </table></div>
         </section>}

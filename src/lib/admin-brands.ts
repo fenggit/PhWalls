@@ -37,7 +37,7 @@ export async function createAdminBrand(input: Record<string, unknown>): Promise<
   const existing = await listAdminBrands();
   if (existing.some((brand) => brand.slug === slug)) throw new Error('品牌标识已存在');
   const titleKey = normalizeAdminName(title);
-  if (existing.some((brand) => normalizeAdminName(brand.title) === titleKey || normalizeAdminName(brand.label) === titleKey)) {
+  if (existing.some((brand) => normalizeAdminName(brand.title) === titleKey)) {
     throw new Error('品牌名称已存在');
   }
   const now = Date.now();
