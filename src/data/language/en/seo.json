@@ -61,9 +61,9 @@
       "description": "Download POCO stock wallpapers from POCO F, X and M series phones. Browse by model and get original images for free."
     },
     "huawei": {
-      "title": "Huawei Stock Wallpapers",
-      "metadataTitle": "Huawei Stock Wallpapers - Free Download",
-      "description": "Download Huawei stock wallpapers from Mate, Pura, nova and foldable phones. Browse by model and get original images for free."
+      "title": "HUAWEI Stock Wallpapers",
+      "metadataTitle": "HUAWEI Stock Wallpapers - Free Download",
+      "description": "Download HUAWEI stock wallpapers from Mate, Pura, nova and foldable phones. Browse by model and get original images for free."
     },
     "oppo": {
       "title": "OPPO Stock Wallpapers",
@@ -71,9 +71,9 @@
       "description": "Download OPPO stock wallpapers from Find X, Find N, Reno and A series phones. Browse by model and get original images for free."
     },
     "honor": {
-      "title": "Honor Wallpapers",
-      "metadataTitle": "Honor Wallpapers - Official Stock Backgrounds",
-      "description": "Download official Honor stock wallpapers from Magic, Magic V and number series phones. Browse every collection by model and get the original images for free."
+      "title": "HONOR Wallpapers",
+      "metadataTitle": "HONOR Wallpapers - Official Stock Backgrounds",
+      "description": "Download official HONOR stock wallpapers from Magic, Magic V and number series phones. Browse every collection by model and get the original images for free."
     },
     "motorola": {
       "title": "Motorola Stock Wallpapers",
@@ -103,7 +103,7 @@
     "harmonyos": {
       "title": "HarmonyOS Stock Wallpapers",
       "metadataTitle": "HarmonyOS Stock Wallpapers - Free Download",
-      "description": "Download HarmonyOS 2.0 and 4.0 stock wallpapers from Huawei system collections. Browse by version and get original images for free."
+      "description": "Download HarmonyOS 2.0 and 4.0 stock wallpapers from HUAWEI system collections. Browse by version and get original images for free."
     }
   },
   "desktop": {

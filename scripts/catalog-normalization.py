@@ -12,7 +12,9 @@ MEDIA={'.jpg','.jpeg','.png','.webp','.bmp','.gif','.mp4','.mov','.m4v','.webm',
 BRANDS={'android':'Android','asus rog phone':'ASUS ROG Phone','google pixel':'Google Pixel','google':'Google','harmonyos':'HarmonyOS','honor':'Honor','huawei':'Huawei','iqoo':'iQOO','motorola':'Motorola','nothing':'Nothing','oneplus':'OnePlus','oppo':'OPPO','poco':'POCO','realme':'realme','redmi':'Redmi','samsung':'Samsung','sony':'Sony','transsion infinix':'Infinix','transsion tecno':'TECNO','vivo':'vivo','xiaomi':'Xiaomi','nio':'NIO','nubia':'nubia','redmagic':'REDMAGIC','zte':'ZTE','htc':'HTC','hmd':'HMD','lg':'LG','sharp':'SHARP'}
 PREFIX_OVERRIDES={}
 FORMAT_OVERRIDES={}
-PREFIX_CASE={'oppo':'OPPO','poco':'POCO','realme':'realme','vivo':'vivo','iqoo':'iQOO','nio':'NIO','nubia':'nubia','tecno':'TECNO','infinix':'Infinix','redmagic':'REDMAGIC','honor':'Honor','huawei':'Huawei','nothing':'Nothing','oneplus':'OnePlus','samsung':'Samsung'}
+PREFIX_CASE={'oppo':'OPPO','poco':'POCO','realme':'realme','vivo':'vivo','iqoo':'iQOO','nio':'NIO','nubia':'nubia','tecno':'TECNO','infinix':'Infinix','redmagic':'REDMAGIC','honor':'Honor','huawei':'Huawei','nothing':'Nothing','oneplus':'OnePlus','samsung':'Samsung','sharp':'Sharp'}
+# Device display names use official brand casing; storage paths keep normalize_label's existing directory names.
+DISPLAY_PREFIX_CASE={'huawei':'HUAWEI','honor':'HONOR','sharp':'SHARP','red magic':'REDMAGIC'}
 LIVE_BRAND_SLUGS={name.replace(' ','-'):name.replace(' ','-') for name in BRANDS}
 LIVE_BRAND_SLUGS.update({'asus':'asus-rog-phone','black-shark':'black-shark','fairphone':'fairphone','lava':'lava','lenovo':'lenovo','meizu':'meizu','micromax':'micromax','nokia':'nokia','smartisan':'smartisan','sharp':'sharp'})
 DESKTOP_BRANDS={}
@@ -41,6 +43,12 @@ def normalize_label(value):
  for prefix,canonical in PREFIX_CASE.items():
   value=re.sub(r'^'+re.escape(prefix)+r'(?=\s|$)',canonical,value,flags=re.I)
  return re.sub(r'\s+',' ',value).strip()
+
+def normalize_display_name(value):
+ value=normalize_label(value)
+ for prefix,canonical in DISPLAY_PREFIX_CASE.items():
+  value=re.sub(r'^'+re.escape(prefix)+r'(?=\s|$)',canonical,value,flags=re.I)
+ return value
 
 def normalize_editorial(text,old_name,new_name):
  if not text:return text
@@ -373,7 +381,7 @@ def remote_plan(db,inventory,moves):
       changes.append({'table':table,'before':before,'after':None,'reason':'merge-duplicate-device-text','retained_text':retained,'editorial_conflicts':conflicts})
      else:changes.append({'table':table,'before':before,'after':{**before,'device_id':winner,'updated_date':timestamp},'reason':'preserve-unique-translation'})
    continue
-  name=normalize_label(d['device_name'])
+  name=normalize_display_name(d['device_name'])
   merged_published=any(item['status']=='published' for item in devices if merges.get(item['id'])==d['id'])
   if name!=d['device_name'] or (merged_published and d['status']!='published'):
    after={**d,'device_name':name,'name_key':name.lower(),'updated_date':timestamp}

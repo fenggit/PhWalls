@@ -30,6 +30,7 @@ import { LIVE_WALLPAPERS_PATH, buildLiveCategoryPath } from '@/lib/live-paths';
 import { filterHomeTabs } from '@/lib/home-priority';
 import { getI18nTexts, I18nTexts } from '@/lib/i18n';
 import { buildBrandPath, normalizeCategoryType } from '@/lib/brands';
+import { getBrandIcon, PHONE_NAVIGATION_ORDER, POPULAR_PHONE_TYPES } from '@/lib/brand-navigation';
 import { stripLanguagePrefix, withLanguagePath } from '@/lib/language';
 import { getShareTexts } from '@/lib/share';
 import { buildAnalyticsShareUrl, trackAnalyticsEvent } from '@/lib/analytics';
@@ -69,112 +70,17 @@ const languageOrder: Language[] = [
   LanguageCode.ZH_HANT,
 ];
 
-const PHONE_NAVIGATION_ORDER = [
-  'samsung',
-  'xiaomi',
-  'huawei',
-  'oppo',
-  'vivo',
-  'google-pixel',
-  'honor',
-  'oneplus',
-  'google',
-  'motorola',
-  'sony',
-  'nothing',
-  'realme',
-  'redmi',
-  'poco',
-  'iqoo',
-  'asus-rog-phone',
-  'transsion-infinix',
-  'transsion-tecno',
-  'nokia',
-  'black-shark',
-  'fairphone',
-  'hmd',
-  'htc',
-  'lg',
-  'lava',
-  'lenovo',
-  'meizu',
-  'micromax',
-  'nio',
-  'nubia',
-  'redmagic',
-  'sharp',
-  'zte',
-  'android',
-] as const;
-const POPULAR_PHONE_TYPES: ReadonlySet<string> = new Set(PHONE_NAVIGATION_ORDER.slice(0, 8));
 const POPULAR_LIVE_TYPES = ['samsung', 'xiaomi', 'huawei', 'sony', 'oppo'];
 
-const BRAND_ICON_PATHS: Record<string, string> = {
-  apple: '/brand-icons/apple.svg',
-  iphone: '/brand-icons/apple.svg',
-  macos: '/brand-icons/apple.svg',
-  poco: '/brand-icons/poco.svg',
-  'transsion-tecno': '/brand-icons/transsion-tecno.svg',
-  harmonyos: '/brand-icons/harmonyos.svg',
-  samsung: '/brand-icons/samsung.svg',
-  smartisan: '/brand-icons/smartisan.svg',
-  xiaomi: '/brand-icons/xiaomi.svg',
-  huawei: '/brand-icons/huawei.svg',
-  oppo: '/brand-icons/oppo.svg',
-  vivo: '/brand-icons/vivo.svg',
-  'google-pixel': '/brand-icons/google-pixel.svg',
-  google: '/brand-icons/google.svg',
-  honor: '/brand-icons/honor.svg',
-  oneplus: '/brand-icons/oneplus.svg',
-  motorola: '/brand-icons/motorola.svg',
-  sony: '/brand-icons/sony.svg',
-  nothing: '/brand-icons/nothing.svg',
-  realme: '/brand-icons/realme.svg',
-  redmi: '/brand-icons/xiaomi.svg',
-  iqoo: '/brand-icons/iqoo.svg',
-  'asus-rog-phone': '/brand-icons/asus-rog-phone.svg',
-  'transsion-infinix': '/brand-icons/transsion-infinix.svg',
-  nokia: '/brand-icons/nokia.svg',
-  'black-shark': '/brand-icons/black-shark.svg',
-  fairphone: '/brand-icons/fairphone.svg',
-  hmd: '/brand-icons/hmd.svg',
-  htc: '/brand-icons/htc.svg',
-  lg: '/brand-icons/lg.svg',
-  lava: '/brand-icons/lava.svg',
-  lenovo: '/brand-icons/lenovo.svg',
-  meizu: '/brand-icons/meizu.svg',
-  micromax: '/brand-icons/micromax.svg',
-  nio: '/brand-icons/nio.svg',
-  nubia: '/brand-icons/nubia.svg',
-  redmagic: '/brand-icons/redmagic.svg',
-  sharp: '/brand-icons/sharp.svg',
-  zte: '/brand-icons/zte.svg',
-  android: '/brand-icons/android.svg',
-  'microsoft-windows': '/brand-icons/microsoft.svg',
-  'microsoft-design': '/brand-icons/microsoft.svg',
-  'microsoft-surface': '/brand-icons/microsoft.svg',
-  ubuntu: '/brand-icons/ubuntu.svg',
-  'omarchy-linux': '/brand-icons/omarchy-linux.svg',
-  'google-chromeos': '/brand-icons/google-chromeos.svg',
-  'google-os': '/brand-icons/google-os.svg',
-};
-
-const WORDMARK_TYPES = new Set([
-  'samsung', 'sony', 'oppo', 'vivo', 'honor', 'nokia', 'iqoo',
-  'transsion-infinix', 'transsion-tecno', 'poco', 'nothing', 'realme',
-  'fairphone', 'hmd', 'htc', 'lg', 'lava', 'lenovo', 'nubia', 'sharp', 'zte',
-]);
-
 function BrandIcon({ type, desktop = false }: { type: string; desktop?: boolean }) {
-  const normalizedType = normalizeCategoryType(type);
-  const iconPath = BRAND_ICON_PATHS[normalizedType];
-  const isWordmark = WORDMARK_TYPES.has(normalizedType);
+  const icon = getBrandIcon(type);
+  const isWordmark = Boolean(icon?.wordmark);
 
   return (
     <span className={`flex shrink-0 items-center justify-center ${desktop ? 'h-7 w-9' : 'h-8 w-12'}`}>
-      {iconPath ? (
+      {icon ? (
         <img
-          src={`${iconPath}?v=20260921-1`}
+          src={icon.src}
           alt=""
           className={`object-contain ${desktop ? (isWordmark ? 'max-h-4 w-8' : 'h-5 w-5') : (isWordmark ? 'max-h-5 w-10' : 'h-5 w-5')}`}
           aria-hidden="true"

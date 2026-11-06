@@ -10,6 +10,11 @@ class CatalogTests(unittest.TestCase):
   self.assertEqual(catalog.normalize_label('nubia Z80 Ultra'),'nubia Z80 Ultra')
   self.assertEqual(catalog.normalize_filename('nubia-redmagic-11-pro-BLUE.JPG'),'red-magic-11-pro-blue.jpg')
   self.assertEqual(catalog.normalize_path('redmagic/nubia RedMagic 11 Pro/preview/A.MP4'),'redmagic/Red Magic 11 Pro/preview/a.mp4')
+ def test_display_names_use_official_brand_casing_without_moving_storage(self):
+  for original,expected in [('Huawei Mate 80','HUAWEI Mate 80'),('Honor Magic 9','HONOR Magic 9'),('Sharp Aquos R7','SHARP Aquos R7'),('Red Magic 6s Pro','REDMAGIC 6S Pro'),('nubia RedMagic 11 Pro','REDMAGIC 11 Pro'),('Tecno Spark 40','TECNO Spark 40'),('nubia Z80 Ultra','nubia Z80 Ultra')]:
+   self.assertEqual(catalog.normalize_display_name(original),expected)
+  for name,path in [('HUAWEI Mate 80','Huawei Mate 80'),('HONOR Magic 9','Honor Magic 9'),('SHARP Aquos R7','Sharp Aquos R7'),('REDMAGIC 11 Pro','Red Magic 11 Pro')]:
+   self.assertEqual(catalog.normalize_label(name),path)
  def test_shared_brand_registry_preserves_phone_paths_and_desktop_categories(self):
   import json, sqlite3
   from unittest.mock import patch

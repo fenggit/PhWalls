@@ -24,9 +24,10 @@ import { normalizeAdminDisplay, normalizeAdminName } from '@/lib/admin-identity'
 import { AdminDeviceNameConflictError, createWithAdminNameConfirmation, type AdminDeviceNameCheck } from '@/lib/admin-device-name';
 import { assertAdminUploadMime, type AdminUploadDirectories, type AdminUploadRole } from '@/lib/admin-upload-path';
 import { DEVICE_THEMES, DEVICE_THEME_LABEL_KEYS, type DeviceTheme } from '@/lib/device-theme';
+import { ADMIN_BRAND_GROUPS, adminBrandOptionText, adminBrandSecondaryName, sortAdminBrands, type AdminBrand } from '@/lib/admin-brand-catalog';
+import AdminBrandPicker, { AdminBrandMark } from '@/app/manager/AdminBrandPicker';
 
 type WallpaperListRow = WallpaperRow & { brand_name: string; device_name: string };
-type AdminBrand = { slug: string; title: string; kind: 'mobile' | 'desktop'; source: 'builtin' | 'custom' };
 type UploadFileGrant = { key?: string; expiresAt?: number; url: string; token: string; headers?: Record<string, string> };
 type UploadRow = { id: string; stem: string; mediaType: WallpaperMediaType; issues: string[]; wallpaperId?: string; selected?: boolean; requiresReconciliation?: boolean; name: string; origin?: File; preview?: File; videoPreview?: File; theme: string; tags: string;
   category: string; folderName?: string; state: 'ready' | 'uploading' | 'done' | 'failed'; progress: number; error?: string; isPrimary?: boolean; isPublished?: boolean;
@@ -49,6 +50,12 @@ async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> 
   }
   if (!result) throw new Error('服务返回了无法识别的数据');
   return result as T;
+}
+
+function deviceMatchesFolder(device: Pick<DeviceRow, 'device_name' | 'upload_prefix'>, folder: string): boolean {
+  const key = normalizeAdminName(folder);
+  const directory = device.upload_prefix?.split('/').pop() || '';
+  return normalizeAdminName(device.device_name) === key || (!!directory && normalizeAdminName(directory) === key);
 }
 
 async function createDevice(input: Record<string, unknown>): Promise<DeviceRow | null> {
@@ -108,18 +115,29 @@ const statusClasses: Record<DeviceRow['status'], string> = {
   unpublished: 'border-gray-200 bg-gray-100 text-gray-700',
 };
 function defaultDeviceCategory(brand: string, brands: AdminBrand[]): DeviceRow['device_category'] {
-  if (brand === 'android' || brand === 'harmonyos') return 'os';
-  if (brands.some((item) => item.slug === brand && item.kind === 'desktop')) return 'desktop';
+  const match = brands.find((item) => item.slug === brand);
+  if (match?.group === 'system') return 'os';
+  if (match?.kind === 'desktop') return 'desktop';
   return 'phone';
 }
 
 function BrandOptions({ brands }: { brands: AdminBrand[] }) {
-  return <>
-    <optgroup label="手机与系统">{brands.filter((brand) => brand.kind === 'mobile')
-      .map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
-    <optgroup label="桌面">{brands.filter((brand) => brand.kind === 'desktop')
-      .map((brand) => <option key={brand.slug} value={brand.slug}>{brand.title}</option>)}</optgroup>
-  </>;
+  return <>{ADMIN_BRAND_GROUPS.map((group) => {
+    const items = brands.filter((brand) => brand.group === group.key);
+    return items.length ? <optgroup key={group.key} label={group.label}>
+      {items.map((brand) => <option key={brand.slug} value={brand.slug}>{adminBrandOptionText(brand)}</option>)}
+    </optgroup> : null;
+  })}</>;
+}
+
+function UploadStepTitle({ index, title, hint, done, compact = false }: { index: number; title: string; hint?: string; done: boolean; compact?: boolean }) {
+  return <div className={`flex min-w-0 items-center gap-3 ${compact ? '' : 'mb-4'}`}>
+    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${done ? 'bg-[#247560] text-white' : 'bg-[#edf2eb] text-[#526950]'}`}>
+      {done ? <Check size={14} aria-hidden="true" /> : index}
+    </span>
+    <div className="min-w-0"><h3 className="text-sm font-semibold text-[#25332d]">{title}{done && <span className="sr-only">（已完成）</span>}</h3>
+      {hint && <p className="truncate text-xs tabular-nums text-[#758278]">{hint}</p>}</div>
+  </div>;
 }
 
 function AdminDialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
@@ -367,8 +385,8 @@ export default function AdminConsole() {
     if (nextTab !== tab) window.history.pushState(null, '', adminTabHref(new URL(window.location.href), nextTab));
   };
   const [brandRows, setBrands] = useState<AdminBrand[]>([]);
-  const brands = useMemo(() => [...brandRows].sort((a, b) =>
-    a.title.localeCompare(b.title, 'en', { sensitivity: 'base' })), [brandRows]);
+  const brands = useMemo(() => sortAdminBrands(brandRows), [brandRows]);
+  const brandLabel = (slug: string) => brands.find((brand) => brand.slug === slug)?.label || slug;
   const [devices, setDevices] = useState<AdminDeviceListRow[]>([]);
   const [deletingDevice, setDeletingDevice] = useState<AdminDeviceCollectionRow | null>(null);
   const [wallpapers, setWallpapers] = useState<WallpaperListRow[]>([]);
@@ -597,8 +615,13 @@ export default function AdminConsole() {
   const findFolderDevice = async (name: string): Promise<DeviceRow | undefined> => {
     const query = new URLSearchParams({ brand: uploadBrand, name: normalizeAdminDisplay(name) });
     const { data } = await api<{ data: DeviceRow[] }>(`devices?${query}`);
-    return data.find((device) => device.brand_name === uploadBrand &&
+    const exact = data.find((device) => device.brand_name === uploadBrand &&
       normalizeAdminName(device.device_name) === normalizeAdminName(name));
+    if (exact) return exact;
+    // 设备显示名可能已改为官方大小写（如 REDMAGIC），本地文件夹仍沿用上传目录名。
+    const { data: brandDevices } = await api<{ data: DeviceRow[] }>(`devices?${new URLSearchParams({ brand: uploadBrand })}`);
+    const byDirectory = brandDevices.filter((device) => device.brand_name === uploadBrand && deviceMatchesFolder(device, name));
+    return byDirectory.length === 1 ? byDirectory[0] : undefined;
   };
 
   const checkUploadFolder = async (name: string) => {
@@ -730,7 +753,7 @@ export default function AdminConsole() {
     if (uploadFolderName) {
       if (uploadFolderState !== 'matched') throw new Error('请先检查并创建文件夹对应的设备或系统');
       const selected = uploadDevices.find((device) => device.id === uploadDevice && device.brand_name === uploadBrand);
-      if (!selected || normalizeAdminName(selected.device_name) !== normalizeAdminName(uploadFolderName)) {
+      if (!selected || !deviceMatchesFolder(selected, uploadFolderName)) {
         throw new Error('所选设备与文件夹名称不一致，请重新检查设备');
       }
     }
@@ -815,6 +838,8 @@ export default function AdminConsole() {
     : null;
   const folderTargetLocked = Boolean(uploadFolderName) && uploadRows.some((row) => row.state !== 'done');
   const selectedUploadDevice = uploadDevices.find((device) => device.id === uploadDevice && device.brand_name === uploadBrand);
+  const visibleUploadDevices = uploadDevices.filter((device) => !uploadSearch || device.id === uploadDevice ||
+    device.device_name.toLowerCase().includes(uploadSearch.toLowerCase()));
   const currentUploadDirectory = selectedUploadDevice && uploadDirectory?.deviceId === uploadDevice
     ? uploadDirectory : null;
   const uploadStorageLoading = Boolean(selectedUploadDevice && !currentUploadDirectory);
@@ -949,10 +974,10 @@ export default function AdminConsole() {
 
         {tab === 'brands' && <section aria-label="品牌目录">
           <div className="overflow-x-auto rounded-lg border border-[#dfe6df] bg-white" aria-busy={loading}><table className={`${tableClass} min-w-[600px]`}>
-            <thead className={tableHeadClass}><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">类型</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
+            <thead className={tableHeadClass}><tr><th className="px-4 py-3">品牌</th><th className="px-4 py-3">标识</th><th className="px-4 py-3">分组</th><th className="px-4 py-3">来源</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
             <tbody>{loading ? <TableFeedback columns={5} loading message="" /> : brands.length === 0 ? <TableFeedback columns={5} loading={false} message="暂无品牌" /> : brands.map((brand) => <tr key={brand.slug} className={tableRowClass}>
-              <td className="px-4 py-3 font-medium text-gray-950"><div className="flex items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-[#edf2eb] text-xs font-semibold uppercase text-[#526950]">{brand.title.slice(0, 2)}</span>{brand.title}</div></td><td className="px-4 py-3 font-mono text-xs text-[#758278]">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{brand.kind === 'desktop' ? '桌面' : '手机与系统'}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
-              <td className="px-4 py-3 text-right"><button className={rowButtonClass} title="上传到此品牌" aria-label={`上传到 ${brand.title}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} />上传</button></td>
+              <td className="px-4 py-3 font-medium text-gray-950"><div className="flex items-center gap-3"><AdminBrandMark brand={brand} /><div className="min-w-0"><div className="truncate">{brand.label}</div>{adminBrandSecondaryName(brand) && <div className="truncate text-xs font-normal text-[#758278]">{adminBrandSecondaryName(brand)}</div>}</div></div></td><td className="px-4 py-3 font-mono text-xs text-[#758278]">{brand.slug}</td><td className="px-4 py-3 text-gray-600">{ADMIN_BRAND_GROUPS.find((group) => group.key === brand.group)?.label}</td><td className="px-4 py-3 text-gray-600">{brand.source === 'builtin' ? '预置' : '后台新增'}</td>
+              <td className="px-4 py-3 text-right"><button className={rowButtonClass} title="上传到此品牌" aria-label={`上传到 ${brand.label}`} onClick={() => { if (selectUploadBrand(brand.slug)) setTab('upload'); }}><UploadCloud size={15} />上传</button></td>
             </tr>)}</tbody>
           </table></div>
         </section>}
@@ -963,7 +988,7 @@ export default function AdminConsole() {
             <tbody>{loading ? <TableFeedback columns={7} loading message="" /> : visibleDevices.length === 0 ? <TableFeedback columns={7} loading={false} message="没有符合条件的设备" onReset={resetFilters} /> : visibleDevices.slice(devicePage * PAGE_SIZE, (devicePage + 1) * PAGE_SIZE).map(device => <Fragment key={device.id}>
               <tr className={tableRowClass}>
                 <td className="px-4 py-3 font-medium"><button className="flex items-center gap-2 text-left" aria-label={`${mixedTexts.collections} ${device.device_name}`} aria-expanded={expandedDevices.has(device.id)} onClick={() => setExpandedDevices(previous => { const next = new Set(previous); if (next.has(device.id)) next.delete(device.id); else next.add(device.id); return next; })}><ChevronRight size={16} className={expandedDevices.has(device.id) ? 'rotate-90' : ''} />{device.device_name}</button><div className="mt-1 pl-6 font-mono text-xs font-normal text-[#758278]">{device.device_slug}</div></td>
-                <td className="px-4 py-3">{brands.find(brand => brand.slug === device.brand_name)?.title || device.brand_name}<div className="mt-1 text-xs text-[#758278]">{categoryLabels[device.device_category]}</div></td>
+                <td className="px-4 py-3">{brandLabel(device.brand_name)}<div className="mt-1 text-xs text-[#758278]">{categoryLabels[device.device_category]}</div></td>
                 <td className="px-4 py-3 tabular-nums"><span>{mixedTexts.static} {device.static_count}</span><span className="ml-3 text-sky-800">{mixedTexts.dynamic} {device.dynamic_count}</span></td>
                 <td className="px-4 py-3"><span className={`rounded px-2 py-1 text-xs ${statusClasses[device.status]}`}>{statusLabels[device.status]}</span></td>
                 <td className="max-w-48 px-4 py-3"><p className="text-xs text-[#66746b]">{device.upload_prefix ? mixedTexts.configured : mixedTexts.notConfigured}</p>{device.upload_prefix && <p className="mt-1 break-all font-mono text-xs">{device.upload_prefix}</p>}</td>
@@ -1005,7 +1030,7 @@ export default function AdminConsole() {
             <thead className={tableHeadClass}><tr><th className="px-4 py-3">预览</th><th className="px-4 py-3">名称 / 设备</th><th className="px-4 py-3">分类</th><th className="px-4 py-3">主题</th><th className="px-4 py-3">格式</th><th className="px-4 py-3">状态</th><th className="px-4 py-3 text-right">操作</th></tr></thead>
             <tbody>{loading ? <TableFeedback columns={7} loading message="" /> : wallpapers.length === 0 ? <TableFeedback columns={7} loading={false} message="没有符合条件的壁纸" onReset={resetFilters} /> : wallpapers.map((item) => <tr key={item.id} className={tableRowClass}>
               <td className="px-4 py-3"><div className="h-16 w-12 overflow-hidden rounded bg-[#edf1ec]">{item.compress_key && (!item.deletion_state || item.deletion_state === 'none') ? <img className="h-full w-full object-cover" alt={`${item.name} 预览`} loading="lazy" src={buildPublicR2Url(item.compress_key) || ''} /> : <Images size={18} className="mx-auto mt-5 text-[#9aaba0]" />}</div></td>
-              <td className="px-4 py-2"><div className="font-medium text-gray-950">{item.name}{item.is_primary ? <span className="ml-2 text-xs text-teal-700">主图</span> : null}</div><div className="text-xs text-gray-500">{brands.find((brand) => brand.slug === item.brand_name)?.title || item.brand_name} / {item.device_name}</div></td>
+              <td className="px-4 py-2"><div className="font-medium text-gray-950">{item.name}{item.is_primary ? <span className="ml-2 text-xs text-teal-700">主图</span> : null}</div><div className="text-xs text-gray-500">{brandLabel(item.brand_name)} / {item.device_name}</div></td>
               <td className="px-4 py-2 text-gray-600">{categoryLabels[item.category]}</td><td className="px-4 py-2 text-gray-600">{themeLabels[item.theme] || item.theme}</td><td className="px-4 py-2 font-mono text-xs uppercase text-gray-600">{item.file_format}</td><td className="px-4 py-2"><span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${item.deletion_state && item.deletion_state !== 'none' ? 'bg-red-50 text-red-800' : statusClasses[item.status]}`}>{item.deletion_state === 'processing' ? '删除中' : item.deletion_state === 'pending' ? '待重试删除' : statusLabels[item.status]}</span></td>
               <td className="px-4 py-2 text-right"><div className="flex justify-end gap-1"><button className={`${rowButtonClass} disabled:cursor-not-allowed disabled:opacity-40`} title="编辑壁纸" aria-label={`编辑 ${item.name}`} disabled={busy || (!!item.deletion_state && item.deletion_state !== 'none')} onClick={() => setEditingWallpaper({ ...item, tags: (JSON.parse(item.tags) as string[]).join(', ') })}><Pencil size={15} />编辑</button><button className={`${rowButtonClass} text-red-700 hover:bg-red-50 hover:text-red-800 disabled:opacity-40`} title="删除壁纸和 R2 文件" aria-label={`删除 ${item.name}`} disabled={busy} onClick={() => { setError(''); setDeletingWallpaper(item); }}><Trash2 size={15} />删除</button></div></td>
             </tr>)}</tbody>
@@ -1019,41 +1044,35 @@ export default function AdminConsole() {
 
         {tab === 'upload' && <section aria-label="上传工作区">
           <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4 sm:p-5">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">1</span>上传目标</h3>
-          <div className="mb-4 grid gap-3 md:grid-cols-[minmax(140px,1fr)_minmax(180px,2fr)] xl:grid-cols-[minmax(160px,1fr)_minmax(220px,2fr)_auto] xl:items-end">
-            <label className="text-sm">品牌
-              <div className="mt-1 flex gap-2"><select className={inputClass} value={uploadBrand} disabled={busy} onChange={(event) => selectUploadBrand(event.target.value)}>
-                <option value="">选择品牌</option><BrandOptions brands={brands} />
-              </select><button type="button" className={buttonClass} title="新增品牌" aria-label="新增品牌" onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} /></button></div>
-            </label>
-            <label className="text-sm">设备或系统
-              <div className="mt-1 grid gap-2 sm:grid-cols-2">
-              <input className={inputClass} aria-label="搜索设备或系统" value={uploadSearch} disabled={!uploadBrand || busy}
-                onChange={(event) => setUploadSearch(event.target.value)} placeholder="搜索当前品牌" />
-              <select className={inputClass} aria-label="选择设备或系统" value={uploadDevice} disabled={!uploadBrand || uploadDevicesLoading || busy || folderTargetLocked}
-                onChange={event => selectUploadTarget(event.target.value)}>
-                <option value="">{uploadDevicesLoading ? '加载中' : '不选设备或系统'}</option>
-                {uploadDevices.filter((device) => !uploadSearch || device.device_name.toLowerCase().includes(uploadSearch.toLowerCase()) || device.id === uploadDevice)
-                  .map((device) => <option key={device.id} value={device.id}>{device.device_name}</option>)}
-              </select>
+          <UploadStepTitle index={1} title="上传目标" done={!!selectedUploadDevice}
+            hint={selectedUploadDevice ? `${brandLabel(uploadBrand)} / ${selectedUploadDevice.device_name}` : uploadBrand ? '选择或新增设备/系统' : '先选择品牌'} />
+          <div className="mb-4 grid gap-4 lg:grid-cols-[minmax(240px,1fr)_minmax(360px,2fr)]">
+            <div className="min-w-0 text-sm"><span className="mb-1 block">品牌</span>
+              <AdminBrandPicker brands={brands} value={uploadBrand} disabled={busy} loading={loading && !brands.length}
+                onChange={(slug) => { selectUploadBrand(slug); }} onCreate={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })} />
+            </div>
+            <div className="min-w-0 text-sm"><span className="mb-1 block">设备或系统</span>
+              <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_auto]">
+                <div className="relative"><Search size={16} className="pointer-events-none absolute left-3 top-3 text-[#758278]" />
+                  <input className={`${inputClass} pl-9`} aria-label="搜索设备或系统" value={uploadSearch} disabled={!uploadBrand || busy}
+                    onChange={(event) => setUploadSearch(event.target.value)} placeholder="搜索当前品牌" /></div>
+                <select className={inputClass} aria-label="选择设备或系统" value={uploadDevice} disabled={!uploadBrand || uploadDevicesLoading || busy || folderTargetLocked}
+                  onChange={event => selectUploadTarget(event.target.value)}>
+                  <option value="">{uploadDevicesLoading ? '加载中' : '不选设备或系统'}</option>
+                  {visibleUploadDevices.map((device) => <option key={device.id} value={device.id}>{device.device_name}</option>)}
+                </select>
+                <button className={buttonClass} disabled={!uploadBrand || busy || uploadDevicesLoading || uploadStorageLoading || folderTargetLocked}
+                  aria-expanded={creatingUploadDevice} onClick={() => setCreatingUploadDevice((current) => !current)}>
+                  <Plus size={16} />新增设备/系统
+                </button>
               </div>
-            </label>
-            <button className={buttonClass} disabled={!uploadBrand || busy || uploadDevicesLoading || uploadStorageLoading || folderTargetLocked}
-              onClick={() => setCreatingUploadDevice((current) => !current)}>
-              <Plus size={16} />新增设备/系统
-            </button>
+              <p role="status" className="mt-1.5 text-xs tabular-nums text-[#758278]">{!uploadBrand ? '选择品牌后加载设备列表'
+                : uploadDevicesLoading ? '正在加载设备…'
+                : selectedUploadDevice ? `${categoryLabels[selectedUploadDevice.device_category]} · ${selectedUploadDevice.release_date || '无发布日期'} · ${statusLabels[selectedUploadDevice.status]}`
+                : `共 ${uploadDevices.length} 个设备/系统${uploadSearch ? `，匹配 ${visibleUploadDevices.length} 个` : ''}`}</p>
+            </div>
           </div>
-          <div className="mb-4 rounded-md border border-[#dfe6df] p-3 text-sm">
-            <div className="flex flex-wrap items-center justify-between gap-2"><span className="font-medium">{mixedTexts.prefix}</span>
-              <button className={rowButtonClass} disabled={busy || !selectedUploadDevice} onClick={() => selectedUploadDevice && setEditingDevice(selectedUploadDevice)}>{mixedTexts.prefixSettings}</button></div>
-            <p className="mt-2 break-all font-mono text-xs">{uploadStorageLoading ? uploadTexts.adminUploadLoadingDirectory : uploadStoragePath || '—'}</p>
-            {uploadStoragePath && <p className="mt-2 break-all text-xs text-[#66746b]">origin/ · compress/ · preview/</p>}
-            <p className="mt-2 text-xs leading-5 text-[#66746b]">{mixedTexts.prefixHelp}</p>
-            {uploadStorage?.historical_directories?.length ? <details className="mt-2 text-xs"><summary className="cursor-pointer">{mixedTexts.history}</summary>{uploadStorage.historical_directories.map(path => <p className="mt-1 break-all font-mono" key={path}>{path}</p>)}</details> : null}
-            {uploadStorage?.source === 'multiple' && <label className="mt-3 block">{uploadTexts.adminUploadChooseExisting}<select className={`${inputClass} mt-1`} value={uploadExistingPrefix} onChange={event => setUploadExistingPrefix(event.target.value)}><option value="">{uploadTexts.adminUploadChooseExisting}</option>{uploadStorage.directories.map(path => <option key={path}>{path}</option>)}</select></label>}
-            {currentUploadDirectory?.error && <p role="alert" className="mt-2 text-red-700">{currentUploadDirectory.error}<button className="ml-2 underline" onClick={() => setUploadDirectoryRevision(value => value + 1)}>{uploadTexts.adminUploadRetryDirectory}</button></p>}
-          </div>
-          {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 border-y border-gray-200 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
+          {creatingUploadDevice && <form onSubmit={createUploadDevice} className="mb-4 grid gap-3 rounded-md border border-[#dfe6df] bg-[#f8faf8] p-3 sm:grid-cols-2 xl:grid-cols-[minmax(200px,2fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto] sm:items-end">
             <div className="text-sm"><label>名称
               <input className={`${inputClass} mt-1`} required maxLength={200} value={newUploadDeviceName}
                 onChange={(event) => setNewUploadDeviceName(event.target.value)} placeholder="设备或系统名称" /></label>
@@ -1072,24 +1091,46 @@ export default function AdminConsole() {
             </label>
             <div className="flex gap-2">
               <button className={primaryClass} disabled={busy}><Check size={16} />创建并选中</button>
-              <button type="button" className={buttonClass} title="取消新增" onClick={() => setCreatingUploadDevice(false)}><X size={16} /></button>
+              <button type="button" className={buttonClass} title="取消新增" aria-label="取消新增" onClick={() => setCreatingUploadDevice(false)}><X size={16} /></button>
             </div>
           </form>}
-          <label className="block max-w-sm text-sm">批量标签
-            <input className={`${inputClass} mt-1`} value={batchTags} onChange={(event) => setBatchTags(event.target.value)} placeholder="以逗号分隔" />
-          </label>
+          <div className="rounded-md border border-[#e3e9e4] bg-[#f8faf8] p-3 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2"><span className="flex items-center gap-2 font-medium"><FolderOpen size={16} className="text-[#526950]" />{mixedTexts.prefix}</span>
+              <button className={rowButtonClass} disabled={busy || !selectedUploadDevice} onClick={() => selectedUploadDevice && setEditingDevice(selectedUploadDevice)}>{mixedTexts.prefixSettings}</button></div>
+            <p className="mt-2 break-all font-mono text-xs">{!selectedUploadDevice ? <span className="font-sans text-[#87918b]">选择设备或系统后显示</span> : uploadStorageLoading ? uploadTexts.adminUploadLoadingDirectory : uploadStoragePath || '—'}</p>
+            {uploadStoragePath && <p className="mt-1 break-all text-xs text-[#66746b]">origin/ · compress/ · preview/</p>}
+            <p className="mt-2 text-xs leading-5 text-[#66746b]">{mixedTexts.prefixHelp}</p>
+            {uploadStorage?.historical_directories?.length ? <details className="mt-2 text-xs"><summary className="cursor-pointer">{mixedTexts.history}</summary>{uploadStorage.historical_directories.map(path => <p className="mt-1 break-all font-mono" key={path}>{path}</p>)}</details> : null}
+            {uploadStorage?.source === 'multiple' && <label className="mt-3 block">{uploadTexts.adminUploadChooseExisting}<select className={`${inputClass} mt-1`} value={uploadExistingPrefix} onChange={event => setUploadExistingPrefix(event.target.value)}><option value="">{uploadTexts.adminUploadChooseExisting}</option>{uploadStorage.directories.map(path => <option key={path}>{path}</option>)}</select></label>}
+            {currentUploadDirectory?.error && <p role="alert" className="mt-2 text-red-700">{currentUploadDirectory.error}<button className="ml-2 underline" onClick={() => setUploadDirectoryRevision(value => value + 1)}>{uploadTexts.adminUploadRetryDirectory}</button></p>}
           </div>
-          <div className="mb-5 rounded-lg border border-dashed border-[#bdccbf] bg-[#edf2eb]/60 p-4 sm:p-5">
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#dfe9de] text-xs text-[#526950]">2</span>选择文件</h3>
-          <p className="mb-4 text-xs leading-5 text-[#66746b]">{mixedTexts.mixedHelp}</p>
-          <p className="mb-4 text-xs leading-5 text-[#66746b]">{mixedTexts.mp4Help}</p>
-          <div className="flex flex-wrap gap-2">
-            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{mixedTexts.originals}<input className="sr-only" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,.mp4" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'origin')} /></label>
-            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />{mixedTexts.covers}<input className="sr-only" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/gif" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'compress')} /></label>
-            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{mixedTexts.videoPreview}<input className="sr-only" type="file" multiple accept="video/mp4,.mp4" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'preview')} /></label>
-            <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadBrand || busy || uploadFolderState === 'checking' ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy || uploadFolderState === 'checking'} onChange={(event) => addFiles(event)} /></label>
           </div>
-          {uploadFolderName && <div className="mt-4 border-t border-[#d4dfd3] pt-4">
+          <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4 sm:p-5">
+          <UploadStepTitle index={2} title="选择文件" done={uploadRows.length > 0}
+            hint={uploadRows.length ? `已添加 ${uploadRows.length} 项` : uploadBrand ? '选择设备文件夹，或为已选设备单独添加文件' : '先选择品牌'} />
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,340px)]">
+            <div className="min-w-0">
+              <div className="rounded-md border border-dashed border-[#bdccbf] bg-[#f3f7f2] p-4">
+                <p className="text-sm font-medium text-[#25332d]">按设备文件夹添加（推荐）</p>
+                <p className="mt-1 text-xs leading-5 text-[#66746b]">文件夹以设备或系统命名，内含 origin、compress 与可选 preview 子目录；会自动匹配或提示创建设备。</p>
+                <label className={`${buttonClass} mt-3 border-[#9cc9b6] text-[#1b5f4c] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadBrand || busy || uploadFolderState === 'checking' ? 'cursor-not-allowed opacity-50' : ''}`}><FolderOpen size={16} />选择文件夹<input className="sr-only" type="file" multiple {...{ webkitdirectory: '' }} disabled={!uploadBrand || busy || uploadFolderState === 'checking'} onChange={(event) => addFiles(event)} /></label>
+              </div>
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-medium text-[#56675b]">或为已选设备单独添加{!uploadDevice && <span className="ml-1 font-normal text-[#87918b]">（需先选择设备或系统）</span>}</p>
+                <div className="flex flex-wrap gap-2">
+                  <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{mixedTexts.originals}<input className="sr-only" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,.mp4" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'origin')} /></label>
+                  <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><ImagePlus size={16} />{mixedTexts.covers}<input className="sr-only" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif,image/gif" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'compress')} /></label>
+                  <label className={`${buttonClass} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#247560] ${!uploadDevice || busy ? 'cursor-not-allowed opacity-50' : ''}`}><UploadCloud size={16} />{mixedTexts.videoPreview}<input className="sr-only" type="file" multiple accept="video/mp4,.mp4" disabled={!uploadDevice || busy} onChange={(event) => addFiles(event, 'preview')} /></label>
+                </div>
+              </div>
+              <ul className="mt-4 list-inside list-disc space-y-1 text-xs leading-5 text-[#66746b]"><li>{mixedTexts.mixedHelp}</li><li>{mixedTexts.mp4Help}</li></ul>
+            </div>
+            <label className="block text-sm">批量标签
+              <input className={`${inputClass} mt-1`} value={batchTags} onChange={(event) => setBatchTags(event.target.value)} placeholder="以逗号分隔" />
+              <span className="mt-1.5 block text-xs leading-5 text-[#758278]">添加文件时写入每张壁纸，可在队列中逐张修改；文件夹内的标签报告会合并进来。</span>
+            </label>
+          </div>
+          {uploadFolderName && <div className="mt-4 border-t border-[#e3e9e4] pt-4">
             {uploadFolderState === 'checking' && <p role="status" className="text-sm text-[#66746b]">正在检查设备：{uploadFolderName}…</p>}
             {inferredExistingDevice && <div role="status" className="flex items-start gap-2 text-sm text-[#247560]"><Check size={18} className="mt-0.5 shrink-0" /><div>已选中设备：<span className="font-semibold">{inferredExistingDevice.device_name}</span><div className="mt-1 text-xs text-[#66746b]">{categoryLabels[inferredExistingDevice.device_category]} · {inferredExistingDevice.release_date || '无发布日期'}</div></div></div>}
             {uploadFolderState === 'missing' && <form onSubmit={(event) => createUploadDevice(event, uploadFolderName)}>
@@ -1107,7 +1148,8 @@ export default function AdminConsole() {
           </div>}
           </div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#34433b]"><span className="flex h-6 w-6 items-center justify-center rounded bg-[#edf2eb] text-xs text-[#526950]">3</span>上传队列<span className="text-xs font-normal tabular-nums text-[#758278]">{uploadRows.length} 项</span></h3>
+            <UploadStepTitle index={3} title="上传队列" done={uploadRows.length > 0 && uploadRows.every((row) => row.state === 'done')} compact
+              hint={`${uploadRows.length} 项 · 已入库 ${uploadRows.filter((row) => row.state === 'done').length} 项`} />
             <button className={primaryClass} disabled={busy || uploadDevicesLoading || uploadStorageLoading || !uploadStorage || !!uploadQueueError || !uploadBrand || !uploadDevice || !uploadStoragePath || !!uploadStoragePathError || (!!uploadFolderName && uploadFolderState !== 'matched') || !uploadRows.some((row) => row.state !== 'done' && !row.requiresReconciliation)} onClick={() => void startUpload()}><UploadCloud size={16} />{busy ? '上传中…' : `开始上传${uploadRows.some((row) => row.state !== 'done') ? ` (${uploadRows.filter((row) => row.state !== 'done').length})` : ''}`}</button>
           </div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-xs text-[#66746b]">
@@ -1180,7 +1222,7 @@ export default function AdminConsole() {
       {deletingWallpaper && <AdminDialog title="删除壁纸" onClose={() => { if (!busy) setDeletingWallpaper(null); }}>
         <form onSubmit={deleteWallpaper} className={modalClass}>
           <div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-semibold">删除壁纸</h2><button type="button" className={iconButtonClass} title="关闭" disabled={busy} onClick={() => setDeletingWallpaper(null)}><X size={16} /></button></div>
-          <p className="mb-1 text-sm font-semibold">{deletingWallpaper.name}</p><p className="mb-4 text-xs text-[#66746b]">{deletingWallpaper.brand_name} / {deletingWallpaper.device_name}</p>
+          <p className="mb-1 text-sm font-semibold">{deletingWallpaper.name}</p><p className="mb-4 text-xs text-[#66746b]">{brandLabel(deletingWallpaper.brand_name)} / {deletingWallpaper.device_name}</p>
           <p className="mb-4 text-sm leading-6 text-red-800">将永久删除后台记录以及以下 R2 文件，此操作无法撤销。</p>
           <dl className="space-y-3 rounded-md bg-[#f5f7f4] p-3 text-xs"><div><dt className="mb-1 text-[#66746b]">原图</dt><dd className="break-all font-mono">{deletingWallpaper.origin_key}</dd></div>{deletingWallpaper.compress_key && <div><dt className="mb-1 text-[#66746b]">预览图</dt><dd className="break-all font-mono">{deletingWallpaper.compress_key}</dd></div>}</dl>
           {deletingWallpaper.media_type === 'dynamic' && <div className="mt-3 rounded-md bg-[#f5f7f4] p-3 text-xs"><div className="mb-1 text-[#66746b]">{uploadTexts.adminUploadVideoPreview}</div><div className="break-all font-mono">{deletingWallpaper.origin_key.replace('/origin/', '/preview/')}</div></div>}
