@@ -761,9 +761,9 @@ export default function AdminConsole() {
     return uploadDevice;
   };
 
-  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string): Promise<boolean> => {
+  const uploadOne = async (row: UploadRow, deviceId: string, r2Prefix: string): Promise<string | null> => {
     if (!row.origin || !row.preview) {
-      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return false;
+      patchUpload(row.id, { state: 'failed', error: '原图和预览图未配齐' }); return null;
     }
     patchUpload(row.id, { state: 'uploading', progress: 0, error: undefined });
     try {
@@ -818,10 +818,10 @@ export default function AdminConsole() {
       });
       patchUpload(row.id, { state: 'done', wallpaperId: data.id, selected: true, progress: 100, isPrimary: !!data.is_primary, isPublished: false,
         originalDimensions: data.width && data.height ? { width: data.width, height: data.height } : undefined });
-      return true;
+      return data.id;
     } catch (cause) {
       patchUpload(row.id, { state: 'failed', error: cause instanceof Error ? cause.message : '上传失败' });
-      return false;
+      return null;
     }
   };
 
@@ -859,8 +859,17 @@ export default function AdminConsole() {
     if (uploadFolderName && pending.some(row => row.folderName !== uploadFolderName)) throw new Error('待上传文件不属于所选设备或系统文件夹');
     const deviceId = await ensureUploadDevice();
     if (!uploadStoragePath || uploadStoragePathError) throw new Error(uploadStoragePathError || '请选择 R2 存储目录');
-    for (const row of pending) await uploadOne(row, deviceId, uploadStoragePath);
+    const uploadedIds: string[] = [];
+    let failed = uploadRows.some(row => row.state === 'failed' && !pending.includes(row));
+    for (const row of pending) {
+      const id = await uploadOne(row, deviceId, uploadStoragePath);
+      if (id) uploadedIds.push(id); else failed = true;
+    }
     setUploadDirectoryRevision(value => value + 1);
+    // 整批成功后直接打开“发布选中素材”弹窗，范围为本次及此前已入库但未发布的选中素材。
+    const publishIds = Array.from(new Set([...successfulAdminUploadIds(uploadRows), ...uploadedIds]));
+    const device = uploadDevices.find((item) => item.id === deviceId);
+    if (!failed && publishIds.length && device) setCollectionAction({ device, operation: 'publish', ids: publishIds });
   });
   const editingDeviceIsDesktop = brands.some((brand) => brand.slug === editingDevice?.brand_name && brand.kind === 'desktop');
   const changeFilters = (patch: Partial<typeof filters>) => {
