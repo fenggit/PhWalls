@@ -25,12 +25,26 @@ export function rankRelatedCollections(
   const series = deviceSeries(current.deviceName || '');
   const score = (row: RelatedCollection) => (series && deviceSeries(row.deviceName) === series ? 100 : 0)
     + (row.resolutions.some(size => current.resolutions.includes(size)) ? 20 : 0);
-  return candidates.filter(row => row.deviceId !== current.deviceId && row.count > 0
-      && (!current.deviceCategory || row.deviceCategory === current.deviceCategory))
-    .sort((a, b) => score(b) - score(a)
-      || (parseWallpaperDate(b.date)?.getTime() || 0) - (parseWallpaperDate(a.date)?.getTime() || 0)
-      || a.slug.localeCompare(b.slug))
-    .slice(0, Math.max(0, Math.min(limit, 8)));
+  const byDateDesc = (a: RelatedCollection, b: RelatedCollection) =>
+    (parseWallpaperDate(b.date)?.getTime() || 0) - (parseWallpaperDate(a.date)?.getTime() || 0)
+    || a.slug.localeCompare(b.slug);
+  const pool = candidates.filter(row => row.count > 0
+    && (!current.deviceCategory || row.deviceCategory === current.deviceCategory));
+  const max = Math.max(0, Math.min(limit, 8));
+  // 按发布时间排列的前后相邻机型固定入选：时间线上每个合集都至少获得一条入链，老机型不会因排序沦为孤儿页。
+  const timeline = [...pool].sort(byDateDesc);
+  const position = timeline.findIndex(row => row.deviceId === current.deviceId);
+  const neighbors = position < 0 ? [] : [timeline[position + 1], timeline[position - 1]]
+    .filter((row): row is RelatedCollection => Boolean(row));
+  const ranked = pool.filter(row => row.deviceId !== current.deviceId)
+    .sort((a, b) => score(b) - score(a) || byDateDesc(a, b));
+  // 邻居保证入选，展示顺序仍按系列与尺寸评分排列。
+  const picked = new Set<string>();
+  for (const row of [...neighbors, ...ranked]) {
+    if (picked.size >= max) break;
+    picked.add(row.deviceId);
+  }
+  return ranked.filter(row => picked.has(row.deviceId));
 }
 
 export function collectionDetailPath(category: string, slug: string, media: WallpaperCollection['mediaType'] = 'static') {

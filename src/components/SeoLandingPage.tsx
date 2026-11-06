@@ -47,6 +47,10 @@ type SeoLandingPageProps = {
   pageSize?: number;
   activeCategoryTypeOverride?: string;
   collectionCardVariant?: 'default' | 'live';
+  /** 分页时在 HTML 中输出全部合集的文字链接，保证未展开的合集也可被抓取。 */
+  allCollectionsTitle?: string;
+  /** 页面简介下方的相关分类入口（如 Google 与 Google Pixel 互链）。 */
+  relatedLinks?: Array<{ href: string; label: string }>;
 };
 
 const gradientPalette = [
@@ -84,6 +88,8 @@ export default function SeoLandingPage({
   pageSize,
   activeCategoryTypeOverride,
   collectionCardVariant = 'default',
+  allCollectionsTitle,
+  relatedLinks,
 }: SeoLandingPageProps) {
   const { language: currentLang, setLanguage: setCurrentLang, texts } = useLanguage();
   const pathname = usePathname();
@@ -106,6 +112,22 @@ export default function SeoLandingPage({
   const updatedLabel = texts.updatedLabel;
   const resolvedDetailCategory = detailCategory || (categoryKey.replace('-wallpapers', '') as WallpaperCategory);
   const resolvedCategoryPath = categoryPath || `/${categoryKey}`;
+
+  const resolveCardLink = (card: LandingCard) => {
+    const isLive = collectionCardVariant === 'live' || Boolean(card.isLive);
+    const detailHref = detailPathPrefix === '/desktop/wallpapers'
+      ? withLanguagePath(buildDesktopWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name, isLive ? 'dynamic' : 'static'), currentLang)
+      : detailPathPrefix
+      ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`, currentLang)
+      : withLanguagePath(isLive
+        ? buildLiveWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name)
+        : buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
+    const cardDisplayName = card.deviceId ? card.name : localizeWallpaperCollectionName(currentLang, card.name);
+    const cardTitle = buildWallpaperListTitle(cardDisplayName,
+      isLive ? texts.liveWallpapersNavLabel : texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+    return { isLive, detailHref, cardDisplayName, cardTitle };
+  };
+  const showAllCollectionLinks = Boolean(pageSize && allCollectionsTitle && cards.length > pageSize);
 
   const localizedHomeUrl = withLanguageUrl(SITE_URL, currentLang);
   const localizedCategoryUrl = withLanguageUrl(`${SITE_URL}${resolvedCategoryPath}`, currentLang);
@@ -173,23 +195,22 @@ export default function SeoLandingPage({
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{pageTitle}</h1>
           <p className="mt-4 max-w-3xl text-sm sm:text-base leading-relaxed text-gray-600">{description}</p>
           <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
+          {relatedLinks?.length ? (
+            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              {relatedLinks.map((link) => (
+                <Link key={link.href} href={link.href} prefetch={false} className="font-medium text-blue-700 hover:underline">
+                  {link.label}<span aria-hidden="true" className="ml-1">→</span>
+                </Link>
+              ))}
+            </p>
+          ) : null}
         </section>
 
         <section className="overflow-visible">
           <div className={`grid ${gridClass} gap-6`}>
             {visibleCards.map((card, index) => {
               const gradient = gradientPalette[index % gradientPalette.length];
-              const isLive = collectionCardVariant === 'live' || Boolean(card.isLive);
-              const detailHref = detailPathPrefix === '/desktop/wallpapers'
-                ? withLanguagePath(buildDesktopWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name, isLive ? 'dynamic' : 'static'), currentLang)
-                : detailPathPrefix
-                ? withLanguagePath(`${detailPathPrefix}/${resolvedDetailCategory}/${slugifyWallpaperName(card.slug || card.name)}`,currentLang)
-                : withLanguagePath(isLive
-                  ? buildLiveWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name)
-                  : buildWallpaperDetailPath(resolvedDetailCategory, card.slug || card.name), currentLang);
-              const cardDisplayName = card.deviceId ? card.name : localizeWallpaperCollectionName(currentLang, card.name);
-              const cardTitle = buildWallpaperListTitle(cardDisplayName,
-                isLive ? texts.liveWallpapersNavLabel : texts.wallpapersTitleSuffix, Boolean(card.deviceId));
+              const { isLive, detailHref, cardDisplayName, cardTitle } = resolveCardLink(card);
               const cardAnalytics = { brand_slug: resolvedDetailCategory, collection_id: card.deviceId,
                 collection_slug: card.slug, media_type: isLive ? 'dynamic' : 'static',
                 device_type: /\/desktop(?:\/|$)/.test(pathname) ? 'desktop' : 'phone',
@@ -266,6 +287,31 @@ export default function SeoLandingPage({
             </div>
           )}
         </section>
+
+        {showAllCollectionLinks && (
+          <nav aria-labelledby="all-collections-title" className="mt-14 border-t border-gray-200 pt-8">
+            <h2 id="all-collections-title" className="text-lg font-semibold tracking-tight text-gray-900">
+              {allCollectionsTitle}
+            </h2>
+            <ul className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {cards.map((card) => {
+                const { isLive, detailHref, cardDisplayName } = resolveCardLink(card);
+                return (
+                  <li key={`${card.name}:${isLive ? 'dynamic' : 'static'}`}>
+                    <Link href={detailHref} prefetch={false}
+                      className="flex items-baseline justify-between gap-3 rounded py-1.5 text-sm text-gray-700 hover:text-blue-600">
+                      <span className="truncate">
+                        {cardDisplayName}
+                        {isLive && collectionCardVariant !== 'live' ? ` · ${texts.liveWallpapersNavLabel}` : ''}
+                      </span>
+                      <span className="shrink-0 text-xs text-gray-400">{card.count}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        )}
       </main>
 
       <Footer />

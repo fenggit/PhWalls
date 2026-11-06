@@ -7,7 +7,6 @@ import Script from 'next/script';
 import { Inter } from 'next/font/google';
 import { SITE_URL } from '@/lib/seo';
 import {
-  buildLanguageAlternates,
   DEFAULT_LANGUAGE,
   getOpenGraphLocaleForLanguage,
   LANGUAGE_HEADER_NAME,
@@ -91,10 +90,7 @@ export const metadata: Metadata = (() => {
       creator: '@phwalls',
       site: '@phwalls',
     },
-    alternates: {
-      canonical: defaultCanonicalUrl,
-      languages: buildLanguageAlternates(SITE_URL),
-    },
+    // canonical 与 hreflang 由各页面自行声明；根布局不设默认值，避免 404 等页面继承首页 canonical。
     metadataBase: new URL(SITE_URL),
     category: 'Technology',
     classification: 'Phone Wallpapers, Mobile Wallpapers',

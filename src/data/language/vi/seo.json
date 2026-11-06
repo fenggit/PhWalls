@@ -1,5 +1,10 @@
 {
   "brands": {
+    "google": {
+      "title": "Bộ sưu tập ứng dụng Hình nền Google",
+      "metadataTitle": "Bộ sưu tập ứng dụng Hình nền Google - Tải miễn phí",
+      "description": "Tải hình nền từ các bộ sưu tập theo chủ đề trong ứng dụng Hình nền của Google như Trái Đất, Phong cảnh, Kết cấu, Nghệ thuật và Thành phố. Hình nền gốc theo từng mẫu Pixel nằm trong mục Google Pixel."
+    },
     "samsung": {
       "title": "Hình nền gốc Samsung Galaxy",
       "metadataTitle": "Hình nền gốc Samsung Galaxy - Tải miễn phí",

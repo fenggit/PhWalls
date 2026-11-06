@@ -4,6 +4,7 @@ import { getI18nTexts } from '@/lib/i18n';
 import { getLiveTabData } from '@/lib/live-data';
 import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
 import { SITE_URL } from '@/lib/seo';
+import { buildDetailIndexingMetadata } from '@/lib/seo-indexing';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
 
 function fill(template: string, values: Record<string, string | number>): string {
@@ -22,12 +23,16 @@ export function getLiveSeoCopy(language: Language, options: { category?: string;
     subtitle: fill(texts.liveCollectionCountTemplate, values), brand };
 }
 
-export function buildLiveMetadata(language: Language, path: string, copy: { title: string; description: string }, image?: string | null): Metadata {
+// detail 传入时按详情页收录策略输出 robots 与 hreflang；列表页保持五语言收录。
+export function buildLiveMetadata(language: Language, path: string, copy: { title: string; description: string },
+  image?: string | null, detail?: { brand: string; count: number }): Metadata {
   const title = `${copy.title} | PhWalls`;
   const canonical = withLanguageUrl(`${SITE_URL}${path}`, language);
   return {
     title, description: copy.description,
-    alternates: { canonical, languages: buildLanguageAlternates(`${SITE_URL}${path}`) },
+    ...(detail
+      ? buildDetailIndexingMetadata(language, detail.brand, detail.count, `${SITE_URL}${path}`, canonical)
+      : { alternates: { canonical, languages: buildLanguageAlternates(`${SITE_URL}${path}`) } }),
     openGraph: { title, description: copy.description, url: canonical, type: 'website',
       locale: getOpenGraphLocaleForLanguage(language),
       images: image ? [{ url: image, alt: copy.title }, ...DEFAULT_OPEN_GRAPH_IMAGES] : DEFAULT_OPEN_GRAPH_IMAGES },

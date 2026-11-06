@@ -142,21 +142,27 @@ export function resolveRequestLanguage(input: {
   );
 }
 
-export function buildLanguageAlternates(path: string) {
-  const build = (value: string, language: Language) => withLanguageUrl(value, language);
-  return {
-    'x-default': withLanguageUrl(path, LanguageCode.EN),
-    en: build(path, LanguageCode.EN),
-    'en-US': build(path, LanguageCode.EN),
-    zh: build(path, LanguageCode.ZH),
-    'zh-CN': build(path, LanguageCode.ZH),
-    ja: build(path, LanguageCode.JA),
-    'ja-JP': build(path, LanguageCode.JA),
-    vi: build(path, LanguageCode.VI),
-    'vi-VN': build(path, LanguageCode.VI),
-    'zh-Hant': build(path, LanguageCode.ZH_HANT),
-    'zh-Hans': build(path, LanguageCode.ZH),
-  };
+// 每种站点语言只输出一个 hreflang 代码；HTML 与 sitemap 共用，避免两处集合不一致。
+export const HREFLANG_CODES: Record<Language, string> = {
+  [LanguageCode.EN]: 'en',
+  [LanguageCode.ZH]: 'zh-Hans',
+  [LanguageCode.JA]: 'ja',
+  [LanguageCode.VI]: 'vi',
+  [LanguageCode.ZH_HANT]: 'zh-Hant',
+};
+
+// languages 只能包含可索引的语言版本；英文不可索引时不输出 x-default。
+export function buildLanguageAlternates(path: string, languages: readonly Language[] = SUPPORTED_LANGUAGES) {
+  const alternates: Record<string, string> = {};
+  for (const language of SUPPORTED_LANGUAGES) {
+    if (languages.includes(language)) {
+      alternates[HREFLANG_CODES[language]] = withLanguageUrl(path, language);
+    }
+  }
+  if (languages.includes(DEFAULT_LANGUAGE)) {
+    alternates['x-default'] = withLanguageUrl(path, DEFAULT_LANGUAGE);
+  }
+  return alternates;
 }
 
 export function getOpenGraphLocaleForLanguage(language: Language): string {

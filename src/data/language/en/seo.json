@@ -1,5 +1,10 @@
 {
   "brands": {
+    "google": {
+      "title": "Google Wallpapers App Collections",
+      "metadataTitle": "Google Wallpapers App Collections - Free Download",
+      "description": "Download wallpapers from the themed collections in Google's Wallpapers app, including Earth, Landscapes, Textures, Art and Cityscapes. Pixel phone stock wallpapers are listed by model under Google Pixel."
+    },
     "samsung": {
       "title": "Samsung Galaxy Stock Wallpapers",
       "metadataTitle": "Samsung Galaxy Stock Wallpapers - Free Download",

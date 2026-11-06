@@ -11,7 +11,8 @@ import {
 import { loadDesktopWallpaperCollection } from '@/lib/desktop-data-server';
 import { formatWallpaperDisplayName } from '@/lib/data';
 import { buildDesktopDetailSeoCopy, getDesktopCategoryLabel } from '@/lib/desktop-seo';
-import { buildLanguageAlternates, getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
+import { getOpenGraphLocaleForLanguage, withLanguageUrl } from '@/lib/language';
+import { buildDetailIndexingMetadata } from '@/lib/seo-indexing';
 import { resolveMetadataLanguage } from '@/lib/metadata';
 import { buildPublicR2Url, hasPublicR2Cdn } from '@/lib/r2-public-url';
 import { SITE_URL } from '@/lib/seo';
@@ -59,10 +60,7 @@ export async function generateMetadata({ params, mediaType = 'static' }: Desktop
   return {
     title: seoCopy.title,
     description: seoCopy.description,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: buildLanguageAlternates(`${SITE_URL}${detailPath}`),
-    },
+    ...buildDetailIndexingMetadata(language, category, collection.item.length, `${SITE_URL}${detailPath}`, canonicalUrl),
     openGraph: {
       title: seoCopy.title,
       description: seoCopy.description,

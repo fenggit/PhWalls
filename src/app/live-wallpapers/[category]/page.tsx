@@ -5,6 +5,7 @@ import { buildLiveCategoryPath } from '@/lib/live-paths';
 import { loadLiveCollections } from '@/lib/live-data-server';
 import { buildLiveMetadata, getLiveSeoCopy } from '@/lib/live-seo';
 import { resolveMetadataLanguage } from '@/lib/metadata';
+import { fillDiscovery, getDiscoveryTexts } from '@/lib/discovery-i18n';
 
 export const runtime = 'edge';
 type Props = { params: Promise<{ category: string }> };
@@ -22,7 +23,9 @@ export default async function LiveCategoryPage({ params }: Props) {
   const language = await resolveMetadataLanguage();
   const collections = await loadLiveCollections(category, language);
   const copy = getLiveSeoCopy(language, { category, count: collections.length });
+  const allCollectionsTitle = fillDiscovery(getDiscoveryTexts(language).allCollections, { brand: copy.brand });
   return <SeoLandingPage breadcrumbLabel={copy.title} categoryKey={category} categoryPath={buildLiveCategoryPath(category)}
+    allCollectionsTitle={allCollectionsTitle}
     detailCategory={category} detailPathPrefix="/live/wallpapers" seoTitle={copy.title}
     seoDescription={copy.description} seoSubtitle={copy.subtitle} cardAspect="aspect-[9/16]"
     gridClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6" pageSize={20}
