@@ -1,4 +1,6 @@
 import 'server-only';
+import { NextResponse } from 'next/server';
+import { normalizeClientIp } from '@/lib/client-ip';
 import { getOptionalRequestContext } from '@cloudflare/next-on-pages';
 import { classifyApiSource, getApiEndpoint } from '@/lib/api-monitor-source';
 import type { ApiAccessEvent } from '@/lib/api-monitor-types';
@@ -13,18 +15,6 @@ export function apiMonitoringEnabled(env: ApiMonitorEnv): boolean {
   return (env.API_MONITOR_ENABLED ?? process.env.API_MONITOR_ENABLED) !== 'false';
 }
 
-function connectionIp(value: string | null): string | null {
-  // CF replaces this header at its edge. Do not fall back to user-supplied forwarding headers.
-  if (!value || value.length > 45) return null;
-  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(value)) {
-    return value.split('.').every((part) => Number(part) <= 255) ? value : null;
-  }
-  if (value.includes(':') && /^[0-9a-f:.]+$/i.test(value)) {
-    try { return new URL(`http://[${value}]/`).hostname.slice(1, -1); } catch { return null; }
-  }
-  return null;
-}
-
 async function writeEvent(db: D1Database, request: Request, endpoint: string, status: number,
   duration: number, createdAt: number, ownAppId: string): Promise<void> {
   const url = new URL(request.url);
@@ -37,7 +27,7 @@ async function writeEvent(db: D1Database, request: Request, endpoint: string, st
   const event: ApiAccessEvent = {
     id: crypto.randomUUID(), created_at: createdAt, endpoint,
     method: request.method, status, duration_ms: Math.max(0, Math.round(duration * 100) / 100),
-    client_ip: connectionIp(request.headers.get('cf-connecting-ip')),
+    client_ip: normalizeClientIp(request.headers.get('cf-connecting-ip')),
     country: country && /^(?:[A-Z]{2}|T1)$/.test(country) ? country : null,
     ...classifyApiSource(request, ownAppId, process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com'),
     user_agent: (request.headers.get('user-agent') || '').slice(0, 256), target_hash: targetHash,
@@ -67,16 +57,38 @@ function record(request: Request, status: number, duration: number, createdAt: n
   }
 }
 
-// Return the original Response without cloning/reading its body or waiting for telemetry.
-export async function observeApiRequest<T extends Response>(request: Request, operation: () => Promise<T>): Promise<T> {
+// Check access first, then return the original allowed Response without reading its body or waiting for telemetry.
+export async function observeApiRequest<T extends Response>(request: Request, operation: () => Promise<T>): Promise<T | NextResponse> {
   const started = performance.now();
   const createdAt = Date.now();
   let status = 500;
   try {
-    const response = await operation();
+    const response = await blockedResponse(request) || await operation();
     status = response.status;
     return response;
   } finally {
     record(request, status, performance.now() - started, createdAt);
+  }
+}
+
+// CF replaces this header at its edge; never trust X-Forwarded-For as a fallback.
+async function blockedResponse(request: Request): Promise<NextResponse | null> {
+  if (!getApiEndpoint(new URL(request.url).pathname)) return null;
+  const ip = normalizeClientIp(request.headers.get('cf-connecting-ip'));
+  if (!ip) return null;
+  const headers = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' };
+  const denied = (code: string, status: number) => NextResponse.json(
+    new URL(request.url).pathname.startsWith('/api/public/mini/')
+      ? { error: { code, message: code === 'IP_BLOCKED' ? 'Access denied' : 'Access check unavailable' } }
+      : { error: code }, { status, headers });
+  try {
+    const env = getOptionalRequestContext()?.env as ApiMonitorEnv | undefined;
+    if (!env?.DB) return denied('BLOCKLIST_UNAVAILABLE', 503);
+    const result = await env.DB.prepare('SELECT ip FROM w_api_ip_blocklist WHERE ip = ? LIMIT 1').bind(ip).all();
+    if (!result.success) throw new Error('Unavailable');
+    return result.results.length ? denied('IP_BLOCKED', 403) : null;
+  } catch {
+    console.error('API blocklist lookup unavailable');
+    return denied('BLOCKLIST_UNAVAILABLE', 503);
   }
 }

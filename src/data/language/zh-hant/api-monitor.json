@@ -73,5 +73,20 @@
   "loadMoreDetails": "載入更多記錄",
   "loadedDetails": "已顯示 {loaded} / {total} 筆記錄",
   "detailsFailed": "詳情載入失敗，已載入記錄會保留，請重試。",
-  "detailsHint": "按目前時段篩選全部請求，每次載入 20 筆。"
+  "detailsHint": "按目前時段篩選全部請求，每次載入 20 筆。",
+  "blocklist": "IP 黑名單",
+  "blockHint": "手動封鎖指定 IP，永久生效直到解除；僅攔截受監控的公開介面。共享 IP 可能影響其他使用者。",
+  "blockIp": "封鎖",
+  "unblockIp": "解除封鎖",
+  "ipInput": "輸入 IPv4 或 IPv6 位址",
+  "invalidIp": "請輸入有效的 IPv4 或 IPv6 位址。",
+  "blockFailed": "操作失敗，請重試。",
+  "blockUnavailable": "黑名單無法使用，請檢查 D1 綁定與黑名單遷移。",
+  "blockSuccess": "已封鎖 {ip}",
+  "unblockSuccess": "已解除封鎖 {ip}",
+  "blockEmpty": "暫無封鎖 IP。",
+  "blockLoading": "正在載入黑名單…",
+  "blockMore": "載入更多黑名單",
+  "blockCreated": "封鎖時間",
+  "blocked": "已封鎖"
 }

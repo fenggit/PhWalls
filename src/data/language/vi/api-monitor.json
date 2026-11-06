@@ -73,5 +73,20 @@
   "loadMoreDetails": "Tải thêm bản ghi",
   "loadedDetails": "Đang hiển thị {loaded} / {total} bản ghi",
   "detailsFailed": "Không thể tải chi tiết. Các bản ghi đã tải được giữ lại; vui lòng thử lại.",
-  "detailsHint": "Lọc tất cả yêu cầu trong khoảng thời gian đã chọn, mỗi lần 20 bản ghi."
+  "detailsHint": "Lọc tất cả yêu cầu trong khoảng thời gian đã chọn, mỗi lần 20 bản ghi.",
+  "blocklist": "Danh sách chặn IP",
+  "blockHint": "Chặn IP thủ công cho đến khi bỏ chặn. Chỉ áp dụng cho API công khai được giám sát. IP dùng chung có thể ảnh hưởng người khác.",
+  "blockIp": "Chặn",
+  "unblockIp": "Bỏ chặn",
+  "ipInput": "Nhập địa chỉ IPv4 hoặc IPv6",
+  "invalidIp": "Vui lòng nhập địa chỉ IPv4 hoặc IPv6 hợp lệ.",
+  "blockFailed": "Thao tác thất bại. Vui lòng thử lại.",
+  "blockUnavailable": "Danh sách chặn không khả dụng. Kiểm tra liên kết D1 và bản di chuyển.",
+  "blockSuccess": "Đã chặn {ip}",
+  "unblockSuccess": "Đã bỏ chặn {ip}",
+  "blockEmpty": "Chưa có IP bị chặn.",
+  "blockLoading": "Đang tải danh sách chặn…",
+  "blockMore": "Tải thêm IP bị chặn",
+  "blockCreated": "Thời gian chặn",
+  "blocked": "Đã chặn"
 }

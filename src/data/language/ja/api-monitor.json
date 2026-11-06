@@ -73,5 +73,20 @@
   "loadMoreDetails": "さらに読み込む",
   "loadedDetails": "{total} 件中 {loaded} 件を表示",
   "detailsFailed": "詳細を読み込めませんでした。読み込み済みの記録は保持されます。再試行してください。",
-  "detailsHint": "選択期間の全リクエストを絞り込み、20 件ずつ読み込みます。"
+  "detailsHint": "選択期間の全リクエストを絞り込み、20 件ずつ読み込みます。",
+  "blocklist": "IP ブロックリスト",
+  "blockHint": "指定 IP を解除するまでブロックします。監視対象の公開 API のみに適用されます。共有 IP は他の利用者にも影響します。",
+  "blockIp": "ブロック",
+  "unblockIp": "解除",
+  "ipInput": "IPv4 または IPv6 アドレスを入力",
+  "invalidIp": "有効な IPv4 または IPv6 アドレスを入力してください。",
+  "blockFailed": "操作に失敗しました。再試行してください。",
+  "blockUnavailable": "ブロックリストを利用できません。D1 バインドと移行を確認してください。",
+  "blockSuccess": "{ip} をブロックしました",
+  "unblockSuccess": "{ip} のブロックを解除しました",
+  "blockEmpty": "ブロックされた IP はありません。",
+  "blockLoading": "ブロックリストを読み込み中…",
+  "blockMore": "さらに読み込む",
+  "blockCreated": "ブロック日時",
+  "blocked": "ブロック済み"
 }

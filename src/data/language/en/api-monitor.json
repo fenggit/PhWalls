@@ -73,5 +73,20 @@
   "loadMoreDetails": "Load more records",
   "loadedDetails": "Showing {loaded} / {total} records",
   "detailsFailed": "Could not load details. Loaded records are kept; please retry.",
-  "detailsHint": "All requests are filtered within the selected period, 20 records at a time."
+  "detailsHint": "All requests are filtered within the selected period, 20 records at a time.",
+  "blocklist": "IP blocklist",
+  "blockHint": "Manually block an IP until removed. Applies to monitored public APIs only. Shared IPs may affect other users.",
+  "blockIp": "Block",
+  "unblockIp": "Unblock",
+  "ipInput": "Enter an IPv4 or IPv6 address",
+  "invalidIp": "Enter a valid IPv4 or IPv6 address.",
+  "blockFailed": "Action failed. Please retry.",
+  "blockUnavailable": "Blocklist unavailable. Check the D1 binding and blocklist migration.",
+  "blockSuccess": "Blocked {ip}",
+  "unblockSuccess": "Unblocked {ip}",
+  "blockEmpty": "No blocked IPs.",
+  "blockLoading": "Loading blocklist…",
+  "blockMore": "Load more blocked IPs",
+  "blockCreated": "Blocked at",
+  "blocked": "Blocked"
 }
