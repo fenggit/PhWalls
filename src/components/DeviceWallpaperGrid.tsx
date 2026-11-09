@@ -488,7 +488,7 @@ export default function DeviceWallpaperGrid({
                         {item.size && <span>{resolution ? '· ' : ''}{item.size}</span>}
                       </p>
                       <WallpaperTags tags={item.tags || (item.tag ? [item.tag] : [])}
-                        language={currentLang} limit={3} onMore={() => openPreview(index)} />
+                        language={currentLang} />
                     </article>
                   );
                 })}
