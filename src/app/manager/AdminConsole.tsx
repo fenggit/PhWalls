@@ -647,7 +647,6 @@ export default function AdminConsole() {
   const createUploadDevice = async (event: React.FormEvent, folderName?: string) => {
     event.preventDefault();
     await run(async () => {
-      if (!newUploadDate.trim()) throw new Error('请填写新设备的发布日期');
       const data = await createDevice({
         brand_name: uploadBrand,
         device_name: folderName ? normalizeAdminDisplay(folderName) : newUploadDeviceName,
@@ -1094,8 +1093,8 @@ export default function AdminConsole() {
                   .map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
               </select>
             </label>
-            <label className="text-sm">发布日期（必填）
-              <input className={`${inputClass} mt-1`} required value={newUploadDate} maxLength={20}
+            <label className="text-sm">发布日期（留空默认今天）
+              <input className={`${inputClass} mt-1`} value={newUploadDate} maxLength={20}
                 onChange={(event) => setNewUploadDate(event.target.value)} placeholder="2021/09/22 或 2021年9月22日" />
             </label>
             <div className="flex gap-2">
@@ -1149,7 +1148,7 @@ export default function AdminConsole() {
                 <label className="text-sm">类型<select className={`${inputClass} mt-1`} disabled={busy} value={newUploadCategory} onChange={(event) => setNewUploadCategory(event.target.value as DeviceRow['device_category'])}>
                   {categories.filter((value) => (value === 'desktop') === uploadBrandIsDesktop).map((value) => <option key={value} value={value}>{categoryLabels[value as DeviceRow['device_category']]}</option>)}
                 </select></label>
-                <label className="text-sm">发布日期（必填）<input className={`${inputClass} mt-1`} required disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="2021/09/22 或 2021年9月22日" /></label>
+                <label className="text-sm">发布日期（留空默认今天）<input className={`${inputClass} mt-1`} disabled={busy} value={newUploadDate} maxLength={20} onChange={(event) => setNewUploadDate(event.target.value)} placeholder="2021/09/22 或 2021年9月22日" /></label>
                 <button className={primaryClass} disabled={busy}><Plus size={16} />{busy ? '创建中…' : '创建设备'}</button>
               </div>
             </form>}
@@ -1294,7 +1293,7 @@ export default function AdminConsole() {
               </select>
               <span className="mt-1 block text-xs text-gray-500">{uploadTexts.adminDeviceThemeHint}</span>
             </label>
-            <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（必填）'}<input className={`${inputClass} mt-1`} required={!editingDevice.id} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="2021/09/22 或 2021年9月22日" /></label>
+            <label className="text-sm">{editingDevice.id ? '发布日期' : '发布日期（留空默认今天）'}<input className={`${inputClass} mt-1`} maxLength={20} value={editingDevice.release_date || ''} onChange={(event) => setEditingDevice({ ...editingDevice, release_date: event.target.value })} placeholder="2021/09/22 或 2021年9月22日" /></label>
             {editingDevice.id && <label className="text-sm sm:col-span-2">{mixedTexts.prefix}<div className="mt-1 flex gap-2"><input className={`${inputClass} font-mono text-xs`} maxLength={300} value={editingDevice.upload_prefix || ''} onChange={event => setEditingDevice({ ...editingDevice, upload_prefix: event.target.value || null })} /><button type="button" className={buttonClass} onClick={() => setChoosingR2Directory(true)}><FolderOpen size={16} /></button></div><span className="mt-1 block text-xs leading-5 text-[#66746b]">{mixedTexts.prefixHelp}</span></label>}
             <label className="text-sm">Logo 路径<input className={`${inputClass} mt-1`} value={editingDevice.brand_logo || ''} onChange={(event) => setEditingDevice({ ...editingDevice, brand_logo: event.target.value })} /></label>
             <label className="text-sm">宣传图 URL<input className={`${inputClass} mt-1`} value={editingDevice.device_splash_url || ''} onChange={(event) => setEditingDevice({ ...editingDevice, device_splash_url: event.target.value })} /></label>
