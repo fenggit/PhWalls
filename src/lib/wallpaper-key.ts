@@ -7,7 +7,7 @@
 //   desktopwalls/<os>/.../origin|compress/<file>.png
 // 共同特征：包含 `/origin/` 或 `/compress/` 路径段，且以图片扩展名结尾。
 
-const ALLOWED_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif']);
+const ALLOWED_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif', 'bmp']);
 
 const safeDecode = (value: string): string => {
   try {

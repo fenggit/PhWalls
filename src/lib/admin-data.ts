@@ -126,7 +126,10 @@ export async function createAdminDevice(input: Record<string, unknown>): Promise
   if (!brand || !slug) throw new Error('品牌或设备名称无法生成 URL');
   const selectedCategory = category(input.device_category);
   if ((brandInfo.kind === 'desktop') !== (selectedCategory === 'desktop')) throw new Error('品牌类型与设备分类不匹配');
-  const releaseDate = normalizeAdminReleaseDate(input.release_date);
+  // 后台按北京时间确定新设备的默认发布日期，避免 Edge 的 UTC 日期跨天偏差。
+  const defaultReleaseDate = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10).replace(/-/g, '/');
+  const releaseDate = normalizeAdminReleaseDate(input.release_date == null ||
+    (typeof input.release_date === 'string' && !input.release_date.trim()) ? defaultReleaseDate : input.release_date);
   const theme = deviceTheme(input.theme);
   const now = Date.now();
   const id = crypto.randomUUID();
