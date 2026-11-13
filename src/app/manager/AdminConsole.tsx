@@ -2,9 +2,10 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Activity, AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
+import { Download, Activity, AlertCircle, Check, ChevronLeft, ChevronRight, ExternalLink, FolderOpen, ImagePlus, Images, LogOut, Pencil, Plus, RefreshCw, Search, Smartphone, Tags, Trash2, UploadCloud, X } from 'lucide-react';
+import AdminDownloadSettings from '@/app/manager/AdminDownloadSettings';
 import AdminApiMonitorPanel from '@/app/manager/AdminApiMonitorPanel';
-import { getApiMonitorTexts } from '@/lib/i18n';
+import { getDownloadQuotaTexts, getApiMonitorTexts } from '@/lib/i18n';
 import AdminDeviceI18nPanel from '@/app/manager/AdminDeviceI18nPanel';
 import AdminDeviceDeleteDialog from '@/app/manager/AdminDeviceDeleteDialog';
 import { listAdminDeviceCollectionRows, type AdminDeviceCollectionRow } from '@/lib/admin-device-collections';
@@ -434,7 +435,7 @@ export default function AdminConsole() {
   const folderLookupId = useRef(0);
 
   const reload = useCallback(async () => {
-    if (!authenticated || tab === 'api-monitor') return;
+    if (!authenticated || (tab === 'api-monitor' || tab === 'download-settings')) return;
     const currentLoad = ++loadId.current;
     setLoading(true);
     try {
@@ -910,7 +911,7 @@ export default function AdminConsole() {
           <span className="rounded border border-white/15 px-1.5 py-0.5 text-[10px] text-white/70 lg:hidden">{process.env.NODE_ENV === 'development' ? '本地' : '线上'}</span>
         </div>
         <nav className="flex overflow-x-auto px-3 pb-3 lg:block lg:space-y-1 lg:overflow-visible lg:px-3 lg:py-6" aria-label="管理视图">
-          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['i18n', '多语言', Pencil], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud], ['api-monitor', monitorTexts.title, Activity]] as const).map(([key, label, Icon]) => (
+          {([['brands', '品牌', Tags], ['devices', '设备', Smartphone], ['i18n', '多语言', Pencil], ['wallpapers', '壁纸', Images], ['upload', '上传', UploadCloud], ['api-monitor', monitorTexts.title, Activity], ['download-settings', getDownloadQuotaTexts('zh').title, Download]] as const).map(([key, label, Icon]) => (
             <button key={key} onClick={() => setTab(key)} aria-current={tab === key ? 'page' : undefined} className={`flex h-10 shrink-0 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-white lg:w-full lg:justify-start ${tab === key ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/8 hover:text-white'}`}><Icon size={16} />{label}</button>
           ))}
         </nav>
@@ -919,10 +920,10 @@ export default function AdminConsole() {
       <div className="min-w-0">
       <header className="border-b border-[#e0e7e0] bg-white px-4 py-3 sm:px-7 lg:h-20 lg:px-9">
         <div className="mx-auto flex h-full max-w-[1480px] items-center justify-between gap-3">
-          <div className="min-w-0"><h1 className="truncate text-base font-semibold text-[#17251d]">{tab === 'api-monitor' ? monitorTexts.title : tab === 'brands' ? '品牌管理' : tab === 'devices' ? '设备管理' : tab === 'wallpapers' ? '壁纸管理' : tab === 'i18n' ? '多语言管理' : '上传壁纸'}</h1><p className="text-xs text-[#758278]">PhWalls / 内容管理</p></div>
+          <div className="min-w-0"><h1 className="truncate text-base font-semibold text-[#17251d]">{tab === 'download-settings' ? getDownloadQuotaTexts('zh').title : tab === 'api-monitor' ? monitorTexts.title : tab === 'brands' ? '品牌管理' : tab === 'devices' ? '设备管理' : tab === 'wallpapers' ? '壁纸管理' : tab === 'i18n' ? '多语言管理' : '上传壁纸'}</h1><p className="text-xs text-[#758278]">PhWalls / 内容管理</p></div>
           <div className="flex items-center gap-2">
             <a className={buttonClass} href={process.env.NODE_ENV === 'development' ? '/' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://phwalls.com')} target="_blank" rel="noopener noreferrer" title="打开网站"><ExternalLink size={16} /><span className="hidden sm:inline">查看网站</span></a>
-            <button className={iconButtonClass} title="刷新数据" aria-label="刷新数据" disabled={loading} onClick={() => { if (tab === 'api-monitor') setMonitorRevision((value) => value + 1); else if (tab === 'i18n') setI18nRevision((value) => value + 1); else void reload(); }}><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
+            <button className={iconButtonClass} title="刷新数据" aria-label="刷新数据" disabled={loading} onClick={() => { if (tab === 'api-monitor' || tab === 'download-settings') setMonitorRevision((value) => value + 1); else if (tab === 'i18n') setI18nRevision((value) => value + 1); else void reload(); }}><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
             <button className={iconButtonClass} title="退出登录" aria-label="退出登录" onClick={() => void run(async () => {
               await api('logout', 'POST'); setAuthenticated(false);
             })}><LogOut size={16} /></button>
@@ -931,14 +932,14 @@ export default function AdminConsole() {
       </header>
       <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-7 lg:px-9 lg:py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div><h2 className="text-2xl font-semibold tracking-tight text-[#17251d]">{tab === 'api-monitor' ? monitorTexts.title : tab === 'brands' ? '品牌目录' : tab === 'devices' ? '设备目录' : tab === 'wallpapers' ? '壁纸目录' : tab === 'i18n' ? '多语言内容' : '上传工作区'}</h2>
-            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{tab === 'api-monitor' ? monitorTexts.subtitle : loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 条记录` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : tab === 'i18n' ? '设备名称、SEO 标题与合集描述' : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
+          <div><h2 className="text-2xl font-semibold tracking-tight text-[#17251d]">{tab === 'download-settings' ? getDownloadQuotaTexts('zh').title : tab === 'api-monitor' ? monitorTexts.title : tab === 'brands' ? '品牌目录' : tab === 'devices' ? '设备目录' : tab === 'wallpapers' ? '壁纸目录' : tab === 'i18n' ? '多语言内容' : '上传工作区'}</h2>
+            <p className="mt-1 text-sm tabular-nums text-[#66746b]" role="status">{tab === 'download-settings' ? getDownloadQuotaTexts('zh').hint : tab === 'api-monitor' ? monitorTexts.subtitle : loading && tab !== 'upload' ? '正在更新数据…' : tab === 'brands' ? `${brands.length} 个品牌` : tab === 'devices' ? `${visibleDevices.length} 条记录` : tab === 'wallpapers' ? `${wallpaperTotal} 张壁纸` : tab === 'i18n' ? '设备名称、SEO 标题与合集描述' : `${uploadRows.length} 项文件 · ${uploadRows.filter((row) => row.state === 'done').length} 项已入库`}</p>
           </div>
           {tab === 'brands' && <button className={primaryClass} onClick={() => setNewBrand({ title: '', slug: '', kind: 'mobile' })}><Plus size={16} />新增品牌</button>}
           {tab === 'devices' && <button className={primaryClass} onClick={() => setEditingDevice({ device_category: 'phone', status: 'draft', is_popular_brand: 0, release_date: '' })}><Plus size={16} />新建设备</button>}
           {tab === 'wallpapers' && <button className={primaryClass} onClick={() => setTab('upload')}><ImagePlus size={16} />上传壁纸</button>}
         </div>
-        {error && tab !== 'api-monitor' && <div role="alert" className="mb-4 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><AlertCircle size={18} className="mt-0.5 shrink-0" /><span className="flex-1">{error}</span><button className="font-medium underline" onClick={() => void reload()}>重试</button></div>}
+        {error && tab !== 'api-monitor' && tab !== 'download-settings' && <div role="alert" className="mb-4 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><AlertCircle size={18} className="mt-0.5 shrink-0" /><span className="flex-1">{error}</span><button className="font-medium underline" onClick={() => void reload()}>重试</button></div>}
         {(tab === 'devices' || tab === 'wallpapers') && <div className="mb-5 rounded-lg border border-[#dfe6df] bg-white p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="relative w-full sm:max-w-sm"><Search className="pointer-events-none absolute left-3 top-3 text-[#758278]" size={16} /><input className={`${inputClass} pl-9`} placeholder={tab === 'devices' ? '搜索设备或品牌' : '搜索壁纸或设备'} aria-label="搜索内容" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} /></div>
@@ -976,6 +977,7 @@ export default function AdminConsole() {
           </div>
         </div>}
 
+        {tab === 'download-settings' && <AdminDownloadSettings refreshKey={monitorRevision} />}
         {tab === 'api-monitor' && <AdminApiMonitorPanel refreshKey={monitorRevision} />}
         {tab === 'i18n' && <AdminDeviceI18nPanel brands={brands} refreshKey={i18nRevision}
           onEdit={(device, language, media) => setDescribingDevice({ device, language, media })} />}

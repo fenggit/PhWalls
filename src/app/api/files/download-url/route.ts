@@ -1,7 +1,5 @@
 import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
-import { R2Service } from '@/lib/services/r2';
-import { getCurrentEnvironment } from '@/lib/config/environments';
 import { sanitizeWallpaperDownloadKey } from '@/lib/wallpaper-key';
 import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 
@@ -21,33 +19,13 @@ async function handlePOST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
     }
 
-    // 获取环境配置
-    const environment = getCurrentEnvironment();
-    const r2Service = new R2Service(environment);
-    
-    let downloadUrl = '';
-    
-    // 使用 R2 生成下载URL
-    // 检查是否为私有存储桶
-    if (environment.r2.isPrivate) {
-      // 私有存储桶，生成带下载头的签名URL
-      // 使用AWS S3兼容的ResponseContentDisposition参数
-      // 参考: https://developers.cloudflare.com/r2/api/s3/presigned-urls/
-      downloadUrl = await r2Service.getPrivateFileUrl(
-        key, 
-        environment.r2.urlExpires,
-        undefined, // expires 参数（当第二个参数是 number 时，此参数被忽略）
-        true // forceDownload = true, 会添加 ResponseContentDisposition 参数
-      );
-    } else {
-      downloadUrl = `/api/files/download?key=${encodeURIComponent(key)}`;
-    }
+    const downloadUrl = `/api/files/download?key=${encodeURIComponent(key)}`;
 
     return NextResponse.json({
       success: true,
       url: downloadUrl,
       filename: key.split('/').pop() || 'download'
-    });
+    }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Error generating download URL:', error);
     return NextResponse.json(

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
 import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
-import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
+import { getPublishedWallpaperPreviewKeys } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 
@@ -16,8 +16,9 @@ async function handleGET(request: NextRequest) {
       return NextResponse.json({ error: 'Key parameter is required' }, { status: 400 });
     }
 
-    const key = sanitizeWallpaperKey(rawKey);
-    if (!key || !await isPublishedWallpaperKey(key)) {
+    const requestedKey = sanitizeWallpaperKey(rawKey);
+    const key = requestedKey ? (await getPublishedWallpaperPreviewKeys([requestedKey])).get(requestedKey) : null;
+    if (!key) {
       return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
     }
 
@@ -31,7 +32,7 @@ async function handleGET(request: NextRequest) {
       ? await r2Service.getPrivateFileUrl(key, environment.r2.urlExpires)
       : r2Service.getPublicFileUrl(key);
 
-    return NextResponse.json({ url });
+    return NextResponse.json({ url }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Error generating private URL:', error);
     return NextResponse.json(
