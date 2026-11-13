@@ -1,12 +1,12 @@
 {
   "title": "Giới hạn tải xuống",
   "label": "Số lượt tải mỗi ngày cho mỗi IP",
-  "hint": "Cùng một giới hạn được áp dụng riêng cho mỗi IP và đặt lại lúc 0 giờ Bắc Kinh. Để trống để không giới hạn; 0 để chặn tải. Hủy sau khi bắt đầu truyền vẫn tính lượt; xem trước không tính.",
+  "hint": "Cùng một giới hạn được áp dụng riêng cho mỗi IP và đặt lại lúc 0 giờ Bắc Kinh. Để trống để không giới hạn; 0 để chặn tải. Chỉ tính lượt khi máy chủ truyền hoàn tất. Lượt đang tải được giữ chỗ và trả lại khi hủy hoặc thất bại. Xem trước không tính.",
   "save": "Lưu cài đặt",
   "saved": "Đã lưu cài đặt",
   "failed": "Không thể tải hoặc lưu. Vui lòng thử lại.",
   "invalid": "Nhập số nguyên từ 0 đến 1000000 hoặc để trống để không giới hạn.",
-  "exceeded": "Đã đạt giới hạn tải hôm nay. Vui lòng thử lại sau 0 giờ Bắc Kinh.",
+  "exceeded": "Đã đạt giới hạn tải hôm nay. Vui lòng thử lại vào ngày mai.",
   "unavailable": "Tạm thời không thể kiểm tra hạn mức tải. Vui lòng thử lại sau.",
   "unlimited": "Không giới hạn",
   "reload": "Tải lại"

@@ -818,4 +818,4 @@ npm run indexnow -- https://phwalls.com/zh/wallpapers/huawei/huawei-matebook-fol
 
 后台“接口监控”支持最近 1 小时、24 小时与 7 天的请求趋势、来源/接口/IP 排行及异常分钟窗口；可识别匹配自有微信 AppID、其他微信、站内、外站及未知来源线索。现有小程序无需修改，不自动封禁；支持手动拉黑和解除指定 IPv4 / IPv6，黑名单独立于采集开关。启用手动拉黑需先应用 `0021_api_ip_blocklist.sql` 再部署，缺表时有可信 IP 的公开请求会返回 503。监控首次上线前需应用 `0017_api_access_events.sql`，按需配置 `API_MONITOR_ENABLED`、`API_MONITOR_MINI_APP_ID`；异步全量记录增加 D1 写入量，保留最近 7 天并随新请求清理。完整部署顺序、字段、统计口径及 Cloudflare 边缘分析的补充范围见 [API 监控说明](docs/api-monitoring.md)。
 
-后台“下载限制”可统一设置每个 IP 每日下载原文件的次数，按北京时间零点重置；留空不限，0 禁止。首次上线前需应用 `migrations/0022_daily_download_limit.sql`。设置、计数规则和验证步骤见 [后台操作文档](docs/wallpaper-admin-operations.md#设置每个-ip-每日下载次数)。
+后台“下载限制”可统一设置每个 IP 每日下载原文件的次数，按北京时间零点重置；留空不限，0 禁止。仅服务端完整传输成功计次，取消或失败不计，下载中预占额度。首次上线前需应用 `0022`、`0023` 下载额度迁移，已有 `0022` 的环境需补上 `0023`。设置、计数规则和验证步骤见 [后台操作文档](docs/wallpaper-admin-operations.md#设置每个-ip-每日下载次数)。
