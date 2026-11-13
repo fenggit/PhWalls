@@ -315,3 +315,17 @@ async function queryDbIndex(brands: string[], language: Language, media: Wallpap
   }
   return index;
 }
+
+/** Resolve legacy original-image preview requests to a published compressed asset. */
+export async function getPublishedWallpaperPreviewKeys(keys: string[]): Promise<Map<string, string>> {
+  if (!keys.length) return new Map();
+  const result = await getWallpaperDb().prepare(`SELECT k.value AS requested, w.compress_key
+    FROM json_each(?) k JOIN w_wallpapers w ON (w.origin_key = k.value OR w.compress_key = k.value)
+    JOIN w_devices d ON d.id = w.device_id
+    WHERE d.status = 'published' AND w.status = 'published'
+      AND w.compress_key IS NOT NULL AND w.compress_key != w.origin_key
+      AND instr(w.compress_key, '/compress/') > 0`)
+    .bind(JSON.stringify(keys)).all<{ requested: string; compress_key: string }>();
+  if (!result.success) throw new Error('Preview lookup unavailable');
+  return new Map(result.results.map((row) => [row.requested, row.compress_key]));
+}

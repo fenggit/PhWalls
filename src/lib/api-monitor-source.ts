@@ -33,7 +33,7 @@ export function classifyApiSource(request: Request, ownAppId: string, siteOrigin
 const ENDPOINTS = new Set([
   '/api/public/search', '/api/public/tabs', '/api/public/wallpaper-image',
   '/api/public/wallpaper-download', '/api/public/share-image',
-  '/api/files/download', '/api/files/download-url', '/api/files/private-url',
+  '/api/files/download', '/api/files/download-quota', '/api/files/download-url', '/api/files/private-url',
   '/api/files/batch-private-urls', '/api/files/preview',
   '/api/public/mini/v1/brands', '/api/public/mini/v1/collections',
 ]);

@@ -1,0 +1,13 @@
+{
+  "title": "Download limits",
+  "label": "Daily downloads per IP",
+  "hint": "The same limit applies separately to each IP and resets at midnight Beijing time. Leave blank for unlimited; 0 blocks downloads. Cancelled transfers count; previews do not.",
+  "save": "Save settings",
+  "saved": "Settings saved",
+  "failed": "Unable to load or save. Please retry.",
+  "invalid": "Enter an integer from 0 to 1000000, or leave blank for unlimited.",
+  "exceeded": "Daily download limit reached. Try again after midnight Beijing time.",
+  "unavailable": "Download quota is temporarily unavailable. Please try again later.",
+  "unlimited": "Unlimited",
+  "reload": "Reload"
+}

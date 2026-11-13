@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
 import { getCurrentEnvironment } from '@/lib/config/environments';
 import { sanitizeWallpaperKey } from '@/lib/wallpaper-key';
-import { getPublishedWallpaperKeys } from '@/lib/wallpaper-db';
+import { getPublishedWallpaperPreviewKeys } from '@/lib/wallpaper-db';
 
 export const runtime = 'edge';
 const SIGNING_CONCURRENCY = 8;
@@ -44,7 +44,7 @@ async function handlePOST(request: NextRequest) {
           .filter((key): key is string => Boolean(key))
       )
     );
-    const published = await getPublishedWallpaperKeys(candidates);
+    const published = await getPublishedWallpaperPreviewKeys(candidates);
     const normalizedKeys = candidates.filter((key) => published.has(key));
 
     if (normalizedKeys.length === 0) {
@@ -103,7 +103,7 @@ async function handlePOST(request: NextRequest) {
           const key = normalizedKeys[currentIndex];
 
           try {
-            const privateUrl = await r2Service.getPrivateFileUrl(key, environment.r2.urlExpires);
+            const privateUrl = await r2Service.getPrivateFileUrl(published.get(key)!, environment.r2.urlExpires);
             results[key] = privateUrl;
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -116,7 +116,7 @@ async function handlePOST(request: NextRequest) {
     } else {
       normalizedKeys.forEach((key) => {
         try {
-          results[key] = r2Service.getPublicFileUrl(key);
+          results[key] = r2Service.getPublicFileUrl(published.get(key)!);
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           errors.push(`Failed to build public URL for ${key}: ${errorMessage}`);
@@ -145,7 +145,7 @@ async function handlePOST(request: NextRequest) {
       });
     }
     
-    return NextResponse.json({ urls: results });
+    return NextResponse.json({ urls: results }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Error generating batch private URLs:', error);
     return NextResponse.json(

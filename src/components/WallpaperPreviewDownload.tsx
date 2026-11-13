@@ -1,5 +1,6 @@
 'use client';
 
+import { getDownloadQuotaTexts } from '@/lib/i18n';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { X, ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut, RotateCcw, RefreshCw, MoreHorizontal } from 'lucide-react';
 import { useLanguage } from '@/components/LanguageProvider';
@@ -341,6 +342,9 @@ export default function WallpaperPreviewDownload({
         file_type: currentWallpaper.type,
         file_size: currentWallpaper.size,
       });
+      const quotaResponse = await fetch('/api/files/download-quota', { cache: 'no-store' });
+      if (!quotaResponse.ok) throw new Error(quotaResponse.status === 429
+        ? getDownloadQuotaTexts(language).exceeded : getDownloadQuotaTexts(language).unavailable);
       // 使用服务器端代理下载，避免CORS问题
       const downloadUrl = `/api/files/download?key=${encodeURIComponent(currentWallpaper.originPath)}${downloadRequestId ? `&download_request_id=${downloadRequestId}` : ''}`;
 
@@ -386,6 +390,7 @@ export default function WallpaperPreviewDownload({
     analyticsParams,
     categoryName,
     currentWallpaper,
+    language,
     texts.downloadFailed,
     texts.errorDetails,
     texts.unknownError,

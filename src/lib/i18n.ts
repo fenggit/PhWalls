@@ -1,3 +1,8 @@
+import downloadQuota0 from '@/data/language/zh/download-quota.json';
+import downloadQuota1 from '@/data/language/en/download-quota.json';
+import downloadQuota2 from '@/data/language/zh-hant/download-quota.json';
+import downloadQuota3 from '@/data/language/ja/download-quota.json';
+import downloadQuota4 from '@/data/language/vi/download-quota.json';
 import apiMonitor0 from '@/data/language/zh/api-monitor.json';
 import apiMonitor1 from '@/data/language/en/api-monitor.json';
 import apiMonitor2 from '@/data/language/ja/api-monitor.json';
@@ -2944,4 +2949,8 @@ const adminMixedUploadTexts: Record<Language, typeof mixedUpload0> = {
 };
 export function getAdminMixedUploadTexts(language: Language) {
   return adminMixedUploadTexts[language];
+}
+
+export function getDownloadQuotaTexts(language: Language) {
+  return ({ zh: downloadQuota0, en: downloadQuota1, 'zh-hant': downloadQuota2, ja: downloadQuota3, vi: downloadQuota4 })[language];
 }

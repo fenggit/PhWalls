@@ -301,3 +301,28 @@
 | `created_at` | INTEGER NOT NULL CHECK (created_at >= 0)；无默认值 | 首次拉黑时间，应用写入 Unix 毫秒；重复拉黑保持原值 |
 
 索引 `idx_api_ip_blocklist_created(created_at DESC, ip)` 支持后台分页。永久保留直到管理员解除，解除直接删除行；不做日志历史回填。旧版忽略新表，回滚应用会停止拦截但保留黑名单。先备份并应用迁移，再部署应用；有可信连接 IP 的公开请求在缺表或查询失败时返回 503，因此不能先发布代码再补迁移。上线与回滚步骤见 [API 监控说明](api-monitoring.md#手动-ip-拉黑)。
+
+## 每 IP 每日下载额度
+
+迁移：`0022_daily_download_limit.sql`，须在发布使用额度功能的代码前应用。
+
+### `w_download_settings`
+
+| 字段 | 类型 | 用途、默认值与约束 |
+| --- | --- | --- |
+| `id` | INTEGER PRIMARY KEY | 单例设置，CHECK 固定为 1；迁移插入此行，不应删除 |
+| `daily_limit` | INTEGER NULL DEFAULT NULL | 所有 IP 各自每日下载上限；NULL 不限，0 禁止下载，正整数限制次数；CHECK 要求整数且范围 0–1000000 |
+
+### `w_download_daily_usage`
+
+| 字段 | 类型 | 用途、默认值与约束 |
+| --- | --- | --- |
+| `day` | TEXT NOT NULL | 北京时间自然日，YYYY-MM-DD；与 ip 组成主键，无默认值 |
+| `ip` | TEXT NOT NULL | 规范化后的 Cloudflare `CF-Connecting-IP`，IPv4/IPv6 均支持，无默认值；不采信 X-Forwarded-For |
+| `downloads` | INTEGER NOT NULL DEFAULT 0 | 当日已获准开始传输的下载次数，CHECK >= 0 |
+
+两个原图下载入口共用额度服务；INSERT/UPSERT 在同一条 SQL 内读取实时额度并递增，避免并发超额。下架、非法 key 和上游文件请求失败不计次，传输开始后取消或失败仍计次；无限模式也记录次数，因此当日切换为有限额度时包含先前下载。设置修改不清空当日计数。每日零点使用新日期键，无需定时重置任务。下载时以 1% 概率清理七天前的计数（非严格七天删除时限）；低流量环境可定期手工清理。额度读取或写入失败拒绝下载并返回 503，超限返回 429 与到下一个北京时间零点的 Retry-After。
+
+存量迁移只新增两张表，不改动壁纸、设备或原有访问事件数据。默认不限次数，历史下载不回填。回滚代码后再考虑删除新表，避免在线代码访问缺失表。
+
+预览字段含义不变：公开图片预览接口只返回 `compress_key`，兼容将 origin 请求解析为其压缩资源；没有独立压缩资源时不返回原图。视频播放保留现有原视频回退，下载额度不限制播放行为，详见操作文档。

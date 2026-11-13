@@ -1,3 +1,4 @@
+import { consumeDownloadQuota, downloadRetryAfter, getDownloadQuota } from '@/lib/download-quota';
 import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
@@ -63,6 +64,13 @@ async function download(request: NextRequest, errorMessage: string) {
       return NextResponse.json({ error: 'Invalid key' }, { status: 400, headers: headers() });
     }
 
+    phase = 'quota';
+    errorCode = 'DOWNLOAD_QUOTA_UNAVAILABLE';
+    const quotaDenied = () => NextResponse.json({ error: 'DAILY_DOWNLOAD_LIMIT_REACHED' }, {
+      status: 429, headers: { ...headers(), 'Retry-After': String(downloadRetryAfter()) },
+    });
+    if (!(await getDownloadQuota(request)).allowed) return quotaDenied();
+
     const sourceStarted = performance.now();
     phase = 'source';
     errorCode = 'SOURCE_URL';
@@ -92,6 +100,18 @@ async function download(request: NextRequest, errorMessage: string) {
       errorCode = fileResponse.ok ? 'UPSTREAM_BODY_MISSING' : 'UPSTREAM_HTTP';
       await fileResponse.body?.cancel();
       throw new Error('Original unavailable');
+    }
+
+    phase = 'quota';
+    errorCode = 'DOWNLOAD_QUOTA_UNAVAILABLE';
+    try {
+      if (!await consumeDownloadQuota(request)) {
+        await fileResponse.body.cancel();
+        return quotaDenied();
+      }
+    } catch (error) {
+      await fileResponse.body.cancel();
+      throw error;
     }
 
     const filename = key.split('/').pop() || 'download';
@@ -151,7 +171,7 @@ async function download(request: NextRequest, errorMessage: string) {
     // Fixed codes retain actionable failure reasons without logging signed URLs.
     log(request.signal.aborted ? 'cancelled' : 'error', 0, performance.now() - started,
       request.signal.aborted ? 'REQUEST_ABORTED' : errorCode);
-    return NextResponse.json({ error: errorMessage }, { status: 500, headers: headers() });
+    return NextResponse.json({ error: errorMessage }, { status: errorCode === 'DOWNLOAD_QUOTA_UNAVAILABLE' ? 503 : 500, headers: headers() });
   }
 }
 
