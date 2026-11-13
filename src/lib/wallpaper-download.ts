@@ -1,4 +1,5 @@
-import { consumeDownloadQuota, downloadRetryAfter, getDownloadQuota } from '@/lib/download-quota';
+import { getOptionalRequestContext } from '@cloudflare/next-on-pages';
+import { reserveDownloadQuota, settleDownloadQuota, downloadRetryAfter, getDownloadQuota } from '@/lib/download-quota';
 import { observeApiRequest } from '@/lib/api-monitor';
 import { NextRequest, NextResponse } from 'next/server';
 import { R2Service } from '@/lib/services/r2';
@@ -10,11 +11,13 @@ import { isPublishedWallpaperKey } from '@/lib/wallpaper-db';
 // Headers measure work up to the response, not the subsequent body transfer.
 // Stream logs record bytes handed to the response; they cannot confirm a client save.
 async function download(request: NextRequest, errorMessage: string) {
+  const context = getOptionalRequestContext();
   const started = performance.now();
   const timings: Record<string, number> = {};
   let upstreamCache = 'UNKNOWN';
   let upstreamRay: string | null = null;
   let upstreamStatus: number | null = null;
+  let reservation: string | null = null;
   let phase = 'validation';
   let errorCode = 'PUBLICATION_CHECK';
   const suppliedRequestId = request.nextUrl.searchParams.get('download_request_id');
@@ -105,7 +108,8 @@ async function download(request: NextRequest, errorMessage: string) {
     phase = 'quota';
     errorCode = 'DOWNLOAD_QUOTA_UNAVAILABLE';
     try {
-      if (!await consumeDownloadQuota(request)) {
+      reservation = await reserveDownloadQuota(request);
+      if (!reservation) {
         await fileResponse.body.cancel();
         return quotaDenied();
       }
@@ -114,17 +118,37 @@ async function download(request: NextRequest, errorMessage: string) {
       throw error;
     }
 
+    if (request.signal.aborted) {
+      await fileResponse.body.cancel();
+      throw new Error('Request aborted');
+    }
     const filename = key.split('/').pop() || 'download';
     const responseHeaders = headers();
     const headersMs = performance.now() - started;
+    const contentLength = fileResponse.headers.get('content-length');
+    const encoded = fileResponse.headers.get('content-encoding');
+    const expectedBytes = contentLength && (!encoded || encoded === 'identity') && /^\d+$/.test(contentLength)
+      ? Number(contentLength) : null;
     phase = 'transfer';
     const reader = fileResponse.body.getReader();
     let bytes = 0;
     let finished = false;
-    const finish = (outcome: string) => {
-      if (finished) return;
+    let settlement: Promise<void> | undefined;
+    const finish = (outcome: 'complete' | 'cancelled' | 'error') => {
+      if (settlement) return settlement;
       finished = true;
-      log(outcome, bytes, headersMs, outcome === 'error' ? 'TRANSFER_STREAM' : undefined);
+      // Keep successful streams open until their completion is recorded.
+      settlement = (async () => {
+        if (reservation) {
+          await settleDownloadQuota(reservation, outcome === 'complete');
+          reservation = null;
+        }
+        log(outcome, bytes, headersMs, outcome === 'error' ? 'TRANSFER_STREAM' : undefined);
+      })();
+      // Preserve settlement work after a client disconnects on Cloudflare.
+      try { context?.ctx.waitUntil(settlement.catch(() => { console.error('Download quota settlement unavailable'); })); }
+      catch { /* Settlement is also awaited by the stream callbacks. */ }
+      return settlement;
     };
     // One chunk per pull preserves backpressure and propagates cancellation.
     const body = new ReadableStream<Uint8Array>({
@@ -132,33 +156,37 @@ async function download(request: NextRequest, errorMessage: string) {
         try {
           const chunk = await reader.read();
           if (finished) return;
+          if (request.signal.aborted) throw new Error('Request aborted');
           if (chunk.done) {
+            if (expectedBytes !== null && bytes !== expectedBytes) throw new Error('Incomplete transfer');
+            await finish('complete');
             reader.releaseLock();
             controller.close();
-            finish('complete');
           } else {
             bytes += chunk.value.byteLength;
             controller.enqueue(chunk.value);
           }
         } catch (error) {
-          if (finished) return;
+          // Cancellation may finish while an upstream read is pending.
+          if (finished && !reservation) return;
+          try {
+            if (!finished) await finish(request.signal.aborted ? 'cancelled' : 'error');
+          } catch { console.error('Download quota settlement unavailable'); }
+          try { await reader.cancel(error); } catch { /* Upstream may already be errored. */ }
           reader.releaseLock();
           controller.error(error);
-          finish('error');
         }
       },
       async cancel(reason) {
-        finish('cancelled');
-        try {
-          await reader.cancel(reason);
-        } finally {
+        // Mark finished before cancelling so an outstanding pull cannot count completion.
+        const settling = finish('cancelled');
+        try { await reader.cancel(reason); }
+        finally {
           reader.releaseLock();
+          try { await settling; } catch { console.error('Download quota settlement unavailable'); }
         }
       },
     });
-    const contentLength = fileResponse.headers.get('content-length');
-    // fetch may decode an encoded body, making the upstream length unsuitable.
-    const encoded = fileResponse.headers.get('content-encoding');
     return new NextResponse(body, {
       headers: {
         ...responseHeaders,
@@ -168,6 +196,10 @@ async function download(request: NextRequest, errorMessage: string) {
       },
     });
   } catch {
+    if (reservation) {
+      try { await settleDownloadQuota(reservation, false); }
+      catch { console.error('Download quota settlement unavailable'); }
+    }
     // Fixed codes retain actionable failure reasons without logging signed URLs.
     log(request.signal.aborted ? 'cancelled' : 'error', 0, performance.now() - started,
       request.signal.aborted ? 'REQUEST_ABORTED' : errorCode);

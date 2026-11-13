@@ -23,33 +23,57 @@ function clientIp(request: Request) {
 }
 
 export async function getDownloadQuota(request: Request) {
+  const day = downloadDay(), ip = clientIp(request);
   const result = await downloadDatabase().prepare(`SELECT s.daily_limit,
-    COALESCE(u.downloads, 0) AS downloads FROM w_download_settings s
+    COALESCE(u.downloads, 0) AS downloads,
+    (SELECT COUNT(*) FROM w_download_reservations WHERE day = ? AND ip = ?) AS reserved
+    FROM w_download_settings s
     LEFT JOIN w_download_daily_usage u ON u.day = ? AND u.ip = ? WHERE s.id = 1`)
-    .bind(downloadDay(), clientIp(request)).first<{ daily_limit: number | null; downloads: number }>();
+    .bind(day, ip, day, ip).first<{ daily_limit: number | null; downloads: number; reserved: number }>();
   if (!result) throw new Error('Download settings unavailable');
-  return { limit: result.daily_limit, used: result.downloads,
-    allowed: result.daily_limit === null || result.downloads < result.daily_limit };
+  return { limit: result.daily_limit, used: result.downloads, reserved: result.reserved,
+    allowed: result.daily_limit === null || result.downloads + result.reserved < result.daily_limit };
 }
 
-// The setting is read inside the write: concurrent requests cannot overspend the quota.
-export const CONSUME_DOWNLOAD_SQL = `INSERT INTO w_download_daily_usage (day, ip, downloads)
-SELECT ?, ?, 1 FROM w_download_settings WHERE id = 1 AND (daily_limit IS NULL OR daily_limit > 0)
-ON CONFLICT(day, ip) DO UPDATE SET downloads = downloads + 1
-WHERE (SELECT daily_limit FROM w_download_settings WHERE id = 1) IS NULL
-   OR downloads < (SELECT daily_limit FROM w_download_settings WHERE id = 1)
-RETURNING downloads`;
+// A single atomic insert accounts for both completed and currently streaming downloads.
+export const RESERVE_DOWNLOAD_SQL = `INSERT INTO w_download_reservations (id, day, ip)
+SELECT ?, ?, ? FROM w_download_settings s WHERE s.id = 1 AND
+(s.daily_limit IS NULL OR
+ COALESCE((SELECT downloads FROM w_download_daily_usage WHERE day = ? AND ip = ?), 0)
+ + (SELECT COUNT(*) FROM w_download_reservations WHERE day = ? AND ip = ?) < s.daily_limit)
+RETURNING id`;
 
-export async function consumeDownloadQuota(request: Request): Promise<boolean> {
+export async function reserveDownloadQuota(request: Request): Promise<string | null> {
   const db = downloadDatabase();
-  const result = await db.prepare(CONSUME_DOWNLOAD_SQL).bind(downloadDay(), clientIp(request)).all();
+  const day = downloadDay(), ip = clientIp(request), id = crypto.randomUUID();
+  const result = await db.prepare(RESERVE_DOWNLOAD_SQL).bind(id, day, ip, day, ip, day, ip).all();
   if (!result.success) throw new Error('Download quota unavailable');
-  // Cleanup is best-effort; its failure must not charge a download without delivering it.
   if (Math.random() < 0.01) {
     try {
-      await db.prepare('DELETE FROM w_download_daily_usage WHERE day < ?')
-        .bind(downloadDay(Date.now() - 7 * 86400000)).run();
+      const cutoff = downloadDay(Date.now() - 7 * 86400000);
+      await db.batch([
+        db.prepare('DELETE FROM w_download_daily_usage WHERE day < ?').bind(cutoff),
+        db.prepare('DELETE FROM w_download_reservations WHERE day < ?').bind(cutoff),
+      ]);
     } catch { console.error('Download quota cleanup unavailable'); }
   }
-  return result.results.length > 0;
+  return result.results.length ? id : null;
+}
+
+export const COMPLETE_DOWNLOAD_SQL = `INSERT INTO w_download_daily_usage (day, ip, downloads)
+SELECT day, ip, 1 FROM w_download_reservations WHERE id = ?
+ON CONFLICT(day, ip) DO UPDATE SET downloads = downloads + 1`;
+
+// D1 batch is transactional. Deleting the reservation makes completion retry-safe.
+export async function settleDownloadQuota(id: string, success: boolean): Promise<void> {
+  const db = downloadDatabase();
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const statements = success ? [db.prepare(COMPLETE_DOWNLOAD_SQL).bind(id)] : [];
+      statements.push(db.prepare('DELETE FROM w_download_reservations WHERE id = ?').bind(id));
+      const results = await db.batch(statements);
+      if (results.some((result) => !result.success)) throw new Error('Download quota unavailable');
+      return;
+    } catch (error) { if (attempt === 2) throw error; }
+  }
 }
