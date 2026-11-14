@@ -362,3 +362,5 @@ API：`GET /api/admin/download-settings` 返回 `{daily_limit: number|null}`；`
 成功计数规则升级需要先应用 `0023_download_reservations.sql` 再部署。历史计数保留原值，新规则不回填历史成功状态；跨日完成计入预占日期。服务端成功指完整读出上游响应并结束代理传输（有可信 Content-Length 时核对长度），不代表浏览器确认落盘。D1 结算重试仍失败或 Worker 被强制终止时，可能留下当日在途预占；服务端会记录 `Download quota settlement unavailable`。先结合下载日志确认对应请求已结束，再按预占 ID 单独删除；不要清空仍有传输的当天预占。次日额度不受前一天预占影响。
 
 本地回归检查：`node scripts/verify-download-stream.cjs` 覆盖完整传输、取消、断流、长度不足及预占后中止；`python3 scripts/verify-download-quota.py` 覆盖并发、成功计数、重复结算、取消释放及日期/IP 隔离，均不依赖新增测试框架。
+
+2026-11-14 全站下载故障：线上代码已引用 `w_download_reservations`，但生产 D1 尚未执行 `0023_download_reservations.sql`，导致额度接口返回 503／`DOWNLOAD_QUOTA_UNAVAILABLE`，所有合集的下载均被阻断。核对确认仅此迁移待执行，Cloudflare 生成数据库导出快照后，经用户授权执行 `npx wrangler d1 migrations apply phwalls --remote`，新增预占表及索引；保留每日上限 10 次与历史计数，无需重新部署。迁移后额度接口恢复，Samsung Galaxy S27 原图代理返回 200 且完整取得 PNG；再次检查无待执行迁移。后续发布下载相关代码前必须核对生产迁移状态，不能仅完成代码部署。
