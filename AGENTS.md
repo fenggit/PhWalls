@@ -27,7 +27,7 @@ cp .env.example .env.local   # 然后填入真实值
 - `R2_ACCESS_KEY_ID_PROD`、`R2_SECRET_ACCESS_KEY_PROD`
 - `R2_BUCKET_NAME_PROD`、`R2_ENDPOINT_PROD`
 
-可选：`R2_REGION_PROD`（默认 `auto`）、`R2_URL_EXPIRES_PROD`（默认 3600）、`NEXT_PUBLIC_ENABLE_ADS`、`NEXT_PUBLIC_SITE_URL`（默认 `https://phwalls.com`）。
+可选：`R2_REGION_PROD`（默认 `auto`）、`R2_URL_EXPIRES_PROD`（默认 3600）、`NEXT_PUBLIC_SITE_URL`（默认 `https://phwalls.com`）。
 
 不要提交 `.env.local`，不要在代码中硬编码密钥。
 

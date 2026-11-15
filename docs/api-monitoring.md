@@ -1,126 +1,82 @@
 # 公开 API 调用监控
 
-后台入口：`https://a.phwalls.com/manager?tab=api-monitor`。需要现有后台登录，仅管理域名提供统计 API。此功能从部署后的新请求开始记录，不能还原未采集的历史调用。
+后台入口：`https://a.phwalls.com/manager?tab=api-monitor`。仅管理域名和已登录管理员可查询。监控从启用后的新请求开始采集，不能还原历史流量。
 
-## 查看与判断
+## 采集范围与隐私
 
-选择最近 1 小时、24 小时或 7 天，查看请求趋势、错误请求、下载请求、接口排行、来源排行、IP 排行、异常分钟窗口和最近 50 次请求。手动点击“刷新统计”获取最新数据。所有时间按上海时区显示；趋势分别按 5 分钟、1 小时、6 小时分桶，首尾可能是不完整桶。
+采集小程序 `/api/public/mini/v1/*`、公开搜索、分类、图片、分享图片、预览、签名和下载等受监控公开接口。不会采集管理登录、会话或其他管理 API；CDN 缓存命中、WAF 前置拦截、`static.phwalls.com` 直访和未进入应用函数的 405 也不在记录中。
 
-来源使用 `Referer` / `Origin` 推断：
+每次请求通过 `ctx.waitUntil` 异步写入 D1，不读取或克隆响应体，不改变业务响应、下载链路或缓存策略。写入失败不会阻断请求，也不保证零丢失。
 
-| 分类 | 规则与含义 |
+记录字段包括时间、归一化接口、方法、状态码、响应头前耗时、Cloudflare 连接 IP、国家/地区、来源分类、来源域名、微信 AppID、截断至 256 字符的 User-Agent 与 SHA-256 资源指纹。不保存完整 Referer/Origin、Cookie、Authorization、请求体、搜索词、原图 key 或签名 URL。记录只向后台管理员开放。
+
+数据表按新写入渐进清理约 7 天记录，无流量或停采期间不会立即物理删除旧数据。采集增加 D1 写入和查询成本；流量异常时可将 `API_MONITOR_ENABLED=false` 停止新采集，历史记录仍可查询。
+
+## 来源与异常判断
+
+来源由 `Referer` 和 `Origin` 推断。显式外部 `Origin` 优先于看起来站内的 `Referer`。
+
+| 分类 | 规则 |
 | --- | --- |
-| 站内来源 | 与 `NEXT_PUBLIC_SITE_URL` 的协议、端口及主域名 / www 别名匹配 |
-| 匹配自有 AppID | HTTPS `servicewechat.com` 来源路径中的 AppID 与 `API_MONITOR_MINI_APP_ID` 一致 |
-| 其他微信来源 | 来自上述微信域名，但 AppID 缺失或不匹配 |
-| 外站来源 | 有有效 HTTP(S) 来源，且非上述站内或微信来源 |
-| 未知 | 来源为空、格式无效或不是 HTTP(S) URL |
+| 站内来源 | 与 `NEXT_PUBLIC_SITE_URL` 的协议、端口及主域名或 www 别名匹配 |
+| 匹配自有 AppID | `https://servicewechat.com` 路径中的 AppID 匹配 `API_MONITOR_MINI_APP_ID` |
+| 其他微信来源 | 来自微信域名但 AppID 缺失或不匹配 |
+| 外站来源 | 有其他有效 HTTP(S) 来源 |
+| 未知 | 来源为空、无效或不是 HTTP(S) URL |
 
-显式外部 `Origin` 优先于看起来是站内的 `Referer`。来源字段都可以被脚本伪造，因此“匹配自有 AppID”只是线索，不是认证；空来源不代表盗用，不用 User-Agent 中的 MicroMessenger 字样作为自有小程序证明。微信正常调用、浏览器下载、新窗口、隐私设置和服务端脚本都有可能缺失来源。现有小程序不需要增加请求头、API Key 或登录步骤。
+来源头可伪造。“匹配自有 AppID”只是线索，不是认证；空来源不代表盗用。不要仅凭 User-Agent、共享出口 IP 或一次异常就封禁用户。
 
-以下固定 UTC 一分钟窗口按同 IP 汇总，任一条件达到即列出提示：
+以下固定 UTC 一分钟窗口按同一 IP 汇总，达到任意阈值即标记：
 
-- 所有被监控接口请求数 ≥ 120。
-- 两个原图下载入口请求数合计 ≥ 20（包括失败请求，不代表成功保存）。
-- 不同资源指纹数 ≥ 60（只对带 `key` 或详情 ID 的请求统计，不读取 POST 请求体）。
+- 受监控接口请求数不少于 120。
+- 两个原图下载入口合计请求数不少于 20，包含失败请求。
+- 带资源标识的请求中，不同资源指纹数不少于 60。
 
-阈值位于 `src/lib/api-monitor-report.ts`。所有来源均适用，不对白名单来源跳过异常识别。共享出口 IP、重试、视频分段与正常批量操作可能触发；低速或分布式爬取也可能不触发。这里只提示排查，不自动封禁、挑战或发送外部消息。先积累基线，再在 Cloudflare 结合来源、IP、访问节奏设置针对性限流，避免给全部 API 加浏览器挑战而阻断微信客户端。
+阈值定义在 `src/lib/api-monitor-report.ts`。标记只用于排查，不自动封禁、挑战、限流或发送通知。共享出口、重试、视频分段和正常批量操作可能触发；低速分布式请求可能不触发。
 
-IP 排行首批显示 20 个，点击“加载更多 IP”每次追加 20 个，并显示已加载数量与总数；接口仍展示前 20 个、来源前 30 组，异常窗口最多 30 条，按最近时间排序。汇总指标和趋势统计整个所选时段，不受这些展示数量限制。错误为 HTTP 状态码 ≥ 400；平均耗时截至响应头返回，不包括响应体传输。
+## 后台查看
 
-## 汇总卡片详情
+选择最近 1 小时、24 小时或 7 天，查看趋势、错误请求、下载请求、接口排行、来源排行、IP 排行、异常分钟窗口和最近请求。时间按上海时区显示，趋势按 5 分钟、1 小时或 6 小时分桶，首尾桶可能不完整。
 
-点击“错误请求”“外站来源请求”“异常 IP”卡片，在卡片下方展开当前统计时段的详情。前两类展示匹配请求的时间、接口、IP、国家/地区、来源域名、小程序 AppID、完整已保存客户端标识、状态码与耗时；异常 IP 展示达到分钟阈值的 IP、调用统计、分钟峰值与异常标记。即使汇总为零，也能打开并看到空状态。
+- 错误为 HTTP 状态码大于等于 400。响应耗时截至响应头返回，不包含文件传输。
+- IP 排行每页 20 条，首次统计的截止时间在 15 分钟内有效。刷新或切换时间范围后从首页重新读取。
+- 错误、外站来源和异常 IP 卡片支持查看完整时间范围内的分页详情，不依赖最近请求或已加载 IP。
+- IP 行可标记请求过密、批量下载、资源遍历和错误请求。不同峰值可来自不同分钟。
 
-详情在服务端先筛选整个统计窗口，再每次加载 20 条，不从最近 50 次请求、前 30 条异常窗口或已加载的 IP 排行中筛选。请求按时间倒序及记录 ID 升序排列，异常 IP 按请求数倒序及 IP 升序排列；共用首次统计截止时间和 15 分钟有效期。追加失败保留已有记录并提供重试，过期提示刷新统计。切换详情、刷新统计或切换时段会取消未完成的详情请求，刷新与切换时段同时收起详情。键盘可操作卡片与加载按钮，收起后焦点返回原卡片。
+管理查询 API：
 
-## IP 追加分页与异常标记
-
-IP 按请求数降序、IP 文本升序稳定排序，每页 20 条。追加沿用首次响应的截止时间，新产生的请求不进入当前排行窗口；刷新或切换时段重新从首批开始，取消未完成的追加请求。追加失败保留已有行，可点击同一按钮重试；全部加载完毕后显示完成提示。
-
-截止时间有效期为 15 分钟，超时提示刷新统计。数据库没有保存跨请求的一致性快照：迟到的异步日志或 7 天保留清理可能影响既有窗口，因此客户端按 IP 去重，所有分页都不查询当前 7 天保留期之外的数据；需要最新完整排序时重新刷新。
-
-“异常 IP”汇总卡片统计所选时段内达到现有分钟阈值的不同 IP 数量，不受当前 IP 页数或异常窗口前 30 条的限制。IP 行新增请求过密、批量下载、资源遍历标签，附上对应分钟峰值并以黄色标记；三个峰值可能来自不同分钟。异常分钟数与标记根据全部匹配分钟计算，不从已截断的异常窗口列表推断。
-
-任意 HTTP 状态码 ≥ 400 在 IP 行显示“有错误请求”标签和错误数；仅有错误的行及近期错误请求用红色标记，错误汇总卡片同时高亮。HTTP 错误本身不会计入流量异常 IP 数量，也不代表盗用；站外或未知来源不会仅凭来源被判异常。不改变匿名访问权限，也不自动限流或封禁。
-
-## 采集覆盖与成本
-
-采集四类 `/api/public/mini/v1/*` 接口及公开搜索、分类、图片、分享图片、预览、签名、下载接口，共 14 类归一化路径。两种下载入口分别记录，动态详情路径归一化为 `:id`。不会采集后台会话、登录和管理接口。未知 API 路径、错误方法导致 Next.js 在函数外生成的 405、平台层异常也不在本表内。
-
-在 Cloudflare 请求生命周期内使用 `ctx.waitUntil` 异步写入 `DB` 绑定；不克隆或读取响应体，不改变响应正文、状态、缓存策略或原图下载链路。记录的是到达函数的每次调用，列表内部的 Cache API 命中仍然计数。若整个响应由浏览器或 Cloudflare CDN 命中、WAF 在前置阶段拦截，或直接访问 `static.phwalls.com`，不会执行该采集器；完整边缘流量应结合 Cloudflare 请求分析，字段、采样和保留期由套餐决定。
-
-每次采集新增一次 D1 INSERT，触发器另外使用时间索引查找并最多删除 100 条过期记录。后台每次刷新执行 8 条受时间范围约束的聚合 / 明细查询；IP 追加页只执行 2 条查询，不重新加载趋势、来源或近期请求。页内分钟峰值仅对本页 IP 按连接 IP / 时间索引读取；7 天流量很大时扫描和 DISTINCT 统计会增加 D1 读取量。记录失败不会阻断业务，也不保证日志零丢失；关注 Pages 日志中的 `API monitor write unavailable` / `API monitor scheduling unavailable`。持续大流量或攻击时可用停采开关止损，并考虑独立分析存储或 Cloudflare 日志产品。
-
-只读 Cloudflare 注入的 `CF-Connecting-IP` 和 `CF-IPCountry`，不从 X-Forwarded-For 补 IP；本地通常显示未知。来源只保存域名和微信 AppID，User-Agent 最长 256 字符；不保存完整 URL、Cookie、Authorization、请求体、搜索词或原图 key。资源指纹为 SHA-256，仅用于统计不同资源。明细可见 IP、国家、来源、User-Agent，应只向后台管理员开放。
-
-## 配置、迁移与上线
-
-| 配置 | 默认与用途 |
+| 请求 | 用途 |
 | --- | --- |
-| `API_MONITOR_ENABLED` | 非 `false` 时启用；项目 `wrangler.toml` 为 `true`。`false` 停止新采集，后台仍可查询已有记录 |
-| `API_MONITOR_MINI_APP_ID` | 项目配置为 `wxa64dd85e9a157ffd`，用于来源线索匹配，非密钥；未配置不归类为自有小程序 |
-| `DB` | 现有 D1 绑定，新建 `w_api_access_events` 表，不改动壁纸业务表 |
+| `GET /api/admin/api-monitor?range=1h\|24h\|7d` | 完整汇总，默认 `24h` |
+| `GET /api/admin/api-monitor?view=clients&range=...&page=...&until=...` | IP 排行分页 |
+| `GET /api/admin/api-monitor?view=details&kind=errors\|external\|anomalous&range=...&page=...&until=...` | 卡片详情分页 |
 
-Cloudflare 请求环境配置优先于本地 process 环境值。生产需核对 Pages 生产 / 预览环境变量实际值。数据保留最近 7 天；每次新记录插入时渐进删除过期数据。无流量、停采或积压较大时旧数据可能暂时留在库中，但查询不会展示 7 天之外的数据。不依赖新增 Cron，不保证在到期时刻立即物理删除。
+所有响应禁止缓存。`page` 是 1–10000 的整数；`until` 必须是 15 分钟内、非未来的 Unix 毫秒时间戳。无效参数返回 400；非管理域名返回 404；未登录返回 401；监控表或 D1 不可用返回 503 `MONITOR_UNAVAILABLE`。
 
-代码推送不会自动应用生产数据库迁移。首次上线按以下顺序执行；2026-10-20 已补齐生产监控迁移，故障与核验记录见 [后台运维说明](wallpaper-admin-operations.md#2026-10-20-监控不可用恢复)：
+## IP 黑名单
 
-1. 导出 D1 备份：`npx wrangler d1 export phwalls --remote --output <备份路径>`。
-2. 用 `npx wrangler d1 migrations list phwalls --remote` 核对全部待执行迁移，特别确认 `0017_api_access_events.sql`。不要在未知待迁移列表上直接批量应用。
-3. 确认后执行 `npx wrangler d1 migrations apply phwalls --remote`；本地验证改用 `--local`。不需要回填历史数据。
-4. 发布包含采集器和后台的代码，并核对上述环境变量。若表未迁移，公开 API 继续工作，但采集失败，后台返回明确不可用状态。
-5. 用现有微信小程序浏览合集、详情及下载；在后台刷新，确认来源可能显示“匹配自有 AppID”或“未知”（以实际微信请求头为准）、状态码及计数正常。再用低频测试脚本发送一个外站 Referer 和一个空来源请求，确认分类；不对生产做高频压测。
-6. 对比现有下载传输日志和 Cloudflare 分析，确认监控口径。回滚应用代码不会影响壁纸表，停止采集可将开关置为 `false`；无需删除监控表。
+后台可输入 IPv4 或 IPv6，也可从 IP 排行、异常窗口和请求详情发起“拉黑”。黑名单精确匹配一个规范化 IP，IPv4 映射 IPv6 会归一化为 IPv4；不支持 CIDR、主机名、端口或 zone ID。重复拉黑和解除操作均幂等。
 
-本地自动化验证：`node --test tests/api-monitor.test.mjs tests/admin-navigation.test.mjs tests/wallpaper-download.test.mjs tests/live-preview.test.mjs scripts/tests/mini-api-http.test.mjs`、`npm run lint`、`npm run build`。测试使用隔离 SQLite，不访问生产数据库。
+黑名单永久保留，直到管理员解除。共享出口地址会影响该地址下全部用户，操作前必须核对。列表按创建时间倒序、IP 升序，每页 50 条。
 
-## 管理查询 API
+受监控公开接口在执行业务和应用缓存查询前检查黑名单：
 
-`GET /api/admin/api-monitor?range=1h|24h|7d`，默认 `24h`。返回 `{ data, enabled, miniAppId }`；`data` 包括 `range/since/until/bucket_ms`、`summary`、`trend`、`endpoints`、`sources`、`clients`、`client_pagination`、`alerts`、`recent`、`thresholds`。所有响应禁止缓存。
+- 命中时返回 403 `IP_BLOCKED`，响应为 `private, no-store`。
+- 黑名单表缺失或查询失败时返回 503 `BLOCKLIST_UNAVAILABLE`，不执行接口业务，避免静默放行。
+- 停止监控采集不停止封禁；开启采集时，被拒绝请求会以 403 计入错误统计。
+- 此功能不覆盖网站页面、管理 API、R2 直访、已经签发的资源链接或 CDN 缓存命中，也不替代 Cloudflare WAF。
 
-IP 追加查询：`GET /api/admin/api-monitor?view=clients&range=24h&page=2&until=<首次响应的until>`，只返回 `{ data: { clients, pagination } }`。`pagination` 包含 `page/page_size/total/has_more/until`；完整报告中的 `client_pagination` 使用相同结构。每页固定 20 条，页码为 1–10000 的整数；超出最后一页返回空数组及真实总数。`until` 必须是非未来的有效 Unix 毫秒时间戳，且距当前时间不超过 15 分钟。缺失或无效参数返回 400 `INVALID_PAGINATION`，截止时间过期返回 400 `SNAPSHOT_EXPIRED`，无效视图返回 400 `INVALID_VIEW`。
+管理接口 `/api/admin/api-monitor/blocklist`：`GET` 分页读取，`POST { "ip": "..." }` 拉黑，`DELETE { "ip": "..." }` 解除。读取要求后台会话；写入还要求同源 `Origin` 和 `X-Phwalls-Admin: 1`。非法 IP 或页码返回 400。
 
-卡片详情查询：`GET /api/admin/api-monitor?view=details&kind=errors|external|anomalous&range=24h&page=1&until=<首次响应的until>`，返回 `{ data: { events, clients, pagination } }`。`errors` 只查询状态码 ≥ 400 的请求，`external` 只查询 `source=external` 的请求，二者返回 `events`、空 `clients`；`anomalous` 返回完整窗口内达到分钟阈值的 `clients`、空 `events`。分页结构、页码、截止时间校验及缓存策略与 IP 追加查询一致；缺失或无效 `kind` 返回 400 `INVALID_DETAIL_KIND`。详情查询每次执行计数与分页两条 SQL，不修改数据库结构或采集行为。
+## 配置、迁移与验证
 
-每个 `clients` 条目另含 `peak_requests/peak_downloads/peak_targets`（单分钟峰值）、`alert_minutes`（达到阈值的分钟数）；`summary.anomalous_clients` 为达到流量阈值的不同 IP 总数。上述均为计算字段，不新增 D1 字段或迁移。
+| 配置或迁移 | 用途 |
+| --- | --- |
+| `API_MONITOR_ENABLED` | 非 `false` 时采集新请求；设为 `false` 停采 |
+| `API_MONITOR_MINI_APP_ID` | 用于微信来源分类，不是密钥 |
+| `0017_api_access_events.sql` | 创建访问事件表、索引和保留触发器 |
+| `0021_api_ip_blocklist.sql` | 创建精确 IP 黑名单表 |
 
-非管理域名返回 404；未登录返回 401；无效时间范围返回 400 `INVALID_RANGE`；未迁移、DB 绑定缺失或查询失败返回 503 `MONITOR_UNAVAILABLE`，不向客户端返回内部异常信息。不提供公开查询入口。
+生产顺序：备份 D1，使用 `npx wrangler d1 migrations list phwalls --remote` 审阅待执行迁移，应用已确认迁移，部署应用，再用低频受控请求核对采集、查询、拉黑和解除。不要用生产接口进行高频压测。
 
-## 卡片详情本地验证（2026-10-26）
-
-监控、后台导航、下载、预览及小程序 API 共 46 项相关测试通过，`npm run lint` 与 `npm run build` 通过。新增隔离 SQLite 用例覆盖近期列表之外的错误请求、外站来源筛选、异常 IP 完整分页、管理员认证及无效详情参数。
-
-Browser 插件不可用，使用 Playwright 与本机 Chrome、真实 React 面板及构建后的样式，以隔离 SQL 合成数据验证三张卡片、键盘展开与焦点返回、20 → 25 条追加、首次及追加失败重试、切换详情取消旧请求、统计过期刷新、零计数空状态和切换时段重置。桌面及 390px 手机宽度无整页横向溢出，无运行时错误；验证期间刻意注入的两次 503 与一次 400 已识别为预期失败。未访问生产监控数据或部署生产版本。
-
-## 追加分页验证（2026-10-23）
-
-监控、后台导航、下载、预览及小程序 API 共 54 项相关测试通过，`npm run lint` 与 `npm run build` 通过。新增 SQL fixture 覆盖稳定分页及末页、追加期间新增请求、异常窗口前 30 条之外的 IP 标记、分页认证和参数校验。
-
-使用实际 React 面板、编译后的 Tailwind 样式与真实 SQL 生成的 45 个合成 IP，在临时本地页面验证 20 → 40 → 45 条追加、失败保留后重试、刷新重置、延迟追加时切换时段、四类标记、桌面及 390px 手机布局；手机宽表限制在表格容器内横向滚动，未产生整页溢出，最终验证无新增控制台错误。此为隔离界面验证，未发布生产版本或使用生产请求做压测。
-
-
-## 本次本地验证（2026-10-18）
-
-- 监控、后台导航、原图下载、视频预览与小程序 API 共 51 项测试通过；公开搜索与批量签名的 5 项定向回归通过。
-- `npm run lint` 无 ESLint 问题，`npm run build` 成功；框架仍提示 next lint 将弃用，以及 Edge Runtime 禁用静态生成。
-- 桌面与 390px 手机宽度使用真实面板组件、编译后样式和合成 SQLite 数据核对布局，手机页面整体宽度为 390px，无整页横向溢出；这不是生产监控数据或真实微信真机验证。
-- `tests/public-wallpaper-data.test.mjs` 全文件为 24 项通过、2 项既有失败：动态详情描述的旧断言不再匹配包含真实数量的新文案；桌面动态页面的测试渲染器不能直接渲染异步服务端组件。两项均在独立导出的未修改 HEAD 源码上复现，未为本功能改动无关页面行为。
-- 未执行远程 D1 写入、数据库迁移、生产部署或真实流量压测。发布后需按上述上线步骤进行微信真机核验。
-
-
-## 手动 IP 拉黑
-
-接口监控顶部提供 IP 黑名单，可手动输入 IPv4 / IPv6，或在 IP 排行、异常窗口、最近请求和卡片详情中点击“拉黑”；黑名单提供“解除拉黑”，也可输入地址直接解除。拉黑永久生效，重复操作幂等。黑名单按拉黑时间倒序、IP 升序，每页 50 个；支持追加、刷新和失败重试。刷新后展示服务器最新状态，多个管理员同时操作时应刷新核对。共享出口地址会影响该地址下的所有客户端，请核对后操作。
-
-仅使用 Cloudflare 覆盖的 `CF-Connecting-IP`，不信任 `X-Forwarded-For`。匹配前规范化 IPv6，IPv4 映射 IPv6 转为 IPv4；不支持 CIDR、主机名或端口。缺失或无效连接 IP 不匹配黑名单。应用须经 Cloudflare 接入，不应在可伪造连接头的非可信代理后直接公开部署。
-
-拦截复用 `observeApiRequest`，覆盖本文受监控端点列表，在执行业务及应用缓存查询前检查 D1。被拉黑请求返回 HTTP 403 和 `IP_BLOCKED`；小程序保留 `{error:{code,message}}` 错误结构，其他接口为 `{error:"IP_BLOCKED"}`；拒绝响应带 `private, no-store`。暂停采集不会停止拦截；采集开启时拒绝请求记为 403 并进入错误统计，不额外标记为流量异常。黑名单查询失败（包括缺表、D1 不可用）返回 503 / `BLOCKLIST_UNAVAILABLE`，不执行接口业务，避免静默放行。每次有有效连接 IP 的受监控请求增加一次主键查询，不在进程缓存黑名单。
-
-该功能不覆盖网站页面、管理 API、R2 直访、已经签发的资源链接或外层 CDN 缓存命中。需要边缘全面封禁时仍应使用 Cloudflare WAF，并确认 CDN 规则不直接缓存公开 API；本功能不修改 WAF。
-
-后台接口 `/api/admin/api-monitor/blocklist`：GET 接受 `page`（从 1 开始，每页 50，返回 `{data:[{ip,created_at}],hasMore}`），POST 接受 `{ip}` 拉黑，DELETE 接受 `{ip}` 解除，写成功返回 `{ip,blocked}`。所有请求沿用管理域名和会话验证，写入必须同源 Origin 且 `X-Phwalls-Admin: 1`。非法 IP / page 返回 400，未登录 401，写来源不符 403，错误域名 404，数据库不可用 503；响应不缓存。
-
-上线顺序：备份 D1 → 核对待执行迁移 → 应用 `0021_api_ip_blocklist.sql` → 部署应用 → 用可控测试 IP 验证拉黑返回 403、解除恢复正常、后台未登录不可访问。新表为空，无需回填既有日志。部署与生产迁移需单独授权，本次代码开发不执行。回滚先回退应用即可保留表和黑名单，但回退后不会执行拉黑；不要在新应用仍运行时删除表。
-
-本次本地验证：黑名单、监控、公开壁纸数据、下载与视频预览共 70 项测试通过，`npm run lint`、`npm run build` 通过。浏览器使用真实黑名单组件、构建样式与隔离合成响应，验证非法输入、请求行拉黑、黑名单解除、503 失败重试及桌面 / 390px 布局；无运行时错误或手机整页横向溢出。未执行生产迁移或部署。
+本地验证：`node --test tests/api-monitor.test.mjs tests/admin-navigation.test.mjs tests/wallpaper-download.test.mjs tests/live-preview.test.mjs scripts/tests/mini-api-http.test.mjs`、`npm run lint`、`npm run build`。

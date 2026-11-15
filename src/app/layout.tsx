@@ -16,6 +16,7 @@ import {
 import { headers } from 'next/headers';
 import { getI18nTexts } from '@/lib/i18n';
 import { DEFAULT_OPEN_GRAPH_IMAGES, DEFAULT_X_IMAGES } from '@/lib/social-metadata';
+import { isAdvertisingEnabled } from '@/lib/advertising-settings';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -123,17 +124,17 @@ export default async function RootLayout({
   const rawLang = headersList.get(LANGUAGE_HEADER_NAME);
   const currentLanguage = isLanguage(rawLang) ? rawLang : DEFAULT_LANGUAGE;
   const homeDescription = getI18nTexts(currentLanguage).heroDescription;
+  const adsEnabled = await isAdvertisingEnabled();
 
   return (
     <html lang={currentLanguage} className="scroll-smooth">
       <head>
-        {/* Google Ads */}
-        <Script
+        {adsEnabled && <Script
           id="google-adsense"
           async
           crossOrigin="anonymous"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4449597016215208"
-        />
+        />}
 
         {/* Google tag (gtag.js) */}
         <Script
@@ -158,7 +159,7 @@ export default async function RootLayout({
         {/* 资源提示优化：为 LCP 图片来源提前建连 */}
         <link rel="preconnect" href="https://static.phwalls.com" />
         <link rel="dns-prefetch" href="https://static.phwalls.com" />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        {adsEnabled && <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
         {/* PWA Manifest */}
