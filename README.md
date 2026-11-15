@@ -156,9 +156,6 @@ R2_ACCESS_KEY_ID_PROD=your_r2_access_key_id
 R2_SECRET_ACCESS_KEY_PROD=your_r2_secret_access_key
 R2_BUCKET_NAME_PROD=your_r2_bucket_name
 R2_ENDPOINT_PROD=https://your-account-id.r2.cloudflarestorage.com
-
-# 功能开关（可选）
-NEXT_PUBLIC_ENABLE_ADS=true
 ```
 
 ### 3. 启动开发服务器
@@ -197,7 +194,6 @@ npm start
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
 | `STORAGE_PROVIDER_PROD` | 存储提供商 | `r2` |
-| `NEXT_PUBLIC_ENABLE_ADS` | 是否启用广告 | `false` |
 | Cloudflare D1 `DB` 绑定 | 壁纸内容唯一数据源（生产读取远程 D1，本地开发读取本机 D1） | 必需 |
 | `ADMIN_HOST` | 线上后台专用域名 | `a.phwalls.com` |
 
@@ -253,7 +249,7 @@ npm start
 
 ### 功能开关配置
 
-后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/manager` 与 `/api/admin`，本地开发允许通过 `localhost:3100/manager` 访问。前后台 Pages 项目合并方案见[合并说明](docs/cloudflare-pages-consolidation.md)；合并完成后 `a.phwalls.com` 与 `phwalls.com` 共用 `phwalls` 项目，统一部署命令为 `npm run deploy`，`npm run admin:deploy` 为兼容别名。
+后台不在公开导航栏提供入口。线上仅在 `ADMIN_HOST` 指定的域名响应 `/manager` 与 `/api/admin`，本地开发允许通过 `localhost:3100/manager` 访问。`a.phwalls.com` 与 `phwalls.com` 共用 `phwalls` Pages 项目；统一部署命令为 `npm run deploy`，`npm run admin:deploy` 为兼容别名。部署与迁移步骤见[后台操作说明](docs/wallpaper-admin-operations.md)。
 
 ## 功能模块
 
@@ -350,7 +346,7 @@ https://phwalls.com/{设备名称}
 
 #### 访问方式
 
-1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/manager`。设备主色调采用单值英文枚举与五语言映射，详见[设备主色调说明](docs/device-themes.md)；单张壁纸使用小写英文数组，英文直接作为五语言 JSON 的键，全部 94 个英文及中文说明见[壁纸标签说明](docs/wallpaper-tags.md)。
+1. 本地执行 D1 迁移与导入（见 [后台操作说明](docs/wallpaper-admin-operations.md)），访问 `http://localhost:3100/manager`。设备主风格、单张标签和明暗主题的字段语义与词表见[内容分类](docs/content-classification.md)。
 2. 使用 `ADMIN_USERNAME` 与生成哈希时输入的原密码登录。
 3. 正式后台部署并绑定专用域名后访问 `https://a.phwalls.com/manager`。
 
@@ -773,7 +769,7 @@ npm start
 
 ### 配置模板
 
-- [环境变量示例](./.env.local.example) - 环境变量配置模板
+- [环境变量示例](./.env.example) - 环境变量配置模板
 
 ### IndexNow 与多语言站点地图
 
